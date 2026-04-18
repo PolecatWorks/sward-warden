@@ -1,12 +1,18 @@
-.PHONY: all build test run
+.PHONY: all build-frontend build-backend helm-package helm-deploy
 
-all: build test
+HELM_CHART := slurry-manager
+HELM_DIR := charts/$(HELM_CHART)
 
-build:
-	cd sp-be-container && cargo build
+all: build-frontend build-backend helm-package
 
-test:
-	cd sp-be-container && cargo test -- --test-threads=1
+build-frontend:
+	docker build -t slurry-manager-frontend:latest sp-fe-container
 
-run:
-	cd sp-be-container && cargo run
+build-backend:
+	docker build -t slurry-manager-backend:latest sp-be-container
+
+helm-package:
+	helm package $(HELM_DIR) -d charts
+
+helm-deploy:
+	helm upgrade --install $(HELM_CHART) $(HELM_DIR)

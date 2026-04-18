@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "slurry-manager.fullname" . }}-backend
+  labels:
+    app.kubernetes.io/name: backend
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  type: {{ .Values.backend.service.type }}
+  ports:
+    - port: {{ .Values.backend.service.appPort }}
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: {{ .Values.backend.service.lifecyclePort }}
+      targetPort: lifecycle
+      protocol: TCP
+      name: lifecycle
+  selector:
+    app.kubernetes.io/name: backend
+    app.kubernetes.io/instance: {{ .Release.Name }}
