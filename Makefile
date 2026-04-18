@@ -1,7 +1,10 @@
-.PHONY: all build-frontend build-backend helm-package helm-deploy
+.PHONY: all build-frontend build-backend helm-package helm-deploy test
 
 HELM_CHART := slurry-manager
 HELM_DIR := charts/$(HELM_CHART)
+
+test:
+	cd sp-be-container && cargo test -- --test-threads=1
 
 all: build-frontend build-backend helm-package
 

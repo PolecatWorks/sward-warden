@@ -5,8 +5,8 @@ use std::env;
 #[derive(Debug, Deserialize, PartialEq)]
 pub struct AppConfig {
     pub database_url: String,
-    pub server_port: u16,
-    pub health_port: u16,
+    pub server_addr: String,
+    pub health_addr: String,
 }
 
 impl AppConfig {
@@ -33,14 +33,15 @@ mod tests {
         let _ = fs::create_dir_all("config");
         let default_config = r#"
 database_url: "postgres://user:pass@localhost:5432/db"
-server_port: 8080
-health_port: 8079
+server_addr: "0.0.0.0:8080"
+health_addr: "0.0.0.0:8079"
 "#;
         fs::write("config/default.yaml", default_config).unwrap();
         unsafe {
             env::set_var("RUN_MODE", "development");
             env::remove_var("SP_BE__DATABASE_URL");
-            env::remove_var("SP_BE__SERVER_PORT");
+            env::remove_var("SP_BE__SERVER_ADDR");
+            env::remove_var("SP_BE__HEALTH_ADDR");
         }
     }
 
@@ -49,7 +50,8 @@ health_port: 8079
         unsafe {
             env::remove_var("RUN_MODE");
             env::remove_var("SP_BE__DATABASE_URL");
-            env::remove_var("SP_BE__SERVER_PORT");
+            env::remove_var("SP_BE__SERVER_ADDR");
+            env::remove_var("SP_BE__HEALTH_ADDR");
         }
     }
 
@@ -58,8 +60,8 @@ health_port: 8079
         setup_test_env();
         let config = AppConfig::load().unwrap();
         assert_eq!(config.database_url, "postgres://user:pass@localhost:5432/db");
-        assert_eq!(config.server_port, 8080);
-        assert_eq!(config.health_port, 8079);
+        assert_eq!(config.server_addr, "0.0.0.0:8080");
+        assert_eq!(config.health_addr, "0.0.0.0:8079");
         teardown_test_env();
     }
 
@@ -68,13 +70,14 @@ health_port: 8079
         setup_test_env();
         unsafe {
             env::set_var("SP_BE__DATABASE_URL", "postgres://prod:prod@db:5432/prod_db");
-            env::set_var("SP_BE__SERVER_PORT", "9090");
+            env::set_var("SP_BE__SERVER_ADDR", "127.0.0.1:9090");
+            env::set_var("SP_BE__HEALTH_ADDR", "127.0.0.1:9091");
         }
 
         let config = AppConfig::load().unwrap();
         assert_eq!(config.database_url, "postgres://prod:prod@db:5432/prod_db");
-        assert_eq!(config.server_port, 9090);
-        assert_eq!(config.health_port, 8079);
+        assert_eq!(config.server_addr, "127.0.0.1:9090");
+        assert_eq!(config.health_addr, "127.0.0.1:9091");
         teardown_test_env();
     }
 
@@ -88,7 +91,7 @@ database_url: "postgres://secret:secret@secret-db:5432/secret_db"
 
         let config = AppConfig::load().unwrap();
         assert_eq!(config.database_url, "postgres://secret:secret@secret-db:5432/secret_db");
-        assert_eq!(config.server_port, 8080);
+        assert_eq!(config.server_addr, "0.0.0.0:8080");
 
         teardown_test_env();
     }
