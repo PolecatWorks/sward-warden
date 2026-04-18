@@ -4,12 +4,12 @@
 This specification covers the implementation details of the frontend application as outlined in PRD 0001.
 
 ## Technical Stack
-- **Framework**: Angular
-- **UI Component Library**: Angular Material
+- **Framework**: Angular (specifically requested for the UI)
+- **UI Component Library**: Angular Material (specifically requested for the UI)
 - **Location**: All source code will reside in `sp-fe-container/`
 
 ## Deployment Strategy
-- The application will be packaged into a Docker container.
+- The application will be packaged into an nginx container serving the compiled json statically.
 
 ## Expected Workflows
 - TDD should be practiced, prioritizing component tests, service tests, and e2e specifications.
