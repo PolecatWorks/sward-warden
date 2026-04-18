@@ -20,3 +20,7 @@ This file describes the workflow and development patterns for our agents to foll
 - Read and understand the PRDs and specs thoroughly before writing code.
 - Analyze PRDs for ambiguities and contradictions; raise issues or resolve them if found.
 - As you pick up new guidance on workflow or best practices, capture it in this `agents.md` file or within the PRD files appropriately.
+- If you have a new requirement update the prd files.
+- Do not update prd files and spec files in the same pr.
+- Do not update spec files and code in the same pr.
+- Prd files should be numbered. Spec files should be numbers deriving from the prd it is from.
