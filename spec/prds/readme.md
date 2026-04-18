@@ -6,4 +6,5 @@ PRDs dictate the high-level features and requirements of the project. Every PRD 
 
 ## Current PRDs
 
-*(No PRDs have been added yet. Update this list as new PRDs are created.)*
+- [0001 Application Architecture](./0001-app-architecture.md)
+- [0002 UI Requirements](./0002-ui.md)
