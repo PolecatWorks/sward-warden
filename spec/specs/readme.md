@@ -6,4 +6,6 @@ Once a PRD in `spec/prds/` is vetted, it is broken down into specific actionable
 
 ## Current Specs
 
-*(No specs have been added yet. Update this list as new specs are created.)*
+- [0001-01 Frontend Specification](./0001-01-frontend.md)
+- [0001-02 Backend Specification](./0001-02-backend.md)
+- [0001-03 Deployment Specification](./0001-03-deployment.md)
