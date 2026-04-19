@@ -1,5 +1,7 @@
 # 0001-01 Frontend Specification
 
+**State**: Complete
+
 ## Scope
 This specification covers the implementation details of the frontend application as outlined in PRD 0001.
 
