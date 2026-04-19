@@ -921,6 +921,7 @@ dependencies = [
  "config",
  "http-body-util",
  "serde",
+ "serde_json",
  "serde_yaml",
  "tokio",
  "tower",

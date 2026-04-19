@@ -29,4 +29,20 @@ export class FarmManagementService {
   getEvents(): Observable<Event[]> {
     return this.http.get<Event[]>(`${this.apiUrl}/events`);
   }
+
+  addUser(user: User): Observable<User> {
+    return this.http.post<User>(`${this.apiUrl}/users`, user);
+  }
+
+  addFarm(farm: Farm): Observable<Farm> {
+    return this.http.post<Farm>(`${this.apiUrl}/farms`, farm);
+  }
+
+  addField(field: Field): Observable<Field> {
+    return this.http.post<Field>(`${this.apiUrl}/fields`, field);
+  }
+
+  addEvent(event: Event): Observable<Event> {
+    return this.http.post<Event>(`${this.apiUrl}/events`, event);
+  }
 }

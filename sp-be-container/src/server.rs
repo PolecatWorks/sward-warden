@@ -1,5 +1,5 @@
 use crate::models::{Event, Farm, Field, User};
-use axum::{routing::get, Json, Router};
+use axum::{routing::{get, post}, Json, Router};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -16,21 +16,33 @@ pub fn app_router() -> Router {
             Json(vec![
                 User { id: 1, name: "John Doe".to_string(), email: "john@example.com".to_string() },
             ])
+        })
+        .post(|Json(user): Json<User>| async move {
+            Json(user)
         }))
         .route("/v0/farms", get(|| async {
             Json(vec![
                 Farm { id: 1, user_id: 1, name: "Green Acres".to_string(), location: "Springfield".to_string() },
             ])
+        })
+        .post(|Json(farm): Json<Farm>| async move {
+            Json(farm)
         }))
         .route("/v0/fields", get(|| async {
             Json(vec![
                 Field { id: 1, farm_id: 1, name: "North Field".to_string(), area_hectares: 10.5 },
             ])
+        })
+        .post(|Json(field): Json<Field>| async move {
+            Json(field)
         }))
         .route("/v0/events", get(|| async {
             Json(vec![
                 Event { id: 1, field_id: 1, event_type: "Slurry".to_string(), description: "Spring application".to_string(), date: "2024-04-01".to_string() },
             ])
+        })
+        .post(|Json(event): Json<Event>| async move {
+            Json(event)
         }))
 }
 
@@ -69,7 +81,7 @@ mod tests {
     async fn test_app_router_users() {
         let app = app_router();
 
-        let response = app
+        let response = app.clone()
             .oneshot(Request::builder().uri("/v0/users").body(Body::empty()).unwrap())
             .await
             .unwrap();
@@ -78,13 +90,31 @@ mod tests {
         let body = response.into_body().collect().await.unwrap().to_bytes();
         let body_str = String::from_utf8(body.to_vec()).unwrap();
         assert!(body_str.contains("John Doe"));
+
+        let new_user = User { id: 2, name: "Jane Doe".to_string(), email: "jane@example.com".to_string() };
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/v0/users")
+                    .header("content-type", "application/json")
+                    .body(Body::from(serde_json::to_string(&new_user).unwrap()))
+                    .unwrap()
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body_str = String::from_utf8(body.to_vec()).unwrap();
+        assert!(body_str.contains("Jane Doe"));
     }
 
     #[tokio::test]
     async fn test_app_router_farms() {
         let app = app_router();
 
-        let response = app
+        let response = app.clone()
             .oneshot(Request::builder().uri("/v0/farms").body(Body::empty()).unwrap())
             .await
             .unwrap();
@@ -93,13 +123,31 @@ mod tests {
         let body = response.into_body().collect().await.unwrap().to_bytes();
         let body_str = String::from_utf8(body.to_vec()).unwrap();
         assert!(body_str.contains("Green Acres"));
+
+        let new_farm = Farm { id: 2, user_id: 2, name: "Red Barn".to_string(), location: "Shelbyville".to_string() };
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/v0/farms")
+                    .header("content-type", "application/json")
+                    .body(Body::from(serde_json::to_string(&new_farm).unwrap()))
+                    .unwrap()
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body_str = String::from_utf8(body.to_vec()).unwrap();
+        assert!(body_str.contains("Red Barn"));
     }
 
     #[tokio::test]
     async fn test_app_router_fields() {
         let app = app_router();
 
-        let response = app
+        let response = app.clone()
             .oneshot(Request::builder().uri("/v0/fields").body(Body::empty()).unwrap())
             .await
             .unwrap();
@@ -108,13 +156,31 @@ mod tests {
         let body = response.into_body().collect().await.unwrap().to_bytes();
         let body_str = String::from_utf8(body.to_vec()).unwrap();
         assert!(body_str.contains("North Field"));
+
+        let new_field = Field { id: 2, farm_id: 2, name: "South Field".to_string(), area_hectares: 20.0 };
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/v0/fields")
+                    .header("content-type", "application/json")
+                    .body(Body::from(serde_json::to_string(&new_field).unwrap()))
+                    .unwrap()
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body_str = String::from_utf8(body.to_vec()).unwrap();
+        assert!(body_str.contains("South Field"));
     }
 
     #[tokio::test]
     async fn test_app_router_events() {
         let app = app_router();
 
-        let response = app
+        let response = app.clone()
             .oneshot(Request::builder().uri("/v0/events").body(Body::empty()).unwrap())
             .await
             .unwrap();
@@ -123,6 +189,24 @@ mod tests {
         let body = response.into_body().collect().await.unwrap().to_bytes();
         let body_str = String::from_utf8(body.to_vec()).unwrap();
         assert!(body_str.contains("Spring application"));
+
+        let new_event = Event { id: 2, field_id: 2, event_type: "Planting".to_string(), description: "Corn".to_string(), date: "2024-05-01".to_string() };
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/v0/events")
+                    .header("content-type", "application/json")
+                    .body(Body::from(serde_json::to_string(&new_event).unwrap()))
+                    .unwrap()
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body_str = String::from_utf8(body.to_vec()).unwrap();
+        assert!(body_str.contains("Planting"));
     }
 
     #[tokio::test]
