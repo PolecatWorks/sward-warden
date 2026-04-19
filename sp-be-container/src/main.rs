@@ -1,3 +1,4 @@
+pub mod models;
 mod cli;
 mod config;
 mod server;
