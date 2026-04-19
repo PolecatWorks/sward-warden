@@ -3,6 +3,13 @@
     <mat-card-title>Optimization Engine</mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <p>Suggest optimal times and locations based on crop needs to maximize yield and minimize waste.</p>
+    <h3>Suggested Application Plan</h3>
+    <mat-list>
+      <mat-list-item *ngFor="let suggestion of suggestions">
+        <span matListItemTitle>{{ suggestion.field }} - {{ suggestion.date }}</span>
+        <span matListItemLine>Recommended Rate: {{ suggestion.rate }}</span>
+        <span matListItemLine>Reason: {{ suggestion.reason }}</span>
+      </mat-list-item>
+    </mat-list>
   </mat-card-content>
 </mat-card>

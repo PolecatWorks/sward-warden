@@ -3,6 +3,15 @@
     <mat-card-title>Topology & Field Mapping</mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <p>Visualize field topology, slopes, and highlight areas with high risk of runoff.</p>
+    <h3>Field Runoff Risk Assessment</h3>
+    <mat-list>
+      <mat-list-item *ngFor="let field of fields">
+        <mat-icon matListItemIcon *ngIf="field.riskLevel === 'High'" color="warn">warning</mat-icon>
+        <mat-icon matListItemIcon *ngIf="field.riskLevel === 'Medium'" color="accent">info</mat-icon>
+        <mat-icon matListItemIcon *ngIf="field.riskLevel === 'Low'" style="color: green;">check_circle</mat-icon>
+        <div matListItemTitle>{{ field.name }}</div>
+        <div matListItemLine>Slope: {{ field.slope }} | Risk Level: {{ field.riskLevel }}</div>
+      </mat-list-item>
+    </mat-list>
   </mat-card-content>
 </mat-card>

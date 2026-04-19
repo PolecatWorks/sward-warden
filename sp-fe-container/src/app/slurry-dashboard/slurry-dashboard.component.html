@@ -3,6 +3,18 @@
     <mat-card-title>Slurry Management Dashboard</mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <p>Overview of current slurry storage levels and planned/historical events.</p>
+    <h3>Current Slurry Storage Level</h3>
+    <div class="storage-container">
+      <span>{{ storageLevel }}% Full</span>
+      <mat-progress-bar mode="determinate" [value]="storageLevel"></mat-progress-bar>
+    </div>
+
+    <h3>Application Events</h3>
+    <mat-list>
+      <mat-list-item *ngFor="let event of events">
+        <span matListItemTitle>{{ event.description }}</span>
+        <span matListItemLine>{{ event.date }} ({{ event.type }})</span>
+      </mat-list-item>
+    </mat-list>
   </mat-card-content>
 </mat-card>
