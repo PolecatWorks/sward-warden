@@ -1,5 +1,7 @@
 # 0001-03 Deployment Specification
 
+**State**: Complete
+
 ## Scope
 This specification details the deployment and infrastructure mechanisms as per PRD 0001.
 

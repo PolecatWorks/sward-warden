@@ -1,5 +1,7 @@
 # 0001-02 Backend Specification
 
+**State**: Complete
+
 ## Scope
 This specification covers the implementation details of the backend application as outlined in PRD 0001.
 
