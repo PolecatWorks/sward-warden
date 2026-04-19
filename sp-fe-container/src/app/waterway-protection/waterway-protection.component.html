@@ -3,6 +3,17 @@
     <mat-card-title>Waterway Protection</mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <p>Mark buffer zones near waterways and prevent scheduling application within these zones.</p>
+    <h3>Buffer Zones</h3>
+    <mat-list>
+      <mat-list-item *ngFor="let waterway of waterways">
+        <mat-icon matListItemIcon *ngIf="waterway.isWithinBuffer" color="warn">block</mat-icon>
+        <mat-icon matListItemIcon *ngIf="!waterway.isWithinBuffer" style="color: green;">check_circle</mat-icon>
+        <div matListItemTitle>{{ waterway.name }}</div>
+        <div matListItemLine>Buffer Zone: {{ waterway.bufferZone }}</div>
+        <div matListItemLine *ngIf="waterway.isWithinBuffer" class="warning-text">
+          Application restricted: Location is within the buffer zone.
+        </div>
+      </mat-list-item>
+    </mat-list>
   </mat-card-content>
 </mat-card>

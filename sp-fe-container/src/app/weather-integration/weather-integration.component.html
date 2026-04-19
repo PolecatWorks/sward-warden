@@ -3,6 +3,13 @@
     <mat-card-title>Weather Integration</mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <p>Incorporate real-time and forecasted weather data to prevent runoff.</p>
+    <h3>Current Condition: {{ currentWeather.condition }} ({{ currentWeather.temp }})</h3>
+    <p>Forecast: {{ currentWeather.forecast }}</p>
+
+    <div *ngIf="!isApplicationAllowed" class="weather-warning">
+      <p><strong>Warning:</strong> Application scheduling is disabled due to adverse weather conditions preventing safe slurry application.</p>
+    </div>
+
+    <button mat-raised-button color="primary" [disabled]="!isApplicationAllowed">Schedule Application</button>
   </mat-card-content>
 </mat-card>
