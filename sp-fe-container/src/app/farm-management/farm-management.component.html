@@ -1,6 +1,19 @@
 <div class="farm-management">
   <h2>Farm Management</h2>
 
+  <h3>Create Farm</h3>
+  <form [formGroup]="farmForm" (ngSubmit)="onSubmitFarm()">
+    <div>
+      <label for="farm_name">Name:</label>
+      <input id="farm_name" formControlName="name" type="text">
+    </div>
+    <div>
+      <label for="location">Location:</label>
+      <input id="location" formControlName="location" type="text">
+    </div>
+    <button type="submit" [disabled]="!farmForm.valid">Add Farm</button>
+  </form>
+
   <h3>Farms</h3>
   <div *ngIf="farms$ | async as farms; else loadingFarms">
     <ul>
@@ -11,6 +24,19 @@
   </div>
   <ng-template #loadingFarms><p>Loading farms...</p></ng-template>
 
+  <h3>Create Field</h3>
+  <form [formGroup]="fieldForm" (ngSubmit)="onSubmitField()">
+    <div>
+      <label for="field_name">Name:</label>
+      <input id="field_name" formControlName="name" type="text">
+    </div>
+    <div>
+      <label for="area_hectares">Area (ha):</label>
+      <input id="area_hectares" formControlName="area_hectares" type="number" step="0.1">
+    </div>
+    <button type="submit" [disabled]="!fieldForm.valid">Add Field</button>
+  </form>
+
   <h3>Fields</h3>
   <div *ngIf="fields$ | async as fields; else loadingFields">
     <ul>
@@ -20,6 +46,23 @@
     </ul>
   </div>
   <ng-template #loadingFields><p>Loading fields...</p></ng-template>
+
+  <h3>Record Event</h3>
+  <form [formGroup]="eventForm" (ngSubmit)="onSubmitEvent()">
+    <div>
+      <label for="event_type">Type:</label>
+      <input id="event_type" formControlName="event_type" type="text">
+    </div>
+    <div>
+      <label for="description">Description:</label>
+      <input id="description" formControlName="description" type="text">
+    </div>
+    <div>
+      <label for="date">Date:</label>
+      <input id="date" formControlName="date" type="date">
+    </div>
+    <button type="submit" [disabled]="!eventForm.valid">Add Event</button>
+  </form>
 
   <h3>Events</h3>
   <div *ngIf="events$ | async as events; else loadingEvents">

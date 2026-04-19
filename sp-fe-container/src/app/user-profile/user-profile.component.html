@@ -1,5 +1,19 @@
 <div class="user-profile">
   <h2>User Profiles</h2>
+
+  <h3>Create User</h3>
+  <form [formGroup]="userForm" (ngSubmit)="onSubmitUser()">
+    <div>
+      <label for="name">Name:</label>
+      <input id="name" formControlName="name" type="text">
+    </div>
+    <div>
+      <label for="email">Email:</label>
+      <input id="email" formControlName="email" type="email">
+    </div>
+    <button type="submit" [disabled]="!userForm.valid">Add User</button>
+  </form>
+
   <div *ngIf="users$ | async as users; else loading">
     <ul class="user-list">
       <li *ngFor="let user of users">
