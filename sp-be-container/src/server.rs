@@ -1,3 +1,4 @@
+use crate::models::{Event, Farm, Field, User};
 use axum::{routing::get, Json, Router};
 use serde::Serialize;
 
@@ -7,9 +8,30 @@ pub struct HelloResponse {
 }
 
 pub fn app_router() -> Router {
-    Router::new().route("/v0/hello", get(|| async {
-        Json(HelloResponse { message: "hello".to_string() })
-    }))
+    Router::new()
+        .route("/v0/hello", get(|| async {
+            Json(HelloResponse { message: "hello".to_string() })
+        }))
+        .route("/v0/users", get(|| async {
+            Json(vec![
+                User { id: 1, name: "John Doe".to_string(), email: "john@example.com".to_string() },
+            ])
+        }))
+        .route("/v0/farms", get(|| async {
+            Json(vec![
+                Farm { id: 1, user_id: 1, name: "Green Acres".to_string(), location: "Springfield".to_string() },
+            ])
+        }))
+        .route("/v0/fields", get(|| async {
+            Json(vec![
+                Field { id: 1, farm_id: 1, name: "North Field".to_string(), area_hectares: 10.5 },
+            ])
+        }))
+        .route("/v0/events", get(|| async {
+            Json(vec![
+                Event { id: 1, field_id: 1, event_type: "Slurry".to_string(), description: "Spring application".to_string(), date: "2024-04-01".to_string() },
+            ])
+        }))
 }
 
 pub fn health_router() -> Router {
@@ -41,6 +63,66 @@ mod tests {
         let body = response.into_body().collect().await.unwrap().to_bytes();
         let body_str = String::from_utf8(body.to_vec()).unwrap();
         assert_eq!(body_str, r#"{"message":"hello"}"#);
+    }
+
+    #[tokio::test]
+    async fn test_app_router_users() {
+        let app = app_router();
+
+        let response = app
+            .oneshot(Request::builder().uri("/v0/users").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body_str = String::from_utf8(body.to_vec()).unwrap();
+        assert!(body_str.contains("John Doe"));
+    }
+
+    #[tokio::test]
+    async fn test_app_router_farms() {
+        let app = app_router();
+
+        let response = app
+            .oneshot(Request::builder().uri("/v0/farms").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body_str = String::from_utf8(body.to_vec()).unwrap();
+        assert!(body_str.contains("Green Acres"));
+    }
+
+    #[tokio::test]
+    async fn test_app_router_fields() {
+        let app = app_router();
+
+        let response = app
+            .oneshot(Request::builder().uri("/v0/fields").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body_str = String::from_utf8(body.to_vec()).unwrap();
+        assert!(body_str.contains("North Field"));
+    }
+
+    #[tokio::test]
+    async fn test_app_router_events() {
+        let app = app_router();
+
+        let response = app
+            .oneshot(Request::builder().uri("/v0/events").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body_str = String::from_utf8(body.to_vec()).unwrap();
+        assert!(body_str.contains("Spring application"));
     }
 
     #[tokio::test]

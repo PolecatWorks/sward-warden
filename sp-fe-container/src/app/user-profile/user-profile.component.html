@@ -1,0 +1,14 @@
+<div class="user-profile">
+  <h2>User Profiles</h2>
+  <div *ngIf="users$ | async as users; else loading">
+    <ul class="user-list">
+      <li *ngFor="let user of users">
+        <strong>Name:</strong> {{ user.name }} <br>
+        <strong>Email:</strong> {{ user.email }}
+      </li>
+    </ul>
+  </div>
+  <ng-template #loading>
+    <p>Loading users...</p>
+  </ng-template>
+</div>

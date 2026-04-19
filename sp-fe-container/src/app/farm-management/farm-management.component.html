@@ -1,0 +1,33 @@
+<div class="farm-management">
+  <h2>Farm Management</h2>
+
+  <h3>Farms</h3>
+  <div *ngIf="farms$ | async as farms; else loadingFarms">
+    <ul>
+      <li *ngFor="let farm of farms">
+        {{ farm.name }} ({{ farm.location }})
+      </li>
+    </ul>
+  </div>
+  <ng-template #loadingFarms><p>Loading farms...</p></ng-template>
+
+  <h3>Fields</h3>
+  <div *ngIf="fields$ | async as fields; else loadingFields">
+    <ul>
+      <li *ngFor="let field of fields">
+        {{ field.name }} - {{ field.area_hectares }} ha
+      </li>
+    </ul>
+  </div>
+  <ng-template #loadingFields><p>Loading fields...</p></ng-template>
+
+  <h3>Events</h3>
+  <div *ngIf="events$ | async as events; else loadingEvents">
+    <ul>
+      <li *ngFor="let event of events">
+        {{ event.date }}: {{ event.event_type }} - {{ event.description }}
+      </li>
+    </ul>
+  </div>
+  <ng-template #loadingEvents><p>Loading events...</p></ng-template>
+</div>
