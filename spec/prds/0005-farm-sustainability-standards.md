@@ -6,11 +6,11 @@ This document outlines the strict environmental and reporting standards under th
 ## Key Compliance and Regulatory Requirements
 
 ### 1. Spraying (Pesticide Use)
-- **Digital Record-Keeping**: Starting 1 January 2026, professional users must log three new data fields for all plant protection products:
-  - Product authorisation number (MAPP)
-  - EPPO crop or land-use code
-  - BBCH growth-stage code
-- **Transition Period**: Paper records are acceptable during 2026. However, all pesticide records must be fully converted into a "machine-readable" digital format by 1 January 2027 for electronic submission upon request.
+- **Digital Record-Keeping**: From 1 January 2027, professional users of Plant Protection Products (PPPs) in Northern Ireland must keep their pesticide records in a "machine-readable" digital format that can be submitted electronically to authorities such as DAERA upon request. To comply, three specific new data elements must be included in every PPP entry:
+  - The product authorisation number (MAPP).
+  - The relevant EPPO crop or land-use code.
+  - The BBCH growth-stage code.
+- **Transition Period**: While the mandatory electronic transfer of these records comes into full effect in 2027, users are expected to begin recording these three new fields during the 2026 transition year. If you continue to use paper records during this 2026 grace period, they must ultimately be converted into the required digital format in time for the 2027 deadline.
 
 ### 2. Chemical Fertiliser
 - **Closed Spreading Periods**:
