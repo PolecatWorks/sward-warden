@@ -1,6 +1,6 @@
 # 0004-01 Slurry Spreading Records Specification
 
-**State**: Open
+**State**: Superseded
 
 ## Scope
 This specification covers the record-keeping capabilities required to maintain compliance with the Nutrients Action Programme (NAP) regulations concerning the spreading of slurry, as outlined in PRD 0004.

@@ -1,6 +1,6 @@
 # 0005-01 Farm Sustainability Standards Specification
 
-**State**: Open
+**State**: Superseded
 
 ## Scope
 This specification details the technical requirements for enforcing environmental and reporting standards under the Farm Sustainability Standards (FSS) effective 1 January 2026, as outlined in PRD 0005. It includes features for tracking pesticide use, chemical fertiliser applications, and organic manure spreading, along with a system to monitor and handle compliance penalty rules.

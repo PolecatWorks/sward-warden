@@ -1,0 +1,20 @@
+# 0003-05 Event Tracking Specification
+
+**State**: Open
+
+## Scope
+This specification covers the implementation details of event tracking as outlined in PRD 0003.
+
+## Features
+- Record events for each field, including:
+  - Planting
+  - Fertiliser application
+  - Slurry application
+  - Spraying
+  - Harvesting
+  - Tilling
+  - Other relevant agricultural activities.
+
+## Data Model Requirements
+- Create `Events` entity.
+- Support relationship for Many Events per Field.
