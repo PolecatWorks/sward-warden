@@ -3,6 +3,13 @@
 
   <h3>Create Farm</h3>
   <form [formGroup]="farmForm" (ngSubmit)="onSubmitFarm()">
+    <div *ngIf="users$ | async as users">
+      <label for="user_id">Select User:</label>
+      <select id="user_id" formControlName="user_id">
+        <option value="">-- Select a User --</option>
+        <option *ngFor="let user of users" [value]="user.id">{{ user.name }}</option>
+      </select>
+    </div>
     <div>
       <label for="farm_name">Name:</label>
       <input id="farm_name" formControlName="name" type="text">
@@ -18,7 +25,7 @@
   <div *ngIf="farms$ | async as farms; else loadingFarms">
     <ul>
       <li *ngFor="let farm of farms">
-        {{ farm.name }} ({{ farm.location }})
+        {{ farm.name }} ({{ farm.location }}) - User ID: {{ farm.user_id }}
       </li>
     </ul>
   </div>
@@ -26,6 +33,13 @@
 
   <h3>Create Field</h3>
   <form [formGroup]="fieldForm" (ngSubmit)="onSubmitField()">
+    <div *ngIf="farms$ | async as farms">
+      <label for="farm_id">Select Farm:</label>
+      <select id="farm_id" formControlName="farm_id">
+        <option value="">-- Select a Farm --</option>
+        <option *ngFor="let farm of farms" [value]="farm.id">{{ farm.name }}</option>
+      </select>
+    </div>
     <div>
       <label for="field_name">Name:</label>
       <input id="field_name" formControlName="name" type="text">
@@ -41,7 +55,7 @@
   <div *ngIf="fields$ | async as fields; else loadingFields">
     <ul>
       <li *ngFor="let field of fields">
-        {{ field.name }} - {{ field.area_hectares }} ha
+        {{ field.name }} - {{ field.area_hectares }} ha - Farm ID: {{ field.farm_id }}
       </li>
     </ul>
   </div>
@@ -49,6 +63,13 @@
 
   <h3>Record Event</h3>
   <form [formGroup]="eventForm" (ngSubmit)="onSubmitEvent()">
+    <div *ngIf="fields$ | async as fields">
+      <label for="field_id">Select Field:</label>
+      <select id="field_id" formControlName="field_id">
+        <option value="">-- Select a Field --</option>
+        <option *ngFor="let field of fields" [value]="field.id">{{ field.name }}</option>
+      </select>
+    </div>
     <div>
       <label for="event_type">Type:</label>
       <input id="event_type" formControlName="event_type" type="text">
@@ -68,7 +89,7 @@
   <div *ngIf="events$ | async as events; else loadingEvents">
     <ul>
       <li *ngFor="let event of events">
-        {{ event.date }}: {{ event.event_type }} - {{ event.description }}
+        {{ event.date }}: {{ event.event_type }} - {{ event.description }} - Field ID: {{ event.field_id }}
       </li>
     </ul>
   </div>

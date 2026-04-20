@@ -1,49 +1,73 @@
 use crate::models::{Event, Farm, Field, User};
-use axum::{routing::{get, post}, Json, Router};
+use axum::{routing::{get, post}, Json, Router, extract::State};
 use serde::Serialize;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 #[derive(Serialize)]
 pub struct HelloResponse {
     pub message: String,
 }
 
+#[derive(Clone)]
+pub struct AppState {
+    pub users: Arc<RwLock<Vec<User>>>,
+    pub farms: Arc<RwLock<Vec<Farm>>>,
+    pub fields: Arc<RwLock<Vec<Field>>>,
+    pub events: Arc<RwLock<Vec<Event>>>,
+}
+
+impl Default for AppState {
+    fn default() -> Self {
+        Self {
+            users: Arc::new(RwLock::new(vec![User { id: 1, name: "John Doe".to_string(), email: "john@example.com".to_string() }])),
+            farms: Arc::new(RwLock::new(vec![Farm { id: 1, user_id: 1, name: "Green Acres".to_string(), location: "Springfield".to_string() }])),
+            fields: Arc::new(RwLock::new(vec![Field { id: 1, farm_id: 1, name: "North Field".to_string(), area_hectares: 10.5 }])),
+            events: Arc::new(RwLock::new(vec![Event { id: 1, field_id: 1, event_type: "Slurry".to_string(), description: "Spring application".to_string(), date: "2024-04-01".to_string() }])),
+        }
+    }
+}
+
 pub fn app_router() -> Router {
+    let state = AppState::default();
+
     Router::new()
         .route("/v0/hello", get(|| async {
             Json(HelloResponse { message: "hello".to_string() })
         }))
-        .route("/v0/users", get(|| async {
-            Json(vec![
-                User { id: 1, name: "John Doe".to_string(), email: "john@example.com".to_string() },
-            ])
+        .route("/v0/users", get(|State(state): State<AppState>| async move {
+            let users = state.users.read().await;
+            Json(users.clone())
         })
-        .post(|Json(user): Json<User>| async move {
+        .post(|State(state): State<AppState>, Json(user): Json<User>| async move {
+            state.users.write().await.push(user.clone());
             Json(user)
         }))
-        .route("/v0/farms", get(|| async {
-            Json(vec![
-                Farm { id: 1, user_id: 1, name: "Green Acres".to_string(), location: "Springfield".to_string() },
-            ])
+        .route("/v0/farms", get(|State(state): State<AppState>| async move {
+            let farms = state.farms.read().await;
+            Json(farms.clone())
         })
-        .post(|Json(farm): Json<Farm>| async move {
+        .post(|State(state): State<AppState>, Json(farm): Json<Farm>| async move {
+            state.farms.write().await.push(farm.clone());
             Json(farm)
         }))
-        .route("/v0/fields", get(|| async {
-            Json(vec![
-                Field { id: 1, farm_id: 1, name: "North Field".to_string(), area_hectares: 10.5 },
-            ])
+        .route("/v0/fields", get(|State(state): State<AppState>| async move {
+            let fields = state.fields.read().await;
+            Json(fields.clone())
         })
-        .post(|Json(field): Json<Field>| async move {
+        .post(|State(state): State<AppState>, Json(field): Json<Field>| async move {
+            state.fields.write().await.push(field.clone());
             Json(field)
         }))
-        .route("/v0/events", get(|| async {
-            Json(vec![
-                Event { id: 1, field_id: 1, event_type: "Slurry".to_string(), description: "Spring application".to_string(), date: "2024-04-01".to_string() },
-            ])
+        .route("/v0/events", get(|State(state): State<AppState>| async move {
+            let events = state.events.read().await;
+            Json(events.clone())
         })
-        .post(|Json(event): Json<Event>| async move {
+        .post(|State(state): State<AppState>, Json(event): Json<Event>| async move {
+            state.events.write().await.push(event.clone());
             Json(event)
         }))
+        .with_state(state)
 }
 
 pub fn health_router() -> Router {
@@ -92,7 +116,7 @@ mod tests {
         assert!(body_str.contains("John Doe"));
 
         let new_user = User { id: 2, name: "Jane Doe".to_string(), email: "jane@example.com".to_string() };
-        let response = app
+        let response = app.clone()
             .oneshot(
                 Request::builder()
                     .method("POST")
@@ -101,6 +125,16 @@ mod tests {
                     .body(Body::from(serde_json::to_string(&new_user).unwrap()))
                     .unwrap()
             )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body_str = String::from_utf8(body.to_vec()).unwrap();
+        assert!(body_str.contains("Jane Doe"));
+
+        let response = app
+            .oneshot(Request::builder().uri("/v0/users").body(Body::empty()).unwrap())
             .await
             .unwrap();
 
@@ -125,7 +159,7 @@ mod tests {
         assert!(body_str.contains("Green Acres"));
 
         let new_farm = Farm { id: 2, user_id: 2, name: "Red Barn".to_string(), location: "Shelbyville".to_string() };
-        let response = app
+        let response = app.clone()
             .oneshot(
                 Request::builder()
                     .method("POST")
@@ -134,6 +168,16 @@ mod tests {
                     .body(Body::from(serde_json::to_string(&new_farm).unwrap()))
                     .unwrap()
             )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body_str = String::from_utf8(body.to_vec()).unwrap();
+        assert!(body_str.contains("Red Barn"));
+
+        let response = app
+            .oneshot(Request::builder().uri("/v0/farms").body(Body::empty()).unwrap())
             .await
             .unwrap();
 
@@ -158,7 +202,7 @@ mod tests {
         assert!(body_str.contains("North Field"));
 
         let new_field = Field { id: 2, farm_id: 2, name: "South Field".to_string(), area_hectares: 20.0 };
-        let response = app
+        let response = app.clone()
             .oneshot(
                 Request::builder()
                     .method("POST")
@@ -167,6 +211,16 @@ mod tests {
                     .body(Body::from(serde_json::to_string(&new_field).unwrap()))
                     .unwrap()
             )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body_str = String::from_utf8(body.to_vec()).unwrap();
+        assert!(body_str.contains("South Field"));
+
+        let response = app
+            .oneshot(Request::builder().uri("/v0/fields").body(Body::empty()).unwrap())
             .await
             .unwrap();
 
@@ -191,7 +245,7 @@ mod tests {
         assert!(body_str.contains("Spring application"));
 
         let new_event = Event { id: 2, field_id: 2, event_type: "Planting".to_string(), description: "Corn".to_string(), date: "2024-05-01".to_string() };
-        let response = app
+        let response = app.clone()
             .oneshot(
                 Request::builder()
                     .method("POST")
@@ -200,6 +254,16 @@ mod tests {
                     .body(Body::from(serde_json::to_string(&new_event).unwrap()))
                     .unwrap()
             )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body_str = String::from_utf8(body.to_vec()).unwrap();
+        assert!(body_str.contains("Planting"));
+
+        let response = app
+            .oneshot(Request::builder().uri("/v0/events").body(Body::empty()).unwrap())
             .await
             .unwrap();
 

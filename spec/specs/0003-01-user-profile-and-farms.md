@@ -1,6 +1,6 @@
 # 0003-01 User Profile and Farms Specification
 
-**State**: Open
+**State**: Complete
 
 ## Scope
 This specification covers the implementation details of user profiles and management of farms, fields, and agricultural events as outlined in PRD 0003.
