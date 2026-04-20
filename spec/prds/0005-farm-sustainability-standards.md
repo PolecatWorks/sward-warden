@@ -41,3 +41,13 @@ This document outlines the strict environmental and reporting standards under th
   - Pig farms producing 20,000kg+ of nitrogen.
   - Derogated farms for all slurry applications after 15 June.
 - **Storage Capacities**: Minimum 22 weeks of livestock manure storage capacity for most enterprises, extending to 26 weeks for pig and poultry enterprises.
+
+## Penalty Matrix for Audit Breaches
+
+Under the new Farm Sustainability Standards (FSS), the penalty matrix for audit breaches categorises infractions based on the severity of their impact:
+
+- **Very Low Severity**: A business committing its first breach at this level will receive a warning letter.
+- **Low Severity**: Results in a 1% penalty or £50 (whichever is higher), along with a guidance letter explaining the breach.
+- **Very High Severity**: Incurs a 50% penalty or £2,100 (whichever is higher), along with a guidance letter. The maximum penalties under the new regime can lead to complete payment loss and exclusion from support schemes.
+- **Mandatory Training**: All businesses that incur any breach must complete training specifically regarding the standard they violated.
+- **Repeat Breaches**: If a business breaches the same requirement within a 3-year period, the financial penalties will increase.
