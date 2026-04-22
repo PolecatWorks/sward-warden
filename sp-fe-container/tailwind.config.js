@@ -6,7 +6,6 @@ module.exports = {
   darkMode: "class",
   theme: {
     extend: {
-    extend: {
       "colors": {
         "surface-dim": "#dadad6",
         "inverse-surface": "#2f312e",
