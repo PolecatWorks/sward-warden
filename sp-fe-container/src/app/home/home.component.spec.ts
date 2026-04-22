@@ -23,8 +23,8 @@ describe('HomeComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display hello', () => {
+  it('should display the app title', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('hello');
+    expect(compiled.textContent).toContain('FieldMetric');
   });
 });
