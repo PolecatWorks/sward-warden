@@ -28,6 +28,8 @@
     "@angular-devkit/build-angular": "^18.2.21",
     "@angular/cli": "^18.2.21",
     "@angular/compiler-cli": "^18.2.0",
+    "@tailwindcss/container-queries": "^0.1.1",
+    "@tailwindcss/forms": "^0.5.11",
     "@types/jasmine": "~5.1.0",
     "autoprefixer": "^10.5.0",
     "jasmine-core": "~5.2.0",
