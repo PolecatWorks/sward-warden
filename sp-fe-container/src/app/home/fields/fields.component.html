@@ -1,0 +1,20 @@
+<div>
+  <h2>Fields for Farm {{ farmId }}</h2>
+
+  <div>
+    <h3>Add New Field</h3>
+    <input type="text" [(ngModel)]="newFieldName" placeholder="Field Name">
+    <input type="number" [(ngModel)]="newFieldArea" placeholder="Area (Hectares)">
+    <button (click)="addField()">Add Field</button>
+  </div>
+
+  <ul>
+    <li *ngFor="let field of fields">
+      {{ field.name }} - {{ field.area_hectares }} hectares
+      <a [routerLink]="['/home/fields', field.id]">View Details</a>
+      <button (click)="deleteField(field.id)">Delete</button>
+    </li>
+  </ul>
+
+  <a routerLink="/home/farms">Back to Farms</a>
+</div>

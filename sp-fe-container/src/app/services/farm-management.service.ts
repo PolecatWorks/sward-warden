@@ -45,4 +45,12 @@ export class FarmManagementService {
   addEvent(event: Event): Observable<Event> {
     return this.http.post<Event>(`${this.apiUrl}/events`, event);
   }
+
+  deleteFarm(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/farms/${id}`);
+  }
+
+  deleteField(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/fields/${id}`);
+  }
 }

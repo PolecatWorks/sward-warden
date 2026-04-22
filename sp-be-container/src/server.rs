@@ -51,6 +51,11 @@ pub fn app_router() -> Router {
             state.farms.write().await.push(farm.clone());
             Json(farm)
         }))
+        .route("/v0/farms/{id}", axum::routing::delete(|State(state): State<AppState>, axum::extract::Path(id): axum::extract::Path<u64>| async move {
+            let mut farms = state.farms.write().await;
+            farms.retain(|f| f.id != id);
+            axum::http::StatusCode::NO_CONTENT
+        }))
         .route("/v0/fields", get(|State(state): State<AppState>| async move {
             let fields = state.fields.read().await;
             Json(fields.clone())
@@ -58,6 +63,11 @@ pub fn app_router() -> Router {
         .post(|State(state): State<AppState>, Json(field): Json<Field>| async move {
             state.fields.write().await.push(field.clone());
             Json(field)
+        }))
+        .route("/v0/fields/{id}", axum::routing::delete(|State(state): State<AppState>, axum::extract::Path(id): axum::extract::Path<u64>| async move {
+            let mut fields = state.fields.write().await;
+            fields.retain(|f| f.id != id);
+            axum::http::StatusCode::NO_CONTENT
         }))
         .route("/v0/events", get(|State(state): State<AppState>| async move {
             let events = state.events.read().await;
@@ -176,7 +186,7 @@ mod tests {
         let body_str = String::from_utf8(body.to_vec()).unwrap();
         assert!(body_str.contains("Red Barn"));
 
-        let response = app
+        let response = app.clone()
             .oneshot(Request::builder().uri("/v0/farms").body(Body::empty()).unwrap())
             .await
             .unwrap();
@@ -185,6 +195,29 @@ mod tests {
         let body = response.into_body().collect().await.unwrap().to_bytes();
         let body_str = String::from_utf8(body.to_vec()).unwrap();
         assert!(body_str.contains("Red Barn"));
+
+        let response = app.clone()
+            .oneshot(
+                Request::builder()
+                    .method("DELETE")
+                    .uri("/v0/farms/1")
+                    .body(Body::empty())
+                    .unwrap()
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::NO_CONTENT);
+
+        let response = app
+            .oneshot(Request::builder().uri("/v0/farms").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body_str = String::from_utf8(body.to_vec()).unwrap();
+        assert!(!body_str.contains("Green Acres")); // Farm 1
     }
 
     #[tokio::test]
@@ -219,7 +252,7 @@ mod tests {
         let body_str = String::from_utf8(body.to_vec()).unwrap();
         assert!(body_str.contains("South Field"));
 
-        let response = app
+        let response = app.clone()
             .oneshot(Request::builder().uri("/v0/fields").body(Body::empty()).unwrap())
             .await
             .unwrap();
@@ -228,6 +261,29 @@ mod tests {
         let body = response.into_body().collect().await.unwrap().to_bytes();
         let body_str = String::from_utf8(body.to_vec()).unwrap();
         assert!(body_str.contains("South Field"));
+
+        let response = app.clone()
+            .oneshot(
+                Request::builder()
+                    .method("DELETE")
+                    .uri("/v0/fields/1")
+                    .body(Body::empty())
+                    .unwrap()
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::NO_CONTENT);
+
+        let response = app
+            .oneshot(Request::builder().uri("/v0/fields").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body_str = String::from_utf8(body.to_vec()).unwrap();
+        assert!(!body_str.contains("North Field")); // Field 1
     }
 
     #[tokio::test]

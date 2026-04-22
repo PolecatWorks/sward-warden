@@ -1,0 +1,18 @@
+<div>
+  <h2>Farms</h2>
+
+  <div>
+    <h3>Add New Farm</h3>
+    <input type="text" [(ngModel)]="newFarmName" placeholder="Farm Name">
+    <input type="text" [(ngModel)]="newFarmLocation" placeholder="Location">
+    <button (click)="addFarm()">Add Farm</button>
+  </div>
+
+  <ul>
+    <li *ngFor="let farm of farms">
+      {{ farm.name }} - {{ farm.location }}
+      <a [routerLink]="['/home/farms', farm.id, 'fields']">View Fields</a>
+      <button (click)="deleteFarm(farm.id)">Delete</button>
+    </li>
+  </ul>
+</div>
