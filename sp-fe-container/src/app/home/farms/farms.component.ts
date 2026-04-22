@@ -16,6 +16,7 @@ export class FarmsComponent implements OnInit {
   farms: Farm[] = [];
   newFarmName: string = '';
   newFarmLocation: string = '';
+  showAddFarmModal: boolean = false;
 
   constructor(private farmService: FarmManagementService) {}
 

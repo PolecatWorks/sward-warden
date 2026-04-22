@@ -1,18 +1,216 @@
-<div>
-  <h2>Farms</h2>
-
-  <div>
-    <h3>Add New Farm</h3>
-    <input type="text" [(ngModel)]="newFarmName" placeholder="Farm Name">
-    <input type="text" [(ngModel)]="newFarmLocation" placeholder="Location">
-    <button (click)="addFarm()">Add Farm</button>
-  </div>
-
-  <ul>
-    <li *ngFor="let farm of farms">
-      {{ farm.name }} - {{ farm.location }}
-      <a [routerLink]="['/home/farms', farm.id, 'fields']">View Fields</a>
-      <button (click)="deleteFarm(farm.id)">Delete</button>
-    </li>
-  </ul>
+<!-- TopAppBar -->
+<header class="bg-[#faf9f5] dark:bg-[#1a1c1a] docked full-width top-0 z-40 sticky">
+<div class="flex justify-between items-center w-full px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="Professional headshot of a middle-aged farmer with a friendly expression, soft natural outdoor lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9LEYgM63_EcZdOk_XPMwWhj6flobdVteCcXRbSib9j1HF-vXmiEe0DrUx6YzhUCxy_jKc--74zZrVXCKMTddyMs21cdwZxg18yzqabmuI8CuOkVPrRLdsMNvVgq6wCnIOgR3DypRnL_jtV3BRyYot3GKJPbOw5JOf67IzEqFov8LeN8RSaGpYhwxnUpbGghcF32gS9wHjyKCytu94_497siedoH7Rf1WznNxnd_DWkbfaVs4yJ4MGrOOYTt6p80xii3PVzs3OCA"/>
 </div>
+<span class="font-['Work_Sans'] font-bold tracking-tight text-display-sm text-[#154212] dark:text-[#f4f4f0] text-xl font-black text-[#154212] dark:text-[#ffffff]">FieldMetric</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#f4f4f0] dark:hover:bg-[#2d302d] transition-colors active:opacity-80 active:scale-95">
+<span class="material-symbols-outlined text-[#154212] dark:text-[#f4f4f0]">settings</span>
+</button>
+</div>
+</header>
+<main class="px-6 pt-4 space-y-8">
+<!-- Hero Section / Statistics Overview -->
+<section class="space-y-4">
+<div class="flex flex-col gap-1">
+<p class="text-on-surface-variant font-medium text-sm tracking-wide uppercase">Operational Overview</p>
+<h1 class="text-4xl font-extrabold text-primary tracking-tighter">Your Portfolio</h1>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-primary-container p-6 rounded-xl flex flex-col justify-between aspect-square">
+<span class="material-symbols-outlined text-on-primary-container text-3xl">agriculture</span>
+<div>
+<div class="text-4xl font-black text-on-primary-container tracking-tight">{{ farms.length }}</div>
+<div class="text-sm font-medium text-on-primary-container/80 uppercase tracking-widest">Active Farms</div>
+</div>
+</div>
+<div class="bg-surface-container-high p-6 rounded-xl flex flex-col justify-between aspect-square">
+<span class="material-symbols-outlined text-primary text-3xl">potted_plant</span>
+<div>
+<div class="text-4xl font-black text-primary tracking-tight">48</div>
+<div class="text-sm font-medium text-on-surface-variant uppercase tracking-widest">Total Fields</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Farms Grid -->
+<section class="space-y-6">
+<div class="flex justify-between items-end">
+<h2 class="text-2xl font-bold tracking-tight text-on-surface">Registered Farms</h2>
+<button class="text-primary font-semibold text-sm flex items-center gap-1">
+                    View Map <span class="material-symbols-outlined text-sm">map</span>
+</button>
+</div>
+<!-- Bento Layout for Farms -->
+<div class="grid grid-cols-1 gap-4">
+<!-- Farm Cards -->
+<div *ngFor="let farm of farms; let i = index" class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm group">
+<div class="h-40 relative">
+<!-- Mock image logic based on index -->
+<img *ngIf="i % 3 === 0" alt="{{ farm.name }}" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtKP4X7e4twRuDt4tLqhsErU--zOjrZ08jgLGBuJQgeEfqhDzuypE98m4l1aHiinATw5qrN2GWVchDtjhvre9LQbYGGByB3tkr_hcErnAIcX7-GbOWOYaJzhfM_JPiNYSn--YmRosGsmGj7gQiQPMmpwKYf_uVc6_4wcAM0j-8UsLGNKLQjqwAxAUyXQrhLd35_gR9hLLYc28_gt6DlJV9LuuL_rFtEqG5FxzRvMYDJZmP8LScItDHJiPdaJ3YpcKmf1TCnqBavQ"/>
+<img *ngIf="i % 3 === 1" alt="{{ farm.name }}" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFSKBzWHF9vDzzRotdi_g4qMbnotM7ZmwucIBilC93PmuacgH147f_4bDlZ0X5fKiPg058S5lbaKHC75goD_GOuKKoz1DlDPZo4l8eAgXxWmTZKm8vtaw30TKMY2RFkvFDsHwhLI-ErfC3KAzu9HMY7w0TuY4ICY8cDTO1lw9Q1Afpj_ZdHffZXPH1EKVwworohW5DM0rxWl0QKrnFfzHl6Wgd6qLK6Yle7UhyTla_nKMWbz61lrKCbCypUkngSNUeMlZZD56yrg"/>
+<img *ngIf="i % 3 === 2" alt="{{ farm.name }}" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYcfg-iJ5KQb9qyAMulKfKx2VIt5t8RzLAvVEYO0GRlyGTJroEgZJh1XqB2Pj4lxdTEJD9psrZ96ONUGOwpWzyMZKdMGi4Emyay9fksZ6J8nS9Apag8yChLQNJLnrUE384JZJ5dBKVHjuXhKfTQeWOu7Sg-0xOTzX8OOuLAkN132TrPzGvH7ce8MHe3eFZpFBLCSFUBXAMNlX19zIqa3JWn_KfePjVVQCUvmRAp43UHJRgLTKbg1lRvYH1Z5Jn8N13nre7Z-zIpQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute bottom-4 left-4 text-white">
+<h3 class="text-xl font-bold">{{ farm.name }}</h3>
+<p class="text-xs opacity-90 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">location_on</span>
+                                {{ farm.location }}
+                            </p>
+</div>
+</div>
+<div class="p-4 flex justify-between items-center bg-surface-container-low cursor-pointer" [routerLink]="['/home/farms', farm.id, 'fields']">
+<div class="flex gap-4">
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Fields</span>
+<span class="text-lg font-bold text-primary">18</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Status</span>
+<span class="text-sm font-semibold" [ngClass]="i % 2 === 0 ? 'text-tertiary' : 'text-secondary'">
+  {{ i % 2 === 0 ? 'Optimal' : 'Harvesting' }}
+</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+  <button (click)="deleteFarm(farm.id); $event.stopPropagation()" class="text-error hover:text-error/80 transition-colors">
+    <span class="material-symbols-outlined text-lg">delete</span>
+  </button>
+  <span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</div>
+</div>
+</div>
+
+<!-- Dummy Data fallback if no farms -->
+<div *ngIf="farms.length === 0" class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm group">
+<div class="h-40 relative">
+<img alt="North Valley Farm" class="w-full h-full object-cover" data-alt="expansive green rolling hills of a modern farm under a clear blue sky with golden hour sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtKP4X7e4twRuDt4tLqhsErU--zOjrZ08jgLGBuJQgeEfqhDzuypE98m4l1aHiinATw5qrN2GWVchDtjhvre9LQbYGGByB3tkr_hcErnAIcX7-GbOWOYaJzhfM_JPiNYSn--YmRosGsmGj7gQiQPMmpwKYf_uVc6_4wcAM0j-8UsLGNKLQjqwAxAUyXQrhLd35_gR9hLLYc28_gt6DlJV9LuuL_rFtEqG5FxzRvMYDJZmP8LScItDHJiPdaJ3YpcKmf1TCnqBavQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute bottom-4 left-4 text-white">
+<h3 class="text-xl font-bold">North Valley Farm</h3>
+<p class="text-xs opacity-90 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">location_on</span>
+                                Montana, USA
+                            </p>
+</div>
+</div>
+<div class="p-4 flex justify-between items-center bg-surface-container-low">
+<div class="flex gap-4">
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Fields</span>
+<span class="text-lg font-bold text-primary">18</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Status</span>
+<span class="text-sm font-semibold text-tertiary">Optimal</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</div>
+</div>
+
+<div *ngIf="farms.length === 0" class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm group">
+<div class="h-40 relative">
+<img alt="River Road Estate" class="w-full h-full object-cover" data-alt="lush riverfront estate with fertile farm land and a winding river in the background at dawn" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFSKBzWHF9vDzzRotdi_g4qMbnotM7ZmwucIBilC93PmuacgH147f_4bDlZ0X5fKiPg058S5lbaKHC75goD_GOuKKoz1DlDPZo4l8eAgXxWmTZKm8vtaw30TKMY2RFkvFDsHwhLI-ErfC3KAzu9HMY7w0TuY4ICY8cDTO1lw9Q1Afpj_ZdHffZXPH1EKVwworohW5DM0rxWl0QKrnFfzHl6Wgd6qLK6Yle7UhyTla_nKMWbz61lrKCbCypUkngSNUeMlZZD56yrg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute bottom-4 left-4 text-white">
+<h3 class="text-xl font-bold">River Road Estate</h3>
+<p class="text-xs opacity-90 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">location_on</span>
+                                Oregon, USA
+                            </p>
+</div>
+</div>
+<div class="p-4 flex justify-between items-center bg-surface-container-low">
+<div class="flex gap-4">
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Fields</span>
+<span class="text-lg font-bold text-primary">07</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Status</span>
+<span class="text-sm font-semibold text-secondary">Harvesting</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+</div>
+</div>
+
+<div *ngIf="farms.length === 0" class="bg-surface-container-low p-5 rounded-xl flex items-center gap-4 border-l-4 border-primary">
+<div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+<img alt="Highland Slopes" class="w-full h-full object-cover" data-alt="top down view of organized vegetable farm rows with vibrant green crops" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYcfg-iJ5KQb9qyAMulKfKx2VIt5t8RzLAvVEYO0GRlyGTJroEgZJh1XqB2Pj4lxdTEJD9psrZ96ONUGOwpWzyMZKdMGi4Emyay9fksZ6J8nS9Apag8yChLQNJLnrUE384JZJ5dBKVHjuXhKfTQeWOu7Sg-0xOTzX8OOuLAkN132TrPzGvH7ce8MHe3eFZpFBLCSFUBXAMNlX19zIqa3JWn_KfePjVVQCUvmRAp43UHJRgLTKbg1lRvYH1Z5Jn8N13nre7Z-zIpQ"/>
+</div>
+<div class="flex-grow">
+<h3 class="font-bold text-lg text-on-surface">Highland Slopes</h3>
+<p class="text-xs text-on-surface-variant">Colorado • 23 Fields</p>
+</div>
+<span class="material-symbols-outlined text-primary-container">arrow_outward</span>
+</div>
+
+</div>
+</section>
+</main>
+<!-- FAB: Add New Farm -->
+<button (click)="showAddFarmModal = true" class="fixed right-6 bottom-24 w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center z-50 active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-2xl">add</span>
+</button>
+
+<!-- Add Farm Modal -->
+<div *ngIf="showAddFarmModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+  <div class="bg-surface rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+    <div class="px-6 py-4 border-b border-surface-variant flex justify-between items-center">
+      <h3 class="text-xl font-bold text-on-surface">Add New Farm</h3>
+      <button (click)="showAddFarmModal = false" class="text-on-surface-variant hover:text-on-surface rounded-full p-1 transition-colors">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="p-6 space-y-4">
+      <div class="space-y-2">
+        <label class="text-sm font-medium text-on-surface-variant">Farm Name</label>
+        <input type="text" [(ngModel)]="newFarmName" placeholder="e.g. Sunny Brook Farm"
+          class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+      </div>
+      <div class="space-y-2">
+        <label class="text-sm font-medium text-on-surface-variant">Location</label>
+        <input type="text" [(ngModel)]="newFarmLocation" placeholder="e.g. California, USA"
+          class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+      </div>
+    </div>
+    <div class="px-6 py-4 bg-surface-container-low flex justify-end gap-3">
+      <button (click)="showAddFarmModal = false" class="px-5 py-2.5 rounded-full text-on-surface-variant font-medium hover:bg-surface-variant transition-colors">
+        Cancel
+      </button>
+      <button (click)="addFarm(); showAddFarmModal = false" [disabled]="!newFarmName || !newFarmLocation"
+        class="px-5 py-2.5 rounded-full bg-primary text-on-primary font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors">
+        Save Farm
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 pb-safe bg-[#faf9f5]/80 dark:bg-[#1a1c1a]/80 backdrop-blur-xl z-50 rounded-t-xl shadow-2xl no-border shadow-[0_-1px_0_0_rgba(0,0,0,0.05)]">
+<!-- Dashboard -->
+<a class="flex flex-col items-center justify-center text-[#77574d] dark:text-[#c2c9bb] px-5 py-2 hover:bg-[#f4f4f0] dark:hover:bg-[#2d302d] transition-colors" routerLink="/slurry-dashboard">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Dashboard</span>
+</a>
+<!-- Fields (Active) -->
+<a class="flex flex-col items-center justify-center bg-[#2d5a27] text-white rounded-xl px-5 py-2 scale-90 transition-transform duration-150" routerLink="/home/farms">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">agriculture</span>
+<span class="font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Farms</span>
+</a>
+<!-- Events -->
+<a class="flex flex-col items-center justify-center text-[#77574d] dark:text-[#c2c9bb] px-5 py-2 hover:bg-[#f4f4f0] dark:hover:bg-[#2d302d] transition-colors" routerLink="/compliance-tracking">
+<span class="material-symbols-outlined">event_note</span>
+<span class="font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Events</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-[#77574d] dark:text-[#c2c9bb] px-5 py-2 hover:bg-[#f4f4f0] dark:hover:bg-[#2d302d] transition-colors" routerLink="/user-profile">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Profile</span>
+</a>
+</nav>
