@@ -1,17 +1,25 @@
-from playwright.sync_api import sync_playwright
+import asyncio
+from playwright.async_api import async_playwright
+import subprocess
 
-def run():
-    with sync_playwright() as p:
-        browser = p.chromium.launch()
-        page = browser.new_page()
-        page.goto('http://localhost:4200/user-profile')
-        page.wait_for_selector('h2', timeout=5000) # wait for page to render
-        page.screenshot(path='onboarding.png')
+async def main():
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page()
 
-        page.goto('http://localhost:4200/farm-management')
-        page.wait_for_selector('h2', timeout=5000) # wait for page to render
-        page.screenshot(path='farm.png')
+        # Start Angular development server
+        server_process = subprocess.Popen(["npm", "start"], cwd="sp-fe-container")
+        await asyncio.sleep(10) # Give dev server time to build and start
 
-        browser.close()
+        await page.goto("http://localhost:4200/home/fields/1")
 
-run()
+        # Wait a moment for rendering and mock data loading
+        await asyncio.sleep(5)
+
+        await page.screenshot(path="screenshot.png", full_page=True)
+        print("Screenshot saved to screenshot.png")
+
+        server_process.terminate()
+        await browser.close()
+
+asyncio.run(main())

@@ -1,35 +1,141 @@
-<div>
-  <h2>Field Details</h2>
+<!-- TopAppBar -->
+<header class="bg-[#faf9f5] dark:bg-[#1a1c1a] flex justify-between items-center w-full px-6 py-4 fixed top-0 z-50">
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-full overflow-hidden bg-surface-variant flex items-center justify-center">
+      <span class="material-symbols-outlined text-on-surface-variant">person</span>
+    </div>
+    <span class="font-['Work_Sans'] font-bold tracking-tight text-display-sm text-[#154212] dark:text-[#f4f4f0]">FieldMetric</span>
+  </div>
+  <div class="p-2 rounded-full hover:bg-[#f4f4f0] transition-colors">
+    <span class="material-symbols-outlined text-[#154212] dark:text-[#ffffff]">settings</span>
+  </div>
+</header>
 
-  <div *ngIf="field">
-    <p><strong>Name:</strong> {{ field.name }}</p>
-    <p><strong>Area:</strong> {{ field.area_hectares }} hectares</p>
-    <a [routerLink]="['/home/farms', field.farm_id, 'fields']">Back to Fields</a>
+<main class="pt-24 px-6 max-w-2xl mx-auto">
+  <div *ngIf="field; else loadingTemplate">
+    <a [routerLink]="['/home/farms', field.farm_id, 'fields']" class="inline-flex items-center text-sm font-medium text-on-surface-variant hover:text-primary mb-4">
+      <span class="material-symbols-outlined mr-1" style="font-size: 18px;">arrow_back</span>
+      Back to Fields
+    </a>
+
+    <!-- Hero Section / Context -->
+    <section class="mb-10">
+      <div class="flex items-end justify-between mb-2">
+        <h2 class="font-headline font-bold text-4xl tracking-tight text-primary">{{ field.name }}</h2>
+        <span class="px-3 py-1 bg-tertiary-container text-white text-[10px] font-bold uppercase tracking-widest rounded-full mb-1 text-center leading-tight">ACTIVE<br>CYCLE</span>
+      </div>
+      <p class="text-on-surface-variant font-medium">Tracking events for Winter Wheat '24 ({{ field.area_hectares }} ha)</p>
+    </section>
+
+    <!-- CTA: Record Event -->
+    <section class="mb-12">
+      <button class="w-full group bg-primary text-on-primary rounded-xl py-6 px-6 flex items-center justify-between shadow-2xl transition-all active:scale-95">
+        <div class="flex flex-col items-start">
+          <span class="font-headline font-extrabold text-2xl tracking-tight">Record Event</span>
+          <span class="text-sm opacity-80 font-medium">Log new activity in the field</span>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-primary-container flex items-center justify-center group-hover:scale-110 transition-transform">
+          <span class="material-symbols-outlined text-white" style="font-variation-settings: 'wght' 700;">add</span>
+        </div>
+      </button>
+
+      <div class="grid grid-cols-3 gap-3 mt-4">
+        <button class="flex flex-col items-center gap-2 p-4 bg-surface-container-low rounded-xl hover:bg-surface-container transition-colors">
+          <span class="material-symbols-outlined text-secondary">crop</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-secondary">Planting</span>
+        </button>
+        <button class="flex flex-col items-center gap-2 p-4 bg-surface-container-low rounded-xl hover:bg-surface-container transition-colors">
+          <span class="material-symbols-outlined text-tertiary-container">water_drop</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-tertiary-container">Spray</span>
+        </button>
+        <button class="flex flex-col items-center gap-2 p-4 bg-surface-container-low rounded-xl hover:bg-surface-container transition-colors">
+          <span class="material-symbols-outlined text-primary-container">science</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-primary-container">Soil Lab</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section class="relative timeline-line">
+      <div class="flex items-center justify-between mb-8">
+        <h3 class="font-headline font-bold text-xl text-on-surface">Activity Timeline</h3>
+        <span class="text-xs font-bold text-outline uppercase tracking-widest">March 2024</span>
+      </div>
+
+      <div *ngIf="events.length > 0; else noEventsTemplate">
+        <div *ngFor="let event of events" class="relative flex gap-6 mb-12">
+          <!-- Timeline Item -->
+          <div class="z-10 w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-sm" [ngClass]="getEventColorClass(event.event_type)">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">{{ getEventIcon(event.event_type) }}</span>
+          </div>
+
+          <div class="flex-1">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-headline font-extrabold text-lg" [ngClass]="getEventTextColorClass(event.event_type)">{{ event.event_type }}</span>
+              <span class="text-xs font-medium text-on-surface-variant">{{ event.date | date:'MMM dd, yyyy' }}</span>
+            </div>
+
+            <!-- Content Card -->
+            <div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm" [ngClass]="{'border-l-4 border-secondary': event.event_type.toLowerCase().includes('harvest'), 'bg-surface-container-low border-0 shadow-none': !event.event_type.toLowerCase().includes('harvest')}">
+              <p class="text-sm font-medium text-on-surface leading-relaxed" [ngClass]="{'mb-3': event.event_type.toLowerCase().includes('harvest'), 'text-on-surface-variant': !event.event_type.toLowerCase().includes('harvest')}">
+                {{ event.description }}
+              </p>
+
+              <!-- Dummy data specific to design references if matches -->
+              <div *ngIf="event.event_type.toLowerCase().includes('harvest')" class="flex gap-2">
+                 <div class="w-16 h-12 rounded bg-surface-variant flex items-center justify-center overflow-hidden">
+                    <span class="material-symbols-outlined text-on-surface-variant">image</span>
+                 </div>
+                 <div class="w-16 h-12 rounded bg-surface-variant flex items-center justify-center overflow-hidden">
+                    <span class="material-symbols-outlined text-on-surface-variant">image</span>
+                 </div>
+              </div>
+
+              <div *ngIf="event.event_type.toLowerCase().includes('fertilise') || event.event_type.toLowerCase().includes('spray') || event.event_type.toLowerCase().includes('water')" class="mt-3 flex items-center gap-4">
+                <div class="flex items-center gap-1 text-tertiary-container">
+                  <span class="material-symbols-outlined text-sm">check_circle</span>
+                  <span class="text-[10px] font-bold uppercase tracking-wider">Applied</span>
+                </div>
+                <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Field ID: {{ event.field_id }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <div *ngIf="!field">
-    <p>Loading field details...</p>
-  </div>
-
-  <h3>Logs / History / Planning</h3>
-  <table *ngIf="events.length > 0; else noEvents">
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Event Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let event of events">
-        <td>{{ event.date }}</td>
-        <td>{{ event.event_type }}</td>
-        <td>{{ event.description }}</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <ng-template #noEvents>
-    <p>No events recorded for this field yet.</p>
+  <ng-template #loadingTemplate>
+    <div class="flex flex-col items-center justify-center py-20">
+      <span class="material-symbols-outlined animate-spin text-primary text-4xl mb-4">progress_activity</span>
+      <p class="text-on-surface-variant font-medium">Loading field details...</p>
+    </div>
   </ng-template>
-</div>
+
+  <ng-template #noEventsTemplate>
+    <div class="bg-surface-container-low p-8 rounded-xl text-center border border-outline-variant border-dashed">
+      <span class="material-symbols-outlined text-outline text-4xl mb-2">event_busy</span>
+      <p class="text-on-surface-variant font-medium">No events recorded for this field yet.</p>
+    </div>
+  </ng-template>
+</main>
+
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 pb-safe bg-[#faf9f5]/80 dark:bg-[#1a1c1a]/80 backdrop-blur-xl z-50 rounded-t-xl shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]">
+  <a class="flex flex-col items-center justify-center text-[#77574d] dark:text-[#c2c9bb] px-5 py-2 hover:bg-[#f4f4f0] dark:hover:bg-[#2d302d] transition-colors" routerLink="/home">
+    <span class="material-symbols-outlined">dashboard</span>
+    <span class="font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Dashboard</span>
+  </a>
+  <a class="flex flex-col items-center justify-center text-[#77574d] dark:text-[#c2c9bb] px-5 py-2 hover:bg-[#f4f4f0] dark:hover:bg-[#2d302d] transition-colors" routerLink="/home/farms">
+    <span class="material-symbols-outlined">agriculture</span>
+    <span class="font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Fields</span>
+  </a>
+  <a class="flex flex-col items-center justify-center bg-[#2d5a27] text-white rounded-xl px-5 py-2 transition-transform duration-150 active:scale-90" routerLink=".">
+    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_note</span>
+    <span class="font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Events</span>
+  </a>
+  <a class="flex flex-col items-center justify-center text-[#77574d] dark:text-[#c2c9bb] px-5 py-2 hover:bg-[#f4f4f0] dark:hover:bg-[#2d302d] transition-colors" routerLink="/user-profile">
+    <span class="material-symbols-outlined">account_circle</span>
+    <span class="font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Profile</span>
+  </a>
+</nav>
