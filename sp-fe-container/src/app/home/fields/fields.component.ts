@@ -17,6 +17,11 @@ export class FieldsComponent implements OnInit {
   farmId: number = 0;
   newFieldName: string = '';
   newFieldArea: number | null = null;
+  showAddForm: boolean = false;
+
+  get totalArea(): number {
+    return this.fields.reduce((acc, field) => acc + (field.area_hectares || 0), 0);
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -52,8 +57,13 @@ export class FieldsComponent implements OnInit {
         this.loadFields();
         this.newFieldName = '';
         this.newFieldArea = null;
+        this.showAddForm = false;
       });
     }
+  }
+
+  toggleAddForm(): void {
+    this.showAddForm = !this.showAddForm;
   }
 
   deleteField(id: number): void {
