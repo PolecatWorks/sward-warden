@@ -1,0 +1,35 @@
+<div>
+  <h2>Field Details</h2>
+
+  <div *ngIf="field">
+    <p><strong>Name:</strong> {{ field.name }}</p>
+    <p><strong>Area:</strong> {{ field.area_hectares }} hectares</p>
+    <a [routerLink]="['/home/farms', field.farm_id, 'fields']">Back to Fields</a>
+  </div>
+
+  <div *ngIf="!field">
+    <p>Loading field details...</p>
+  </div>
+
+  <h3>Logs / History / Planning</h3>
+  <table *ngIf="events.length > 0; else noEvents">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Event Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let event of events">
+        <td>{{ event.date }}</td>
+        <td>{{ event.event_type }}</td>
+        <td>{{ event.description }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-template #noEvents>
+    <p>No events recorded for this field yet.</p>
+  </ng-template>
+</div>

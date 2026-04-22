@@ -8,9 +8,15 @@ import { OptimizationEngineComponent } from './optimization-engine/optimization-
 import { WeatherIntegrationComponent } from './weather-integration/weather-integration.component';
 import { TopologyMappingComponent } from './topology-mapping/topology-mapping.component';
 import { WaterwayProtectionComponent } from './waterway-protection/waterway-protection.component';
+import { FarmsComponent } from './home/farms/farms.component';
+import { FieldsComponent } from './home/fields/fields.component';
+import { FieldViewComponent } from './home/field-view/field-view.component';
 
 export const routes: Routes = [
     { path: 'home', component: HomeComponent },
+    { path: 'home/farms', component: FarmsComponent },
+    { path: 'home/farms/:farmId/fields', component: FieldsComponent },
+    { path: 'home/fields/:fieldId', component: FieldViewComponent },
     { path: 'user-profile', component: UserProfileComponent },
     { path: 'farm-management', component: FarmManagementComponent },
     { path: 'slurry-dashboard', component: SlurryDashboardComponent },
