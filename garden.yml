@@ -1,0 +1,23 @@
+kind: Project
+name: slurry-pal
+environments:
+  - name: local
+  - name: pr
+variables:
+  current-namespace: ${environment.name == "pr" ? "slurry-manager-pr-${env.PR_NUMBER}" : "slurry-manager-local"}
+
+---
+kind: Deploy
+type: helm
+name: slurry-manager
+spec:
+  chart: ./charts/slurry-manager
+  values:
+    frontend:
+      image:
+        repository: ${env.SP_FE_IMAGE || "slurry-manager-frontend"}
+        tag: ${env.SP_FE_TAG || "latest"}
+    backend:
+      image:
+        repository: ${env.SP_BE_IMAGE || "slurry-manager-backend"}
+        tag: ${env.SP_BE_TAG || "latest"}

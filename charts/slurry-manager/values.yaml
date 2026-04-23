@@ -10,7 +10,7 @@ frontend:
     tag: "latest"
   service:
     type: ClusterIP
-    port: 80
+    port: 8080
 
 backend:
   replicaCount: 1
