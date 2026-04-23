@@ -6,4 +6,4 @@ repos:
       - id: end-of-file-fixer
       - id: check-yaml
       - id: no-commit-to-branch
-        branch: main
+        args: [ --branch, Main ]
