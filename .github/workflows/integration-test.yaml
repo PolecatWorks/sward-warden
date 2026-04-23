@@ -1,7 +1,7 @@
 name: Integration Tests
 on:
   pull_request:
-    branches: [main]
+    branches: [Main]
   workflow_dispatch:
     inputs:
       pr_number:
@@ -34,6 +34,8 @@ jobs:
             frontend:
               - 'sp-fe-container/**'
               - '.github/workflows/sp-fe-docker-publish.yml'
+            spec:
+              - 'spec/**'
 
       - name: Prepare Image Variables
         run: |
@@ -46,7 +48,7 @@ jobs:
             echo "SP_BE_TAG=pr-${PR_NUMBER}" >> $GITHUB_ENV
           else
             echo "SP_BE_IMAGE=ghcr.io/${REPO_LOWER}-be" >> $GITHUB_ENV
-            echo "SP_BE_TAG=main" >> $GITHUB_ENV
+            echo "SP_BE_TAG=Main" >> $GITHUB_ENV
           fi
 
           if [[ "${{ steps.filter.outputs.frontend }}" == "true" ]]; then
@@ -54,7 +56,7 @@ jobs:
             echo "SP_FE_TAG=pr-${PR_NUMBER}" >> $GITHUB_ENV
           else
             echo "SP_FE_IMAGE=ghcr.io/${REPO_LOWER}-ui" >> $GITHUB_ENV
-            echo "SP_FE_TAG=main" >> $GITHUB_ENV
+            echo "SP_FE_TAG=Main" >> $GITHUB_ENV
           fi
 
       - name: Set up kubectl

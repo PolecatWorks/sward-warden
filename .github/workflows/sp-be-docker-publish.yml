@@ -7,9 +7,9 @@ name: SP-BE Docker
 
 on:
   push:
-    branches: ["main"]
+    branches: ["Main"]
   pull_request:
-    branches: ["main"]
+    branches: ["Main"]
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -134,7 +134,7 @@ jobs:
             "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}"
           cache-from: |
             type=gha,scope=${{ github.repository }}-sp-be-${{ github.ref_name }}-${{ matrix.platform }}
-            type=gha,scope=${{ github.repository }}-sp-be-main-${{ matrix.platform }}
+            type=gha,scope=${{ github.repository }}-sp-be-Main-${{ matrix.platform }}
           cache-to: type=gha,mode=max,scope=${{ github.repository }}-sp-be-${{ github.ref_name }}-${{ matrix.platform }}
 
       - name: Export digest
@@ -209,8 +209,8 @@ jobs:
           tags: |
             type=ref,event=pr
             type=raw,value=pr-${{ github.event.pull_request.number }},enable=${{ github.event_name == 'pull_request' }}
-            type=raw,value=main,enable=${{ github.ref_name == 'main' }}
-            type=raw,value=latest,enable=${{ github.ref_name == 'main' }}
+            type=raw,value=Main,enable=${{ github.ref_name == 'Main' }}
+            type=raw,value=latest,enable=${{ github.ref_name == 'Main' }}
             type=raw,value=sha-${{ env.BACKEND_SHA }}
 
       - name: Set up Docker Buildx

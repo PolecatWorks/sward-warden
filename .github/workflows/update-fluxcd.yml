@@ -2,7 +2,7 @@ name: Update FluxCD
 
 on:
   push:
-    branches: ["main"]
+    branches: ["Main"]
     paths:
       - "sp-fe-container/**"
       - "sp-be-container/**"
@@ -106,6 +106,6 @@ jobs:
             git checkout -b $BRANCH_NAME
             git commit -m "chore: update fluxcd-dev tags for UI and BE"
             git push --force https://x-access-token:$PAT@github.com/${{ github.repository }}.git $BRANCH_NAME
-            gh pr create --title "chore: update fluxcd-dev tags" --body "Automated PR to update FluxCD tags for UI and Backend based on new image builds." --base main --head $BRANCH_NAME
+            gh pr create --title "chore: update fluxcd-dev tags" --body "Automated PR to update FluxCD tags for UI and Backend based on new image builds." --base Main --head $BRANCH_NAME
             gh pr merge $BRANCH_NAME --auto --rebase
           fi

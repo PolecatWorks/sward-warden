@@ -2,7 +2,7 @@ name: Helm CI (PR)
 
 on:
   pull_request:
-    branches: ["main"]
+    branches: ["Main"]
 
 env:
   REGISTRY: ghcr.io
@@ -27,6 +27,8 @@ jobs:
             charts:
               - 'charts/**'
               - '.github/workflows/helm-ci-pr.yaml'
+            spec:
+              - 'spec/**'
 
   lint:
     needs: check-paths
