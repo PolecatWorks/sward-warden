@@ -1,0 +1,27 @@
+kind: Deploy
+type: kubernetes
+name: robot-test-runner
+dependencies:
+  - deploy.slurry-manager
+spec:
+  manifests:
+    - apiVersion: v1
+      kind: Pod
+      metadata:
+        name: robot-test-runner
+      spec:
+        containers:
+          - name: robot
+            image: marketsquare/robotframework-browser:latest
+            command: ["/bin/bash", "-c", "pip install robotframework-requests && sleep infinity"]
+            securityContext:
+              runAsUser: 1001
+
+---
+kind: Test
+type: exec
+name: integration-all
+dependencies:
+  - deploy.robot-test-runner
+spec:
+  command: ["/bin/bash", "-c", "GARDEN_NAMESPACE=${var.current-namespace} ./run-tests.sh"]
