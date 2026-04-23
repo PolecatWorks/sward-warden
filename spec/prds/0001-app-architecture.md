@@ -18,7 +18,13 @@ This document defines the overarching application architecture for the slurry ma
 - **Location:** Code to be placed in `sp-be-container` directory.
 - **Deployment:** Packaged as a Docker container.
 - **State Management:** PostgreSQL for relational data storage.
-- **Security:** Security, authentication, and authorization logic will be deferred to Istio in the Kubernetes cluster.
+- **Security:** 
+  - Authentication will be handled via **OAuth2 (OIDC)**, supporting providers like Google.
+  - Endpoint protection and JWT validation will be managed by **Istio**.
+  - The application will extract user identity from headers provided by the sidecar to associate data in the PostgreSQL database.
+- **Data Sources (Initial Phase):**
+  - Regulatory code lists (MAPP, EPPO, BBCH) will be implemented as static data.
+  - Weather information will be provided via static datasets for the initial version, with future plans for API integration.
 - **App Framework & CLI:**
   - Application configuration will be via YAML files, with secret files and environment variable overrides.
   - The application must follow 12-factor principles.

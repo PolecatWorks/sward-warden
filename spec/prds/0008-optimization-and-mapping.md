@@ -10,7 +10,7 @@ This document defines the requirements for the application's intelligent optimiz
 - **Strategic Planning**: Identify the best fields for application at any given time to maximize nutrient uptake and minimize environmental runoff.
 
 ### 2. Weather Integration
-- **Live Data**: Incorporate real-time weather data and 48-hour forecasts.
+- **Live Data**: Incorporate weather data and 48-hour forecasts (provided as **static datasets** for the initial version; API integration is planned for future phases).
 - **Safety Lock**: Automatically prevent the scheduling or logging of slurry application if heavy rain is forecast within 48 hours or if current conditions (e.g., snow, frost) prohibit spreading.
 - **Visual Indicators**: Provide clear, high-quality weather widgets showing "Application Windows" based on forecast reliability.
 
@@ -20,7 +20,9 @@ This document defines the requirements for the application's intelligent optimiz
 - **Interactive Layers**: Allow users to toggle between different mapping layers (e.g., Soil Type, Risk Level, Historical Application).
 
 ### 4. Waterway Protection
-- **Buffer Zone Enforcement**: Automatically calculate and visualize mandatory buffer zones (10m/20m/15m/30m) around waterways and lakes.
+- **Buffer Zone Enforcement**: Automatically calculate and visualize mandatory buffer zones based on application type:
+  - **Chemical Fertilisers**: 2 metres from all waterways.
+  - **Slurry/Organic Manures**: Standard (10m waterways, 20m lakes) or Increased (15m waterways, 30m lakes during high-risk periods).
 - **Preventative Blocking**: The system must prevent any application events from being recorded or planned within these zones.
 
 ## UI Requirements

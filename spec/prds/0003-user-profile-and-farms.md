@@ -7,8 +7,8 @@ This document defines the requirements for user profiles and the management of f
 
 1. **User Profile Management**
    - Provide a user interface to allow users to set and manage their profile information.
-   - Profile information includes, but is not limited to, name and contact details.
-   - Users typically create an account and fill out this information when they first join.
+   - Profile information is linked to the user's **OAuth2 identity** (e.g., Google account).
+   - Users typically complete their profile details (contact info, etc.) during an onboarding step after their first successful login.
 
 2. **Farm Management**
    - Once joined, users must be able to create and manage multiple farms within their account.
@@ -18,14 +18,14 @@ This document defines the requirements for user profiles and the management of f
 
 4. **Event Tracking**
    - Users must be able to describe and record events for each field.
-   - Examples of events include:
-     - Planting
-     - Fertiliser application
-     - Slurry application
-     - Spraying
-     - Harvesting
-     - Tilling
-     - And other relevant agricultural activities.
+   - **Supported Event Types**:
+     - **Planting**: Crop type and variety.
+     - **Fertiliser Application**: Product name, quantity, and N-P-K values.
+     - **Slurry Application**: Quantity, application method (LESSE vs Splash Plate), and nitrogen loading.
+     - **Spraying**: **CRITICAL**: Must include MAPP number, EPPO crop code, and BBCH growth stage as per [PRD 0005](./0005-farm-sustainability-standards.md).
+     - **Harvesting**: Yield quantity and quality notes.
+     - **Tilling**: Method used (e.g., ploughing, min-till).
+     - **Soil Analysis**: pH, P-index, K-index, and Magnesium levels.
 
 ## UI Requirements
 - **User Profile**: Must be transitioned from the basic form to a premium "Hero-style" profile view as demonstrated in the prototype `HomeComponent`.
