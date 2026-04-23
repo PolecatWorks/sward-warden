@@ -1,6 +1,6 @@
 # 0003-05 Event Tracking Specification
 
-**State**: Open
+**State**: Complete
 
 ## Scope
 This specification covers the implementation details of event tracking as outlined in PRD 0003.

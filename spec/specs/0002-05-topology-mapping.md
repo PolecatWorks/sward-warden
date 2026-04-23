@@ -1,6 +1,6 @@
 # 0002-06 Topology and Field Mapping Specification
 
-**State**: Open
+**State**: Complete
 
 ## Scope
 This specification details the UI implementation for Topology & Field Mapping as derived from PRD 0002.

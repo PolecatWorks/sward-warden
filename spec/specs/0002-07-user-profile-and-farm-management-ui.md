@@ -1,7 +1,7 @@
 # 0002-07 User Profile and Farm Management UI Specification
 
 ## Status
-Open
+Complete
 
 ## Overview
 This document specifies the user interface requirements for setting up and managing user profiles and farms, based on Feature 7 of PRD 0002.
