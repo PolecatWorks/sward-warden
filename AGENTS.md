@@ -1,0 +1,2 @@
+- Strict PR workflow rules: Do not update PRD files and spec files in the same PR. Modifying the content of the spec files (e.g., adding or changing requirements) and the code in the same PR is not allowed.
+- It is expected that the spec status (e.g., `**State**: Open` to `**State**: Complete`) is updated at the same time as the code is updated.

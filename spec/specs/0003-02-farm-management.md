@@ -1,6 +1,6 @@
 # 0003-03 Farm Management Specification
 
-**State**: Open
+**State**: Complete
 
 ## Scope
 This specification covers the implementation details of farm management as outlined in PRD 0003.

@@ -1,6 +1,6 @@
 # 0002-07 Waterway Protection Specification
 
-**State**: Open
+**State**: Complete
 
 ## Scope
 This specification details the UI implementation for Waterway Protection as derived from PRD 0002.

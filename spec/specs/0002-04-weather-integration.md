@@ -1,6 +1,6 @@
 # 0002-05 Weather Integration Specification
 
-**State**: Open
+**State**: Complete
 
 ## Scope
 This specification details the UI implementation for Weather Integration as derived from PRD 0002.
