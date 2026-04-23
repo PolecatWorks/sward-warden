@@ -51,3 +51,8 @@ Under the new Farm Sustainability Standards (FSS), the penalty matrix for audit 
 - **Very High Severity**: Incurs a 50% penalty or £2,100 (whichever is higher), along with a guidance letter. The maximum penalties under the new regime can lead to complete payment loss and exclusion from support schemes.
 - **Mandatory Training**: All businesses that incur any breach must complete training specifically regarding the standard they violated.
 - **Repeat Breaches**: If a business breaches the same requirement within a 3-year period, the financial penalties will increase.
+
+## UI Requirements for Compliance Tracking
+- **Interactive Alerts**: Compliance warnings must use high-visibility Material Symbols and clear, tonal color coding (e.g., Error/Warning containers) rather than basic lists.
+- **Regulation Visualization**: Closed periods and nitrogen limits should be visualized using the standardized Bento grid pattern for quick reference.
+- **Risk Assessment Mapping**: Vulnerable zones and buffer zones must be clearly rendered on field maps as part of the Topology view, following the premium design system's color and texture patterns.

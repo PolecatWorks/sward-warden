@@ -5,7 +5,8 @@ This document defines the overarching application architecture for the slurry ma
 
 ## Frontend Requirements
 - **Framework:** Angular
-- **Component Library:** Angular Material
+- **Layout Pattern:** Persistent shell layout using a `MainLayoutComponent` with nested `<router-outlet>` to ensure stable navigation (Header/BottomNav) across view transitions.
+- **Design System:** Transition from generic Angular Material to a custom premium aesthetic using Tailwind CSS, Google Fonts (Work Sans), and curated HSL color palettes. Angular Material remains supported for low-level primitive components.
 - **Location:** Code to be placed in `sp-fe-container` directory.
 - **Deployment:** Packaged as a Docker container.
 

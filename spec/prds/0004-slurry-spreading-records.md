@@ -31,3 +31,8 @@ This document outlines the record-keeping requirements to maintain compliance wi
 7. **Spreading Equipment Exemptions**
    - If Low Emission Slurry Spreading Equipment (LESSE) is required but impractical due to field slope, an inverted splash plate may be used.
    - Must keep a specific record of the field number and the reason for using the splash plate for inspection purposes.
+
+## UI Requirements
+- **Record Entry UX**: Forms for recording slurry spreading must be optimized for speed and clarity, utilizing the "Record Event" pattern from the UI review (large touch targets, clear iconography).
+- **Import/Export Dashboard**: Use a dedicated Bento-style overview to track manure movements and deadlines.
+- **Exemption Logging**: A specific high-quality UI component should be provided to quickly log splash plate exemptions, ensuring compliance data is captured with minimal friction.

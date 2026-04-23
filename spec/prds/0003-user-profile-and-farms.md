@@ -26,3 +26,8 @@ This document defines the requirements for user profiles and the management of f
      - Harvesting
      - Tilling
      - And other relevant agricultural activities.
+
+## UI Requirements
+- **User Profile**: Must be transitioned from the basic form to a premium "Hero-style" profile view as demonstrated in the prototype `HomeComponent`.
+- **Farm/Field Cards**: Must utilize high-quality imagery (where available) and Bento-style layouts for displaying operational stats.
+- **Timeline**: The field event tracking must use the standardized high-quality activity timeline identified in the UI review.
