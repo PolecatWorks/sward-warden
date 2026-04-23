@@ -22,6 +22,6 @@ This file describes the workflow and development patterns for our agents to foll
 - As you pick up new guidance on workflow or best practices, capture it in this `agents.md` file or within the PRD files appropriately.
 - If you have a new requirement update the prd files.
 - Do not update prd files and spec files in the same pr.
-- Do not update spec files and code in the same pr.
+- Do not update spec file content and code in the same PR. However, it is expected that the status of the spec file (e.g. changing from "Open" to "Complete") is modified at the same time as code is modified, to allow code and spec files to remain in sync.
 - Prd files should be numbered. Spec files should be numbers deriving from the prd it is from.
 - **NOTE**: PRD files can mutate over time. Spec files are immutable, however when a spec file has updates and it is not complete (ie still in open state) then it can be modified and does not need to be superceeded. Spec files can be in the following states: Open / Complete / Deprecated / Superceeded.
