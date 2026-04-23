@@ -1,0 +1,111 @@
+name: Update FluxCD
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "sp-fe-container/**"
+      - "sp-be-container/**"
+      - ".github/workflows/sp-fe-docker-publish.yml"
+      - ".github/workflows/sp-be-docker-publish.yml"
+      - ".github/workflows/update-fluxcd.yml"
+
+jobs:
+  update-fluxcd:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Wait for SP-FE and SP-BE Docker Workflows
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const workflowIds = ['sp-fe-docker-publish.yml', 'sp-be-docker-publish.yml'];
+            const maxRetries = 60; // Wait up to 30 minutes (30s interval)
+            const intervalSeconds = 30;
+            const commitSha = context.sha;
+
+            console.log(`Waiting for workflows ${workflowIds.join(', ')} on commit ${commitSha}...`);
+
+            // To track completion of workflows
+            const completedWorkflows = new Set();
+
+            for (let i = 0; i < maxRetries; i++) {
+              for (const workflowId of workflowIds) {
+                if (completedWorkflows.has(workflowId)) continue;
+
+                try {
+                  const runs = await github.rest.actions.listWorkflowRuns({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    workflow_id: workflowId,
+                    head_sha: commitSha,
+                  });
+
+                  if (runs.data.total_count === 0) {
+                    console.log(`Workflow run ${workflowId} not found yet. Waiting...`);
+                  } else {
+                    const run = runs.data.workflow_runs[0];
+                    console.log(`Found workflow run: ${workflowId} (ID: ${run.id}, Status: ${run.status}, Conclusion: ${run.conclusion})`);
+
+                    if (run.status === 'completed') {
+                      if (run.conclusion === 'success') {
+                        console.log(`CI ${workflowId} completed successfully.`);
+                        completedWorkflows.add(workflowId);
+                      } else {
+                        core.setFailed(`CI workflow ${workflowId} failed with conclusion: ${run.conclusion}`);
+                        return;
+                      }
+                    }
+                  }
+                } catch (error) {
+                  console.log(`Error checking workflow status for ${workflowId}: ${error.message}. Retrying...`);
+                }
+              }
+
+              if (completedWorkflows.size === workflowIds.length) {
+                console.log('All required CI workflows completed successfully.');
+                return;
+              }
+              await new Promise(r => setTimeout(r, intervalSeconds * 1000));
+            }
+            core.setFailed('Timeout waiting for required CI workflows to complete.');
+
+      - name: Determine Content SHAs
+        run: |
+          UI_SHA=$(git log -1 --format=%H -- sp-fe-container/ .github/workflows/sp-fe-docker-publish.yml)
+          echo "Determined UI content SHA: $UI_SHA"
+          echo "UI_SHA=$UI_SHA" >> $GITHUB_ENV
+
+          BACKEND_SHA=$(git log -1 --format=%H -- sp-be-container/ .github/workflows/sp-be-docker-publish.yml)
+          echo "Determined Backend content SHA: $BACKEND_SHA"
+          echo "BACKEND_SHA=$BACKEND_SHA" >> $GITHUB_ENV
+
+      - name: Update fluxcd-dev tags
+        env:
+          PAT: ${{ secrets.PAT }}
+          GH_TOKEN: ${{ secrets.PAT }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          yq e '(. | select(.kind == "HelmRelease" and .metadata.name == "slurry-manager-fe") | .spec.values.image.tag) = "sha-" + env(UI_SHA)' -i fluxcd-dev/slurry-manager.yaml
+          yq e '(. | select(.kind == "HelmRelease" and .metadata.name == "slurry-manager") | .spec.values.image.tag) = "sha-" + env(BACKEND_SHA)' -i fluxcd-dev/slurry-manager.yaml
+
+          git add fluxcd-dev/slurry-manager.yaml
+          if git diff --staged --quiet; then
+            echo "No changes to commit for fluxcd-dev tags."
+          else
+            BRANCH_NAME="update-fluxcd-${GITHUB_SHA}"
+            git checkout -b $BRANCH_NAME
+            git commit -m "chore: update fluxcd-dev tags for UI and BE"
+            git push --force https://x-access-token:$PAT@github.com/${{ github.repository }}.git $BRANCH_NAME
+            gh pr create --title "chore: update fluxcd-dev tags" --body "Automated PR to update FluxCD tags for UI and Backend based on new image builds." --base main --head $BRANCH_NAME
+            gh pr merge $BRANCH_NAME --auto --rebase
+          fi
