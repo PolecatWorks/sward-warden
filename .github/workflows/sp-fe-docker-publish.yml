@@ -7,9 +7,9 @@ name: SP-FE Docker
 
 on:
   push:
-    branches: ["main"]
+    branches: ["Main"]
   pull_request:
-    branches: ["main"]
+    branches: ["Main"]
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -133,7 +133,7 @@ jobs:
           outputs: type=image,name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWERCASE }},push-by-digest=true,name-canonical=true,push=true,oci-mediatypes=true
           cache-from: |
             type=gha,scope=${{ github.repository }}-sp-fe-${{ github.ref_name }}-${{ matrix.platform }}
-            type=gha,scope=${{ github.repository }}-sp-fe-main-${{ matrix.platform }}
+            type=gha,scope=${{ github.repository }}-sp-fe-Main-${{ matrix.platform }}
           cache-to: type=gha,mode=max,scope=${{ github.repository }}-sp-fe-${{ github.ref_name }}-${{ matrix.platform }}
 
       - name: Export digest
@@ -208,8 +208,8 @@ jobs:
           tags: |
             type=ref,event=pr
             type=raw,value=pr-${{ github.event.pull_request.number }},enable=${{ github.event_name == 'pull_request' }}
-            type=raw,value=main,enable=${{ github.ref_name == 'main' }}
-            type=raw,value=latest,enable=${{ github.ref_name == 'main' }}
+            type=raw,value=Main,enable=${{ github.ref_name == 'Main' }}
+            type=raw,value=latest,enable=${{ github.ref_name == 'Main' }}
             type=raw,value=sha-${{ env.UI_SHA }}
 
       - name: Set up Docker Buildx

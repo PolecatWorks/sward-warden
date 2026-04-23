@@ -63,7 +63,7 @@ jobs:
           echo "Checking if source image exists: $SRC_IMAGE"
           if ! docker buildx imagetools inspect "$SRC_IMAGE" > /dev/null 2>&1; then
             echo "Error: Source image $SRC_IMAGE does not exist."
-            echo "The release commit must successfully build on main before release."
+            echo "The release commit must successfully build on Main before release."
             exit 1
           fi
 

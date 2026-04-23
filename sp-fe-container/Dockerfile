@@ -1,11 +1,27 @@
-FROM node:18-alpine AS build
+FROM node:22-alpine AS build
+
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
+
+# Switch to app directory
+COPY package.json package-lock.json .npmrc* ./
+RUN --mount=type=secret,id=NODE_AUTH_TOKEN,env=NODE_AUTH_TOKEN \
+    npm ci
+
+# Copy application code
 COPY . .
 RUN npm run build
 
+# Stage 2: Serve
 FROM nginx:alpine
-COPY --from=build /app/dist/sp-fe-container /usr/share/nginx/html
-EXPOSE 80
+
+# Add OCI labels
+LABEL org.opencontainers.image.title="Slurry-pal UI"
+LABEL org.opencontainers.image.description="Slurry-pal User Interface (Angular)"
+LABEL org.opencontainers.image.authors="Ben Greene <BenJGreene@gmail.com>"
+LABEL org.opencontainers.image.source="https://github.com/PolecatWorks/Slurry-pal"
+
+COPY --from=build /app/dist/sp-fe-container/browser /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]

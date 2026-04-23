@@ -13,3 +13,4 @@ PRDs dictate the high-level features and requirements of the project. Every PRD 
 - [0005 Farm Sustainability Standards](./0005-farm-sustainability-standards.md)
 - [0006 Inventory and Equipment](./0006-inventory-and-equipment.md)
 - [0007 Reporting and Export](./0007-reporting-and-export.md)
+- [0008 Optimization, Weather, and Topology Mapping](./0008-optimization-and-mapping.md)

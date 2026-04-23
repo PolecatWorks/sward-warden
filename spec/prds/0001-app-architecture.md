@@ -5,7 +5,8 @@ This document defines the overarching application architecture for the slurry ma
 
 ## Frontend Requirements
 - **Framework:** Angular
-- **Component Library:** Angular Material
+- **Layout Pattern:** Persistent shell layout using a `MainLayoutComponent` with nested `<router-outlet>` to ensure stable navigation (Header/BottomNav) across view transitions.
+- **Design System:** Transition from generic Angular Material to a custom premium aesthetic using Tailwind CSS, Google Fonts (Work Sans), and curated HSL color palettes. Angular Material remains supported for low-level primitive components.
 - **Location:** Code to be placed in `sp-fe-container` directory.
 - **Deployment:** Packaged as a Docker container.
 
@@ -17,7 +18,13 @@ This document defines the overarching application architecture for the slurry ma
 - **Location:** Code to be placed in `sp-be-container` directory.
 - **Deployment:** Packaged as a Docker container.
 - **State Management:** PostgreSQL for relational data storage.
-- **Security:** Security, authentication, and authorization logic will be deferred to Istio in the Kubernetes cluster.
+- **Security:** 
+  - Authentication will be handled via **OAuth2 (OIDC)**, supporting providers like Google.
+  - Endpoint protection and JWT validation will be managed by **Istio**.
+  - The application will extract user identity from headers provided by the sidecar to associate data in the PostgreSQL database.
+- **Data Sources (Initial Phase):**
+  - Regulatory code lists (MAPP, EPPO, BBCH) will be implemented as static data.
+  - Weather information will be provided via static datasets for the initial version, with future plans for API integration.
 - **App Framework & CLI:**
   - Application configuration will be via YAML files, with secret files and environment variable overrides.
   - The application must follow 12-factor principles.

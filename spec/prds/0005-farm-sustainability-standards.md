@@ -6,7 +6,7 @@ This document outlines the strict environmental and reporting standards under th
 ## Key Compliance and Regulatory Requirements
 
 ### 1. Spraying (Pesticide Use)
-- **Digital Record-Keeping**: From 1 January 2027, professional users of Plant Protection Products (PPPs) in Northern Ireland must keep their pesticide records in a "machine-readable" digital format that can be submitted electronically to authorities such as DAERA upon request. To comply, three specific new data elements must be included in every PPP entry:
+- **Digital Record-Keeping**: From 1 January 2027, professional users of Plant Protection Products (PPPs) in Northern Ireland must keep their pesticide records in a "machine-readable" digital format that can be submitted electronically to authorities such as DAERA upon request. To comply, three specific new data elements must be included in every PPP entry (these will be provided as **static data lists** in the initial application version):
   - The product authorisation number (MAPP). MAPP stands for Ministerial Approved Pesticide Product. In the UK, it is a unique registration number assigned to approved pesticides to confirm they are legally authorized for use and trackable.
   - The relevant EPPO crop or land-use code. EPPO refers to the European and Mediterranean Plant Protection Organization. EPPO codes are standard alphanumeric identifiers used globally in agriculture to precisely record specific plant species, crops, or pests, eliminating confusion caused by different common names or languages.
   - The BBCH growth-stage code. BBCH is a universally recognized scale used in agronomy to identify the exact phenological development (growth) stages of a plant. The scale uses a uniform numbering system to describe how far along a crop is in its life cycle, such as germination, leaf development, or flowering.
@@ -51,3 +51,8 @@ Under the new Farm Sustainability Standards (FSS), the penalty matrix for audit 
 - **Very High Severity**: Incurs a 50% penalty or £2,100 (whichever is higher), along with a guidance letter. The maximum penalties under the new regime can lead to complete payment loss and exclusion from support schemes.
 - **Mandatory Training**: All businesses that incur any breach must complete training specifically regarding the standard they violated.
 - **Repeat Breaches**: If a business breaches the same requirement within a 3-year period, the financial penalties will increase.
+
+## UI Requirements for Compliance Tracking
+- **Interactive Alerts**: Compliance warnings must use high-visibility Material Symbols and clear, tonal color coding (e.g., Error/Warning containers) rather than basic lists.
+- **Regulation Visualization**: Closed periods and nitrogen limits should be visualized using the standardized Bento grid pattern for quick reference.
+- **Risk Assessment Mapping**: Vulnerable zones and buffer zones must be clearly rendered on field maps as part of the Topology view, following the premium design system's color and texture patterns.
