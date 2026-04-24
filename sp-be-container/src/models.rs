@@ -31,3 +31,12 @@ pub struct Event {
     pub description: String,
     pub date: String,
 }
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct FarmRecord {
+    pub id: u64,
+    pub farm_id: u64,
+    pub agricultural_area: f64,
+    pub manure_storage_capacity: f64,
+    pub year: i32,
+}

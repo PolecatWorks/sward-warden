@@ -1,4 +1,4 @@
-use crate::models::{Event, Farm, Field, User};
+use crate::models::{Event, Farm, Field, User, FarmRecord};
 use axum::{routing::{get, post}, Json, Router, extract::State};
 use serde::Serialize;
 use std::sync::Arc;
@@ -15,6 +15,7 @@ pub struct AppState {
     pub farms: Arc<RwLock<Vec<Farm>>>,
     pub fields: Arc<RwLock<Vec<Field>>>,
     pub events: Arc<RwLock<Vec<Event>>>,
+    pub farm_records: Arc<RwLock<Vec<FarmRecord>>>,
 }
 
 impl Default for AppState {
@@ -24,6 +25,7 @@ impl Default for AppState {
             farms: Arc::new(RwLock::new(vec![Farm { id: 1, user_id: 1, name: "Green Acres".to_string(), location: "Springfield".to_string() }])),
             fields: Arc::new(RwLock::new(vec![Field { id: 1, farm_id: 1, name: "North Field".to_string(), area_hectares: 10.5 }])),
             events: Arc::new(RwLock::new(vec![Event { id: 1, field_id: 1, event_type: "Slurry".to_string(), description: "Spring application".to_string(), date: "2024-04-01".to_string() }])),
+            farm_records: Arc::new(RwLock::new(vec![FarmRecord { id: 1, farm_id: 1, agricultural_area: 100.0, manure_storage_capacity: 500.0, year: 2024 }])),
         }
     }
 }
@@ -76,6 +78,14 @@ pub fn app_router() -> Router {
         .post(|State(state): State<AppState>, Json(event): Json<Event>| async move {
             state.events.write().await.push(event.clone());
             Json(event)
+        }))
+        .route("/v0/farm_records", get(|State(state): State<AppState>| async move {
+            let farm_records = state.farm_records.read().await;
+            Json(farm_records.clone())
+        })
+        .post(|State(state): State<AppState>, Json(farm_record): Json<FarmRecord>| async move {
+            state.farm_records.write().await.push(farm_record.clone());
+            Json(farm_record)
         }))
         .with_state(state)
 }
@@ -327,6 +337,49 @@ mod tests {
         let body = response.into_body().collect().await.unwrap().to_bytes();
         let body_str = String::from_utf8(body.to_vec()).unwrap();
         assert!(body_str.contains("Planting"));
+    }
+
+    #[tokio::test]
+    async fn test_app_router_farm_records() {
+        let app = app_router();
+
+        let response = app.clone()
+            .oneshot(Request::builder().uri("/v0/farm_records").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body_str = String::from_utf8(body.to_vec()).unwrap();
+        assert!(body_str.contains("100.0")); // from agricultural_area
+
+        let new_record = FarmRecord { id: 2, farm_id: 2, agricultural_area: 250.5, manure_storage_capacity: 1000.0, year: 2025 };
+        let response = app.clone()
+            .oneshot(
+                Request::builder()
+                    .method("POST")
+                    .uri("/v0/farm_records")
+                    .header("content-type", "application/json")
+                    .body(Body::from(serde_json::to_string(&new_record).unwrap()))
+                    .unwrap()
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body_str = String::from_utf8(body.to_vec()).unwrap();
+        assert!(body_str.contains("250.5"));
+
+        let response = app
+            .oneshot(Request::builder().uri("/v0/farm_records").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let body = response.into_body().collect().await.unwrap().to_bytes();
+        let body_str = String::from_utf8(body.to_vec()).unwrap();
+        assert!(body_str.contains("250.5"));
     }
 
     #[tokio::test]
