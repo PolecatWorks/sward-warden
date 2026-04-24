@@ -1,7 +1,7 @@
 # 0006-02 Chemical and Pesticide Inventory Specification
 
 ## Status
-Open
+Complete
 
 ## Overview
 This document outlines the requirements for maintaining an inventory of Plant Protection Products (PPPs), based on Feature 2 of PRD 0006.

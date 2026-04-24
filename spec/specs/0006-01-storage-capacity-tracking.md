@@ -1,7 +1,7 @@
 # 0006-01 Storage Capacity Tracking Specification
 
 ## Status
-Open
+Complete
 
 ## Overview
 This document specifies the requirements for tracking livestock manure and other storage capacities, based on Feature 1 of PRD 0006. Maintaining accurate inventory is critical for compliance with Farm Sustainability Standards.

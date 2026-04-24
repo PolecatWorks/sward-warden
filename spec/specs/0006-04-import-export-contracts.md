@@ -1,7 +1,7 @@
 # 0006-04 Import and Export Contracts Specification
 
 ## Status
-Open
+Complete
 
 ## Overview
 This document outlines the requirements for tracking import and export contracts for manure, based on Feature 4 of PRD 0006.

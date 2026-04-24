@@ -1,7 +1,7 @@
 # 0007-02 Annual Fertilisation Accounts Specification
 
 ## Status
-Open
+Complete
 
 ## Overview
 This document outlines the requirements for generating annual fertilisation accounts, based on Feature 2 of PRD 0007.
