@@ -1,6 +1,6 @@
 # 0004-02 General Farm Records Specification
 
-**State**: Open
+**State**: Complete
 
 ## Scope
 This specification covers the general farm records required to maintain compliance with NAP regulations (PRD 0004).
