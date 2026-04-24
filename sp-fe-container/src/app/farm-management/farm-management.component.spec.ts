@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { FarmManagementComponent } from './farm-management.component';
 import { FarmManagementService } from '../services/farm-management.service';
@@ -16,9 +17,10 @@ describe('FarmManagementComponent', () => {
     mockFarmService.getEvents.and.returnValue(of([{ id: 1, field_id: 1, event_type: 'Test Event', description: 'Test', date: '2024-01-01' }]));
 
     await TestBed.configureTestingModule({
-      providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
       imports: [FarmManagementComponent],
-      providers: [{ provide: ActivatedRoute, useValue: {} },
+      providers: [
+        { provide: ActivatedRoute, useValue: {} },
+        provideRouter([]),
         { provide: FarmManagementService, useValue: mockFarmService }
       ]
     })
