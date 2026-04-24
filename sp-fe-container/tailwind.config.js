@@ -63,6 +63,7 @@ module.exports = {
       },
       "fontFamily": {
         "headline": ["Work Sans"],
+        "display": ["Work Sans"],
         "body": ["Inter"],
         "label": ["Inter"]
       }

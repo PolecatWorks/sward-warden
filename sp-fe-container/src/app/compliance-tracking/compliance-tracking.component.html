@@ -1,23 +1,126 @@
-<mat-card>
-  <mat-card-header>
-    <mat-card-title>Compliance Tracking</mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
-    <h3>Alerts & Prohibitions</h3>
-    <mat-list>
-      <mat-list-item *ngFor="let alert of alerts">
-        <mat-icon matListItemIcon *ngIf="alert.type === 'prohibited'" color="warn">error</mat-icon>
-        <mat-icon matListItemIcon *ngIf="alert.type === 'warning'" color="accent">warning</mat-icon>
-        <div matListItemTitle>{{ alert.message }}</div>
-      </mat-list-item>
-    </mat-list>
-
-    <h3>Local Regulations Guidelines</h3>
-    <mat-list>
-      <mat-list-item *ngFor="let reg of regulations">
-        <mat-icon matListItemIcon>check_circle</mat-icon>
-        <div matListItemTitle>{{ reg }}</div>
-      </mat-list-item>
-    </mat-list>
-  </mat-card-content>
-</mat-card>
+<!-- TopAppBar -->
+<header class="bg-[#faf9f5] dark:bg-stone-950 flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto sticky top-0 z-50">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#154212] dark:text-emerald-500 text-3xl">agriculture</span>
+<h1 class="font-['Work_Sans'] font-black tracking-tighter text-[#154212] dark:text-emerald-500 text-2xl">SwardWarden</h1>
+</div>
+<nav class="hidden md:flex items-center space-x-8">
+<a class="font-label font-bold text-[10px] uppercase tracking-widest text-[#1a1c1a] dark:text-stone-400 hover:text-[#154212] transition-colors" routerLink="/slurry-dashboard">Dashboard</a>
+<a class="font-label font-bold text-[10px] uppercase tracking-widest text-[#1a1c1a] dark:text-stone-400 hover:text-[#154212] transition-colors" routerLink="/home/farms">Farms</a>
+<a class="font-label font-bold text-[10px] uppercase tracking-widest text-[#154212] dark:text-emerald-400" routerLink="/compliance-tracking">Compliance</a>
+<a class="font-label font-bold text-[10px] uppercase tracking-widest text-[#1a1c1a] dark:text-stone-400 hover:text-[#154212] transition-colors" routerLink="/user-profile">Profile</a>
+</nav>
+<div class="h-10 w-10 rounded-full bg-surface-container-high overflow-hidden">
+<img alt="User profile photo" data-alt="professional portrait of an agronomist in a clean field environment, soft natural daylight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnrgV6Ixx4D3Jn0dn8aDAGwe008FxDuO1_s9AJR7416OlgTQaNtpZjJWkGh6nRW-lraEOB_-svReps5H3X5pmuJ18mywU4VnwcwA0OWNGXCKA4s6HtPeicx8-0_4xOKGprWAsJ4YdsGOHDGxDlz4JPkPWGAoY2X-U9Wy2hGaxc59_9aaD203hhphjEi_1_bENKwHzaEV5CKClcJ0-MltxIhkQDnJ_90TBPMx343c42SzTuJ8lezPlKNp28UWjxxzQA1fzEt51QZQ"/>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 py-12 pb-32">
+<header class="mb-12">
+<p class="font-label font-bold text-sm text-secondary uppercase tracking-[0.2em] mb-2">Operations Center</p>
+<h2 class="font-display font-extrabold text-5xl md:text-6xl text-primary tracking-tight">Compliance &amp; Regulatory Hub</h2>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Regulatory Health Score Card -->
+<section class="md:col-span-5 bg-surface-container-lowest rounded-xl p-8 flex flex-col justify-between relative overflow-hidden shadow-sm">
+<div class="absolute -right-12 -top-12 w-64 h-64 bg-primary-fixed/20 rounded-full blur-3xl"></div>
+<div class="relative z-10">
+<h3 class="font-display font-semibold text-xl text-on-surface mb-8">Regulatory Health Score</h3>
+<div class="flex flex-col items-start">
+<span class="font-display font-black text-9xl text-primary leading-none tracking-tighter">92</span>
+<div class="mt-4 flex items-center gap-2 px-3 py-1 bg-primary-fixed rounded-full">
+<span class="material-symbols-outlined text-on-primary-fixed-variant text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label font-bold text-xs text-on-primary-fixed-variant uppercase">Excellent Status</span>
+</div>
+</div>
+</div>
+<div class="mt-12 relative z-10">
+<p class="text-on-surface-variant text-sm leading-relaxed max-w-xs">
+                        Your farm is currently exceeding national environmental compliance standards. Keep maintaining current nitrogen application records to stay in the green.
+                    </p>
+<button class="mt-6 flex items-center gap-2 font-display font-bold text-primary hover:gap-3 transition-all">
+<span>Full Audit Trail</span>
+<span class="material-symbols-outlined">trending_flat</span>
+</button>
+</div>
+</section>
+<!-- Alert Cards -->
+<section class="md:col-span-7 flex flex-col gap-4">
+<div *ngFor="let alert of alerts" class="glass-panel border-l-8 p-6 rounded-xl flex items-start gap-5 shadow-sm" [ngClass]="{'border-error': alert.type === 'prohibited', 'border-secondary': alert.type !== 'prohibited'}">
+<div class="p-3 rounded-full" [ngClass]="{'bg-error-container': alert.type === 'prohibited', 'bg-secondary-container': alert.type !== 'prohibited'}">
+<span class="material-symbols-outlined" [ngClass]="{'text-on-error-container': alert.type === 'prohibited', 'text-on-secondary-container': alert.type !== 'prohibited'}" style="font-variation-settings: 'FILL' 1;">
+{{ alert.type === 'prohibited' ? 'emergency_home' : 'warning' }}
+</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1">
+<h4 class="font-display font-bold text-lg text-on-surface">{{ alert.type === 'prohibited' ? 'Prohibited' : 'Warning' }}</h4>
+<span class="font-label font-bold text-[10px] uppercase tracking-wider" [ngClass]="{'text-error': alert.type === 'prohibited', 'text-on-secondary-container': alert.type !== 'prohibited'}">
+{{ alert.type === 'prohibited' ? 'Critical' : 'Warning' }}
+</span>
+</div>
+<p class="text-on-surface-variant text-sm">{{ alert.message }}</p>
+</div>
+</div>
+</section>
+<!-- Interactive Regulation Timeline -->
+<section class="md:col-span-12 mt-8">
+<div class="bg-surface-container-low rounded-3xl p-10">
+<h3 class="font-display font-bold text-3xl text-on-surface mb-12">Regulatory Roadmap / Local Regulations Guidelines</h3>
+<div class="relative space-y-12">
+<!-- Timeline Line -->
+<div class="absolute left-[19px] top-4 bottom-4 w-0.5 bg-outline-variant/30"></div>
+<!-- Timeline Item 1 -->
+<div *ngFor="let reg of regulations" class="relative pl-12 opacity-80">
+<div class="absolute left-0 top-1 w-10 h-10 rounded-full bg-outline-variant flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-on-surface text-xl">check_circle</span>
+</div>
+<div class="grid md:grid-cols-4 gap-8">
+<div class="md:col-span-1">
+<span class="font-display font-black text-2xl text-on-surface">Guideline</span>
+</div>
+<div class="md:col-span-3">
+<p class="text-on-surface-variant leading-relaxed mb-4">{{ reg }}</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Featured Field Analysis -->
+<section class="mt-12">
+<div class="relative h-[400px] w-full rounded-3xl overflow-hidden group">
+<img class="w-full h-full object-cover" data-alt="high angle aerial view of vibrant green rolling farmland fields at sunrise, clean geometric agricultural patterns" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZxT5YfJCv4mNeLnFWEpcZ1tP6rHrLPVc_bWbcncTkLreCCNtTqG9CrHA_45lBuNk8nIjBeyYjC--2qDPp_1_cSLbrvIONNAH1hlw4GkxVKDp0cDaEmhHh8-YhTCXFxGypfKxvMAasZ_xoAcWI19Hq1SMoUtVaEM0uXZ6eqRO1ZLY5xi0bxdUjBfDlJENAkloM2MJdFWyU_pKDKqXXgmyrYb8JSfalJpxCL900o1SS0_6cBhCgs-vDJJXxH9AlX0HZcTf_HzIPOw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent"></div>
+<div class="absolute bottom-8 left-8 right-8 flex flex-col md:flex-row justify-between items-end">
+<div class="text-white max-w-xl">
+<h3 class="font-display font-black text-4xl tracking-tight mb-2">Precision Field Insights</h3>
+<p class="text-primary-fixed text-lg">Parcel 12B - High Nitrogen sensitivity detected near the riparian buffer zone.</p>
+</div>
+<button class="mt-6 md:mt-0 bg-white text-primary px-8 py-4 rounded-xl font-display font-black text-sm uppercase tracking-widest hover:bg-primary-fixed transition-colors">
+                        Map overlays
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-[#faf9f5]/80 dark:bg-stone-950/80 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,0,0,0.04)] rounded-t-3xl">
+<a class="flex flex-col items-center justify-center text-[#795950] dark:text-stone-500 px-5 py-2" routerLink="/slurry-dashboard">
+<span class="material-symbols-outlined mb-1">dashboard</span>
+<span class="font-['Inter'] font-bold text-[10px] uppercase tracking-widest">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#795950] dark:text-stone-500 px-5 py-2" routerLink="/home/farms">
+<span class="material-symbols-outlined mb-1">potted_plant</span>
+<span class="font-['Inter'] font-bold text-[10px] uppercase tracking-widest">Farms</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#154212] text-white dark:bg-emerald-600 dark:text-white rounded-xl px-5 py-2" routerLink="/compliance-tracking">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">assignment_turned_in</span>
+<span class="font-['Inter'] font-bold text-[10px] uppercase tracking-widest">Compliance</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#795950] dark:text-stone-500 px-5 py-2" routerLink="/user-profile">
+<span class="material-symbols-outlined mb-1">person</span>
+<span class="font-['Inter'] font-bold text-[10px] uppercase tracking-widest">Profile</span>
+</a>
+</nav>
