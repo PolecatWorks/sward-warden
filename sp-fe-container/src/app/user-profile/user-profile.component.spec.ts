@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { UserProfileComponent } from './user-profile.component';
 import { FarmManagementService } from '../services/farm-management.service';
@@ -15,6 +16,8 @@ describe('UserProfileComponent', () => {
     await TestBed.configureTestingModule({
       imports: [UserProfileComponent],
       providers: [
+        { provide: ActivatedRoute, useValue: {} },
+        provideRouter([]),
         { provide: FarmManagementService, useValue: mockFarmService }
       ]
     })

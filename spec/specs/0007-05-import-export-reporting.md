@@ -1,7 +1,7 @@
 # 0007-05 Import and Export Reporting Specification
 
 ## Status
-Open
+Complete
 
 ## Overview
 This document outlines the requirements for reporting the movement of manure and slurry, based on Feature 5 of PRD 0007.

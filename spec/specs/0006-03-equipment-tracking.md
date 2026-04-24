@@ -1,7 +1,7 @@
 # 0006-03 Equipment Tracking Specification
 
 ## Status
-Open
+Complete
 
 ## Overview
 This document specifies the requirements for recording and tracking farm equipment details, based on Feature 3 of PRD 0006.

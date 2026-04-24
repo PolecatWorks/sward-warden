@@ -1,7 +1,7 @@
 # 0007-03 General Farm Records Export Specification
 
 ## Status
-Open
+Complete
 
 ## Overview
 This document specifies the requirements for generating and exporting general farm records, based on Feature 3 of PRD 0007.

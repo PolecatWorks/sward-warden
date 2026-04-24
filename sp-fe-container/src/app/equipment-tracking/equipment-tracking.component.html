@@ -1,0 +1,44 @@
+<div class="px-6 py-8">
+  <div class="flex items-center gap-4 mb-6">
+    <a routerLink="/inventory-and-equipment" class="material-symbols-outlined text-primary hover:text-primary/80">arrow_back</a>
+    <h2 class="text-3xl font-black text-primary">Equipment Tracking</h2>
+  </div>
+
+  <div class="space-y-6">
+    <div class="bg-surface-container-low rounded-xl p-6">
+      <h3 class="font-bold text-xl text-on-surface mb-4">LESSE Equipment</h3>
+      <div class="space-y-3">
+        <label class="flex items-center gap-3 p-3 border border-outline-variant rounded-lg bg-surface">
+          <input type="checkbox" checked class="w-5 h-5 text-primary rounded focus:ring-primary">
+          <span class="font-medium text-on-surface">Dribble Bars</span>
+        </label>
+        <label class="flex items-center gap-3 p-3 border border-outline-variant rounded-lg bg-surface">
+          <input type="checkbox" class="w-5 h-5 text-primary rounded focus:ring-primary">
+          <span class="font-medium text-on-surface">Trailing Shoes</span>
+        </label>
+        <label class="flex items-center gap-3 p-3 border border-outline-variant rounded-lg bg-surface">
+          <input type="checkbox" class="w-5 h-5 text-primary rounded focus:ring-primary">
+          <span class="font-medium text-on-surface">Soil Injection Systems</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="bg-error/10 rounded-xl p-6 border border-error/20">
+      <h3 class="font-bold text-xl text-error mb-4 flex items-center gap-2">
+        <span class="material-symbols-outlined">warning</span> Exceptions
+      </h3>
+      <div class="space-y-4">
+        <div>
+          <label class="flex items-center gap-3 p-3 bg-surface rounded-lg">
+            <input type="checkbox" checked class="w-5 h-5 text-error rounded">
+            <span class="font-medium text-on-surface">Inverted Splash Plates Used</span>
+          </label>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-error mb-1">Required Justification</label>
+          <textarea class="w-full bg-surface border border-error/50 rounded-lg p-3 text-sm focus:ring-error focus:border-error outline-none" rows="3" placeholder="e.g., impractical due to field slope...">Impractical to use dribble bars due to severe slope on Field 4.</textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

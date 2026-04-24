@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute, provideRouter } from '@angular/router';
 
 import { OptimizationEngineComponent } from './optimization-engine.component';
 
@@ -8,6 +9,7 @@ describe('OptimizationEngineComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
       imports: [OptimizationEngineComponent]
     })
     .compileComponents();
