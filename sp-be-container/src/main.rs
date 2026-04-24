@@ -1,45 +1,111 @@
+pub mod cli;
+pub mod config;
+pub mod error;
+pub mod hams;
+pub mod metrics;
 pub mod models;
-mod cli;
-mod config;
-mod server;
+pub mod startup_tools;
+pub mod state;
+pub mod tokio_tools;
+pub mod webserver;
 
+use axum_prometheus::metrics_exporter_prometheus::PrometheusBuilder;
 use clap::Parser;
-use cli::{Cli, Commands};
-use config::AppConfig;
-use tokio::net::TcpListener;
+use std::ffi::c_void;
+use tokio_util::sync::CancellationToken;
+use tracing::info;
 
-#[tokio::main]
-async fn main() {
+use ::hams::hams::Hams;
+use ::hams::probe::AsyncHealthProbe;
+use ::hams::probe::FFIProbe;
+use ::hams::probe::manual::Manual as ProbeManual;
+
+use crate::cli::{Cli, Commands};
+use crate::config::AppConfig;
+use crate::error::MyError;
+use crate::metrics::{prometheus_response_free, prometheus_response_mystate};
+use crate::state::AppState;
+use crate::tokio_tools::run_in_tokio;
+use crate::webserver::start_app_api;
+
+pub const NAME: &str = env!("CARGO_PKG_NAME");
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
+
+fn main() -> Result<(), MyError> {
+    // Initialize structured logging
+    tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .init();
+
     let cli = Cli::parse();
 
     match &cli.command {
         Commands::Serve => {
-            let config = AppConfig::load().unwrap_or_else(|_| AppConfig {
-                database_url: "".to_string(),
-                server_addr: "0.0.0.0:8080".to_string(),
-                health_addr: "0.0.0.0:8079".to_string(),
-            });
-
-            let app_router = server::app_router();
-            let health_router = server::health_router();
-
-            let app_listener = TcpListener::bind(&config.server_addr).await.unwrap();
-            let health_listener = TcpListener::bind(&config.health_addr).await.unwrap();
-
-            println!("App listening on {}", config.server_addr);
-            println!("Health listening on {}", config.health_addr);
-
-            tokio::spawn(async move {
-                axum::serve(health_listener, health_router).await.unwrap();
-            });
-
-            axum::serve(app_listener, app_router).await.unwrap();
+            let config = AppConfig::load()?;
+            let ct = CancellationToken::new();
+            run_in_tokio(&config.runtime, service_cancellable(ct, config.clone()))?;
         }
         Commands::Version => {
-            println!("sp-be {}", env!("CARGO_PKG_VERSION"));
+            println!("sp-be {}", VERSION);
         }
         Commands::Migrate => {
             println!("Migrating database...");
         }
     }
+
+    Ok(())
+}
+
+async fn service_cancellable(ct: CancellationToken, config: AppConfig) -> Result<(), MyError> {
+    info!("Starting service {} v{}", NAME, VERSION);
+
+    // Setup Prometheus Recorder
+    let metric_handle = PrometheusBuilder::new()
+        .install_recorder()
+        .map_err(|e| MyError::Message(format!("Failed to install Prometheus recorder: {e}")))?;
+
+    let state = AppState::new(config.clone(), metric_handle);
+
+    if config.startup_checks.enabled {
+        startup_tools::run_startup_checks(&config).await?;
+    }
+
+    let mut hams_config = config.hams.clone();
+    hams_config.name = NAME.to_owned();
+    hams_config.version = VERSION.to_owned();
+
+    struct SendHams(Hams);
+    unsafe impl Send for SendHams {}
+
+    let hams_wrapper = tokio::task::spawn_blocking(move || {
+        let mut hams = Hams::new(hams_config);
+
+        let db_probe = ProbeManual::new("db-connected", true); // placeholder
+        hams.ready_insert(Box::new(FFIProbe::from(db_probe.clone())) as Box<dyn AsyncHealthProbe>);
+
+        Ok::<_, MyError>(SendHams(hams))
+    })
+    .await
+    .map_err(|e| MyError::Message(format!("Tokio join error: {}", e)))??;
+
+    let mut hams = hams_wrapper.0;
+
+    hams.register_prometheus(
+        prometheus_response_mystate,
+        prometheus_response_free,
+        &state as *const _ as *const c_void,
+    )?;
+
+    hams.start().unwrap();
+
+    let server_future = start_app_api(state.clone(), ct.clone());
+
+    server_future.await?;
+
+    hams.stop()?;
+    hams.deregister_prometheus()?;
+
+    ct.cancel();
+
+    Ok(())
 }
