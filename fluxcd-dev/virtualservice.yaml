@@ -1,0 +1,26 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: slurry-pal
+spec:
+  hosts:
+    - slurry.k8s
+  gateways:
+    - istio-ingress/k8s-gateway
+    - mesh # applies to all the sidecars in the mesh
+  http:
+    - name: slurry-pal-fe
+      match:
+        - uri:
+            prefix: /mfe/slurry-pal
+      route:
+        - destination:
+            host: mfe-slurry-pal-nginx-view
+    - name: slurry-pal-be
+      match:
+        - uri:
+            prefix: /slurry-be/v0
+      route:
+        - destination:
+            host: slurry-pal-slurry-manager-backend

@@ -1,0 +1,73 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mfe-slurry-pal
+spec:
+  releaseName: mfe-slurry-pal
+  chartRef:
+    kind: OCIRepository
+    name: mfe-shell
+  interval: 50m
+  install:
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: ghcr.io/polecatworks/slurry-manager-frontend
+      tag: latest
+      pullPolicy: Always # Dev ONLY
+    env:
+      - name: SERVE_ROOT
+        value: /mfe/slurry-pal
+    config:
+      contents:
+        config.json: |
+          {
+            "apiUrl": "/slurry-be/v0"
+          }
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: slurry-pal
+spec:
+  interval: 10m
+  url: oci://ghcr.io/polecatworks/slurry-pal/helm/slurry-manager
+  ref:
+    semver: ">= 0.1.x-0"
+    semverFilter: .*-main
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: slurry-pal
+spec:
+  releaseName: slurry-pal
+  chartRef:
+    kind: OCIRepository
+    name: slurry-pal
+  interval: 50m
+  install:
+    remediation:
+      retries: 3
+  values:
+    backend:
+      image:
+        repository: ghcr.io/polecatworks/slurry-manager-backend
+        tag: latest
+        pullPolicy: Always
+      configs:
+        database:
+          url: postgresql://cnpg-db0-cluster-rw.dbs:5432/slurry_pal
+    volumes:
+      - name: secrets
+        projected:
+          sources:
+            - secret:
+                name: db0-slurry-pal-user
+                items:
+                  - key: username
+                    path: persistence/db/connection/username
+                  - key: password
+                    path: persistence/db/connection/password
