@@ -10,6 +10,7 @@ describe('FarmsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
       imports: [FarmsComponent, HttpClientTestingModule, RouterTestingModule]
     })
     .compileComponents();

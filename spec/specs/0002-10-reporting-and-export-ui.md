@@ -1,7 +1,7 @@
 # 0002-10 Reporting and Export UI Specification
 
 ## Status
-Open
+Complete
 
 ## Overview
 This document outlines the user interface requirements for generating and exporting reports, based on Feature 10 of PRD 0002.

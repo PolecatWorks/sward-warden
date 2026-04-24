@@ -8,6 +8,7 @@ describe('WaterwayProtectionComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
       imports: [WaterwayProtectionComponent]
     })
     .compileComponents();

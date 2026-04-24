@@ -8,6 +8,7 @@ describe('TopologyMappingComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
       imports: [TopologyMappingComponent]
     })
     .compileComponents();

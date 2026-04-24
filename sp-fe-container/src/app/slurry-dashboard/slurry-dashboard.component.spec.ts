@@ -8,6 +8,7 @@ describe('SlurryDashboardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
       imports: [SlurryDashboardComponent]
     })
     .compileComponents();

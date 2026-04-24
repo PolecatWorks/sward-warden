@@ -8,6 +8,7 @@ describe('OptimizationEngineComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
       imports: [OptimizationEngineComponent]
     })
     .compileComponents();

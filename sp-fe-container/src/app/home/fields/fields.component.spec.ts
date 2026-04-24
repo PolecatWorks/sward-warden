@@ -10,6 +10,7 @@ describe('FieldsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
       imports: [FieldsComponent, HttpClientTestingModule, RouterTestingModule]
     })
     .compileComponents();

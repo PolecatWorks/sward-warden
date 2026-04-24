@@ -10,7 +10,7 @@ describe('HomeComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [HomeComponent],
-      providers: [provideRouter([])]
+      providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])]
     })
     .compileComponents();
 

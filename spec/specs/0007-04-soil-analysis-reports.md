@@ -1,7 +1,7 @@
 # 0007-04 Soil Analysis Reports Specification
 
 ## Status
-Open
+Complete
 
 ## Overview
 This document specifies the requirements for generating soil analysis reports, based on Feature 4 of PRD 0007.

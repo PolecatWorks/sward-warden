@@ -1,7 +1,7 @@
 # 0002-09 Inventory and Equipment UI Specification
 
 ## Status
-Open
+Complete
 
 ## Overview
 This document specifies the user interface requirements for tracking inventory and equipment, based on Feature 9 of PRD 0002.

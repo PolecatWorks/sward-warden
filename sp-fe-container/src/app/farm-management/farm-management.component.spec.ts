@@ -16,8 +16,9 @@ describe('FarmManagementComponent', () => {
     mockFarmService.getEvents.and.returnValue(of([{ id: 1, field_id: 1, event_type: 'Test Event', description: 'Test', date: '2024-01-01' }]));
 
     await TestBed.configureTestingModule({
+      providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
       imports: [FarmManagementComponent],
-      providers: [
+      providers: [{ provide: ActivatedRoute, useValue: {} },
         { provide: FarmManagementService, useValue: mockFarmService }
       ]
     })

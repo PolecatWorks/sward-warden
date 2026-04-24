@@ -8,6 +8,7 @@ describe('ComplianceTrackingComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
       imports: [ComplianceTrackingComponent]
     })
     .compileComponents();

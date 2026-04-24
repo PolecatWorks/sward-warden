@@ -13,8 +13,9 @@ describe('UserProfileComponent', () => {
     mockFarmService.getUsers.and.returnValue(of([{ id: 1, name: 'Test User', email: 'test@example.com' }]));
 
     await TestBed.configureTestingModule({
+      providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
       imports: [UserProfileComponent],
-      providers: [
+      providers: [{ provide: ActivatedRoute, useValue: {} },
         { provide: FarmManagementService, useValue: mockFarmService }
       ]
     })

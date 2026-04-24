@@ -1,7 +1,7 @@
 # 0007-01 Digital Pesticide Records Export Specification
 
 ## Status
-Open
+Complete
 
 ## Overview
 This document specifies the requirements for generating digital exports of pesticide records, based on Feature 1 of PRD 0007.
