@@ -1,13 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatListModule } from '@angular/material/list';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-slurry-dashboard',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatProgressBarModule, MatListModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './slurry-dashboard.component.html',
   styleUrl: './slurry-dashboard.component.css'
 })

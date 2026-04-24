@@ -1,15 +1,192 @@
-<mat-card>
-  <mat-card-header>
-    <mat-card-title>Optimization Engine</mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
-    <h3>Suggested Application Plan</h3>
-    <mat-list>
-      <mat-list-item *ngFor="let suggestion of suggestions">
-        <span matListItemTitle>{{ suggestion.field }} - {{ suggestion.date }}</span>
-        <span matListItemLine>Recommended Rate: {{ suggestion.rate }}</span>
-        <span matListItemLine>Reason: {{ suggestion.reason }}</span>
-      </mat-list-item>
-    </mat-list>
-  </mat-card-content>
-</mat-card>
+<!-- TopAppBar -->
+<header class="bg-[#faf9f5] dark:bg-stone-950 sticky top-0 z-40">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#154212] dark:text-emerald-500 text-3xl">agriculture</span>
+<h1 class="font-['Work_Sans'] font-black tracking-tighter text-[#154212] dark:text-emerald-500 text-2xl">SwardWarden</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-[#f4f4f0] dark:hover:bg-stone-900 transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined text-on-surface">notifications</span>
+</button>
+<img alt="User profile photo" class="w-10 h-10 rounded-full border-2 border-primary-container object-cover" data-alt="close-up portrait of a professional agricultural advisor in a field setting with soft natural morning light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3FQlwQmK7G51BrWXCuRwLXng6wsfbLWWbHMjo8mg_5Dx6lCSJ_w0PPbwz1LEh7CsXuCxhfifaA2o-axnqkWOcPzzJCkREJC5Y4o4ZgBfjSbOg4yKGoaH-13wo4byFP0UqZulKehd8oBrnicNrqOzmuda9YxyDURMefs0J4v8Cije2j6QH-O-1BG78Yf9ACK0ZncKIHuPr4bFThoPRMXMZJGdKI5a1nYwEQ9I1fq0rzydHgGFdtzZ4NH8oXaCdvIBheXunAxJ9Iw"/>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 py-8">
+<!-- Header Section -->
+<section class="mb-12">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<span class="font-label font-bold text-[10px] uppercase tracking-[0.2em] text-secondary mb-2 block">AI Optimization Engine</span>
+<h2 class="font-display font-black text-5xl md:text-7xl text-primary tracking-tighter leading-none">Advisor View</h2>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="bg-primary text-on-primary px-6 py-3 rounded-xl font-bold transition-all active:scale-95 hover:opacity-90 flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                        Run New Simulation
+                    </button>
+</div>
+</div>
+</section>
+<!-- Bento Grid Insights -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-12">
+<!-- Main Impact Card -->
+<div class="md:col-span-8 bg-surface-container-lowest rounded-full p-8 relative overflow-hidden flex flex-col justify-between min-h-[400px]">
+<div class="relative z-10">
+<h3 class="font-display font-semibold text-3xl tracking-tight text-primary mb-4">Seasonal Efficiency Outlook</h3>
+<p class="font-body text-on-surface-variant max-w-md">Our AI analysis suggests a shift toward high-precision foliar application can reduce nitrogen runoff by 22% while maintaining current yield targets.</p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-8 relative z-10">
+<div>
+<span class="font-label font-bold text-[10px] uppercase tracking-widest text-secondary block mb-1">Cost Savings</span>
+<div class="font-display font-black text-5xl text-primary leading-none">£12.4k</div>
+</div>
+<div>
+<span class="font-label font-bold text-[10px] uppercase tracking-widest text-secondary block mb-1">Soil Health Index</span>
+<div class="font-display font-black text-5xl text-tertiary-container leading-none">+14%</div>
+</div>
+<div class="hidden md:block">
+<span class="font-label font-bold text-[10px] uppercase tracking-widest text-secondary block mb-1">Carbon Credit Est.</span>
+<div class="font-display font-black text-5xl text-primary-container leading-none">34.2</div>
+</div>
+</div>
+<div class="absolute top-0 right-0 w-1/2 h-full opacity-10 pointer-events-none">
+<img class="w-full h-full object-cover" data-alt="abstract close up of vibrant green plant leaves with intricate veins and organic textures under soft studio light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvavf19LUr2a3KQXzenau7XBRYpFJ6wQ1bEXOOQLwzSyN0NxyJLEqOyLYrCvFg_K9P74EGZYvBelID92KbsYzDktqBXqWvRDARcjTImn2KN6swDouBVdBVo9BgE39VA42OStmEXhbBYsGz36WvtlubPZHtaWtkK4Bm2h7NfkLriPKi0QRACWJ7fY6ff9erszqMrQuzlIaFbpyvCmkMekUXQFY0q62ZwzuqDN_gKFA1ysdCJbgXJ165BE5pRMI7b6ou6XOVRtp6JQ"/>
+</div>
+</div>
+<!-- Side Recommendations (Suggestions) -->
+<div class="md:col-span-4 flex flex-col gap-6">
+<div *ngFor="let suggestion of suggestions" class="bg-surface-container-high text-on-surface p-6 rounded-full flex flex-col justify-between flex-1 border border-outline-variant/30">
+<span class="material-symbols-outlined text-4xl mb-4 text-primary">psychology</span>
+<div>
+<h4 class="font-display font-bold text-xl mb-1 tracking-tight">{{ suggestion.field }}</h4>
+<p class="font-label font-bold text-xs uppercase tracking-widest text-secondary mb-2">{{ suggestion.date }} | {{ suggestion.rate }}</p>
+<p class="text-sm opacity-80 leading-relaxed">{{ suggestion.reason }}</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Scenario Comparison -->
+<section class="mb-12">
+<h3 class="font-display font-bold text-2xl text-on-surface mb-8 tracking-tight px-2 border-l-4 border-primary">Scenario Comparison: Nutrient Uptake</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Current Plan -->
+<div class="bg-surface-container-low p-8 rounded-full border border-transparent hover:border-outline-variant/20 transition-all">
+<div class="flex justify-between items-start mb-8">
+<div>
+<span class="font-label font-bold text-[10px] uppercase tracking-widest text-outline block mb-1">Status Quo</span>
+<h4 class="font-display font-bold text-2xl text-on-surface">Current Plan</h4>
+</div>
+<span class="bg-surface-container-highest px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Active</span>
+</div>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between text-sm mb-2 font-medium">
+<span>Nitrogen Efficiency</span>
+<span>64%</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-outline rounded-full" style="width: 64%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-sm mb-2 font-medium">
+<span>Phosphate Stability</span>
+<span>78%</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-outline rounded-full" style="width: 78%"></div>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-8 border-t border-outline-variant/10">
+<div class="text-on-surface-variant text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">schedule</span>
+                            Estimated application cost: £4,200/unit
+                        </div>
+</div>
+</div>
+<!-- Optimized Plan -->
+<div class="bg-surface-container-lowest p-8 rounded-full shadow-[0_4px_32px_rgba(21,66,18,0.06)] ring-2 ring-primary relative overflow-hidden">
+<div class="flex justify-between items-start mb-8">
+<div>
+<span class="font-label font-bold text-[10px] uppercase tracking-widest text-primary block mb-1">AI Recommendation</span>
+<h4 class="font-display font-bold text-2xl text-primary">Optimized Plan</h4>
+</div>
+<span class="bg-primary text-on-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Optimal</span>
+</div>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between text-sm mb-2 font-bold text-primary">
+<span>Nitrogen Efficiency</span>
+<span class="flex items-center gap-1">89% <span class="material-symbols-outlined text-sm">trending_up</span></span>
+</div>
+<div class="h-2 w-full bg-primary-container/20 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 89%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-sm mb-2 font-bold text-primary">
+<span>Phosphate Stability</span>
+<span class="flex items-center gap-1">92% <span class="material-symbols-outlined text-sm">trending_up</span></span>
+</div>
+<div class="h-2 w-full bg-primary-container/20 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 92%"></div>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-8 border-t border-outline-variant/20">
+<div class="text-primary font-bold text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">verified</span>
+                            Estimated application cost: £3,150/unit
+                        </div>
+</div>
+<!-- Decorative AI Sparkle -->
+<div class="absolute -top-12 -right-12 w-32 h-32 bg-primary/5 rounded-full blur-3xl"></div>
+</div>
+</div>
+</section>
+<!-- Quick Actions Pills -->
+<section class="mb-16">
+<h3 class="font-label font-bold text-[10px] uppercase tracking-[0.2em] text-secondary mb-6 block px-2">Recommended Actions</h3>
+<div class="flex flex-wrap gap-4">
+<button class="px-6 py-4 bg-surface-container-low text-on-surface hover:bg-surface-container-high transition-colors rounded-full flex items-center gap-3 active:scale-95 duration-200">
+<span class="material-symbols-outlined text-primary">description</span>
+<span class="font-medium">Export Prescription Map</span>
+</button>
+<button class="px-6 py-4 bg-surface-container-low text-on-surface hover:bg-surface-container-high transition-colors rounded-full flex items-center gap-3 active:scale-95 duration-200">
+<span class="material-symbols-outlined text-primary">send_time_extension</span>
+<span class="font-medium">Sync with John Deere Ops</span>
+</button>
+<button class="px-6 py-4 bg-surface-container-low text-on-surface hover:bg-surface-container-high transition-colors rounded-full flex items-center gap-3 active:scale-95 duration-200">
+<span class="material-symbols-outlined text-primary">share</span>
+<span class="font-medium">Share PDF with Grower</span>
+</button>
+<button class="px-6 py-4 bg-primary text-on-primary hover:opacity-90 transition-opacity rounded-full flex items-center gap-3 active:scale-95 duration-200 shadow-lg shadow-primary/10">
+<span class="material-symbols-outlined">check_circle</span>
+<span class="font-bold">Apply Optimized Strategy</span>
+</button>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-[#faf9f5]/80 dark:bg-stone-950/80 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,0,0,0.04)] rounded-t-3xl">
+<a class="flex flex-col items-center justify-center bg-[#154212] text-white dark:bg-emerald-600 dark:text-white rounded-xl px-5 py-2 active:scale-90 transition-transform duration-200" routerLink="/slurry-dashboard">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-['Inter'] font-bold text-[10px] uppercase tracking-widest mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#795950] dark:text-stone-500 px-5 py-2 hover:text-[#154212] dark:hover:text-emerald-400 active:scale-90 transition-transform duration-200" routerLink="/home/farms">
+<span class="material-symbols-outlined">potted_plant</span>
+<span class="font-['Inter'] font-bold text-[10px] uppercase tracking-widest mt-1">Farms</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#795950] dark:text-stone-500 px-5 py-2 hover:text-[#154212] dark:hover:text-emerald-400 active:scale-90 transition-transform duration-200" routerLink="/compliance-tracking">
+<span class="material-symbols-outlined">assignment_turned_in</span>
+<span class="font-['Inter'] font-bold text-[10px] uppercase tracking-widest mt-1">Compliance</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#795950] dark:text-stone-500 px-5 py-2 hover:text-[#154212] dark:hover:text-emerald-400 active:scale-90 transition-transform duration-200" routerLink="/user-profile">
+<span class="material-symbols-outlined">person</span>
+<span class="font-['Inter'] font-bold text-[10px] uppercase tracking-widest mt-1">Profile</span>
+</a>
+</nav>
+<!-- FAB (Suppressed on this view as it's an Advisor Insight screen) -->
