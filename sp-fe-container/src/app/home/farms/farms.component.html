@@ -1,18 +1,4 @@
-<!-- TopAppBar -->
-<header class="bg-[#faf9f5] dark:bg-[#1a1c1a] docked full-width top-0 z-40 sticky">
-<div class="flex justify-between items-center w-full px-6 py-4">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden">
-<img alt="User profile photo" class="w-full h-full object-cover" data-alt="Professional headshot of a middle-aged farmer with a friendly expression, soft natural outdoor lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9LEYgM63_EcZdOk_XPMwWhj6flobdVteCcXRbSib9j1HF-vXmiEe0DrUx6YzhUCxy_jKc--74zZrVXCKMTddyMs21cdwZxg18yzqabmuI8CuOkVPrRLdsMNvVgq6wCnIOgR3DypRnL_jtV3BRyYot3GKJPbOw5JOf67IzEqFov8LeN8RSaGpYhwxnUpbGghcF32gS9wHjyKCytu94_497siedoH7Rf1WznNxnd_DWkbfaVs4yJ4MGrOOYTt6p80xii3PVzs3OCA"/>
-</div>
-<span class="font-['Work_Sans'] font-bold tracking-tight text-display-sm text-[#154212] dark:text-[#f4f4f0] text-xl font-black text-[#154212] dark:text-[#ffffff]">FieldMetric</span>
-</div>
-<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#f4f4f0] dark:hover:bg-[#2d302d] transition-colors active:opacity-80 active:scale-95">
-<span class="material-symbols-outlined text-[#154212] dark:text-[#f4f4f0]">settings</span>
-</button>
-</div>
-</header>
-<main class="px-6 pt-4 space-y-8">
+<main class="px-6 pt-4 space-y-8 pb-4">
 <!-- Hero Section / Statistics Overview -->
 <section class="space-y-4">
 <div class="flex flex-col gap-1">
@@ -62,7 +48,7 @@
                             </p>
 </div>
 </div>
-<div class="p-4 flex justify-between items-center bg-surface-container-low cursor-pointer" [routerLink]="['/home/farms', farm.id, 'fields']">
+<div class="p-4 flex justify-between items-center bg-surface-container-low cursor-pointer" [routerLink]="['/farms', farm.id, 'fields']">
 <div class="flex gap-4">
 <div class="flex flex-col">
 <span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Fields</span>
@@ -97,7 +83,7 @@
                             </p>
 </div>
 </div>
-<div class="p-4 flex justify-between items-center bg-surface-container-low">
+<div class="p-4 flex justify-between items-center bg-surface-container-low cursor-pointer" routerLink="/farms/1/fields">
 <div class="flex gap-4">
 <div class="flex flex-col">
 <span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Fields</span>
@@ -112,49 +98,11 @@
 </div>
 </div>
 
-<div *ngIf="farms.length === 0" class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm group">
-<div class="h-40 relative">
-<img alt="River Road Estate" class="w-full h-full object-cover" data-alt="lush riverfront estate with fertile farm land and a winding river in the background at dawn" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFSKBzWHF9vDzzRotdi_g4qMbnotM7ZmwucIBilC93PmuacgH147f_4bDlZ0X5fKiPg058S5lbaKHC75goD_GOuKKoz1DlDPZo4l8eAgXxWmTZKm8vtaw30TKMY2RFkvFDsHwhLI-ErfC3KAzu9HMY7w0TuY4ICY8cDTO1lw9Q1Afpj_ZdHffZXPH1EKVwworohW5DM0rxWl0QKrnFfzHl6Wgd6qLK6Yle7UhyTla_nKMWbz61lrKCbCypUkngSNUeMlZZD56yrg"/>
-<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-<div class="absolute bottom-4 left-4 text-white">
-<h3 class="text-xl font-bold">River Road Estate</h3>
-<p class="text-xs opacity-90 flex items-center gap-1">
-<span class="material-symbols-outlined text-xs">location_on</span>
-                                Oregon, USA
-                            </p>
-</div>
-</div>
-<div class="p-4 flex justify-between items-center bg-surface-container-low">
-<div class="flex gap-4">
-<div class="flex flex-col">
-<span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Fields</span>
-<span class="text-lg font-bold text-primary">07</span>
-</div>
-<div class="flex flex-col">
-<span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Status</span>
-<span class="text-sm font-semibold text-secondary">Harvesting</span>
-</div>
-</div>
-<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
-</div>
-</div>
-
-<div *ngIf="farms.length === 0" class="bg-surface-container-low p-5 rounded-xl flex items-center gap-4 border-l-4 border-primary">
-<div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
-<img alt="Highland Slopes" class="w-full h-full object-cover" data-alt="top down view of organized vegetable farm rows with vibrant green crops" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYcfg-iJ5KQb9qyAMulKfKx2VIt5t8RzLAvVEYO0GRlyGTJroEgZJh1XqB2Pj4lxdTEJD9psrZ96ONUGOwpWzyMZKdMGi4Emyay9fksZ6J8nS9Apag8yChLQNJLnrUE384JZJ5dBKVHjuXhKfTQeWOu7Sg-0xOTzX8OOuLAkN132TrPzGvH7ce8MHe3eFZpFBLCSFUBXAMNlX19zIqa3JWn_KfePjVVQCUvmRAp43UHJRgLTKbg1lRvYH1Z5Jn8N13nre7Z-zIpQ"/>
-</div>
-<div class="flex-grow">
-<h3 class="font-bold text-lg text-on-surface">Highland Slopes</h3>
-<p class="text-xs text-on-surface-variant">Colorado • 23 Fields</p>
-</div>
-<span class="material-symbols-outlined text-primary-container">arrow_outward</span>
-</div>
-
 </div>
 </section>
 </main>
 <!-- FAB: Add New Farm -->
-<button (click)="showAddFarmModal = true" class="fixed right-6 bottom-24 w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center z-50 active:scale-90 transition-transform">
+<button (click)="showAddFarmModal = true" class="fixed right-6 bottom-24 w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center z-40 active:scale-90 transition-transform">
 <span class="material-symbols-outlined text-2xl">add</span>
 </button>
 
@@ -190,27 +138,3 @@
     </div>
   </div>
 </div>
-
-<!-- BottomNavBar -->
-<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 pb-safe bg-[#faf9f5]/80 dark:bg-[#1a1c1a]/80 backdrop-blur-xl z-50 rounded-t-xl shadow-2xl no-border shadow-[0_-1px_0_0_rgba(0,0,0,0.05)]">
-<!-- Dashboard -->
-<a class="flex flex-col items-center justify-center text-[#77574d] dark:text-[#c2c9bb] px-5 py-2 hover:bg-[#f4f4f0] dark:hover:bg-[#2d302d] transition-colors" routerLink="/slurry-dashboard">
-<span class="material-symbols-outlined">dashboard</span>
-<span class="font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Dashboard</span>
-</a>
-<!-- Fields (Active) -->
-<a class="flex flex-col items-center justify-center bg-[#2d5a27] text-white rounded-xl px-5 py-2 scale-90 transition-transform duration-150" routerLink="/home/farms">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">agriculture</span>
-<span class="font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Farms</span>
-</a>
-<!-- Events -->
-<a class="flex flex-col items-center justify-center text-[#77574d] dark:text-[#c2c9bb] px-5 py-2 hover:bg-[#f4f4f0] dark:hover:bg-[#2d302d] transition-colors" routerLink="/compliance-tracking">
-<span class="material-symbols-outlined">event_note</span>
-<span class="font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Events</span>
-</a>
-<!-- Profile -->
-<a class="flex flex-col items-center justify-center text-[#77574d] dark:text-[#c2c9bb] px-5 py-2 hover:bg-[#f4f4f0] dark:hover:bg-[#2d302d] transition-colors" routerLink="/user-profile">
-<span class="material-symbols-outlined">account_circle</span>
-<span class="font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Profile</span>
-</a>
-</nav>

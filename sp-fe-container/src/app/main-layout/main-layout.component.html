@@ -1,0 +1,57 @@
+<!-- Persistent TopAppBar -->
+<header class="bg-[#faf9f5]/90 dark:bg-[#1a1c1a]/90 backdrop-blur-xl sticky top-0 z-40 border-b border-black/5">
+  <div class="flex justify-between items-center w-full px-6 py-4 max-w-2xl mx-auto">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container">
+        <img alt="Arthur Miller Profile"
+          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEGLVw7OJxGjDvarhM4qk8kwucVrFtr2LhZEnaBrkmsU-zTvETHxqqhqPe8uNJGzakLfepGm665SgCJvPPpt8B83L8FPfZpDnLS88vJsBQzhXdlteqviG82bhlHXzWn2za5JxQWWf3-Xd13318Hmd3MYo1wmxKnO2sR09K4ZrygrJ_0tOrra17-xn9c5GgOBifkKCV5dVJhoufTcuHGNXs0PIvQgPvANInQWOqHjOxi8gMnO-Vg_yXzQqHdPttBr-CvunJqZnhsA"
+          class="w-full h-full object-cover" />
+      </div>
+      <h1 class="text-xl font-black text-[#154212] dark:text-white font-['Work_Sans'] tracking-tight">FieldMetric</h1>
+    </div>
+    <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#f4f4f0] dark:hover:bg-[#2d302d] transition-colors active:scale-95"
+      id="settings-btn" aria-label="Settings">
+      <span class="material-symbols-outlined text-[#154212] dark:text-[#f4f4f0]">settings</span>
+    </button>
+  </div>
+</header>
+
+<!-- Main Content Area — Child Routes Render Here -->
+<main class="flex-grow pb-28 max-w-2xl mx-auto w-full">
+  <router-outlet></router-outlet>
+</main>
+
+<!-- Persistent Glassmorphism Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-[#faf9f5]/80 dark:bg-[#1a1c1a]/80 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,0,0,0.06)] rounded-t-2xl">
+  <div class="flex justify-around items-center px-4 py-3 pb-safe max-w-2xl mx-auto">
+
+    <!-- Dashboard -->
+    <a routerLink="/dashboard" routerLinkActive="nav-active"
+       class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
+      <span class="material-symbols-outlined nav-icon">dashboard</span>
+      <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Dashboard</span>
+    </a>
+
+    <!-- Farms / Fields -->
+    <a routerLink="/farms" routerLinkActive="nav-active"
+       class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
+      <span class="material-symbols-outlined nav-icon">agriculture</span>
+      <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Farms</span>
+    </a>
+
+    <!-- Compliance / Events -->
+    <a routerLink="/compliance" routerLinkActive="nav-active"
+       class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
+      <span class="material-symbols-outlined nav-icon">event_note</span>
+      <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Compliance</span>
+    </a>
+
+    <!-- Profile -->
+    <a routerLink="/profile" routerLinkActive="nav-active"
+       class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
+      <span class="material-symbols-outlined nav-icon">account_circle</span>
+      <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Profile</span>
+    </a>
+
+  </div>
+</nav>

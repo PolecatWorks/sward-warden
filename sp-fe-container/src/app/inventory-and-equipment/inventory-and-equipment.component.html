@@ -1,29 +1,65 @@
-<div class="px-6 py-8">
-  <h2 class="text-3xl font-black text-primary mb-6">Inventory & Equipment</h2>
+<div class="px-6 py-8 max-w-2xl mx-auto">
+  <p class="text-[10px] uppercase tracking-[0.2em] font-bold text-secondary mb-2">Operations</p>
+  <h1 class="text-4xl font-black text-primary font-['Work_Sans'] tracking-tight mb-8">Inventory &amp; Equipment</h1>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <a routerLink="/inventory-and-equipment/storage" class="bg-surface-container-low p-6 rounded-xl hover:bg-surface-container transition-colors">
-      <span class="material-symbols-outlined text-primary mb-2 text-3xl">warehouse</span>
-      <h3 class="text-xl font-bold text-on-surface">Storage Capacity</h3>
-      <p class="text-on-surface-variant text-sm mt-2">Track manure and fertiliser limits</p>
+  <div class="grid grid-cols-1 gap-4">
+
+    <a routerLink="/inventory/storage"
+      class="group flex items-center gap-5 bg-surface-container-lowest p-6 rounded-2xl shadow-sm hover:bg-surface-container transition-all hover:scale-[1.01]">
+      <div class="w-14 h-14 bg-primary-container rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+        <span class="material-symbols-outlined text-on-primary-container text-2xl">warehouse</span>
+      </div>
+      <div class="flex-1">
+        <h3 class="text-xl font-bold text-on-surface">Storage Capacity</h3>
+        <p class="text-on-surface-variant text-sm mt-1">Slurry tanks — 22 &amp; 26 week storage markers</p>
+      </div>
+      <div class="flex flex-col items-end gap-1">
+        <span class="px-2 py-0.5 bg-primary-container text-on-primary-container rounded-full text-[10px] font-bold uppercase tracking-wider">65% Full</span>
+        <span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+      </div>
     </a>
 
-    <a routerLink="/inventory-and-equipment/chemical" class="bg-surface-container-low p-6 rounded-xl hover:bg-surface-container transition-colors">
-      <span class="material-symbols-outlined text-primary mb-2 text-3xl">science</span>
-      <h3 class="text-xl font-bold text-on-surface">Chemical/Pesticide</h3>
-      <p class="text-on-surface-variant text-sm mt-2">Manage PPPs and MAPP numbers</p>
+    <a routerLink="/inventory/chemical"
+      class="group flex items-center gap-5 bg-surface-container-lowest p-6 rounded-2xl shadow-sm hover:bg-surface-container transition-all hover:scale-[1.01]">
+      <div class="w-14 h-14 bg-secondary-container rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+        <span class="material-symbols-outlined text-on-secondary-container text-2xl">science</span>
+      </div>
+      <div class="flex-1">
+        <h3 class="text-xl font-bold text-on-surface">Chemical/Pesticide Cabinet</h3>
+        <p class="text-on-surface-variant text-sm mt-1">MAPP numbers, expiry dates, stock levels</p>
+      </div>
+      <div class="flex flex-col items-end gap-1">
+        <span class="px-2 py-0.5 bg-error-container text-on-error-container rounded-full text-[10px] font-bold uppercase tracking-wider">2 Low Stock</span>
+        <span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+      </div>
     </a>
 
-    <a routerLink="/inventory-and-equipment/equipment" class="bg-surface-container-low p-6 rounded-xl hover:bg-surface-container transition-colors">
-      <span class="material-symbols-outlined text-primary mb-2 text-3xl">agriculture</span>
-      <h3 class="text-xl font-bold text-on-surface">Equipment Details</h3>
-      <p class="text-on-surface-variant text-sm mt-2">Track LESSE and exceptions</p>
+    <a routerLink="/inventory/equipment"
+      class="group flex items-center gap-5 bg-surface-container-lowest p-6 rounded-2xl shadow-sm hover:bg-surface-container transition-all hover:scale-[1.01]">
+      <div class="w-14 h-14 bg-tertiary-container rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+        <span class="material-symbols-outlined text-on-tertiary-container text-2xl">agriculture</span>
+      </div>
+      <div class="flex-1">
+        <h3 class="text-xl font-bold text-on-surface">Fleet Manager</h3>
+        <p class="text-on-surface-variant text-sm mt-1">Tractors, spreaders, LESSE compliance</p>
+      </div>
+      <div class="flex flex-col items-end gap-1">
+        <span class="px-2 py-0.5 bg-secondary-container text-on-secondary-container rounded-full text-[10px] font-bold uppercase tracking-wider">3 Vehicles</span>
+        <span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+      </div>
     </a>
 
-    <a routerLink="/inventory-and-equipment/contracts" class="bg-surface-container-low p-6 rounded-xl hover:bg-surface-container transition-colors">
-      <span class="material-symbols-outlined text-primary mb-2 text-3xl">handshake</span>
-      <h3 class="text-xl font-bold text-on-surface">Import/Export Contracts</h3>
-      <p class="text-on-surface-variant text-sm mt-2">Record manure transfers</p>
+    <a routerLink="/inventory/contracts"
+      class="group flex items-center gap-5 bg-surface-container-lowest p-6 rounded-2xl shadow-sm hover:bg-surface-container transition-all hover:scale-[1.01]">
+      <div class="w-14 h-14 bg-surface-container-high rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+        <span class="material-symbols-outlined text-primary text-2xl">handshake</span>
+      </div>
+      <div class="flex-1">
+        <h3 class="text-xl font-bold text-on-surface">Import/Export Contracts</h3>
+        <p class="text-on-surface-variant text-sm mt-1">Record manure transfers and agreements</p>
+      </div>
+      <span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
     </a>
+
   </div>
 </div>
