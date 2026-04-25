@@ -14,3 +14,6 @@ PRDs dictate the high-level features and requirements of the project. Every PRD 
 - [0006 Inventory and Equipment](./0006-inventory-and-equipment.md)
 - [0007 Reporting and Export](./0007-reporting-and-export.md)
 - [0008 Optimization, Weather, and Topology Mapping](./0008-optimization-and-mapping.md)
+- [0009 Backend Architecture Refactor](./0009-backend-architecture-refactor.md)
+- [0010 Database Integration](./0010-database-integration.md)
+- [0011 Offline Capabilities](./0011-offline-capabilities.md)
