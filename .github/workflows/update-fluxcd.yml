@@ -2,12 +2,12 @@ name: Update FluxCD
 
 on:
   push:
-    branches: ["Main"]
+    branches: ["main"]
     paths:
-      - "sp-fe-container/**"
-      - "sp-be-container/**"
-      - ".github/workflows/sp-fe-docker-publish.yml"
-      - ".github/workflows/sp-be-docker-publish.yml"
+      - "sw-fe-container/**"
+      - "sw-be-container/**"
+      - ".github/workflows/sw-fe-docker-publish.yml"
+      - ".github/workflows/sw-be-docker-publish.yml"
       - ".github/workflows/update-fluxcd.yml"
 
 jobs:
@@ -22,11 +22,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Wait for SP-FE and SP-BE Docker Workflows
+      - name: Wait for SW-FE and SW-BE Docker Workflows
         uses: actions/github-script@v7
         with:
           script: |
-            const workflowIds = ['sp-fe-docker-publish.yml', 'sp-be-docker-publish.yml'];
+            const workflowIds = ['sw-fe-docker-publish.yml', 'sw-be-docker-publish.yml'];
             const maxRetries = 60; // Wait up to 30 minutes (30s interval)
             const intervalSeconds = 30;
             const commitSha = context.sha;
@@ -79,11 +79,11 @@ jobs:
 
       - name: Determine Content SHAs
         run: |
-          UI_SHA=$(git log -1 --format=%H -- sp-fe-container/ .github/workflows/sp-fe-docker-publish.yml)
+          UI_SHA=$(git log -1 --format=%H -- sw-fe-container/ .github/workflows/sw-fe-docker-publish.yml)
           echo "Determined UI content SHA: $UI_SHA"
           echo "UI_SHA=$UI_SHA" >> $GITHUB_ENV
 
-          BACKEND_SHA=$(git log -1 --format=%H -- sp-be-container/ .github/workflows/sp-be-docker-publish.yml)
+          BACKEND_SHA=$(git log -1 --format=%H -- sw-be-container/ .github/workflows/sw-be-docker-publish.yml)
           echo "Determined Backend content SHA: $BACKEND_SHA"
           echo "BACKEND_SHA=$BACKEND_SHA" >> $GITHUB_ENV
 
@@ -106,6 +106,6 @@ jobs:
             git checkout -b $BRANCH_NAME
             git commit -m "chore: update fluxcd-dev tags for UI and BE"
             git push --force https://x-access-token:$PAT@github.com/${{ github.repository }}.git $BRANCH_NAME
-            gh pr create --title "chore: update fluxcd-dev tags" --body "Automated PR to update FluxCD tags for UI and Backend based on new image builds." --base Main --head $BRANCH_NAME
+            gh pr create --title "chore: update fluxcd-dev tags" --body "Automated PR to update FluxCD tags for UI and Backend based on new image builds." --base main --head $BRANCH_NAME
             gh pr merge $BRANCH_NAME --auto --rebase
           fi

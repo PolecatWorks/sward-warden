@@ -1,7 +1,7 @@
 name: Integration Tests
 on:
   pull_request:
-    branches: [Main]
+    branches: [main]
   workflow_dispatch:
     inputs:
       pr_number:
@@ -29,11 +29,11 @@ jobs:
         with:
           filters: |
             backend:
-              - 'sp-be-container/**'
-              - '.github/workflows/sp-be-docker-publish.yml'
+              - 'sw-be-container/**'
+              - '.github/workflows/sw-be-docker-publish.yml'
             frontend:
-              - 'sp-fe-container/**'
-              - '.github/workflows/sp-fe-docker-publish.yml'
+              - 'sw-fe-container/**'
+              - '.github/workflows/sw-fe-docker-publish.yml'
             spec:
               - 'spec/**'
 
@@ -44,19 +44,19 @@ jobs:
           echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
 
           if [[ "${{ steps.filter.outputs.backend }}" == "true" ]]; then
-            echo "SP_BE_IMAGE=ghcr.io/${REPO_LOWER}-be/dev" >> $GITHUB_ENV
-            echo "SP_BE_TAG=pr-${PR_NUMBER}" >> $GITHUB_ENV
+            echo "SW_BE_IMAGE=ghcr.io/${REPO_LOWER}-be/dev" >> $GITHUB_ENV
+            echo "SW_BE_TAG=pr-${PR_NUMBER}" >> $GITHUB_ENV
           else
-            echo "SP_BE_IMAGE=ghcr.io/${REPO_LOWER}-be" >> $GITHUB_ENV
-            echo "SP_BE_TAG=Main" >> $GITHUB_ENV
+            echo "SW_BE_IMAGE=ghcr.io/${REPO_LOWER}-be" >> $GITHUB_ENV
+            echo "SW_BE_TAG=main" >> $GITHUB_ENV
           fi
 
           if [[ "${{ steps.filter.outputs.frontend }}" == "true" ]]; then
-            echo "SP_FE_IMAGE=ghcr.io/${REPO_LOWER}-ui/dev" >> $GITHUB_ENV
-            echo "SP_FE_TAG=pr-${PR_NUMBER}" >> $GITHUB_ENV
+            echo "SW_FE_IMAGE=ghcr.io/${REPO_LOWER}-ui/dev" >> $GITHUB_ENV
+            echo "SW_FE_TAG=pr-${PR_NUMBER}" >> $GITHUB_ENV
           else
-            echo "SP_FE_IMAGE=ghcr.io/${REPO_LOWER}-ui" >> $GITHUB_ENV
-            echo "SP_FE_TAG=Main" >> $GITHUB_ENV
+            echo "SW_FE_IMAGE=ghcr.io/${REPO_LOWER}-ui" >> $GITHUB_ENV
+            echo "SW_FE_TAG=main" >> $GITHUB_ENV
           fi
 
       - name: Set up kubectl
@@ -103,18 +103,18 @@ jobs:
           NAMESPACE="slurry-manager-pr-${{ env.PR_NUMBER }}"
           # Ensure namespace exists
           kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
-          # Create a mock secret for sp-be (required by Helm chart)
-          kubectl create secret generic sp-be -n $NAMESPACE --from-literal=database_password=mock --dry-run=client -o yaml | kubectl apply -f -
+          # Create a mock secret for sw-be (required by Helm chart)
+          kubectl create secret generic sw-be -n $NAMESPACE --from-literal=database_password=mock --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Run Integration Tests with Garden
         uses: garden-io/garden-action@v2
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
           GARDEN_KUBECONTEXT: local
-          SP_BE_IMAGE: ${{ env.SP_BE_IMAGE }}
-          SP_BE_TAG: ${{ env.SP_BE_TAG }}
-          SP_FE_IMAGE: ${{ env.SP_FE_IMAGE }}
-          SP_FE_TAG: ${{ env.SP_FE_TAG }}
+          SW_BE_IMAGE: ${{ env.SW_BE_IMAGE }}
+          SW_BE_TAG: ${{ env.SW_BE_TAG }}
+          SW_FE_IMAGE: ${{ env.SW_FE_IMAGE }}
+          SW_FE_TAG: ${{ env.SW_FE_TAG }}
         with:
           command: test --env pr
 

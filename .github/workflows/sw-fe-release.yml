@@ -1,13 +1,13 @@
-name: SP-FE Release
+name: SW-FE Release
 
 on:
   push:
     tags:
       - "*.*.*"
     paths:
-      - "sp-fe-container/**"
-      - ".github/workflows/sp-fe-docker-publish.yml"
-      - ".github/workflows/sp-fe-release.yml"
+      - "sw-fe-container/**"
+      - ".github/workflows/sw-fe-docker-publish.yml"
+      - ".github/workflows/sw-fe-release.yml"
 
 env:
   REGISTRY: ghcr.io
@@ -31,7 +31,7 @@ jobs:
       - name: Determine UI Content SHA
         id: ui-content
         run: |
-          UI_SHA=$(git log -1 --format=%H -- sp-fe-container/ .github/workflows/sp-fe-docker-publish.yml)
+          UI_SHA=$(git log -1 --format=%H -- sw-fe-container/ .github/workflows/sw-fe-docker-publish.yml)
           echo "Determined ui content SHA: $UI_SHA"
           echo "UI_SHA=$UI_SHA" >> $GITHUB_ENV
 
@@ -63,7 +63,7 @@ jobs:
           echo "Checking if source image exists: $SRC_IMAGE"
           if ! docker buildx imagetools inspect "$SRC_IMAGE" > /dev/null 2>&1; then
             echo "Error: Source image $SRC_IMAGE does not exist."
-            echo "The release commit must successfully build on Main before release."
+            echo "The release commit must successfully build on main before release."
             exit 1
           fi
 

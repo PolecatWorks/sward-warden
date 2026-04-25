@@ -1,4 +1,4 @@
-name: SP-BE Docker
+name: SW-FE Docker
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
@@ -7,15 +7,15 @@ name: SP-BE Docker
 
 on:
   push:
-    branches: ["Main"]
+    branches: ["main"]
   pull_request:
-    branches: ["Main"]
+    branches: ["main"]
 
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}-be
+  IMAGE_NAME: ${{ github.repository }}-ui
 
 concurrency:
   # This concurrency group ensures that only one job in the group runs at a time.
@@ -27,20 +27,20 @@ jobs:
   check-paths:
     runs-on: ubuntu-latest
     outputs:
-      backend: ${{ steps.filter.outputs.backend }}
+      ui: ${{ steps.filter.outputs.ui }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |
-            backend:
-              - 'sp-be-container/**'
-              - '.github/workflows/sp-be-docker-publish.yml'
+            ui:
+              - 'sw-fe-container/**'
+              - '.github/workflows/sw-fe-docker-publish.yml'
 
   build:
     needs: check-paths
-    if: needs.check-paths.outputs.backend == 'true'
+    if: needs.check-paths.outputs.ui == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -50,7 +50,7 @@ jobs:
 
     # runs-on: ubuntu-latest
     runs-on: ${{ matrix.platform == 'linux/amd64' && 'ubuntu-24.04' || matrix.platform == 'linux/arm64' && 'ubuntu-24.04-arm' }}
-    name: ${{ matrix.platform }} SP-BE Docker
+    name: ${{ matrix.platform }} SW-FE Docker
     permissions:
       contents: read
       packages: write
@@ -64,12 +64,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Determine Backend Content SHA
-        id: backend-content
+      - name: Determine UI Content SHA
+        id: ui-content
         run: |
-          BACKEND_SHA=$(git log -1 --format=%H -- sp-be-container/ .github/workflows/sp-be-docker-publish.yml)
-          echo "Determined backend content SHA: $BACKEND_SHA"
-          echo "BACKEND_SHA=$BACKEND_SHA" >> $GITHUB_ENV
+          UI_SHA=$(git log -1 --format=%H -- sw-fe-container/ .github/workflows/sw-fe-docker-publish.yml)
+          echo "Determined ui content SHA: $UI_SHA"
+          echo "UI_SHA=$UI_SHA" >> $GITHUB_ENV
 
       - &prepare_step
         name: Prepare environment for current platform
@@ -82,9 +82,9 @@ jobs:
           platform=${{ matrix.platform }}
           repo_name="${{ github.repository }}"
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "IMAGE_NAME_LOWERCASE=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')-be/dev" >> $GITHUB_ENV
+            echo "IMAGE_NAME_LOWERCASE=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')-ui/dev" >> $GITHUB_ENV
           else
-            echo "IMAGE_NAME_LOWERCASE=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')-be" >> $GITHUB_ENV
+            echo "IMAGE_NAME_LOWERCASE=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')-ui" >> $GITHUB_ENV
           fi
           echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
 
@@ -117,25 +117,24 @@ jobs:
             type=raw,value=pr-${{ github.event.pull_request.number }},enable=${{ github.event_name == 'pull_request' }}
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=sha-${{ env.BACKEND_SHA }}
+            type=raw,value=sha-${{ env.UI_SHA }}
 
       # Build and push Docker image
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
         id: build
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
-          context: sp-be-container
-          push: ${{ github.event_name != 'pull_request' }}
+          context: sw-fe-container
+          secrets: |
+            NODE_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}
           labels: ${{ steps.meta.outputs.labels }}
           annotations: ${{ steps.meta.outputs.annotations }}
           outputs: type=image,name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWERCASE }},push-by-digest=true,name-canonical=true,push=true,oci-mediatypes=true
-          secrets: |
-            "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}"
           cache-from: |
-            type=gha,scope=${{ github.repository }}-sp-be-${{ github.ref_name }}-${{ matrix.platform }}
-            type=gha,scope=${{ github.repository }}-sp-be-Main-${{ matrix.platform }}
-          cache-to: type=gha,mode=max,scope=${{ github.repository }}-sp-be-${{ github.ref_name }}-${{ matrix.platform }}
+            type=gha,scope=${{ github.repository }}-sw-fe-${{ github.ref_name }}-${{ matrix.platform }}
+            type=gha,scope=${{ github.repository }}-sw-fe-main-${{ matrix.platform }}
+          cache-to: type=gha,mode=max,scope=${{ github.repository }}-sw-fe-${{ github.ref_name }}-${{ matrix.platform }}
 
       - name: Export digest
         run: |
@@ -176,9 +175,9 @@ jobs:
         run: |
           repo_name="${{ github.repository }}"
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "IMAGE_NAME_LOWERCASE=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')-be/dev" >> $GITHUB_ENV
+            echo "IMAGE_NAME_LOWERCASE=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')-ui/dev" >> $GITHUB_ENV
           else
-            echo "IMAGE_NAME_LOWERCASE=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')-be" >> $GITHUB_ENV
+            echo "IMAGE_NAME_LOWERCASE=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')-ui" >> $GITHUB_ENV
           fi
 
       - name: Checkout repository (for history)
@@ -186,11 +185,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Determine Backend Content SHA
-        id: backend-content
+      - name: Determine UI Content SHA
+        id: ui-content
         run: |
-          BACKEND_SHA=$(git log -1 --format=%H -- sp-be-container/ .github/workflows/sp-be-docker-publish.yml)
-          echo "BACKEND_SHA=$BACKEND_SHA" >> $GITHUB_ENV
+          UI_SHA=$(git log -1 --format=%H -- sw-fe-container/ .github/workflows/sw-fe-docker-publish.yml)
+          echo "UI_SHA=$UI_SHA" >> $GITHUB_ENV
 
       - name: Download digests
         uses: actions/download-artifact@v6
@@ -209,9 +208,9 @@ jobs:
           tags: |
             type=ref,event=pr
             type=raw,value=pr-${{ github.event.pull_request.number }},enable=${{ github.event_name == 'pull_request' }}
-            type=raw,value=Main,enable=${{ github.ref_name == 'Main' }}
-            type=raw,value=latest,enable=${{ github.ref_name == 'Main' }}
-            type=raw,value=sha-${{ env.BACKEND_SHA }}
+            type=raw,value=main,enable=${{ github.ref_name == 'main' }}
+            type=raw,value=latest,enable=${{ github.ref_name == 'main' }}
+            type=raw,value=sha-${{ env.UI_SHA }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -265,18 +264,18 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `🚀 SP-BE Docker image published for testing!\n\n**Image Name:** \`${process.env.REGISTRY}/${process.env.IMAGE_NAME_LOWERCASE}:pr-${context.issue.number}\``
+              body: `🚀 SW-FE Docker image published for testing!\n\n**Image Name:** \`${process.env.REGISTRY}/${process.env.IMAGE_NAME_LOWERCASE}:pr-${context.issue.number}\``
             })
 
   ci-success:
-    name: SP-BE CI Success
+    name: SW-FE CI Success
     needs: [check-paths, merge]
     if: always()
     runs-on: ubuntu-latest
     steps:
       - name: Check Status
         run: |
-          if [[ "${{ needs.check-paths.outputs.backend }}" == 'true' ]]; then
+          if [[ "${{ needs.check-paths.outputs.ui }}" == 'true' ]]; then
             if [[ "${{ needs.merge.result }}" != 'success' ]]; then
                echo "Build/Merge failed!"
                exit 1

@@ -1,13 +1,13 @@
-name: SP-BE Release
+name: SW-BE Release
 
 on:
   push:
     tags:
       - "*.*.*"
     paths:
-      - "sp-be-container/**"
-      - ".github/workflows/sp-be-docker-publish.yml"
-      - ".github/workflows/sp-be-release.yml"
+      - "sw-be-container/**"
+      - ".github/workflows/sw-be-docker-publish.yml"
+      - ".github/workflows/sw-be-release.yml"
 
 env:
   REGISTRY: ghcr.io
@@ -31,7 +31,7 @@ jobs:
       - name: Determine Backend Content SHA
         id: backend-content
         run: |
-          BACKEND_SHA=$(git log -1 --format=%H -- sp-be-container/ .github/workflows/sp-be-docker-publish.yml)
+          BACKEND_SHA=$(git log -1 --format=%H -- sw-be-container/ .github/workflows/sw-be-docker-publish.yml)
           echo "Determined backend content SHA: $BACKEND_SHA"
           echo "BACKEND_SHA=$BACKEND_SHA" >> $GITHUB_ENV
 
@@ -63,7 +63,7 @@ jobs:
           echo "Checking if source image exists: $SRC_IMAGE"
           if ! docker buildx imagetools inspect "$SRC_IMAGE" > /dev/null 2>&1; then
             echo "Error: Source image $SRC_IMAGE does not exist."
-            echo "The release commit must successfully build on Main before release."
+            echo "The release commit must successfully build on main before release."
             exit 1
           fi
 
