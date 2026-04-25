@@ -146,6 +146,39 @@ describe('SyncEngineService', () => {
     expect(entries[0].status).toBe('pending');
   });
 
+
+  it('should increment retry count when processEntry throws a non-HTTP error (e.g. invalid JSON)', async () => {
+    const db = await firstValueFrom(rxdbService.db$);
+
+    await db.outbox.insert({
+      id: 'outbox-invalid-json-1',
+      actionType: 'POST',
+      entityType: 'farms',
+      localDocId: 'local-invalid-json-1',
+      payload: 'invalid-json-that-will-throw',
+      timestamp: new Date().toISOString(),
+      status: 'pending',
+      retryCount: 0,
+    });
+
+    await db.farms.insert({
+      id: 'local-invalid-json-1',
+      name: 'Fail Farm',
+      location: 'Nowhere',
+      syncStatus: 'pending',
+      updatedAt: new Date().toISOString(),
+    });
+
+    const processPromise = service.processOutbox();
+    await new Promise(resolve => setTimeout(resolve, 50));
+    await processPromise;
+
+    const entries = await db.outbox.find({ selector: { id: 'outbox-invalid-json-1' } }).exec();
+    expect(entries.length).toBe(1);
+    expect(entries[0].retryCount).toBe(1);
+    expect(entries[0].status).toBe('pending');
+  });
+
   it('should mark as failed after max retries', async () => {
     const db = await firstValueFrom(rxdbService.db$);
 
