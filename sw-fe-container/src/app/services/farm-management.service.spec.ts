@@ -164,40 +164,4 @@ describe('FarmManagementService', () => {
       expect(payload.name).toBe('Outbox Farm');
     });
   });
-
-  // ── httpAddFarm (HTTP) ──────────────────────────────────
-  describe('httpAddFarm', () => {
-    it('should POST to /v0/farms via HTTP', () => {
-      const newFarm: Farm = { name: 'Remote Farm', location: 'Dublin, Ireland' };
-      const serverResponse: Farm = { id: 10, user_id: 1, name: 'Remote Farm', location: 'Dublin, Ireland' };
-
-      service['apiUrl$'].subscribe();
-      const configReq = httpMock.expectOne((req) => req.url.endsWith('config.json'));
-      configReq.flush({ apiUrl: '/v0' });
-
-      let result: Farm | undefined;
-      service.httpAddFarm(newFarm).subscribe((farm) => (result = farm));
-
-      const req = httpMock.expectOne('/v0/farms');
-      expect(req.request.method).toBe('POST');
-      req.flush(serverResponse);
-
-      expect(result).toEqual(serverResponse);
-    });
-  });
-
-  // ── httpDeleteFarm (HTTP) ───────────────────────────────
-  describe('httpDeleteFarm', () => {
-    it('should DELETE /v0/farms/:id via HTTP', () => {
-      service['apiUrl$'].subscribe();
-      const configReq = httpMock.expectOne((req) => req.url.endsWith('config.json'));
-      configReq.flush({ apiUrl: '/v0' });
-
-      service.httpDeleteFarm(1).subscribe();
-
-      const req = httpMock.expectOne('/v0/farms/1');
-      expect(req.request.method).toBe('DELETE');
-      req.flush(null, { status: 204, statusText: 'No Content' });
-    });
-  });
 });

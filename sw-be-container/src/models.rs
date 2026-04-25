@@ -43,7 +43,7 @@ pub struct Event {
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct FarmRecord {
     pub id: Option<i64>,
-    pub farm_id: i64,
+    pub farm_id: Option<i64>,
     pub agricultural_area: f64,
     pub manure_storage_capacity: f64,
     pub year: i32,
@@ -59,6 +59,8 @@ pub struct SyncResponse {
     pub fields: Vec<Field>,
     pub events: Vec<Event>,
     pub farm_records: Vec<FarmRecord>,
+    pub soil_analyses: Vec<SoilAnalysis>,
+    pub fertilisation_plans: Vec<FertilisationPlan>,
 }
 
 /// Query parameters for the delta sync endpoint.
@@ -69,11 +71,27 @@ pub struct SyncQuery {
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct SoilAnalysis {
-    pub id: i64,
+    pub id: Option<i64>,
     pub field_id: i64,
     pub sample_date: String,
     pub ph_level: Option<f64>,
     pub phosphorus_index: Option<i32>,
     pub potassium_index: Option<i32>,
     pub magnesium_index: Option<i32>,
+    pub updated_at: Option<DateTime<Utc>>,
+    pub is_deleted: Option<bool>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+pub struct FertilisationPlan {
+    pub id: Option<i64>,
+    pub field_id: i64,
+    pub crop_type: String,
+    pub target_yield: f64,
+    pub nitrogen_requirement: f64,
+    pub phosphorus_requirement: f64,
+    pub potassium_requirement: f64,
+    pub application_date: String,
+    pub updated_at: Option<DateTime<Utc>>,
+    pub is_deleted: Option<bool>,
 }

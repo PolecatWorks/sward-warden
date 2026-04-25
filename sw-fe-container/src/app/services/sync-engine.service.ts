@@ -23,6 +23,8 @@ interface SyncResponse {
   fields: any[];
   events: any[];
   farm_records: any[];
+  soil_analyses: any[];
+  fertilisation_plans: any[];
 }
 
 /**
@@ -190,6 +192,8 @@ export class SyncEngineService implements OnDestroy {
       await this.upsertFarms(db, response.farms || []);
       await this.upsertFields(db, response.fields || []);
       await this.upsertEvents(db, response.events || []);
+      await this.upsertSoilAnalyses(db, response.soil_analyses || []);
+      await this.upsertFertilisationPlans(db, response.fertilisation_plans || []);
 
       // Update checkpoint
       if (response.checkpoint) {
@@ -222,30 +226,17 @@ export class SyncEngineService implements OnDestroy {
   // Upsert Logic with LWW Conflict Resolution
   // ──────────────────────────────────────────────────────────
 
-  /**
-   * Upsert farms from the server into local RxDB.
-   * Uses Last Write Wins (LWW) based on updatedAt.
-   */
   private async upsertFarms(db: SwardDatabase, serverFarms: any[]): Promise<void> {
     for (const serverFarm of serverFarms) {
       if (serverFarm.is_deleted) {
-        // Remove locally if soft-deleted on server
         const docs = await db.farms.find({ selector: { serverId: serverFarm.id } }).exec();
-        for (const doc of docs) {
-          await doc.remove();
-        }
+        for (const doc of docs) { await doc.remove(); }
         continue;
       }
-
-      // Check for existing local doc by serverId
       const existing = await db.farms.find({ selector: { serverId: serverFarm.id } }).exec();
-
       if (existing.length > 0) {
         const localDoc = existing[0];
-        const shouldOverwrite = await this.shouldOverwriteLocal(
-          db, localDoc.updatedAt, serverFarm.updated_at, localDoc.id
-        );
-        if (shouldOverwrite) {
+        if (await this.shouldOverwriteLocal(db, localDoc.updatedAt, serverFarm.updated_at, localDoc.id)) {
           await localDoc.patch({
             name: serverFarm.name,
             location: serverFarm.location,
@@ -254,10 +245,8 @@ export class SyncEngineService implements OnDestroy {
           });
         }
       } else {
-        // New record from server
-        const localId = `server-${serverFarm.id}`;
         await db.farms.upsert({
-          id: localId,
+          id: `server-${serverFarm.id}`,
           serverId: serverFarm.id,
           user_id: serverFarm.user_id,
           name: serverFarm.name,
@@ -269,25 +258,17 @@ export class SyncEngineService implements OnDestroy {
     }
   }
 
-  /** Upsert fields from the server into local RxDB. */
   private async upsertFields(db: SwardDatabase, serverFields: any[]): Promise<void> {
     for (const serverField of serverFields) {
       if (serverField.is_deleted) {
         const docs = await db.fields.find({ selector: { serverId: serverField.id } }).exec();
-        for (const doc of docs) {
-          await doc.remove();
-        }
+        for (const doc of docs) { await doc.remove(); }
         continue;
       }
-
       const existing = await db.fields.find({ selector: { serverId: serverField.id } }).exec();
-
       if (existing.length > 0) {
         const localDoc = existing[0];
-        const shouldOverwrite = await this.shouldOverwriteLocal(
-          db, localDoc.updatedAt, serverField.updated_at, localDoc.id
-        );
-        if (shouldOverwrite) {
+        if (await this.shouldOverwriteLocal(db, localDoc.updatedAt, serverField.updated_at, localDoc.id)) {
           await localDoc.patch({
             name: serverField.name,
             area_hectares: serverField.area_hectares,
@@ -296,9 +277,8 @@ export class SyncEngineService implements OnDestroy {
           });
         }
       } else {
-        const localId = `server-${serverField.id}`;
         await db.fields.upsert({
-          id: localId,
+          id: `server-${serverField.id}`,
           serverId: serverField.id,
           farm_id: serverField.farm_id,
           name: serverField.name,
@@ -310,25 +290,17 @@ export class SyncEngineService implements OnDestroy {
     }
   }
 
-  /** Upsert events from the server into local RxDB. */
   private async upsertEvents(db: SwardDatabase, serverEvents: any[]): Promise<void> {
     for (const serverEvent of serverEvents) {
       if (serverEvent.is_deleted) {
         const docs = await db.events.find({ selector: { serverId: serverEvent.id } }).exec();
-        for (const doc of docs) {
-          await doc.remove();
-        }
+        for (const doc of docs) { await doc.remove(); }
         continue;
       }
-
       const existing = await db.events.find({ selector: { serverId: serverEvent.id } }).exec();
-
       if (existing.length > 0) {
         const localDoc = existing[0];
-        const shouldOverwrite = await this.shouldOverwriteLocal(
-          db, localDoc.updatedAt, serverEvent.updated_at, localDoc.id
-        );
-        if (shouldOverwrite) {
+        if (await this.shouldOverwriteLocal(db, localDoc.updatedAt, serverEvent.updated_at, localDoc.id)) {
           await localDoc.patch({
             event_type: serverEvent.event_type,
             description: serverEvent.description,
@@ -338,9 +310,8 @@ export class SyncEngineService implements OnDestroy {
           });
         }
       } else {
-        const localId = `server-${serverEvent.id}`;
         await db.events.upsert({
-          id: localId,
+          id: `server-${serverEvent.id}`,
           serverId: serverEvent.id,
           field_id: serverEvent.field_id,
           event_type: serverEvent.event_type,
@@ -353,18 +324,83 @@ export class SyncEngineService implements OnDestroy {
     }
   }
 
-  // ──────────────────────────────────────────────────────────
-  // LWW Conflict Resolution
-  // ──────────────────────────────────────────────────────────
+  private async upsertSoilAnalyses(db: SwardDatabase, serverAnalyses: any[]): Promise<void> {
+    for (const serverAnalysis of serverAnalyses) {
+      if (serverAnalysis.is_deleted) {
+        const docs = await db.soil_analyses.find({ selector: { serverId: serverAnalysis.id } }).exec();
+        for (const doc of docs) { await doc.remove(); }
+        continue;
+      }
+      const existing = await db.soil_analyses.find({ selector: { serverId: serverAnalysis.id } }).exec();
+      if (existing.length > 0) {
+        const localDoc = existing[0];
+        if (await this.shouldOverwriteLocal(db, localDoc.updatedAt, serverAnalysis.updated_at, localDoc.id)) {
+          await localDoc.patch({
+            ph_level: serverAnalysis.ph_level,
+            phosphorus_index: serverAnalysis.phosphorus_index,
+            potassium_index: serverAnalysis.potassium_index,
+            magnesium_index: serverAnalysis.magnesium_index,
+            updatedAt: serverAnalysis.updated_at,
+            syncStatus: 'synced',
+          });
+        }
+      } else {
+        await db.soil_analyses.upsert({
+          id: `server-${serverAnalysis.id}`,
+          serverId: serverAnalysis.id,
+          field_id: serverAnalysis.field_id,
+          sample_date: serverAnalysis.sample_date,
+          ph_level: serverAnalysis.ph_level,
+          phosphorus_index: serverAnalysis.phosphorus_index,
+          potassium_index: serverAnalysis.potassium_index,
+          magnesium_index: serverAnalysis.magnesium_index,
+          syncStatus: 'synced',
+          updatedAt: serverAnalysis.updated_at,
+        });
+      }
+    }
+  }
 
-  /**
-   * Determine whether the local doc should be overwritten by the server record.
-   *
-   * Last Write Wins (LWW) strategy:
-   *  - If server is newer → overwrite
-   *  - If local is newer with pending outbox entry → keep local (will be pushed next sync)
-   *  - If local is newer without pending outbox entry → overwrite (local changes already pushed)
-   */
+  private async upsertFertilisationPlans(db: SwardDatabase, serverPlans: any[]): Promise<void> {
+    for (const serverPlan of serverPlans) {
+      if (serverPlan.is_deleted) {
+        const docs = await db.fertilisation_plans.find({ selector: { serverId: serverPlan.id } }).exec();
+        for (const doc of docs) { await doc.remove(); }
+        continue;
+      }
+      const existing = await db.fertilisation_plans.find({ selector: { serverId: serverPlan.id } }).exec();
+      if (existing.length > 0) {
+        const localDoc = existing[0];
+        if (await this.shouldOverwriteLocal(db, localDoc.updatedAt, serverPlan.updated_at, localDoc.id)) {
+          await localDoc.patch({
+            crop_type: serverPlan.crop_type,
+            target_yield: serverPlan.target_yield,
+            nitrogen_requirement: serverPlan.nitrogen_requirement,
+            phosphorus_requirement: serverPlan.phosphorus_requirement,
+            potassium_requirement: serverPlan.potassium_requirement,
+            application_date: serverPlan.application_date,
+            updatedAt: serverPlan.updated_at,
+            syncStatus: 'synced',
+          });
+        }
+      } else {
+        await db.fertilisation_plans.upsert({
+          id: `server-${serverPlan.id}`,
+          serverId: serverPlan.id,
+          field_id: serverPlan.field_id,
+          crop_type: serverPlan.crop_type,
+          target_yield: serverPlan.target_yield,
+          nitrogen_requirement: serverPlan.nitrogen_requirement,
+          phosphorus_requirement: serverPlan.phosphorus_requirement,
+          potassium_requirement: serverPlan.potassium_requirement,
+          application_date: serverPlan.application_date,
+          syncStatus: 'synced',
+          updatedAt: serverPlan.updated_at,
+        });
+      }
+    }
+  }
+
   private async shouldOverwriteLocal(
     db: SwardDatabase,
     localUpdatedAt: string,
@@ -373,28 +409,13 @@ export class SyncEngineService implements OnDestroy {
   ): Promise<boolean> {
     const serverTime = new Date(serverUpdatedAt).getTime();
     const localTime = new Date(localUpdatedAt).getTime();
-
-    if (serverTime >= localTime) {
-      return true; // Server is newer
-    }
-
-    // Local is newer — check for pending outbox entry
+    if (serverTime >= localTime) return true;
     const pendingOutbox = await db.outbox.find({
       selector: { localDocId, status: 'pending' },
     }).exec();
-
-    if (pendingOutbox.length > 0) {
-      return false; // Local has pending changes, keep them
-    }
-
-    return true; // Local changes were already pushed, overwrite with server
+    return pendingOutbox.length === 0;
   }
 
-  // ──────────────────────────────────────────────────────────
-  // Local Doc Helpers
-  // ──────────────────────────────────────────────────────────
-
-  /** Update a local RxDB document's syncStatus. */
   private async updateLocalDocStatus(
     db: SwardDatabase,
     entityType: string,
@@ -404,12 +425,9 @@ export class SyncEngineService implements OnDestroy {
     const collection = (db as any)[entityType];
     if (!collection) return;
     const doc = await collection.findOne(localDocId).exec();
-    if (doc) {
-      await doc.patch({ syncStatus: status });
-    }
+    if (doc) { await doc.patch({ syncStatus: status }); }
   }
 
-  /** Update a local RxDB document with the server-assigned ID and mark as synced. */
   private async updateLocalDocServerId(
     db: SwardDatabase,
     entityType: string,
@@ -419,9 +437,7 @@ export class SyncEngineService implements OnDestroy {
     const collection = (db as any)[entityType];
     if (!collection) return;
     const doc = await collection.findOne(localDocId).exec();
-    if (doc) {
-      await doc.patch({ serverId, syncStatus: 'synced' });
-    }
+    if (doc) { await doc.patch({ serverId, syncStatus: 'synced' }); }
   }
 
   ngOnDestroy(): void {

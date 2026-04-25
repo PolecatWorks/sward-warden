@@ -14,7 +14,7 @@ use chrono::{DateTime, Utc};
 
 use crate::state::AppState;
 use crate::error::MyError;
-use crate::models::{User, Farm, Field, Event, FarmRecord, SoilAnalysis, SyncResponse, SyncQuery};
+use crate::models::{User, Farm, Field, Event, FarmRecord, SoilAnalysis, FertilisationPlan, SyncResponse, SyncQuery};
 
 // Central API Router
 pub fn app_router(state: AppState) -> Router {
@@ -30,6 +30,8 @@ pub fn app_router(state: AppState) -> Router {
         .route("/v0/events", get(list_events).post(create_event))
         .route("/v0/soil_analyses", get(list_soil_analyses).post(create_soil_analysis))
         .route("/v0/soil_analyses/{id}", delete(delete_soil_analysis))
+        .route("/v0/fertilisation_plans", get(list_fertilisation_plans).post(create_fertilisation_plan))
+        .route("/v0/fertilisation_plans/{id}", delete(delete_fertilisation_plan))
         .route("/v0/farm_records", get(list_farm_records).post(create_farm_record))
         .route("/v0/sync", get(delta_sync))
         .with_state(state)
@@ -204,7 +206,7 @@ async fn create_farm_record(State(state): State<AppState>, Json(record): Json<Fa
 
 async fn list_soil_analyses(State(state): State<AppState>) -> Result<Json<Vec<SoilAnalysis>>, MyError> {
     let analyses = sqlx::query_as::<_, SoilAnalysis>(
-        "SELECT sa.id, sa.field_id, sa.sample_date, sa.ph_level, sa.phosphorus_index, sa.potassium_index, sa.magnesium_index FROM soil_analyses sa JOIN fields f ON sa.field_id = f.id JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1"
+        "SELECT sa.id, sa.field_id, sa.sample_date, sa.ph_level, sa.phosphorus_index, sa.potassium_index, sa.magnesium_index, sa.updated_at, sa.is_deleted FROM soil_analyses sa JOIN fields f ON sa.field_id = f.id JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1 AND sa.is_deleted = FALSE"
     )
     .fetch_all(&state.db_pool)
     .await;
@@ -213,7 +215,7 @@ async fn list_soil_analyses(State(state): State<AppState>) -> Result<Json<Vec<So
 
 async fn create_soil_analysis(State(state): State<AppState>, Json(analysis): Json<SoilAnalysis>) -> Result<Json<SoilAnalysis>, MyError> {
     let new_analysis = sqlx::query_as::<_, SoilAnalysis>(
-        "INSERT INTO soil_analyses (field_id, sample_date, ph_level, phosphorus_index, potassium_index, magnesium_index) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, field_id, sample_date, ph_level, phosphorus_index, potassium_index, magnesium_index"
+        "INSERT INTO soil_analyses (field_id, sample_date, ph_level, phosphorus_index, potassium_index, magnesium_index) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, field_id, sample_date, ph_level, phosphorus_index, potassium_index, magnesium_index, updated_at, is_deleted"
     )
     .bind(analysis.field_id)
     .bind(&analysis.sample_date)
@@ -227,7 +229,40 @@ async fn create_soil_analysis(State(state): State<AppState>, Json(analysis): Jso
 }
 
 async fn delete_soil_analysis(State(state): State<AppState>, Path(id): Path<i64>) -> Result<StatusCode, MyError> {
-    sqlx::query("DELETE FROM soil_analyses WHERE id = $1 AND field_id IN (SELECT f.id FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1)")
+    sqlx::query("UPDATE soil_analyses SET is_deleted = TRUE, updated_at = NOW() WHERE id = $1 AND field_id IN (SELECT f.id FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1)")
+        .bind(id)
+        .execute(&state.db_pool)
+        .await?;
+    Ok(StatusCode::NO_CONTENT)
+}
+
+async fn list_fertilisation_plans(State(state): State<AppState>) -> Result<Json<Vec<FertilisationPlan>>, MyError> {
+    let plans = sqlx::query_as::<_, FertilisationPlan>(
+        "SELECT fp.id, fp.field_id, fp.crop_type, fp.target_yield, fp.nitrogen_requirement, fp.phosphorus_requirement, fp.potassium_requirement, fp.application_date, fp.updated_at, fp.is_deleted FROM fertilisation_plans fp JOIN fields f ON fp.field_id = f.id JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1 AND fp.is_deleted = FALSE"
+    )
+    .fetch_all(&state.db_pool)
+    .await;
+    Ok(Json(plans?))
+}
+
+async fn create_fertilisation_plan(State(state): State<AppState>, Json(plan): Json<FertilisationPlan>) -> Result<Json<FertilisationPlan>, MyError> {
+    let new_plan = sqlx::query_as::<_, FertilisationPlan>(
+        "INSERT INTO fertilisation_plans (field_id, crop_type, target_yield, nitrogen_requirement, phosphorus_requirement, potassium_requirement, application_date) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, field_id, crop_type, target_yield, nitrogen_requirement, phosphorus_requirement, potassium_requirement, application_date, updated_at, is_deleted"
+    )
+    .bind(plan.field_id)
+    .bind(&plan.crop_type)
+    .bind(plan.target_yield)
+    .bind(plan.nitrogen_requirement)
+    .bind(plan.phosphorus_requirement)
+    .bind(plan.potassium_requirement)
+    .bind(&plan.application_date)
+    .fetch_one(&state.db_pool)
+    .await;
+    Ok(Json(new_plan?))
+}
+
+async fn delete_fertilisation_plan(State(state): State<AppState>, Path(id): Path<i64>) -> Result<StatusCode, MyError> {
+    sqlx::query("UPDATE fertilisation_plans SET is_deleted = TRUE, updated_at = NOW() WHERE id = $1 AND field_id IN (SELECT f.id FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1)")
         .bind(id)
         .execute(&state.db_pool)
         .await?;
@@ -279,6 +314,20 @@ async fn delta_sync(
     .fetch_all(&state.db_pool)
     .await?;
 
+    let soil_analyses = sqlx::query_as::<_, SoilAnalysis>(
+        "SELECT sa.id, sa.field_id, sa.sample_date, sa.ph_level, sa.phosphorus_index, sa.potassium_index, sa.magnesium_index, sa.updated_at, sa.is_deleted FROM soil_analyses sa JOIN fields f ON sa.field_id = f.id JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1 AND sa.updated_at > $1"
+    )
+    .bind(since)
+    .fetch_all(&state.db_pool)
+    .await?;
+
+    let fertilisation_plans = sqlx::query_as::<_, FertilisationPlan>(
+        "SELECT fp.id, fp.field_id, fp.crop_type, fp.target_yield, fp.nitrogen_requirement, fp.phosphorus_requirement, fp.potassium_requirement, fp.application_date, fp.updated_at, fp.is_deleted FROM fertilisation_plans fp JOIN fields f ON fp.field_id = f.id JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1 AND fp.updated_at > $1"
+    )
+    .bind(since)
+    .fetch_all(&state.db_pool)
+    .await?;
+
     let checkpoint = Utc::now();
 
     Ok(Json(SyncResponse {
@@ -287,6 +336,8 @@ async fn delta_sync(
         fields,
         events,
         farm_records,
+        soil_analyses,
+        fertilisation_plans,
     }))
 }
 #[cfg(test)]

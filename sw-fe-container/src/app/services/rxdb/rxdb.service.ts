@@ -4,7 +4,9 @@ import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { Observable, from, shareReplay, switchMap } from 'rxjs';
 import {
   FarmDocType, FieldDocType, EventDocType, OutboxDocType, MetadataDocType,
+  SoilAnalysisDocType, FertilisationPlanDocType,
   farmSchema, fieldSchema, eventSchema, outboxSchema, metadataSchema,
+  soilAnalysisSchema, fertilisationPlanSchema,
 } from './schemas';
 
 /** Injection token for providing an alternative RxStorage (e.g. memory for tests). */
@@ -18,6 +20,8 @@ export type SwardCollections = {
   farms: RxCollection<FarmDocType>;
   fields: RxCollection<FieldDocType>;
   events: RxCollection<EventDocType>;
+  soil_analyses: RxCollection<SoilAnalysisDocType>;
+  fertilisation_plans: RxCollection<FertilisationPlanDocType>;
   outbox: RxCollection<OutboxDocType>;
   metadata: RxCollection<MetadataDocType>;
 };
@@ -25,13 +29,6 @@ export type SwardDatabase = RxDatabase<SwardCollections>;
 
 /**
  * Service responsible for creating and exposing the RxDB database.
- *
- * Consumers should use the `db$` observable or the typed collection
- * accessors (`farmsCollection$`, `fieldsCollection$`, `eventsCollection$`)
- * to interact with local data.
- *
- * For testing, provide `RXDB_STORAGE` with `getRxStorageMemory()` and
- * `RXDB_DB_NAME` with a unique name to avoid cross-test contamination.
  */
 @Injectable({
   providedIn: 'root'
@@ -64,6 +61,8 @@ export class RxdbService implements OnDestroy {
       farms: { schema: farmSchema },
       fields: { schema: fieldSchema },
       events: { schema: eventSchema },
+      soil_analyses: { schema: soilAnalysisSchema },
+      fertilisation_plans: { schema: fertilisationPlanSchema },
       outbox: { schema: outboxSchema },
       metadata: { schema: metadataSchema },
     });
@@ -84,6 +83,16 @@ export class RxdbService implements OnDestroy {
   /** Observable emitting the events RxCollection. */
   get eventsCollection$(): Observable<RxCollection<EventDocType>> {
     return this.db$.pipe(switchMap(db => from(Promise.resolve(db.events))));
+  }
+
+  /** Observable emitting the soil analyses RxCollection. */
+  get soilAnalysesCollection$(): Observable<RxCollection<SoilAnalysisDocType>> {
+    return this.db$.pipe(switchMap(db => from(Promise.resolve(db.soil_analyses))));
+  }
+
+  /** Observable emitting the fertilisation plans RxCollection. */
+  get fertilisationPlansCollection$(): Observable<RxCollection<FertilisationPlanDocType>> {
+    return this.db$.pipe(switchMap(db => from(Promise.resolve(db.fertilisation_plans))));
   }
 
   /** Observable emitting the outbox RxCollection. */

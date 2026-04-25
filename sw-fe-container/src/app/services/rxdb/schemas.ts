@@ -41,6 +41,33 @@ export interface EventDocType {
   updatedAt: string;
 }
 
+export interface SoilAnalysisDocType {
+  id: string;
+  serverId?: number;
+  field_id: number;
+  sample_date: string;
+  ph_level?: number;
+  phosphorus_index?: number;
+  potassium_index?: number;
+  magnesium_index?: number;
+  syncStatus: SyncStatus;
+  updatedAt: string;
+}
+
+export interface FertilisationPlanDocType {
+  id: string;
+  serverId?: number;
+  field_id: number;
+  crop_type: string;
+  target_yield: number;
+  nitrogen_requirement: number;
+  phosphorus_requirement: number;
+  potassium_requirement: number;
+  application_date: string;
+  syncStatus: SyncStatus;
+  updatedAt: string;
+}
+
 export const farmSchema: RxJsonSchema<FarmDocType> = {
   version: 0,
   primaryKey: 'id',
@@ -93,9 +120,50 @@ export const eventSchema: RxJsonSchema<EventDocType> = {
   indexes: ['syncStatus', 'updatedAt'],
 };
 
+export const soilAnalysisSchema: RxJsonSchema<SoilAnalysisDocType> = {
+  version: 0,
+  primaryKey: 'id',
+  type: 'object',
+  properties: {
+    id: { type: 'string', maxLength: 64 },
+    serverId: { type: 'number' },
+    field_id: { type: 'number' },
+    sample_date: { type: 'string' },
+    ph_level: { type: 'number' },
+    phosphorus_index: { type: 'number' },
+    potassium_index: { type: 'number' },
+    magnesium_index: { type: 'number' },
+    syncStatus: { type: 'string', maxLength: 16, enum: ['synced', 'pending', 'failed'], default: 'pending' },
+    updatedAt: { type: 'string', maxLength: 32 },
+  },
+  required: ['id', 'field_id', 'sample_date', 'syncStatus', 'updatedAt'],
+  indexes: ['syncStatus', 'updatedAt'],
+};
+
+export const fertilisationPlanSchema: RxJsonSchema<FertilisationPlanDocType> = {
+  version: 0,
+  primaryKey: 'id',
+  type: 'object',
+  properties: {
+    id: { type: 'string', maxLength: 64 },
+    serverId: { type: 'number' },
+    field_id: { type: 'number' },
+    crop_type: { type: 'string' },
+    target_yield: { type: 'number' },
+    nitrogen_requirement: { type: 'number' },
+    phosphorus_requirement: { type: 'number' },
+    potassium_requirement: { type: 'number' },
+    application_date: { type: 'string' },
+    syncStatus: { type: 'string', maxLength: 16, enum: ['synced', 'pending', 'failed'], default: 'pending' },
+    updatedAt: { type: 'string', maxLength: 32 },
+  },
+  required: ['id', 'field_id', 'crop_type', 'target_yield', 'syncStatus', 'updatedAt'],
+  indexes: ['syncStatus', 'updatedAt'],
+};
+
 /** Outbox entry for queuing offline writes. */
 export type OutboxActionType = 'POST' | 'PUT' | 'DELETE';
-export type OutboxEntityType = 'farms' | 'fields' | 'events';
+export type OutboxEntityType = 'farms' | 'fields' | 'events' | 'soil_analyses' | 'fertilisation_plans';
 export type OutboxStatus = 'pending' | 'failed';
 
 export interface OutboxDocType {
@@ -118,7 +186,7 @@ export const outboxSchema: RxJsonSchema<OutboxDocType> = {
   properties: {
     id: { type: 'string', maxLength: 64 },
     actionType: { type: 'string', maxLength: 8, enum: ['POST', 'PUT', 'DELETE'] },
-    entityType: { type: 'string', maxLength: 16, enum: ['farms', 'fields', 'events'] },
+    entityType: { type: 'string', maxLength: 32, enum: ['farms', 'fields', 'events', 'soil_analyses', 'fertilisation_plans'] },
     localDocId: { type: 'string', maxLength: 64 },
     payload: { type: 'string' },
     timestamp: { type: 'string', maxLength: 32 },
