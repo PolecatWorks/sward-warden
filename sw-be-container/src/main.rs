@@ -46,7 +46,7 @@ fn main() -> Result<(), MyError> {
             run_in_tokio(&config.runtime, service_cancellable(ct, config.clone()))?;
         }
         Commands::Version => {
-            println!("sp-be {}", VERSION);
+            println!("sw-be {}", VERSION);
         }
         Commands::Migrate => {
             println!("Migrating database...");

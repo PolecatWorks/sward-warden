@@ -1,7 +1,7 @@
 # Spec 0009-01: Backend Architecture Implementation
 
 ## 1. Description
-This specification covers the implementation of the backend architecture refactoring as defined in PRD 0009. It transitions `sp-be-container` from a simple MVP structure to a robust, production-ready foundation incorporating `figment` for configuration, `hams` for health checking, comprehensive error handling, and structured routing.
+This specification covers the implementation of the backend architecture refactoring as defined in PRD 0009. It transitions `sw-be-container` from a simple MVP structure to a robust, production-ready foundation incorporating `figment` for configuration, `hams` for health checking, comprehensive error handling, and structured routing.
 
 ## 2. Acceptance Criteria
 1. **Dependency Updates**: `Cargo.toml` is updated with all dependencies specified in PRD 0009 (e.g., `figment`, `hams`, `axum-prometheus`, `tokio-util`, etc.).

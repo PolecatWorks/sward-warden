@@ -37,9 +37,9 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY --from=build /app/target/release/sp-be-container /usr/local/bin/
+COPY --from=build /app/target/release/sw-be-container /usr/local/bin/
 
 EXPOSE 8080 8079
 
-ENTRYPOINT ["/usr/local/bin/sp-be-container"]
+ENTRYPOINT ["/usr/local/bin/sw-be-container"]
 CMD ["serve"]

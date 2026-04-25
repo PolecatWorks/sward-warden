@@ -10,4 +10,4 @@ This specification details the UI implementation for Waterway Protection as deri
 - The UI must reflect systemic prevention of scheduling applications within buffer zones to avoid runoff into waterways.
 
 ## Technical Details
-- Must be implemented using Angular and Angular Material in the `sp-fe-container`.
+- Must be implemented using Angular and Angular Material in the `sw-fe-container`.

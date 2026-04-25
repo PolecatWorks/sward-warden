@@ -9,12 +9,12 @@ This document specifies the user interface requirements for tracking inventory a
 ## Requirements
 
 1. **Inventory Tracking Interface**
-   - Track slurry storage capacities.
+   - Track sward storage capacities.
    - Track chemical/pesticide inventory, including mandatory MAPP numbers.
 
 2. **Equipment Details Interface**
    - Provide interfaces to input and view equipment details.
-   - Specifically track Low Emission Slurry Spreading Equipment (LESSE) details.
+   - Specifically track Low Emission Sward Spreading Equipment (LESSE) details.
 
 ## Technical Details
 - Built with Angular and Angular Material.

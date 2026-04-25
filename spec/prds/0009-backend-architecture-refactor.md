@@ -1,7 +1,7 @@
 # PRD 0009: Backend Architecture Refactor
 
 ## 1. Overview
-The current backend implementation in `sp-be-container` is a simple proof-of-concept utilizing in-memory state (`Arc<RwLock<Vec<T>>>`), basic error handling, and primitive configuration management. This document specifies a comprehensive refactoring of the backend to adopt enterprise-grade Rust patterns based on an established reference architecture.
+The current backend implementation in `sw-be-container` is a simple proof-of-concept utilizing in-memory state (`Arc<RwLock<Vec<T>>>`), basic error handling, and primitive configuration management. This document specifies a comprehensive refactoring of the backend to adopt enterprise-grade Rust patterns based on an established reference architecture.
 
 ## 2. Objectives
 - Improve application reliability, scalability, and maintainability.
@@ -55,7 +55,7 @@ The current backend implementation in `sp-be-container` is a simple proof-of-con
 - Each handler should rely strictly on `AppState` and proper `AppError` return types.
 
 ## 4. Dependencies to Add/Update
-The `sp-be-container/Cargo.toml` should be updated to align with the reference project's dependencies:
+The `sw-be-container/Cargo.toml` should be updated to align with the reference project's dependencies:
 
 ```toml
 [dependencies]

@@ -4,6 +4,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 
 import { FarmManagementService } from './farm-management.service';
 import { Farm } from '../models/farm';
+import { AuthService } from './auth.service';
 
 const mockFarms: Farm[] = [
   { id: 1, user_id: 1, name: 'Sunrise Farm', location: 'Kerry, Ireland' },
@@ -20,10 +21,21 @@ describe('FarmManagementService', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         FarmManagementService,
+        {
+          provide: AuthService,
+          useValue: { getUserId: () => 'test-user' }
+        }
       ],
     });
     service = TestBed.inject(FarmManagementService);
     httpMock = TestBed.inject(HttpTestingController);
+
+    // Force the config request to be made
+    service['apiUrl$'].subscribe();
+
+    // Handle the config.json request made
+    const configReq = httpMock.expectOne((req) => req.url.endsWith('config.json'));
+    configReq.flush({ apiUrl: '/v0' });
   });
 
   afterEach(() => {

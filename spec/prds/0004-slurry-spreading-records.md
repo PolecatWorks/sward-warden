@@ -1,7 +1,7 @@
-# PRD 0004: Slurry Spreading Records
+# PRD 0004: Sward Spreading Records
 
 ## Overview
-This document outlines the record-keeping requirements to maintain compliance with the Nutrients Action Programme (NAP) regulations when spreading slurry.
+This document outlines the record-keeping requirements to maintain compliance with the Nutrients Action Programme (NAP) regulations when spreading sward.
 
 ## Key Requirements
 
@@ -21,7 +21,7 @@ This document outlines the record-keeping requirements to maintain compliance wi
    - If the farm operates under an approved derogation (allowing up to 250 kg N/ha/year from grazing livestock), an annual fertilisation account must be submitted online to the Northern Ireland Environment Agency (NIEA) by 1 March for the previous calendar year.
 
 5. **Import and Export Records**
-   - Moving slurry onto or off the farm requires recording the quantity, date, type of organic manure, names, and addresses of the consignee, consignor, and transporter.
+   - Moving sward onto or off the farm requires recording the quantity, date, type of organic manure, names, and addresses of the consignee, consignor, and transporter.
    - Written contractual agreements are required for manure movement, stating parties involved, origin, final destination, volume, and length of contract.
    - Export records must be submitted to the NIEA annually by 31 January (or 1 March for derogated farms).
 
@@ -29,10 +29,10 @@ This document outlines the record-keeping requirements to maintain compliance wi
    - Applying P-rich organic manures (>0.25 kg total P per 1 kg total N) or anaerobic digestate requires available soil test results to prove crop requirement for additional phosphorus.
 
 7. **Spreading Equipment Exemptions**
-   - If Low Emission Slurry Spreading Equipment (LESSE) is required but impractical due to field slope, an inverted splash plate may be used.
+   - If Low Emission Sward Spreading Equipment (LESSE) is required but impractical due to field slope, an inverted splash plate may be used.
    - Must keep a specific record of the field number and the reason for using the splash plate for inspection purposes.
 
 ## UI Requirements
-- **Record Entry UX**: Forms for recording slurry spreading must be optimized for speed and clarity, utilizing the "Record Event" pattern from the UI review (large touch targets, clear iconography).
+- **Record Entry UX**: Forms for recording sward spreading must be optimized for speed and clarity, utilizing the "Record Event" pattern from the UI review (large touch targets, clear iconography).
 - **Import/Export Dashboard**: Use a dedicated Bento-style overview to track manure movements and deadlines.
 - **Exemption Logging**: A specific high-quality UI component should be provided to quickly log splash plate exemptions, ensuring compliance data is captured with minimal friction.

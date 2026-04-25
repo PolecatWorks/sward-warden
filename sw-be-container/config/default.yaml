@@ -3,12 +3,12 @@ webservice:
   forwarding_headers: []
 database:
   url:
-    url: "postgres://localhost:5432/slurrydb"
+    url: "postgres://localhost:5432/swarddb"
     username: "postgres"
     password: "mysecretpassword"
   max_connections: 10
 hams:
-  name: "sp-be"
+  name: "sw-be"
   version: "0.1.0"
   start_active: true
   addr: "0.0.0.0:8079"

@@ -10,5 +10,5 @@ This specification details the UI implementation for Topology & Field Mapping as
 - Highlight areas with high risk of runoff.
 
 ## Technical Details
-- Must be implemented using Angular and Angular Material in the `sp-fe-container`.
+- Must be implemented using Angular and Angular Material in the `sw-fe-container`.
 - Must handle mapping and visualization features appropriately on mobile devices.

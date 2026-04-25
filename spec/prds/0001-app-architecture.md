@@ -1,13 +1,13 @@
 # PRD 0001: Application Architecture
 
 ## Overview
-This document defines the overarching application architecture for the slurry management application, covering frontend, backend, and deployment strategies.
+This document defines the overarching application architecture for the sward management application, covering frontend, backend, and deployment strategies.
 
 ## Frontend Requirements
 - **Framework:** Angular
 - **Layout Pattern:** Persistent shell layout using a `MainLayoutComponent` with nested `<router-outlet>` to ensure stable navigation (Header/BottomNav) across view transitions.
 - **Design System:** Transition from generic Angular Material to a custom premium aesthetic using Tailwind CSS, Google Fonts (Work Sans), and curated HSL color palettes. Angular Material remains supported for low-level primitive components.
-- **Location:** Code to be placed in `sp-fe-container` directory.
+- **Location:** Code to be placed in `sw-fe-container` directory.
 - **Deployment:** Packaged as a Docker container.
 
 ## Development Workflow
@@ -15,10 +15,10 @@ This document defines the overarching application architecture for the slurry ma
 
 ## Backend Requirements
 - **Language/Framework:** Rust using the Axum web framework.
-- **Location:** Code to be placed in `sp-be-container` directory.
+- **Location:** Code to be placed in `sw-be-container` directory.
 - **Deployment:** Packaged as a Docker container.
 - **State Management:** PostgreSQL for relational data storage.
-- **Security:** 
+- **Security:**
   - Authentication will be handled via **OAuth2 (OIDC)**, supporting providers like Google.
   - Endpoint protection and JWT validation will be managed by **Istio**.
   - The application will extract user identity from headers provided by the sidecar to associate data in the PostgreSQL database.

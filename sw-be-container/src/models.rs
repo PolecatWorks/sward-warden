@@ -28,7 +28,7 @@ pub struct Field {
 pub struct Event {
     pub id: i64,
     pub field_id: i64,
-    pub event_type: String, // e.g. "Planting", "Fertiliser", "Slurry", "Spraying"
+    pub event_type: String, // e.g. "Planting", "Fertiliser", "Sward", "Spraying"
     pub description: String,
     pub date: String,
 }

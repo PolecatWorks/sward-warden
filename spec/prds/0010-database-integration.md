@@ -1,7 +1,7 @@
 # PRD 0010: Database Integration and Multi-Tenancy
 
 ## Objective
-Migrate the `sp-be-container` backend away from the legacy MVP in-memory `RwLock<Vec<T>>` data structures to a real, persistent database implementation using PostgreSQL. This will ensure production readiness, enforce multi-tenancy, and enable persistent storage.
+Migrate the `sw-be-container` backend away from the legacy MVP in-memory `RwLock<Vec<T>>` data structures to a real, persistent database implementation using PostgreSQL. This will ensure production readiness, enforce multi-tenancy, and enable persistent storage.
 
 ## Requirements
 1. **Connection Pooling**: Utilize `sqlx` to establish a robust, asynchronous PostgreSQL connection pool (`PgPool`) initialized on application startup.

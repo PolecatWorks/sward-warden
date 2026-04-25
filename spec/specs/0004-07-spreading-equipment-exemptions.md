@@ -10,4 +10,4 @@ This specification covers the spreading equipment exemptions required to maintai
 - Field for exemption reasons (e.g., using an inverted splash plate due to field slope where LESSE is otherwise required).
 
 ## Data Model Requirements
-- Extend `Events` (specifically slurry applications) to record equipment used and exemption reasons.
+- Extend `Events` (specifically sward applications) to record equipment used and exemption reasons.

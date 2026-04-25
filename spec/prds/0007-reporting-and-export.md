@@ -21,7 +21,7 @@ This document specifies the requirements for generating reports and exporting da
    - Generate reports demonstrating crop requirements based on available soil test results, necessary for proving the need for P-rich organic manures or chemical phosphorus fertilisers.
 
 5. **Import/Export Reporting**
-   - Generate export records of slurry/manure movements to be submitted to NIEA annually (by 31 January, or 1 March for derogated farms).
+   - Generate export records of sward/manure movements to be submitted to NIEA annually (by 31 January, or 1 March for derogated farms).
 
 ## UI Requirements
 - **Report Preview**: Users must be able to preview reports in a high-fidelity, clean layout before exporting.

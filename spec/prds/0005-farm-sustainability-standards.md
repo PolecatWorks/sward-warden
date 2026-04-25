@@ -22,24 +22,24 @@ This document outlines the strict environmental and reporting standards under th
 - **Phosphorus Restrictions**: Chemical phosphorus fertilisers can only be applied if a recent soil analysis demonstrates a genuine crop requirement.
 - **Buffer Zones**: All chemical fertilisers must be kept at least 2 metres away from any waterway.
 
-### 3. Slurry and Organic Manure
+### 3. Sward and Organic Manure
 - **Nitrogen Loading Limits**: Total livestock manure application must not exceed 170 kg of nitrogen per hectare per year. Derogated farms (requiring at least 80% grassland) can apply up to 250 kg N/ha/year from grazing livestock but must adhere to additional planning and phosphorus balance rules.
 - **Closed Spreading Periods**:
-  - Slurry, poultry litter, and anaerobic digestate: Prohibited from 15 October to 31 January.
+  - Sward, poultry litter, and anaerobic digestate: Prohibited from 15 October to 31 January.
   - Farmyard manure (FYM): Prohibited from 31 October to 31 January.
 - **Weather and Soil Conditions**: Spreading any organic manure is prohibited if the soil is waterlogged, flooded, frozen, snow-covered, or if heavy rain is falling or forecast within the next 48 hours.
 - **Application Limits**:
-  - Maximum application of 50m³ (4,500 gallons) of slurry or 50 tonnes of solid manure per hectare at any one time.
+  - Maximum application of 50m³ (4,500 gallons) of sward or 50 tonnes of solid manure per hectare at any one time.
   - Must leave a minimum of three weeks between applications.
 - **Buffer Zones**:
   - Standard buffer: 10 metres from a waterway, 20 metres from a lake.
   - Increased buffer (February and 30 September - 15 October): 15 metres from waterways, 30 metres from lakes, with maximum application rate reduced to 30m³ per hectare.
-- **Equipment Requirements (LESSE)**: Low Emission Slurry Spreading Equipment (dribble bars, trailing shoes, soil injection) is legally required for:
-  - All slurry contractors.
+- **Equipment Requirements (LESSE)**: Low Emission Sward Spreading Equipment (dribble bars, trailing shoes, soil injection) is legally required for:
+  - All sward contractors.
   - Anyone spreading anaerobic digestate.
   - Cattle farms with 200+ livestock units.
   - Pig farms producing 20,000kg+ of nitrogen.
-  - Derogated farms for all slurry applications after 15 June.
+  - Derogated farms for all sward applications after 15 June.
 - **Storage Capacities**: Minimum 22 weeks of livestock manure storage capacity for most enterprises, extending to 26 weeks for pig and poultry enterprises.
 
 ## Penalty Matrix for Audit Breaches

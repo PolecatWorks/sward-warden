@@ -2,7 +2,7 @@ kind: Deploy
 type: kubernetes
 name: robot-test-runner
 dependencies:
-  - deploy.slurry-manager
+  - deploy.sward-manager
 spec:
   manifests:
     - apiVersion: v1

@@ -13,7 +13,7 @@ This document outlines the UI requirements for recording agricultural events, ba
    - Event types to include:
      - Planting
      - Fertiliser application
-     - Slurry application
+     - Sward application
      - Spraying
      - Harvesting
      - Tilling
