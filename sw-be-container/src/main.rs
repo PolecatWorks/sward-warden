@@ -4,6 +4,7 @@ pub mod error;
 pub mod hams;
 pub mod metrics;
 pub mod models;
+pub mod seed;
 pub mod startup_tools;
 pub mod state;
 pub mod tokio_tools;
@@ -49,7 +50,35 @@ fn main() -> Result<(), MyError> {
             println!("sw-be {}", VERSION);
         }
         Commands::Migrate => {
-            println!("Migrating database...");
+            let config = AppConfig::load()?;
+            run_in_tokio(&config.runtime, async move {
+                let db_url: url::Url = config.database.url.clone().into();
+                let db_pool = sqlx::postgres::PgPoolOptions::new()
+                    .max_connections(1)
+                    .connect(db_url.as_str())
+                    .await
+                    .map_err(|e| MyError::Message(format!("Failed to connect to database: {e}")))?;
+
+                sqlx::migrate!()
+                    .run(&db_pool)
+                    .await
+                    .map_err(|e| MyError::Message(format!("Failed to run migrations: {e}")))?;
+
+                println!("Migrations completed successfully.");
+                Ok(())
+            })?;
+        }
+        Commands::Seed { user_id } => {
+            let config = AppConfig::load()?;
+            run_in_tokio(&config.runtime, async move {
+                let db_url: url::Url = config.database.url.clone().into();
+                let db_pool = sqlx::postgres::PgPoolOptions::new()
+                    .max_connections(1)
+                    .connect(db_url.as_str())
+                    .await
+                    .map_err(|e| MyError::Message(format!("Failed to connect to database: {e}")))?;
+                seed::seed_database(&db_pool, *user_id).await
+            })?;
         }
     }
 

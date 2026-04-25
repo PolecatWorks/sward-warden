@@ -3,7 +3,7 @@
 ## Goal
 Implement a standalone Rust CLI tool in `sw-be-container/tools/seed_data` that populates the Sward Warden database with realistic, localised mock data via the backend API.
 
-## State: Open
+## State: Complete
 
 ## Technical Plan
 1. **Dependencies**:
