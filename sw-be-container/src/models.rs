@@ -15,6 +15,7 @@ pub struct Farm {
     pub user_id: Option<i64>,
     pub name: String,
     pub location: String,
+    pub has_derogation: Option<bool>,
     pub updated_at: Option<DateTime<Utc>>,
     pub is_deleted: Option<bool>,
 }
@@ -67,6 +68,7 @@ pub struct SyncResponse {
     pub soil_analyses: Vec<SoilAnalysis>,
     pub fertilisation_plans: Vec<FertilisationPlan>,
     pub fertiliser_applications: Vec<FertiliserApplication>,
+    pub organic_manure_applications: Vec<OrganicManureApplication>,
 }
 
 /// Query parameters for the delta sync endpoint.
@@ -113,6 +115,21 @@ pub struct FertiliserApplication {
     pub is_protected_urea: Option<bool>,
     pub buffer_zone_confirmed: Option<bool>,
     pub evidence_of_control: Option<String>,
+    pub updated_at: Option<DateTime<Utc>>,
+    pub is_deleted: Option<bool>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+pub struct OrganicManureApplication {
+    pub id: Option<i64>,
+    pub event_id: i64,
+    pub manure_type: String,
+    pub volume_applied_m3_per_ha: Option<f64>,
+    pub weight_applied_tonnes_per_ha: Option<f64>,
+    pub nitrogen_content_kg_per_unit: Option<f64>,
+    pub is_lesse_applied: Option<bool>,
+    pub weather_conditions_confirmed: Option<bool>,
+    pub buffer_zone_distance_meters: Option<i32>,
     pub updated_at: Option<DateTime<Utc>>,
     pub is_deleted: Option<bool>,
 }

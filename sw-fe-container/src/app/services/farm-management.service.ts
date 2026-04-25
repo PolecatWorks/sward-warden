@@ -9,6 +9,7 @@ import { Event } from '../models/event';
 import { FertiliserApplication } from '../models/fertiliser-application';
 import { SoilAnalysis } from '../models/soil-analysis';
 import { FertilisationPlan } from '../models/fertilisation-plan';
+import { OrganicManureApplication } from '../models/organic-manure-application';
 import { AuthService } from './auth.service';
 import { RxdbService } from './rxdb/rxdb.service';
 import {
@@ -228,6 +229,22 @@ export class FarmManagementService {
   addFertiliserApplication(application: FertiliserApplication): Observable<FertiliserApplication> {
     return this.apiUrl$.pipe(
       switchMap(apiUrl => this.http.post<FertiliserApplication>(`${apiUrl}/fertiliser_applications`, application, { headers: this.getHeaders() }))
+    );
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // Organic Manure Applications (HTTP-only for now)
+  // ──────────────────────────────────────────────────────────
+
+  getOrganicManureApplications(): Observable<OrganicManureApplication[]> {
+    return this.apiUrl$.pipe(
+      switchMap(apiUrl => this.http.get<OrganicManureApplication[]>(`${apiUrl}/organic-manure-applications`, { headers: this.getHeaders() }))
+    );
+  }
+
+  addOrganicManureApplication(application: OrganicManureApplication): Observable<OrganicManureApplication> {
+    return this.apiUrl$.pipe(
+      switchMap(apiUrl => this.http.post<OrganicManureApplication>(`${apiUrl}/organic-manure-applications`, application, { headers: this.getHeaders() }))
     );
   }
 

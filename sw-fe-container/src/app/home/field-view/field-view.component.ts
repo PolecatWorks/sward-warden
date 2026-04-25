@@ -6,6 +6,7 @@ import { FarmManagementService } from '../../services/farm-management.service';
 import { Field } from '../../models/field';
 import { Event } from '../../models/event';
 import { FertiliserApplication } from '../../models/fertiliser-application';
+import { OrganicManureApplication } from '../../models/organic-manure-application';
 
 @Component({
   selector: 'app-field-view',
@@ -43,6 +44,20 @@ export class FieldViewComponent implements OnInit {
     bbch_growth_stage: ''
   };
 
+  showOrganicManureForm: boolean = false;
+  newOrganicManure: Partial<OrganicManureApplication> & { date: string, description: string } = {
+    date: new Date().toISOString().split('T')[0],
+    description: '',
+    manure_type: '',
+    volume_applied_m3_per_ha: 0,
+    weight_applied_tonnes_per_ha: 0,
+    nitrogen_content_kg_per_unit: 0,
+    is_lesse_applied: false,
+    weather_conditions_confirmed: false,
+    buffer_zone_distance_meters: 10
+  };
+  organicManureApplications: OrganicManureApplication[] = [];
+
 
   constructor(
     private route: ActivatedRoute,
@@ -75,6 +90,13 @@ export class FieldViewComponent implements OnInit {
     this.farmService.getFertiliserApplications().subscribe(apps => {
       this.fertiliserApplications = apps;
     });
+    this.farmService.getOrganicManureApplications().subscribe(apps => {
+      this.organicManureApplications = apps;
+    });
+  }
+
+  getOrganicManureAppForEvent(eventId: number): OrganicManureApplication | undefined {
+    return this.organicManureApplications.find(oma => oma.event_id === eventId);
   }
 
   getFertiliserAppForEvent(eventId: number): FertiliserApplication | undefined {
@@ -87,6 +109,10 @@ export class FieldViewComponent implements OnInit {
 
   toggleSprayingForm(): void {
     this.showSprayingForm = !this.showSprayingForm;
+  }
+
+  toggleOrganicManureForm(): void {
+    this.showOrganicManureForm = !this.showOrganicManureForm;
   }
 
   submitFertiliserApplication(): void {
@@ -182,5 +208,48 @@ export class FieldViewComponent implements OnInit {
     if (type.includes('plant')) return 'text-primary';
     if (type.includes('soil')) return 'text-primary-container';
     return 'text-on-surface';
+  }
+
+  submitOrganicManureApplication(): void {
+    if (!this.newOrganicManure.manure_type || !this.newOrganicManure.date) return;
+
+    const event: Omit<Event, 'id'> = {
+      field_id: this.fieldId,
+      event_type: 'Organic Manure',
+      description: this.newOrganicManure.description || `Applied ${this.newOrganicManure.manure_type}`,
+      date: this.newOrganicManure.date
+    };
+
+    this.farmService.addEvent(event as Event).subscribe(createdEvent => {
+      const application: Omit<OrganicManureApplication, 'id'> = {
+        event_id: createdEvent.id!,
+        manure_type: this.newOrganicManure.manure_type!,
+        volume_applied_m3_per_ha: this.newOrganicManure.volume_applied_m3_per_ha,
+        weight_applied_tonnes_per_ha: this.newOrganicManure.weight_applied_tonnes_per_ha,
+        nitrogen_content_kg_per_unit: this.newOrganicManure.nitrogen_content_kg_per_unit,
+        is_lesse_applied: this.newOrganicManure.is_lesse_applied,
+        weather_conditions_confirmed: this.newOrganicManure.weather_conditions_confirmed,
+        buffer_zone_distance_meters: this.newOrganicManure.buffer_zone_distance_meters
+      };
+
+      this.farmService.addOrganicManureApplication(application as OrganicManureApplication).subscribe(() => {
+        this.loadEvents();
+        this.showOrganicManureForm = false;
+        this.newOrganicManure = {
+          date: new Date().toISOString().split('T')[0],
+          description: '',
+          manure_type: '',
+          volume_applied_m3_per_ha: 0,
+          weight_applied_tonnes_per_ha: 0,
+          nitrogen_content_kg_per_unit: 0,
+          is_lesse_applied: false,
+          weather_conditions_confirmed: false,
+          buffer_zone_distance_meters: 10
+        };
+      }, error => {
+         // Error handled by interceptor or shown via alert
+         alert("Validation failed: " + (error.error?.message || error.message || "Unknown error"));
+      });
+    });
   }
 }

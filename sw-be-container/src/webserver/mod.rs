@@ -15,10 +15,10 @@ use tracing::{Level, info};
 
 use crate::error::MyError;
 use crate::models::{
-    Event, Farm, FarmRecord, FertilisationPlan, FertiliserApplication, Field, SoilAnalysis,
+    Event, Farm, FarmRecord, FertilisationPlan, FertiliserApplication, Field, OrganicManureApplication, SoilAnalysis,
     SyncQuery, SyncResponse, User,
 };
-use crate::rules::{validate_fertiliser_application, ValidationResult};
+use crate::rules::{validate_fertiliser_application, validate_organic_manure_application, ValidationResult};
 use crate::state::AppState;
 
 // Central API Router
@@ -31,9 +31,13 @@ pub fn app_router(state: AppState) -> Router {
         .route("/v0/users", get(list_users).post(create_user))
         .route("/v0/farms", get(list_farms).post(create_farm))
         .route("/v0/farms/{id}", delete(delete_farm))
+        .route("/v0/farms/{farm_id}/soil-analyses", get(list_soil_analyses))
         .route("/v0/fields", get(list_fields).post(create_field))
         .route("/v0/fields/{id}", delete(delete_field))
         .route("/v0/events", get(list_events).post(create_event))
+        .route("/v0/fertiliser-applications", get(list_fertiliser_applications).post(create_fertiliser_application))
+        .route("/v0/organic-manure-applications", get(list_organic_manure_applications).post(create_organic_manure_application))
+        .route("/v0/sync/delta", get(delta_sync))
         .route(
             "/v0/soil_analyses",
             get(list_soil_analyses).post(create_soil_analysis),
@@ -312,6 +316,66 @@ async fn create_fertiliser_application(
     Ok(Json(new_app?))
 }
 
+async fn list_organic_manure_applications(
+    State(state): State<AppState>,
+) -> Result<Json<Vec<OrganicManureApplication>>, MyError> {
+    let apps = sqlx::query_as::<_, OrganicManureApplication>(
+        "SELECT id, event_id, manure_type, volume_applied_m3_per_ha, weight_applied_tonnes_per_ha, nitrogen_content_kg_per_unit, is_lesse_applied, weather_conditions_confirmed, buffer_zone_distance_meters, updated_at, is_deleted FROM organic_manure_applications WHERE is_deleted = FALSE"
+    )
+    .fetch_all(&state.db_pool)
+    .await;
+    Ok(Json(apps?))
+}
+
+async fn create_organic_manure_application(
+    State(state): State<AppState>,
+    Json(app): Json<OrganicManureApplication>,
+) -> Result<Json<OrganicManureApplication>, MyError> {
+    let event = sqlx::query_as::<_, Event>("SELECT * FROM events WHERE id = $1")
+        .bind(app.event_id)
+        .fetch_one(&state.db_pool)
+        .await?;
+
+    let field = sqlx::query_as::<_, Field>("SELECT * FROM fields WHERE id = $1")
+        .bind(event.field_id)
+        .fetch_one(&state.db_pool)
+        .await?;
+
+    let farm = sqlx::query_as::<_, Farm>("SELECT * FROM farms WHERE id = $1")
+        .bind(field.farm_id)
+        .fetch_one(&state.db_pool)
+        .await?;
+
+    // Fetch previous apps for 3-week gap rule
+    let previous_apps = sqlx::query_as::<_, Event>(
+        "SELECT * FROM events WHERE field_id = $1 AND (event_type ILIKE '%slurry%' OR event_type ILIKE '%manure%') AND date != $2"
+    )
+    .bind(field.id)
+    .bind(&event.date)
+    .fetch_all(&state.db_pool)
+    .await?;
+
+    match validate_organic_manure_application(&event, &app, &field, &farm, &previous_apps) {
+        ValidationResult::Valid => (),
+        ValidationResult::Invalid(reason) => return Err(MyError::BadRequest(reason)),
+    }
+
+    let new_app = sqlx::query_as::<_, OrganicManureApplication>(
+        "INSERT INTO organic_manure_applications (event_id, manure_type, volume_applied_m3_per_ha, weight_applied_tonnes_per_ha, nitrogen_content_kg_per_unit, is_lesse_applied, weather_conditions_confirmed, buffer_zone_distance_meters) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id, event_id, manure_type, volume_applied_m3_per_ha, weight_applied_tonnes_per_ha, nitrogen_content_kg_per_unit, is_lesse_applied, weather_conditions_confirmed, buffer_zone_distance_meters, updated_at, is_deleted"
+    )
+    .bind(app.event_id)
+    .bind(&app.manure_type)
+    .bind(app.volume_applied_m3_per_ha)
+    .bind(app.weight_applied_tonnes_per_ha)
+    .bind(app.nitrogen_content_kg_per_unit)
+    .bind(app.is_lesse_applied)
+    .bind(app.weather_conditions_confirmed)
+    .bind(app.buffer_zone_distance_meters)
+    .fetch_one(&state.db_pool)
+    .await;
+    Ok(Json(new_app?))
+}
+
 async fn list_soil_analyses(
     State(state): State<AppState>,
 ) -> Result<Json<Vec<SoilAnalysis>>, MyError> {
@@ -459,6 +523,13 @@ async fn delta_sync(
     .fetch_all(&state.db_pool)
     .await?;
 
+    let organic_manure_applications = sqlx::query_as::<_, OrganicManureApplication>(
+        "SELECT oma.id, oma.event_id, oma.manure_type, oma.volume_applied_m3_per_ha, oma.weight_applied_tonnes_per_ha, oma.nitrogen_content_kg_per_unit, oma.is_lesse_applied, oma.weather_conditions_confirmed, oma.buffer_zone_distance_meters, oma.updated_at, oma.is_deleted FROM organic_manure_applications oma JOIN events e ON oma.event_id = e.id JOIN fields f ON e.field_id = f.id JOIN farms far ON f.farm_id = far.id WHERE far.user_id = 1 AND oma.updated_at > $1"
+    )
+    .bind(since)
+    .fetch_all(&state.db_pool)
+    .await?;
+
     let checkpoint = Utc::now();
 
     Ok(Json(SyncResponse {
@@ -470,6 +541,7 @@ async fn delta_sync(
         soil_analyses,
         fertilisation_plans,
         fertiliser_applications,
+        organic_manure_applications,
     }))
 }
 

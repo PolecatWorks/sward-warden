@@ -111,6 +111,68 @@
       </div>
     </div>
 
+    <!-- Organic Manure Application Form Modal -->
+    <div *ngIf="showOrganicManureForm" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div class="bg-surface rounded-xl shadow-2xl p-6 w-full max-w-md">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-headline font-bold text-xl text-on-surface">Log Organic Manure</h3>
+          <button (click)="toggleOrganicManureForm()" class="text-on-surface-variant hover:text-error">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <form (ngSubmit)="submitOrganicManureApplication()" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-on-surface mb-1">Date</label>
+            <input type="date" [(ngModel)]="newOrganicManure.date" name="o_date" required class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface mb-1">Manure Type</label>
+            <select [(ngModel)]="newOrganicManure.manure_type" name="o_type" required class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface">
+              <option value="">Select type...</option>
+              <option value="Slurry (Cattle)">Slurry (Cattle)</option>
+              <option value="Slurry (Pig)">Slurry (Pig)</option>
+              <option value="FYM (Farmyard Manure)">FYM (Farmyard Manure)</option>
+              <option value="Poultry Litter">Poultry Litter</option>
+              <option value="Digestate">Digestate</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-on-surface mb-1">Vol (m³/ha)</label>
+              <input type="number" [(ngModel)]="newOrganicManure.volume_applied_m3_per_ha" name="vol" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-on-surface mb-1">Weight (t/ha)</label>
+              <input type="number" [(ngModel)]="newOrganicManure.weight_applied_tonnes_per_ha" name="weight" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface mb-1">N Content (kg N/unit)</label>
+            <input type="number" [(ngModel)]="newOrganicManure.nitrogen_content_kg_per_unit" name="o_n" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary">
+          </div>
+          <div class="space-y-2">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" [(ngModel)]="newOrganicManure.is_lesse_applied" name="lesse" class="w-4 h-4 text-primary rounded border-outline focus:ring-primary">
+              <span class="text-sm font-medium text-on-surface">Low Emission Equipment (LESSE)</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" [(ngModel)]="newOrganicManure.weather_conditions_confirmed" name="weather" required class="w-4 h-4 text-primary rounded border-outline focus:ring-primary">
+              <span class="text-sm font-medium text-on-surface">Confirm Soil/Weather Conditions</span>
+            </label>
+          </div>
+          <div>
+             <label class="block text-sm font-medium text-on-surface mb-1">Buffer Zone (m)</label>
+             <input type="number" [(ngModel)]="newOrganicManure.buffer_zone_distance_meters" name="buffer" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary">
+          </div>
+          <div class="pt-4 flex justify-end gap-3">
+            <button type="button" (click)="toggleOrganicManureForm()" class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md">Cancel</button>
+            <button type="submit" class="px-4 py-2 bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90">Save Record</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- CTA: Record Event -->
     <section class="mb-12">
       <button class="w-full group bg-primary text-on-primary rounded-xl py-6 px-6 flex items-center justify-between shadow-2xl transition-all active:scale-95">
@@ -135,6 +197,13 @@
         <button (click)="toggleSprayingForm()" class="flex flex-col items-center gap-2 p-4 bg-surface-container-low rounded-xl hover:bg-surface-container transition-colors">
           <span class="material-symbols-outlined text-primary-container">science</span>
           <span class="text-[10px] font-bold uppercase tracking-wider text-primary-container">Spraying</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 mt-3">
+        <button (click)="toggleOrganicManureForm()" class="flex items-center justify-center gap-2 p-3 bg-tertiary-container text-white rounded-xl hover:bg-tertiary transition-colors shadow-sm">
+          <span class="material-symbols-outlined">water_lux</span>
+          <span class="text-xs font-bold uppercase tracking-wider">Organic Manure / Slurry</span>
         </button>
       </div>
     </section>
@@ -183,6 +252,18 @@
                   <div><span class="text-on-surface-variant font-medium">MAPP:</span> {{ event.mapp_number }}</div>
                   <div *ngIf="event.eppo_code"><span class="text-on-surface-variant font-medium">EPPO Code:</span> {{ event.eppo_code }}</div>
                   <div *ngIf="event.bbch_growth_stage"><span class="text-on-surface-variant font-medium">BBCH Stage:</span> {{ event.bbch_growth_stage }}</div>
+                </div>
+              </div>
+
+              <!-- Organic Manure Details -->
+              <div *ngIf="getOrganicManureAppForEvent(event.id) as oma" class="mt-3 bg-surface-container-lowest border border-outline-variant p-3 rounded-lg text-sm">
+                <div class="grid grid-cols-2 gap-2">
+                  <div><span class="text-on-surface-variant font-medium">Type:</span> {{ oma.manure_type }}</div>
+                  <div *ngIf="oma.volume_applied_m3_per_ha"><span class="text-on-surface-variant font-medium">Vol:</span> {{ oma.volume_applied_m3_per_ha }} m³/ha</div>
+                  <div *ngIf="oma.weight_applied_tonnes_per_ha"><span class="text-on-surface-variant font-medium">Weight:</span> {{ oma.weight_applied_tonnes_per_ha }} t/ha</div>
+                  <div *ngIf="oma.nitrogen_content_kg_per_unit"><span class="text-on-surface-variant font-medium">N:</span> {{ oma.nitrogen_content_kg_per_unit }} kg/unit</div>
+                  <div *ngIf="oma.is_lesse_applied" class="col-span-2 text-primary font-bold text-[10px] uppercase">LESSE Applied</div>
+                  <div class="col-span-2 text-on-surface-variant text-[10px]">Buffer: {{ oma.buffer_zone_distance_meters }}m</div>
                 </div>
               </div>
 
