@@ -49,7 +49,7 @@ export class SoilAnalysisResults implements OnInit {
 
   deleteAnalysis(id: number | undefined): void {
     if (id) {
-      this.farmService.deleteSoilAnalysis(id).subscribe(() => {
+      this.farmService.deleteEntity('soil_analyses', id).subscribe(() => {
         this.loadData();
       });
     }

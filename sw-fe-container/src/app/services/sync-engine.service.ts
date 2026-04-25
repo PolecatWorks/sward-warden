@@ -223,18 +223,14 @@ export class SyncEngineService implements OnDestroy {
   }
 
   // ──────────────────────────────────────────────────────────
-  // Upsert Logic with LWW Conflict Resolution
+  // Upsert Logic with LWW Conflict Resolution (Optimized)
   // ──────────────────────────────────────────────────────────
 
-  /**
-   * Upsert farms from the server into local RxDB.
-   * Uses Last Write Wins (LWW) based on updatedAt.
-   */
+  /** Upsert farms from the server into local RxDB. */
   private async upsertFarms(db: SwardDatabase, serverFarms: any[]): Promise<void> {
     if (!serverFarms || serverFarms.length === 0) return;
 
     const serverIds = serverFarms.map(s => s.id);
-
     const existingDocsArray = await db.farms.find({
       selector: { serverId: { $in: serverIds } }
     }).exec();
@@ -261,9 +257,7 @@ export class SyncEngineService implements OnDestroy {
       const localDoc = existingDocsMap.get(serverFarm.id);
 
       if (serverFarm.is_deleted) {
-        if (localDoc) {
-          toRemove.push(localDoc);
-        }
+        if (localDoc) toRemove.push(localDoc);
         continue;
       }
 
@@ -293,7 +287,6 @@ export class SyncEngineService implements OnDestroy {
     if (toRemove.length > 0) {
       await db.farms.bulkRemove(toRemove.map(d => d.id));
     }
-
     if (toUpsert.length > 0) {
       await db.farms.bulkUpsert(toUpsert);
     }
@@ -304,7 +297,6 @@ export class SyncEngineService implements OnDestroy {
     if (!serverFields || serverFields.length === 0) return;
 
     const serverIds = serverFields.map(s => s.id);
-
     const existingDocsArray = await db.fields.find({
       selector: { serverId: { $in: serverIds } }
     }).exec();
@@ -331,9 +323,7 @@ export class SyncEngineService implements OnDestroy {
       const localDoc = existingDocsMap.get(serverField.id);
 
       if (serverField.is_deleted) {
-        if (localDoc) {
-          toRemove.push(localDoc);
-        }
+        if (localDoc) toRemove.push(localDoc);
         continue;
       }
 
@@ -363,7 +353,6 @@ export class SyncEngineService implements OnDestroy {
     if (toRemove.length > 0) {
       await db.fields.bulkRemove(toRemove.map(d => d.id));
     }
-
     if (toUpsert.length > 0) {
       await db.fields.bulkUpsert(toUpsert);
     }
@@ -374,7 +363,6 @@ export class SyncEngineService implements OnDestroy {
     if (!serverEvents || serverEvents.length === 0) return;
 
     const serverIds = serverEvents.map(s => s.id);
-
     const existingDocsArray = await db.events.find({
       selector: { serverId: { $in: serverIds } }
     }).exec();
@@ -401,9 +389,7 @@ export class SyncEngineService implements OnDestroy {
       const localDoc = existingDocsMap.get(serverEvent.id);
 
       if (serverEvent.is_deleted) {
-        if (localDoc) {
-          toRemove.push(localDoc);
-        }
+        if (localDoc) toRemove.push(localDoc);
         continue;
       }
 
@@ -435,7 +421,6 @@ export class SyncEngineService implements OnDestroy {
     if (toRemove.length > 0) {
       await db.events.bulkRemove(toRemove.map(d => d.id));
     }
-
     if (toUpsert.length > 0) {
       await db.events.bulkUpsert(toUpsert);
     }
@@ -446,7 +431,6 @@ export class SyncEngineService implements OnDestroy {
     if (!serverAnalyses || serverAnalyses.length === 0) return;
 
     const serverIds = serverAnalyses.map(s => s.id);
-
     const existingDocsArray = await db.soil_analyses.find({
       selector: { serverId: { $in: serverIds } }
     }).exec();
@@ -473,9 +457,7 @@ export class SyncEngineService implements OnDestroy {
       const localDoc = existingDocsMap.get(serverAnalysis.id);
 
       if (serverAnalysis.is_deleted) {
-        if (localDoc) {
-          toRemove.push(localDoc);
-        }
+        if (localDoc) toRemove.push(localDoc);
         continue;
       }
 
@@ -510,7 +492,6 @@ export class SyncEngineService implements OnDestroy {
     if (toRemove.length > 0) {
       await db.soil_analyses.bulkRemove(toRemove.map(d => d.id));
     }
-
     if (toUpsert.length > 0) {
       await db.soil_analyses.bulkUpsert(toUpsert);
     }
@@ -521,7 +502,6 @@ export class SyncEngineService implements OnDestroy {
     if (!serverPlans || serverPlans.length === 0) return;
 
     const serverIds = serverPlans.map(s => s.id);
-
     const existingDocsArray = await db.fertilisation_plans.find({
       selector: { serverId: { $in: serverIds } }
     }).exec();
@@ -548,9 +528,7 @@ export class SyncEngineService implements OnDestroy {
       const localDoc = existingDocsMap.get(serverPlan.id);
 
       if (serverPlan.is_deleted) {
-        if (localDoc) {
-          toRemove.push(localDoc);
-        }
+        if (localDoc) toRemove.push(localDoc);
         continue;
       }
 
@@ -588,7 +566,6 @@ export class SyncEngineService implements OnDestroy {
     if (toRemove.length > 0) {
       await db.fertilisation_plans.bulkRemove(toRemove.map(d => d.id));
     }
-
     if (toUpsert.length > 0) {
       await db.fertilisation_plans.bulkUpsert(toUpsert);
     }
@@ -600,11 +577,6 @@ export class SyncEngineService implements OnDestroy {
 
   /**
    * Determine whether the local doc should be overwritten by the server record.
-   *
-   * Last Write Wins (LWW) strategy:
-   *  - If server is newer → overwrite
-   *  - If local is newer with pending outbox entry → keep local (will be pushed next sync)
-   *  - If local is newer without pending outbox entry → overwrite (local changes already pushed)
    */
   private shouldOverwriteLocal(
     localUpdatedAt: string,

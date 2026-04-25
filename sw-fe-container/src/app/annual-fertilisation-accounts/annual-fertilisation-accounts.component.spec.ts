@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { AnnualFertilisationAccountsComponent } from './annual-fertilisation-accounts.component';
 
@@ -10,7 +11,7 @@ describe('AnnualFertilisationAccountsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
-      imports: [AnnualFertilisationAccountsComponent]
+      imports: [AnnualFertilisationAccountsComponent, HttpClientTestingModule]
     })
     .compileComponents();
 

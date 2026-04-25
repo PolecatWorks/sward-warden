@@ -55,7 +55,7 @@ export class FertilisationPlansComponent implements OnInit {
 
   deletePlan(id: number | undefined): void {
     if (id) {
-      this.farmService.deleteFertilisationPlan(id).subscribe(() => {
+      this.farmService.deleteEntity('fertilisation_plans', id).subscribe(() => {
         this.loadData();
       });
     }

@@ -24,11 +24,11 @@ describe('FarmsComponent', () => {
     const spy = jasmine.createSpyObj('FarmManagementService', [
       'getFarms',
       'addFarm',
-      'deleteFarm',
+      'deleteEntity',
     ]);
     spy.getFarms.and.returnValue(of(mockFarms));
     spy.addFarm.and.returnValue(of({ id: 3, name: 'New Farm', location: 'Galway, Ireland' }));
-    spy.deleteFarm.and.returnValue(of(undefined));
+    spy.deleteEntity.and.returnValue(of(undefined));
 
     await TestBed.configureTestingModule({
       providers: [
@@ -195,14 +195,14 @@ describe('FarmsComponent', () => {
   });
 
   // ── Delete Farm ───────────────────────────────────────────
-  describe('deleteFarm', () => {
+  describe('deleteEntity', () => {
     beforeEach(() => {
       fixture.detectChanges();
     });
 
-    it('should call deleteFarm service with the correct farm id', () => {
+    it('should call deleteEntity service with the correct farm id', () => {
       component.deleteFarm(1);
-      expect(farmServiceSpy.deleteFarm).toHaveBeenCalledOnceWith(1);
+      expect(farmServiceSpy.deleteEntity).toHaveBeenCalledOnceWith('farms', 1);
     });
 
     it('should reload farms after successful delete', () => {
@@ -213,7 +213,7 @@ describe('FarmsComponent', () => {
 
     it('should show error message when delete fails', () => {
       spyOn(console, 'error');
-      farmServiceSpy.deleteFarm.and.returnValue(throwError(() => new Error('Delete failed')));
+      farmServiceSpy.deleteEntity.and.returnValue(throwError(() => new Error('Delete failed')));
       component.deleteFarm(1);
       expect(component.errorMessage).toContain('Failed to delete farm');
     });
