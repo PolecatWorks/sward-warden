@@ -53,6 +53,10 @@ Once a PRD in `spec/prds/` is vetted, it is broken down into specific actionable
 - [0011-04 Outbox Pattern and Push Sync Specification](./0011-04-outbox-pattern-push-sync.md)
 - [0011-05 Delta Sync Client and Conflict Resolution Specification](./0011-05-delta-sync-client-and-conflict-resolution.md)
 
+- [0012-01 Adaptive Layouts Specification](./0012-01-adaptive-layouts.md)
+- [0012-02 Component Scaling and Typography Specification](./0012-02-component-scaling-and-typography.md)
+- [0012-03 Responsive Design Implementation Guidelines](./0012-03-implementation-guidelines.md)
+
 ## Implementation Sequence for Remaining Work
 
 Based on dependencies and logical flow, the following order is proposed for completing the remaining uncompleted technical specifications (those in 'Open' status):
@@ -87,3 +91,9 @@ These specs implement the local-first architecture and synchronisation layer. Th
 14. **[0011-04 Outbox Pattern and Push Sync Specification](./0011-04-outbox-pattern-push-sync.md)** — Push path: queues offline writes and sends them when connectivity returns. Depends on 0011-01 and 0011-02.
 15. **[0011-05 Delta Sync Client and Conflict Resolution Specification](./0011-05-delta-sync-client-and-conflict-resolution.md)** — Pull path: fetches server changes, merges into local DB, and resolves conflicts via LWW. Depends on 0011-01, 0011-03, and 0011-04.
 
+
+### Phase 6: Responsive Design
+These specs handle adapting the UI for larger screens.
+16. **[0012-01 Adaptive Layouts Specification](./0012-01-adaptive-layouts.md)**
+17. **[0012-02 Component Scaling and Typography Specification](./0012-02-component-scaling-and-typography.md)**
+18. **[0012-03 Responsive Design Implementation Guidelines](./0012-03-implementation-guidelines.md)**
