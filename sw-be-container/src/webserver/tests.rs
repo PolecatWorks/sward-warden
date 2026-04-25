@@ -51,6 +51,7 @@ fn get_test_state() -> AppState {
 
     let db_pool = sqlx::postgres::PgPoolOptions::new()
         .max_connections(1)
+        .acquire_timeout(std::time::Duration::from_secs(1))
         .connect_lazy("postgres://localhost:5432/db")
         .unwrap();
 
