@@ -40,7 +40,7 @@ pub enum MyError {
     PreflightCheck,
 
     #[error("Figment error `{0}`")]
-    FigmentError(#[from] figment::error::Error),
+    FigmentError(#[from] Box<figment::error::Error>),
 
     #[error("EnvFilter error `{0}`")]
     EnvFilterError(#[from] FromEnvError),
@@ -73,12 +73,19 @@ impl axum::response::IntoResponse for MyError {
                 reqwest::StatusCode::INTERNAL_SERVER_ERROR,
                 "Schema Mismatch".to_string(),
             ),
-            MyError::Cancelled => (reqwest::StatusCode::INTERNAL_SERVER_ERROR, "Cancelled".to_string()),
-            MyError::HamsError(_error) => {
-                (reqwest::StatusCode::INTERNAL_SERVER_ERROR, "Hams Error".to_string())
-            }
+            MyError::Cancelled => (
+                reqwest::StatusCode::INTERNAL_SERVER_ERROR,
+                "Cancelled".to_string(),
+            ),
+            MyError::HamsError(_error) => (
+                reqwest::StatusCode::INTERNAL_SERVER_ERROR,
+                "Hams Error".to_string(),
+            ),
             MyError::Serde(_error) => (reqwest::StatusCode::BAD_REQUEST, "Serde Error".to_string()),
-            MyError::Io(_error) => (reqwest::StatusCode::INTERNAL_SERVER_ERROR, "IO Error".to_string()),
+            MyError::Io(_error) => (
+                reqwest::StatusCode::INTERNAL_SERVER_ERROR,
+                "IO Error".to_string(),
+            ),
             MyError::ShutdownCheck => (
                 reqwest::StatusCode::INTERNAL_SERVER_ERROR,
                 "Shutdown Check Failed".to_string(),
@@ -110,7 +117,7 @@ impl axum::response::IntoResponse for MyError {
                     reqwest::StatusCode::INTERNAL_SERVER_ERROR,
                     "Database Error".to_string(),
                 )
-            },
+            }
         };
 
         (status, axum::Json(ErrorResponse { message })).into_response()

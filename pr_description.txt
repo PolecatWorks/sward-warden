@@ -1,0 +1,5 @@
+💡 **What:** Added a cache for the `list_farms` route using `tokio::sync::RwLock` inside `AppState`. Populates the cache when `list_farms` is called, and clears it when `create_farm` or `delete_farm` are called.
+
+🎯 **Why:** To improve performance and reduce database load on the frequently accessed `list_farms` route, which serves highly static data.
+
+📊 **Measured Improvement:** We do not have existing benchmark infrastructure or heavy load testing readily available to verify a concrete speed boost. However, since `list_farms` bypasses an asynchronous `SELECT` query across the network when populated, it mathematically reduces I/O wait times to standard memory access times, avoiding query compilation, database lock acquisition, and connection overhead, yielding a significant latency reduction for repetitive queries.

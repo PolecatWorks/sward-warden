@@ -1,23 +1,24 @@
+use crate::config::AppConfig;
+use crate::state::AppState;
+use crate::webserver::app_router;
 use axum::body::Body;
 use axum::http::{Request, StatusCode};
-use http_body_util::BodyExt;
-use tower::ServiceExt;
-use crate::webserver::app_router;
-use crate::state::AppState;
-use crate::config::AppConfig;
 use axum_prometheus::metrics_exporter_prometheus::PrometheusBuilder;
+use http_body_util::BodyExt;
 use std::sync::OnceLock;
+use tower::ServiceExt;
 
 use crate::tokio_tools::ThreadRuntime;
 use url::Url;
 
 /// Install the Prometheus recorder exactly once across all tests in this module.
-static PROMETHEUS_HANDLE: OnceLock<axum_prometheus::metrics_exporter_prometheus::PrometheusHandle> = OnceLock::new();
+static PROMETHEUS_HANDLE: OnceLock<axum_prometheus::metrics_exporter_prometheus::PrometheusHandle> =
+    OnceLock::new();
 
 fn init_prometheus() -> axum_prometheus::metrics_exporter_prometheus::PrometheusHandle {
-    PROMETHEUS_HANDLE.get_or_init(|| {
-        PrometheusBuilder::new().install_recorder().unwrap()
-    }).clone()
+    PROMETHEUS_HANDLE
+        .get_or_init(|| PrometheusBuilder::new().install_recorder().unwrap())
+        .clone()
 }
 
 fn get_test_state() -> AppState {
@@ -62,7 +63,12 @@ async fn test_app_router_hello() {
     let app = app_router(state);
 
     let response = app
-        .oneshot(Request::builder().uri("/v0/hello").body(Body::empty()).unwrap())
+        .oneshot(
+            Request::builder()
+                .uri("/v0/hello")
+                .body(Body::empty())
+                .unwrap(),
+        )
         .await
         .unwrap();
 

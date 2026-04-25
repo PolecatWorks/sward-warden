@@ -41,6 +41,7 @@ pub extern "C" fn prometheus_response_mystate(ptr: *const c_void) -> *mut c_char
 }
 
 #[unsafe(no_mangle)]
+#[allow(clippy::not_unsafe_ptr_arg_deref)]
 pub extern "C" fn prometheus_response_free(ptr: *mut c_char) {
     if ptr.is_null() {
         return;
