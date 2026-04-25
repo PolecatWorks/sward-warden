@@ -43,6 +43,11 @@ Once a PRD in `spec/prds/` is vetted, it is broken down into specific actionable
 - [0007-03 General Farm Records Export Specification](./0007-03-general-farm-records-export.md)
 - [0007-04 Soil Analysis Reports Specification](./0007-04-soil-analysis-reports.md)
 - [0007-05 Import and Export Reporting Specification](./0007-05-import-export-reporting.md)
+- [0011-01 RxDB Local Database Setup Specification](./0011-01-rxdb-local-database.md)
+- [0011-02 Network Status and Sync UI Specification](./0011-02-network-status-ui.md)
+- [0011-03 Backend Delta Sync API Specification](./0011-03-backend-delta-sync-api.md)
+- [0011-04 Outbox Pattern and Push Sync Specification](./0011-04-outbox-pattern-push-sync.md)
+- [0011-05 Delta Sync Client and Conflict Resolution Specification](./0011-05-delta-sync-client-and-conflict-resolution.md)
 
 ## Implementation Sequence for Remaining Work
 
@@ -67,7 +72,15 @@ These specs cover exceptions and logistical movements (imports/exports) that aff
 9. **[0004-07 Spreading Equipment Exemptions Specification](./0004-07-spreading-equipment-exemptions.md)**
 
 ### Phase 4: Compliance
-Finally, this spec ties the recorded data against rules to generate compliance penalties.
+This spec ties the recorded data against rules to generate compliance penalties.
 10. **[0005-04 Compliance Penalty Matrix Specification](./0005-04-compliance-penalty-matrix.md)**
 
-*(Note: Uncompleted PRDs 0008 and 0011 will generate additional specs once analyzed).*
+### Phase 5: Offline Capabilities
+These specs implement the local-first architecture and synchronisation layer. They should be implemented after core data flows are stable, as they wrap the existing CRUD operations with offline resilience. The order below reflects internal dependencies within the offline feature set.
+11. **[0011-01 RxDB Local Database Setup Specification](./0011-01-rxdb-local-database.md)** — Frontend foundation: installs RxDB and rewires services to a local-first data path.
+12. **[0011-02 Network Status and Sync UI Specification](./0011-02-network-status-ui.md)** — Quick win: adds the connectivity indicator and sync state services consumed by later specs.
+13. **[0011-03 Backend Delta Sync API Specification](./0011-03-backend-delta-sync-api.md)** — Backend foundation: adds `updated_at`/`is_deleted` columns and the `GET /api/sync` endpoint.
+14. **[0011-04 Outbox Pattern and Push Sync Specification](./0011-04-outbox-pattern-push-sync.md)** — Push path: queues offline writes and sends them when connectivity returns. Depends on 0011-01 and 0011-02.
+15. **[0011-05 Delta Sync Client and Conflict Resolution Specification](./0011-05-delta-sync-client-and-conflict-resolution.md)** — Pull path: fetches server changes, merges into local DB, and resolves conflicts via LWW. Depends on 0011-01, 0011-03, and 0011-04.
+
+*(Note: Uncompleted PRD 0008 will generate additional specs once analyzed).*
