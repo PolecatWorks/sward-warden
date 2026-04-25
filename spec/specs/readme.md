@@ -43,3 +43,31 @@ Once a PRD in `spec/prds/` is vetted, it is broken down into specific actionable
 - [0007-03 General Farm Records Export Specification](./0007-03-general-farm-records-export.md)
 - [0007-04 Soil Analysis Reports Specification](./0007-04-soil-analysis-reports.md)
 - [0007-05 Import and Export Reporting Specification](./0007-05-import-export-reporting.md)
+
+## Implementation Sequence for Remaining Work
+
+Based on dependencies and logical flow, the following order is proposed for completing the remaining uncompleted technical specifications (those in 'Open' status):
+
+### Phase 1: Foundation Data & Planning
+These specs establish the foundational soil data and high-level fertilisation plans required for specific application events.
+1. **[0004-06 Soil Analysis Results Specification](./0004-06-soil-analysis-results.md)**
+2. **[0004-03 Fertilisation Plan Specification](./0004-03-fertilisation-plan.md)**
+3. **[0004-04 Fertilisation Account Specification](./0004-04-fertilisation-account.md)**
+
+### Phase 2: Core Records & Application
+With plans in place, these specs handle the actual recording of spraying and fertilisation events.
+4. **[0004-02 Fertiliser Application Records Specification](./0004-02-fertiliser-application-records.md)**
+5. **[0005-01 Spraying (Pesticide Use) Records Specification](./0005-01-spraying-records.md)**
+6. **[0005-02 Chemical Fertiliser Management Specification](./0005-02-chemical-fertiliser-management.md)**
+7. **[0005-03 Sward and Organic Manure Management Specification](./0005-03-sward-and-organic-manure-management.md)**
+
+### Phase 3: Exemptions & Logistics
+These specs cover exceptions and logistical movements (imports/exports) that affect the overall nutrient balance.
+8. **[0004-05 Import and Export Records Specification](./0004-05-import-export-records.md)**
+9. **[0004-07 Spreading Equipment Exemptions Specification](./0004-07-spreading-equipment-exemptions.md)**
+
+### Phase 4: Compliance
+Finally, this spec ties the recorded data against rules to generate compliance penalties.
+10. **[0005-04 Compliance Penalty Matrix Specification](./0005-04-compliance-penalty-matrix.md)**
+
+*(Note: Uncompleted PRDs 0008 and 0011 will generate additional specs once analyzed).*
