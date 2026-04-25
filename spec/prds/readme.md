@@ -17,6 +17,7 @@ PRDs dictate the high-level features and requirements of the project. Every PRD 
 - [0009 Backend Architecture Refactor](./0009-backend-architecture-refactor.md)
 - [0010 Database Integration](./0010-database-integration.md)
 - [0011 Offline Capabilities](./0011-offline-capabilities.md)
+- [0012 Seed Data Generator](./0012-seed-data-generator.md)
 
 ## Implementation Sequence for Remaining Work
 
