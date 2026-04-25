@@ -58,9 +58,8 @@ pub async fn start_app_api(state: AppState, ct: CancellationToken) -> Result<(),
 async fn list_users(State(state): State<AppState>) -> Result<Json<Vec<User>>, MyError> {
     let users = sqlx::query_as::<_, User>("SELECT id, name, email FROM users")
         .fetch_all(&state.db_pool)
-        .await
-        .map_err(|e| MyError::Message(format!("DB error: {}", e)))?;
-    Ok(Json(users))
+        .await;
+    Ok(Json(users?))
 }
 async fn create_user(State(state): State<AppState>, Json(user): Json<User>) -> Result<Json<User>, MyError> {
     let new_user = sqlx::query_as::<_, User>(
@@ -69,17 +68,15 @@ async fn create_user(State(state): State<AppState>, Json(user): Json<User>) -> R
     .bind(&user.name)
     .bind(&user.email)
     .fetch_one(&state.db_pool)
-    .await
-    .map_err(|e| MyError::Message(format!("DB error: {}", e)))?;
-    Ok(Json(new_user))
+    .await;
+    Ok(Json(new_user?))
 }
 
 async fn list_farms(State(state): State<AppState>) -> Result<Json<Vec<Farm>>, MyError> {
     let farms = sqlx::query_as::<_, Farm>("SELECT id, user_id, name, location FROM farms WHERE user_id = 1")
         .fetch_all(&state.db_pool)
-        .await
-        .map_err(|e| MyError::Message(format!("DB error: {}", e)))?;
-    Ok(Json(farms))
+        .await;
+    Ok(Json(farms?))
 }
 async fn create_farm(State(state): State<AppState>, Json(farm): Json<Farm>) -> Result<Json<Farm>, MyError> {
     let new_farm = sqlx::query_as::<_, Farm>(
@@ -89,16 +86,14 @@ async fn create_farm(State(state): State<AppState>, Json(farm): Json<Farm>) -> R
     .bind(&farm.name)
     .bind(&farm.location)
     .fetch_one(&state.db_pool)
-    .await
-    .map_err(|e| MyError::Message(format!("DB error: {}", e)))?;
-    Ok(Json(new_farm))
+    .await;
+    Ok(Json(new_farm?))
 }
 async fn delete_farm(State(state): State<AppState>, Path(id): Path<i64>) -> Result<StatusCode, MyError> {
     sqlx::query("DELETE FROM farms WHERE id = $1 AND user_id = 1")
         .bind(id)
         .execute(&state.db_pool)
-        .await
-        .map_err(|e| MyError::Message(format!("DB error: {}", e)))?;
+        .await?;
     Ok(StatusCode::NO_CONTENT)
 }
 
@@ -107,9 +102,8 @@ async fn list_fields(State(state): State<AppState>) -> Result<Json<Vec<Field>>, 
         "SELECT f.id, f.farm_id, f.name, f.area_hectares FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1"
     )
     .fetch_all(&state.db_pool)
-    .await
-    .map_err(|e| MyError::Message(format!("DB error: {}", e)))?;
-    Ok(Json(fields))
+    .await;
+    Ok(Json(fields?))
 }
 async fn create_field(State(state): State<AppState>, Json(field): Json<Field>) -> Result<Json<Field>, MyError> {
     let new_field = sqlx::query_as::<_, Field>(
@@ -119,16 +113,14 @@ async fn create_field(State(state): State<AppState>, Json(field): Json<Field>) -
     .bind(&field.name)
     .bind(field.area_hectares)
     .fetch_one(&state.db_pool)
-    .await
-    .map_err(|e| MyError::Message(format!("DB error: {}", e)))?;
-    Ok(Json(new_field))
+    .await;
+    Ok(Json(new_field?))
 }
 async fn delete_field(State(state): State<AppState>, Path(id): Path<i64>) -> Result<StatusCode, MyError> {
     sqlx::query("DELETE FROM fields WHERE id = $1 AND farm_id IN (SELECT id FROM farms WHERE user_id = 1)")
         .bind(id)
         .execute(&state.db_pool)
-        .await
-        .map_err(|e| MyError::Message(format!("DB error: {}", e)))?;
+        .await?;
     Ok(StatusCode::NO_CONTENT)
 }
 
@@ -137,9 +129,8 @@ async fn list_events(State(state): State<AppState>) -> Result<Json<Vec<Event>>, 
         "SELECT e.id, e.field_id, e.event_type, e.description, e.date FROM events e JOIN fields f ON e.field_id = f.id JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1"
     )
     .fetch_all(&state.db_pool)
-    .await
-    .map_err(|e| MyError::Message(format!("DB error: {}", e)))?;
-    Ok(Json(events))
+    .await;
+    Ok(Json(events?))
 }
 async fn create_event(State(state): State<AppState>, Json(event): Json<Event>) -> Result<Json<Event>, MyError> {
     let new_event = sqlx::query_as::<_, Event>(
@@ -150,9 +141,8 @@ async fn create_event(State(state): State<AppState>, Json(event): Json<Event>) -
     .bind(&event.description)
     .bind(&event.date)
     .fetch_one(&state.db_pool)
-    .await
-    .map_err(|e| MyError::Message(format!("DB error: {}", e)))?;
-    Ok(Json(new_event))
+    .await;
+    Ok(Json(new_event?))
 }
 
 async fn list_farm_records(State(state): State<AppState>) -> Result<Json<Vec<FarmRecord>>, MyError> {
@@ -160,9 +150,8 @@ async fn list_farm_records(State(state): State<AppState>) -> Result<Json<Vec<Far
         "SELECT fr.id, fr.farm_id, fr.agricultural_area, fr.manure_storage_capacity, fr.year FROM farm_records fr JOIN farms fa ON fr.farm_id = fa.id WHERE fa.user_id = 1"
     )
     .fetch_all(&state.db_pool)
-    .await
-    .map_err(|e| MyError::Message(format!("DB error: {}", e)))?;
-    Ok(Json(records))
+    .await;
+    Ok(Json(records?))
 }
 async fn create_farm_record(State(state): State<AppState>, Json(record): Json<FarmRecord>) -> Result<Json<FarmRecord>, MyError> {
     let new_record = sqlx::query_as::<_, FarmRecord>(
@@ -173,9 +162,8 @@ async fn create_farm_record(State(state): State<AppState>, Json(record): Json<Fa
     .bind(record.manure_storage_capacity)
     .bind(record.year)
     .fetch_one(&state.db_pool)
-    .await
-    .map_err(|e| MyError::Message(format!("DB error: {}", e)))?;
-    Ok(Json(new_record))
+    .await;
+    Ok(Json(new_record?))
 }
 
 #[cfg(test)]
