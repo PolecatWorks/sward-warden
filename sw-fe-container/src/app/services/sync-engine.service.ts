@@ -228,43 +228,57 @@ export class SyncEngineService implements OnDestroy {
 
   /** Upsert farms from the server into local RxDB. */
   private async upsertFarms(db: SwardDatabase, serverFarms: any[]): Promise<void> {
-    if (!serverFarms || serverFarms.length === 0) return;
+    if (serverFarms.length === 0) return;
 
-    const serverIds = serverFarms.map(s => s.id);
-    const existingDocsArray = await db.farms.find({
-      selector: { serverId: { $in: serverIds } }
-    }).exec();
-
-    const existingDocsMap = new Map();
-    for (const doc of existingDocsArray) {
-      existingDocsMap.set(doc.serverId, doc);
+    const serverIds = serverFarms.map(f => f.id);
+    const existingDocs = await db.farms.find({ selector: { serverId: { $in: serverIds } } }).exec();
+    const localDocsByServerId = new Map<number, any[]>();
+    for (const doc of existingDocs) {
+      if (doc.serverId !== undefined) {
+        const list = localDocsByServerId.get(doc.serverId) || [];
+        list.push(doc);
+        localDocsByServerId.set(doc.serverId, list);
+      }
     }
 
-    const localDocIds = existingDocsArray.map(doc => doc.id);
-    const outboxEntriesArray = await db.outbox.find({
-      selector: { localDocId: { $in: localDocIds }, status: 'pending' }
-    }).exec();
+    const potentialConflictDocIds = serverFarms
+      .map(sf => {
+        const localDocs = localDocsByServerId.get(sf.id);
+        if (!localDocs || localDocs.length === 0 || sf.is_deleted) return null;
+        const localDoc = localDocs[0];
+        const serverTime = new Date(sf.updated_at).getTime();
+        const localTime = new Date(localDoc.updatedAt).getTime();
+        return localTime > serverTime ? localDoc.id : null;
+      })
+      .filter((id): id is string => id !== null);
 
-    const pendingOutboxMap = new Set();
-    for (const entry of outboxEntriesArray) {
-      pendingOutboxMap.add(entry.localDocId);
+    const pendingOutboxSet = new Set<string>();
+    if (potentialConflictDocIds.length > 0) {
+      const pendingEntries = await db.outbox.find({
+        selector: { localDocId: { $in: potentialConflictDocIds }, status: 'pending' }
+      }).exec();
+      pendingEntries.forEach(e => pendingOutboxSet.add(e.localDocId));
     }
 
-    const toUpsert = [];
-    const toRemove = [];
+    const toUpsert: any[] = [];
+    const idsToRemove: string[] = [];
 
     for (const serverFarm of serverFarms) {
-      const localDoc = existingDocsMap.get(serverFarm.id);
-
+      const localDocs = localDocsByServerId.get(serverFarm.id) || [];
       if (serverFarm.is_deleted) {
-        if (localDoc) toRemove.push(localDoc);
+        for (const doc of localDocs) idsToRemove.push(doc.id);
         continue;
       }
 
-      if (localDoc) {
-        const hasPending = pendingOutboxMap.has(localDoc.id);
-        if (this.shouldOverwriteLocal(localDoc.updatedAt, serverFarm.updated_at, hasPending)) {
-          await localDoc.patch({
+      if (localDocs.length > 0) {
+        const localDoc = localDocs[0];
+        const serverTime = new Date(serverFarm.updated_at).getTime();
+        const localTime = new Date(localDoc.updatedAt).getTime();
+        let overwrite = serverTime >= localTime || !pendingOutboxSet.has(localDoc.id);
+
+        if (overwrite) {
+          toUpsert.push({
+            ...localDoc.toJSON(),
             name: serverFarm.name,
             location: serverFarm.location,
             updatedAt: serverFarm.updated_at,
@@ -284,53 +298,63 @@ export class SyncEngineService implements OnDestroy {
       }
     }
 
-    if (toRemove.length > 0) {
-      await db.farms.bulkRemove(toRemove.map(d => d.id));
-    }
-    if (toUpsert.length > 0) {
-      await db.farms.bulkUpsert(toUpsert);
-    }
+    if (idsToRemove.length > 0) await db.farms.bulkRemove(idsToRemove);
+    if (toUpsert.length > 0) await db.farms.bulkUpsert(toUpsert);
   }
 
   /** Upsert fields from the server into local RxDB. */
   private async upsertFields(db: SwardDatabase, serverFields: any[]): Promise<void> {
-    if (!serverFields || serverFields.length === 0) return;
+    if (serverFields.length === 0) return;
 
-    const serverIds = serverFields.map(s => s.id);
-    const existingDocsArray = await db.fields.find({
-      selector: { serverId: { $in: serverIds } }
-    }).exec();
-
-    const existingDocsMap = new Map();
-    for (const doc of existingDocsArray) {
-      existingDocsMap.set(doc.serverId, doc);
+    const serverIds = serverFields.map(f => f.id);
+    const existingDocs = await db.fields.find({ selector: { serverId: { $in: serverIds } } }).exec();
+    const localDocsByServerId = new Map<number, any[]>();
+    for (const doc of existingDocs) {
+      if (doc.serverId !== undefined) {
+        const list = localDocsByServerId.get(doc.serverId) || [];
+        list.push(doc);
+        localDocsByServerId.set(doc.serverId, list);
+      }
     }
 
-    const localDocIds = existingDocsArray.map(doc => doc.id);
-    const outboxEntriesArray = await db.outbox.find({
-      selector: { localDocId: { $in: localDocIds }, status: 'pending' }
-    }).exec();
+    const potentialConflictDocIds = serverFields
+      .map(sf => {
+        const localDocs = localDocsByServerId.get(sf.id);
+        if (!localDocs || localDocs.length === 0 || sf.is_deleted) return null;
+        const localDoc = localDocs[0];
+        const serverTime = new Date(sf.updated_at).getTime();
+        const localTime = new Date(localDoc.updatedAt).getTime();
+        return localTime > serverTime ? localDoc.id : null;
+      })
+      .filter((id): id is string => id !== null);
 
-    const pendingOutboxMap = new Set();
-    for (const entry of outboxEntriesArray) {
-      pendingOutboxMap.add(entry.localDocId);
+    const pendingOutboxSet = new Set<string>();
+    if (potentialConflictDocIds.length > 0) {
+      const pendingEntries = await db.outbox.find({
+        selector: { localDocId: { $in: potentialConflictDocIds }, status: 'pending' }
+      }).exec();
+      pendingEntries.forEach(e => pendingOutboxSet.add(e.localDocId));
     }
 
-    const toUpsert = [];
-    const toRemove = [];
+    const toUpsert: any[] = [];
+    const idsToRemove: string[] = [];
 
     for (const serverField of serverFields) {
-      const localDoc = existingDocsMap.get(serverField.id);
-
+      const localDocs = localDocsByServerId.get(serverField.id) || [];
       if (serverField.is_deleted) {
-        if (localDoc) toRemove.push(localDoc);
+        for (const doc of localDocs) idsToRemove.push(doc.id);
         continue;
       }
 
-      if (localDoc) {
-        const hasPending = pendingOutboxMap.has(localDoc.id);
-        if (this.shouldOverwriteLocal(localDoc.updatedAt, serverField.updated_at, hasPending)) {
-          await localDoc.patch({
+      if (localDocs.length > 0) {
+        const localDoc = localDocs[0];
+        const serverTime = new Date(serverField.updated_at).getTime();
+        const localTime = new Date(localDoc.updatedAt).getTime();
+        let overwrite = serverTime >= localTime || !pendingOutboxSet.has(localDoc.id);
+
+        if (overwrite) {
+          toUpsert.push({
+            ...localDoc.toJSON(),
             name: serverField.name,
             area_hectares: serverField.area_hectares,
             updatedAt: serverField.updated_at,
@@ -350,53 +374,63 @@ export class SyncEngineService implements OnDestroy {
       }
     }
 
-    if (toRemove.length > 0) {
-      await db.fields.bulkRemove(toRemove.map(d => d.id));
-    }
-    if (toUpsert.length > 0) {
-      await db.fields.bulkUpsert(toUpsert);
-    }
+    if (idsToRemove.length > 0) await db.fields.bulkRemove(idsToRemove);
+    if (toUpsert.length > 0) await db.fields.bulkUpsert(toUpsert);
   }
 
   /** Upsert events from the server into local RxDB. */
   private async upsertEvents(db: SwardDatabase, serverEvents: any[]): Promise<void> {
-    if (!serverEvents || serverEvents.length === 0) return;
+    if (serverEvents.length === 0) return;
 
-    const serverIds = serverEvents.map(s => s.id);
-    const existingDocsArray = await db.events.find({
-      selector: { serverId: { $in: serverIds } }
-    }).exec();
-
-    const existingDocsMap = new Map();
-    for (const doc of existingDocsArray) {
-      existingDocsMap.set(doc.serverId, doc);
+    const serverIds = serverEvents.map(e => e.id);
+    const existingDocs = await db.events.find({ selector: { serverId: { $in: serverIds } } }).exec();
+    const localDocsByServerId = new Map<number, any[]>();
+    for (const doc of existingDocs) {
+      if (doc.serverId !== undefined) {
+        const list = localDocsByServerId.get(doc.serverId) || [];
+        list.push(doc);
+        localDocsByServerId.set(doc.serverId, list);
+      }
     }
 
-    const localDocIds = existingDocsArray.map(doc => doc.id);
-    const outboxEntriesArray = await db.outbox.find({
-      selector: { localDocId: { $in: localDocIds }, status: 'pending' }
-    }).exec();
+    const potentialConflictDocIds = serverEvents
+      .map(se => {
+        const localDocs = localDocsByServerId.get(se.id);
+        if (!localDocs || localDocs.length === 0 || se.is_deleted) return null;
+        const localDoc = localDocs[0];
+        const serverTime = new Date(se.updated_at).getTime();
+        const localTime = new Date(localDoc.updatedAt).getTime();
+        return localTime > serverTime ? localDoc.id : null;
+      })
+      .filter((id): id is string => id !== null);
 
-    const pendingOutboxMap = new Set();
-    for (const entry of outboxEntriesArray) {
-      pendingOutboxMap.add(entry.localDocId);
+    const pendingOutboxSet = new Set<string>();
+    if (potentialConflictDocIds.length > 0) {
+      const pendingEntries = await db.outbox.find({
+        selector: { localDocId: { $in: potentialConflictDocIds }, status: 'pending' }
+      }).exec();
+      pendingEntries.forEach(e => pendingOutboxSet.add(e.localDocId));
     }
 
-    const toUpsert = [];
-    const toRemove = [];
+    const toUpsert: any[] = [];
+    const idsToRemove: string[] = [];
 
     for (const serverEvent of serverEvents) {
-      const localDoc = existingDocsMap.get(serverEvent.id);
-
+      const localDocs = localDocsByServerId.get(serverEvent.id) || [];
       if (serverEvent.is_deleted) {
-        if (localDoc) toRemove.push(localDoc);
+        for (const doc of localDocs) idsToRemove.push(doc.id);
         continue;
       }
 
-      if (localDoc) {
-        const hasPending = pendingOutboxMap.has(localDoc.id);
-        if (this.shouldOverwriteLocal(localDoc.updatedAt, serverEvent.updated_at, hasPending)) {
-          await localDoc.patch({
+      if (localDocs.length > 0) {
+        const localDoc = localDocs[0];
+        const serverTime = new Date(serverEvent.updated_at).getTime();
+        const localTime = new Date(localDoc.updatedAt).getTime();
+        let overwrite = serverTime >= localTime || !pendingOutboxSet.has(localDoc.id);
+
+        if (overwrite) {
+          toUpsert.push({
+            ...localDoc.toJSON(),
             event_type: serverEvent.event_type,
             description: serverEvent.description,
             date: serverEvent.date,
@@ -418,53 +452,82 @@ export class SyncEngineService implements OnDestroy {
       }
     }
 
-    if (toRemove.length > 0) {
-      await db.events.bulkRemove(toRemove.map(d => d.id));
-    }
-    if (toUpsert.length > 0) {
-      await db.events.bulkUpsert(toUpsert);
-    }
+    if (idsToRemove.length > 0) await db.events.bulkRemove(idsToRemove);
+    if (toUpsert.length > 0) await db.events.bulkUpsert(toUpsert);
   }
 
   /** Upsert soil analyses from the server into local RxDB. */
   private async upsertSoilAnalyses(db: SwardDatabase, serverAnalyses: any[]): Promise<void> {
-    if (!serverAnalyses || serverAnalyses.length === 0) return;
+    if (serverAnalyses.length === 0) return;
 
-    const serverIds = serverAnalyses.map(s => s.id);
-    const existingDocsArray = await db.soil_analyses.find({
+    // 1. Bulk lookup existing local records by serverId
+    const serverIds = serverAnalyses.map(a => a.id);
+    const existingDocs = await db.soil_analyses.find({
       selector: { serverId: { $in: serverIds } }
     }).exec();
 
-    const existingDocsMap = new Map();
-    for (const doc of existingDocsArray) {
-      existingDocsMap.set(doc.serverId, doc);
+    // Group local docs by serverId
+    const localDocsByServerId = new Map<number, any[]>();
+    for (const doc of existingDocs) {
+      if (doc.serverId !== undefined) {
+        const list = localDocsByServerId.get(doc.serverId) || [];
+        list.push(doc);
+        localDocsByServerId.set(doc.serverId, list);
+      }
     }
 
-    const localDocIds = existingDocsArray.map(doc => doc.id);
-    const outboxEntriesArray = await db.outbox.find({
-      selector: { localDocId: { $in: localDocIds }, status: 'pending' }
-    }).exec();
+    // 2. Pre-fetch pending outbox entries to avoid N+1
+    const potentialConflictDocIds = serverAnalyses
+      .map(sa => {
+        const localDocs = localDocsByServerId.get(sa.id);
+        if (!localDocs || localDocs.length === 0 || sa.is_deleted) return null;
+        const localDoc = localDocs[0];
+        const serverTime = new Date(sa.updated_at).getTime();
+        const localTime = new Date(localDoc.updatedAt).getTime();
+        return localTime > serverTime ? localDoc.id : null;
+      })
+      .filter((id): id is string => id !== null);
 
-    const pendingOutboxMap = new Set();
-    for (const entry of outboxEntriesArray) {
-      pendingOutboxMap.add(entry.localDocId);
+    const pendingOutboxSet = new Set<string>();
+    if (potentialConflictDocIds.length > 0) {
+      const pendingEntries = await db.outbox.find({
+        selector: {
+          localDocId: { $in: potentialConflictDocIds },
+          status: 'pending'
+        }
+      }).exec();
+      pendingEntries.forEach(e => pendingOutboxSet.add(e.localDocId));
     }
 
-    const toUpsert = [];
-    const toRemove = [];
+    const toUpsert: any[] = [];
+    const idsToRemove: string[] = [];
 
+    // 3. Process records
     for (const serverAnalysis of serverAnalyses) {
-      const localDoc = existingDocsMap.get(serverAnalysis.id);
+      const localDocs = localDocsByServerId.get(serverAnalysis.id) || [];
 
       if (serverAnalysis.is_deleted) {
-        if (localDoc) toRemove.push(localDoc);
+        for (const doc of localDocs) {
+          idsToRemove.push(doc.id);
+        }
         continue;
       }
 
-      if (localDoc) {
-        const hasPending = pendingOutboxMap.has(localDoc.id);
-        if (this.shouldOverwriteLocal(localDoc.updatedAt, serverAnalysis.updated_at, hasPending)) {
-          await localDoc.patch({
+      if (localDocs.length > 0) {
+        const localDoc = localDocs[0];
+        const serverTime = new Date(serverAnalysis.updated_at).getTime();
+        const localTime = new Date(localDoc.updatedAt).getTime();
+
+        let overwrite = true;
+        if (serverTime < localTime) {
+          if (pendingOutboxSet.has(localDoc.id)) {
+            overwrite = false;
+          }
+        }
+
+        if (overwrite) {
+          toUpsert.push({
+            ...localDoc.toJSON(),
             ph_level: serverAnalysis.ph_level,
             phosphorus_index: serverAnalysis.phosphorus_index,
             potassium_index: serverAnalysis.potassium_index,
@@ -489,8 +552,9 @@ export class SyncEngineService implements OnDestroy {
       }
     }
 
-    if (toRemove.length > 0) {
-      await db.soil_analyses.bulkRemove(toRemove.map(d => d.id));
+    // 4. Batch database operations
+    if (idsToRemove.length > 0) {
+      await db.soil_analyses.bulkRemove(idsToRemove);
     }
     if (toUpsert.length > 0) {
       await db.soil_analyses.bulkUpsert(toUpsert);
@@ -499,43 +563,57 @@ export class SyncEngineService implements OnDestroy {
 
   /** Upsert fertilisation plans from the server into local RxDB. */
   private async upsertFertilisationPlans(db: SwardDatabase, serverPlans: any[]): Promise<void> {
-    if (!serverPlans || serverPlans.length === 0) return;
+    if (serverPlans.length === 0) return;
 
-    const serverIds = serverPlans.map(s => s.id);
-    const existingDocsArray = await db.fertilisation_plans.find({
-      selector: { serverId: { $in: serverIds } }
-    }).exec();
-
-    const existingDocsMap = new Map();
-    for (const doc of existingDocsArray) {
-      existingDocsMap.set(doc.serverId, doc);
+    const serverIds = serverPlans.map(p => p.id);
+    const existingDocs = await db.fertilisation_plans.find({ selector: { serverId: { $in: serverIds } } }).exec();
+    const localDocsByServerId = new Map<number, any[]>();
+    for (const doc of existingDocs) {
+      if (doc.serverId !== undefined) {
+        const list = localDocsByServerId.get(doc.serverId) || [];
+        list.push(doc);
+        localDocsByServerId.set(doc.serverId, list);
+      }
     }
 
-    const localDocIds = existingDocsArray.map(doc => doc.id);
-    const outboxEntriesArray = await db.outbox.find({
-      selector: { localDocId: { $in: localDocIds }, status: 'pending' }
-    }).exec();
+    const potentialConflictDocIds = serverPlans
+      .map(sp => {
+        const localDocs = localDocsByServerId.get(sp.id);
+        if (!localDocs || localDocs.length === 0 || sp.is_deleted) return null;
+        const localDoc = localDocs[0];
+        const serverTime = new Date(sp.updated_at).getTime();
+        const localTime = new Date(localDoc.updatedAt).getTime();
+        return localTime > serverTime ? localDoc.id : null;
+      })
+      .filter((id): id is string => id !== null);
 
-    const pendingOutboxMap = new Set();
-    for (const entry of outboxEntriesArray) {
-      pendingOutboxMap.add(entry.localDocId);
+    const pendingOutboxSet = new Set<string>();
+    if (potentialConflictDocIds.length > 0) {
+      const pendingEntries = await db.outbox.find({
+        selector: { localDocId: { $in: potentialConflictDocIds }, status: 'pending' }
+      }).exec();
+      pendingEntries.forEach(e => pendingOutboxSet.add(e.localDocId));
     }
 
-    const toUpsert = [];
-    const toRemove = [];
+    const toUpsert: any[] = [];
+    const idsToRemove: string[] = [];
 
     for (const serverPlan of serverPlans) {
-      const localDoc = existingDocsMap.get(serverPlan.id);
-
+      const localDocs = localDocsByServerId.get(serverPlan.id) || [];
       if (serverPlan.is_deleted) {
-        if (localDoc) toRemove.push(localDoc);
+        for (const doc of localDocs) idsToRemove.push(doc.id);
         continue;
       }
 
-      if (localDoc) {
-        const hasPending = pendingOutboxMap.has(localDoc.id);
-        if (this.shouldOverwriteLocal(localDoc.updatedAt, serverPlan.updated_at, hasPending)) {
-          await localDoc.patch({
+      if (localDocs.length > 0) {
+        const localDoc = localDocs[0];
+        const serverTime = new Date(serverPlan.updated_at).getTime();
+        const localTime = new Date(localDoc.updatedAt).getTime();
+        let overwrite = serverTime >= localTime || !pendingOutboxSet.has(localDoc.id);
+
+        if (overwrite) {
+          toUpsert.push({
+            ...localDoc.toJSON(),
             crop_type: serverPlan.crop_type,
             target_yield: serverPlan.target_yield,
             nitrogen_requirement: serverPlan.nitrogen_requirement,
@@ -563,38 +641,8 @@ export class SyncEngineService implements OnDestroy {
       }
     }
 
-    if (toRemove.length > 0) {
-      await db.fertilisation_plans.bulkRemove(toRemove.map(d => d.id));
-    }
-    if (toUpsert.length > 0) {
-      await db.fertilisation_plans.bulkUpsert(toUpsert);
-    }
-  }
-
-  // ──────────────────────────────────────────────────────────
-  // LWW Conflict Resolution
-  // ──────────────────────────────────────────────────────────
-
-  /**
-   * Determine whether the local doc should be overwritten by the server record.
-   */
-  private shouldOverwriteLocal(
-    localUpdatedAt: string,
-    serverUpdatedAt: string,
-    hasPendingOutbox: boolean,
-  ): boolean {
-    const serverTime = new Date(serverUpdatedAt).getTime();
-    const localTime = new Date(localUpdatedAt).getTime();
-
-    if (serverTime >= localTime) {
-      return true; // Server is newer
-    }
-
-    if (hasPendingOutbox) {
-      return false; // Local has pending changes, keep them
-    }
-
-    return true; // Local changes were already pushed, overwrite with server
+    if (idsToRemove.length > 0) await db.fertilisation_plans.bulkRemove(idsToRemove);
+    if (toUpsert.length > 0) await db.fertilisation_plans.bulkUpsert(toUpsert);
   }
 
   // ──────────────────────────────────────────────────────────
