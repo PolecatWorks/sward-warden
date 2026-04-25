@@ -1,23 +1,42 @@
 kind: Project
+apiVersion: garden.io/v2
 name: sward-warden
+
+variables:
+  pr-number: ${local.env.PR_NUMBER || "local"}
+  kube-context: "${local.env.GARDEN_KUBECONTEXT || (local.env.CI == 'true' ? 'local' : 'kubernetes-admin@kubernetes')}"
+  current-namespace: ${environment.defaultNamespace || "default"}
+
+providers:
+  - name: kubernetes
+    context: ${var.kube-context}
+    namespace: ${environment.namespace}
+    environments:
+      - pr
+      - local
+
 environments:
   - name: local
+    defaultNamespace: sward-warden-${local.env.USER}
   - name: pr
-variables:
-  current-namespace: ${environment.name == "pr" ? "sward-manager-pr-${env.PR_NUMBER}" : "sward-manager-local"}
+    defaultNamespace: sward-warden-pr-${var.pr-number}
 
 ---
 kind: Deploy
 type: helm
 name: sward-manager
+description: "Deploy the sward manager"
+source:
+  path: charts/sward-manager
+include:
+  - charts/sward-manager/**/*
 spec:
-  chart: ./charts/sward-manager
   values:
     frontend:
       image:
-        repository: ${env.SP_FE_IMAGE || "sward-manager-frontend"}
-        tag: ${env.SP_FE_TAG || "latest"}
+        repository: ${local.env.SW_FE_IMAGE || "sward-manager-frontend"}
+        tag: ${local.env.SW_FE_TAG || "latest"}
     backend:
       image:
-        repository: ${env.SP_BE_IMAGE || "sward-manager-backend"}
-        tag: ${env.SP_BE_TAG || "latest"}
+        repository: ${local.env.SW_BE_IMAGE || "sward-manager-backend"}
+        tag: ${local.env.SW_BE_TAG || "latest"}
