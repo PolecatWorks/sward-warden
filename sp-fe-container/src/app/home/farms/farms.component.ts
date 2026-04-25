@@ -17,6 +17,9 @@ export class FarmsComponent implements OnInit {
   newFarmName: string = '';
   newFarmLocation: string = '';
   showAddFarmModal: boolean = false;
+  isLoading: boolean = false;
+  isSaving: boolean = false;
+  errorMessage: string | null = null;
 
   constructor(private farmService: FarmManagementService) {}
 
@@ -25,31 +28,70 @@ export class FarmsComponent implements OnInit {
   }
 
   loadFarms(): void {
-    this.farmService.getFarms().subscribe(farms => {
-      this.farms = farms;
+    this.isLoading = true;
+    this.errorMessage = null;
+    this.farmService.getFarms().subscribe({
+      next: (farms) => {
+        this.farms = farms;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.errorMessage = 'Failed to load farms. Please try again.';
+        this.isLoading = false;
+        console.error('Error loading farms:', err);
+      }
     });
   }
 
   addFarm(): void {
-    if (this.newFarmName && this.newFarmLocation) {
-      const newFarm: Farm = {
-        id: Date.now(), // Generate a temporary ID
-        user_id: 1, // Default user_id for now
-        name: this.newFarmName,
-        location: this.newFarmLocation
-      };
+    if (!this.newFarmName || !this.newFarmLocation) {
+      return;
+    }
 
-      this.farmService.addFarm(newFarm).subscribe(() => {
-        this.loadFarms();
+    const newFarm: Farm = {
+      name: this.newFarmName,
+      location: this.newFarmLocation
+    };
+
+    this.isSaving = true;
+    this.farmService.addFarm(newFarm).subscribe({
+      next: () => {
         this.newFarmName = '';
         this.newFarmLocation = '';
-      });
-    }
+        this.showAddFarmModal = false;
+        this.isSaving = false;
+        this.loadFarms();
+      },
+      error: (err) => {
+        this.errorMessage = 'Failed to add farm. Please try again.';
+        this.isSaving = false;
+        console.error('Error adding farm:', err);
+      }
+    });
   }
 
   deleteFarm(id: number): void {
-    this.farmService.deleteFarm(id).subscribe(() => {
-      this.loadFarms();
+    this.farmService.deleteFarm(id).subscribe({
+      next: () => {
+        this.loadFarms();
+      },
+      error: (err) => {
+        this.errorMessage = 'Failed to delete farm. Please try again.';
+        console.error('Error deleting farm:', err);
+      }
     });
+  }
+
+  openAddFarmModal(): void {
+    this.newFarmName = '';
+    this.newFarmLocation = '';
+    this.errorMessage = null;
+    this.showAddFarmModal = true;
+  }
+
+  closeAddFarmModal(): void {
+    this.showAddFarmModal = false;
+    this.newFarmName = '';
+    this.newFarmLocation = '';
   }
 }
