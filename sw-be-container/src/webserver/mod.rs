@@ -10,7 +10,7 @@ use reqwest::StatusCode;
 
 use crate::state::AppState;
 use crate::error::MyError;
-use crate::models::{User, Farm, Field, Event, FarmRecord};
+use crate::models::{User, Farm, Field, Event, FarmRecord, SoilAnalysis};
 
 // Central API Router
 pub fn app_router(state: AppState) -> Router {
@@ -24,6 +24,8 @@ pub fn app_router(state: AppState) -> Router {
         .route("/v0/fields", get(list_fields).post(create_field))
         .route("/v0/fields/{id}", delete(delete_field))
         .route("/v0/events", get(list_events).post(create_event))
+        .route("/v0/soil_analyses", get(list_soil_analyses).post(create_soil_analysis))
+        .route("/v0/soil_analyses/{id}", delete(delete_soil_analysis))
         .route("/v0/farm_records", get(list_farm_records).post(create_farm_record))
         .with_state(state)
 }
@@ -166,5 +168,37 @@ async fn create_farm_record(State(state): State<AppState>, Json(record): Json<Fa
     Ok(Json(new_record?))
 }
 
+
+async fn list_soil_analyses(State(state): State<AppState>) -> Result<Json<Vec<SoilAnalysis>>, MyError> {
+    let analyses = sqlx::query_as::<_, SoilAnalysis>(
+        "SELECT sa.id, sa.field_id, sa.sample_date, sa.ph_level, sa.phosphorus_index, sa.potassium_index, sa.magnesium_index FROM soil_analyses sa JOIN fields f ON sa.field_id = f.id JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1"
+    )
+    .fetch_all(&state.db_pool)
+    .await;
+    Ok(Json(analyses?))
+}
+
+async fn create_soil_analysis(State(state): State<AppState>, Json(analysis): Json<SoilAnalysis>) -> Result<Json<SoilAnalysis>, MyError> {
+    let new_analysis = sqlx::query_as::<_, SoilAnalysis>(
+        "INSERT INTO soil_analyses (field_id, sample_date, ph_level, phosphorus_index, potassium_index, magnesium_index) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, field_id, sample_date, ph_level, phosphorus_index, potassium_index, magnesium_index"
+    )
+    .bind(analysis.field_id)
+    .bind(&analysis.sample_date)
+    .bind(analysis.ph_level)
+    .bind(analysis.phosphorus_index)
+    .bind(analysis.potassium_index)
+    .bind(analysis.magnesium_index)
+    .fetch_one(&state.db_pool)
+    .await;
+    Ok(Json(new_analysis?))
+}
+
+async fn delete_soil_analysis(State(state): State<AppState>, Path(id): Path<i64>) -> Result<StatusCode, MyError> {
+    sqlx::query("DELETE FROM soil_analyses WHERE id = $1 AND field_id IN (SELECT f.id FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1)")
+        .bind(id)
+        .execute(&state.db_pool)
+        .await?;
+    Ok(StatusCode::NO_CONTENT)
+}
 #[cfg(test)]
 mod tests;

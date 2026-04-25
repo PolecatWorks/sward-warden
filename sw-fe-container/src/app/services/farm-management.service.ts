@@ -5,6 +5,7 @@ import { User } from '../models/user';
 import { Farm } from '../models/farm';
 import { Field } from '../models/field';
 import { Event } from '../models/event';
+import { SoilAnalysis } from '../models/soil-analysis';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -89,4 +90,23 @@ export class FarmManagementService {
       switchMap(apiUrl => this.http.delete<void>(`${apiUrl}/fields/${id}`, { headers: this.getHeaders() }))
     );
   }
+
+  getSoilAnalyses(): Observable<SoilAnalysis[]> {
+    return this.apiUrl$.pipe(
+      switchMap(apiUrl => this.http.get<SoilAnalysis[]>(`${apiUrl}/soil_analyses`, { headers: this.getHeaders() }))
+    );
+  }
+
+  addSoilAnalysis(analysis: SoilAnalysis): Observable<SoilAnalysis> {
+    return this.apiUrl$.pipe(
+      switchMap(apiUrl => this.http.post<SoilAnalysis>(`${apiUrl}/soil_analyses`, analysis, { headers: this.getHeaders() }))
+    );
+  }
+
+  deleteSoilAnalysis(id: number): Observable<void> {
+    return this.apiUrl$.pipe(
+      switchMap(apiUrl => this.http.delete<void>(`${apiUrl}/soil_analyses/${id}`, { headers: this.getHeaders() }))
+    );
+  }
+
 }
