@@ -4,9 +4,9 @@ import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { Observable, from, shareReplay, switchMap } from 'rxjs';
 import {
   FarmDocType, FieldDocType, EventDocType, OutboxDocType, MetadataDocType,
-  SoilAnalysisDocType, FertilisationPlanDocType,
+  SoilAnalysisDocType, FertilisationPlanDocType, FarmRecordDocType,
   farmSchema, fieldSchema, eventSchema, outboxSchema, metadataSchema,
-  soilAnalysisSchema, fertilisationPlanSchema,
+  soilAnalysisSchema, fertilisationPlanSchema, farmRecordSchema,
 } from './schemas';
 
 /** Injection token for providing an alternative RxStorage (e.g. memory for tests). */
@@ -22,6 +22,7 @@ export type SwardCollections = {
   events: RxCollection<EventDocType>;
   soil_analyses: RxCollection<SoilAnalysisDocType>;
   fertilisation_plans: RxCollection<FertilisationPlanDocType>;
+  farm_records: RxCollection<FarmRecordDocType>;
   outbox: RxCollection<OutboxDocType>;
   metadata: RxCollection<MetadataDocType>;
 };
@@ -70,6 +71,7 @@ export class RxdbService implements OnDestroy {
       events: { schema: eventSchema },
       soil_analyses: { schema: soilAnalysisSchema },
       fertilisation_plans: { schema: fertilisationPlanSchema },
+      farm_records: { schema: farmRecordSchema },
       outbox: { schema: outboxSchema },
       metadata: { schema: metadataSchema },
     });
@@ -100,6 +102,12 @@ export class RxdbService implements OnDestroy {
   /** Observable emitting the fertilisation plans RxCollection. */
   get fertilisationPlansCollection$(): Observable<RxCollection<FertilisationPlanDocType>> {
     return this.db$.pipe(switchMap(db => from(Promise.resolve(db.fertilisation_plans))));
+  }
+
+
+  /** Observable emitting the farm records RxCollection. */
+  get farmRecordsCollection$(): Observable<RxCollection<FarmRecordDocType>> {
+    return this.db$.pipe(switchMap(db => from(Promise.resolve(db.farm_records))));
   }
 
   /** Observable emitting the outbox RxCollection. */

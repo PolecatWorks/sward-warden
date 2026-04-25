@@ -4,6 +4,10 @@ import { Subscription, firstValueFrom, filter, switchMap, from, timer, merge } f
 import { RxdbService, SwardDatabase } from './rxdb/rxdb.service';
 import { NetworkService } from './network.service';
 import { SyncStateService } from './sync-state.service';
+
+function generateLocalId(): string {
+  return `local-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+}
 import { FarmManagementService } from './farm-management.service';
 import { OutboxDocType } from './rxdb/schemas';
 
@@ -194,6 +198,7 @@ export class SyncEngineService implements OnDestroy {
       await this.upsertEvents(db, response.events || []);
       await this.upsertSoilAnalyses(db, response.soil_analyses || []);
       await this.upsertFertilisationPlans(db, response.fertilisation_plans || []);
+      await this.upsertFarmRecords(db, response.farm_records || []);
 
       // Update checkpoint
       if (response.checkpoint) {
@@ -629,6 +634,61 @@ export class SyncEngineService implements OnDestroy {
   // ──────────────────────────────────────────────────────────
 
   /** Update a local RxDB document's syncStatus. */
+
+  private async upsertFarmRecords(db: SwardDatabase, serverRecords: any[]): Promise<void> {
+    if (!serverRecords || serverRecords.length === 0) return;
+    const serverIds = serverRecords.map(r => r.id);
+    const existingDocs = await db.farm_records.find({ selector: { serverId: { $in: serverIds } } }).exec();
+    const existingMap = new Map(existingDocs.map(d => [d.serverId, d]));
+
+    const toUpsert: any[] = [];
+    const idsToRemove: string[] = [];
+
+    for (const sRecord of serverRecords) {
+      const localDoc = existingMap.get(sRecord.id);
+
+      if (sRecord.is_deleted) {
+        if (localDoc && localDoc.syncStatus !== 'pending') {
+          idsToRemove.push(localDoc.id);
+        }
+        continue;
+      }
+
+      if (localDoc) {
+        const localUpdatedAt = new Date(localDoc.updatedAt).getTime();
+        const serverUpdatedAt = sRecord.updated_at ? new Date(sRecord.updated_at).getTime() : 0;
+        if (localDoc.syncStatus === 'pending' && localUpdatedAt > serverUpdatedAt) {
+          continue;
+        }
+        toUpsert.push({
+          ...localDoc.toJSON(),
+          farm_id: sRecord.farm_id,
+          agricultural_area: sRecord.agricultural_area,
+          manure_storage_capacity: sRecord.manure_storage_capacity,
+          year: sRecord.year,
+          has_derogation: sRecord.has_derogation,
+          updatedAt: sRecord.updated_at || new Date().toISOString(),
+          syncStatus: 'synced',
+        });
+      } else {
+        toUpsert.push({
+          id: generateLocalId(),
+          serverId: sRecord.id,
+          farm_id: sRecord.farm_id,
+          agricultural_area: sRecord.agricultural_area,
+          manure_storage_capacity: sRecord.manure_storage_capacity,
+          year: sRecord.year,
+          has_derogation: sRecord.has_derogation,
+          syncStatus: 'synced',
+          updatedAt: sRecord.updated_at || new Date().toISOString(),
+        });
+      }
+    }
+
+    if (idsToRemove.length > 0) await db.farm_records.bulkRemove(idsToRemove);
+    if (toUpsert.length > 0) await db.farm_records.bulkUpsert(toUpsert);
+  }
+
   private async updateLocalDocStatus(
     db: SwardDatabase,
     entityType: string,

@@ -1,6 +1,6 @@
 # 0004-05 Fertilisation Account Specification
 
-**State**: Open
+**State**: Complete
 
 ## Scope
 This specification covers the fertilisation account requirements to maintain compliance with NAP regulations (PRD 0004).

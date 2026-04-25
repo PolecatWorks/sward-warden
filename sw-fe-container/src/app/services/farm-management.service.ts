@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, from, map, shareReplay, switchMap } from 'rxjs';
 import { User } from '../models/user';
 import { Farm } from '../models/farm';
+import { FarmRecord } from '../models/farm-record';
 import { Field } from '../models/field';
 import { Event } from '../models/event';
 import { FertiliserApplication } from '../models/fertiliser-application';
@@ -12,7 +13,7 @@ import { AuthService } from './auth.service';
 import { RxdbService } from './rxdb/rxdb.service';
 import {
   FarmDocType, FieldDocType, EventDocType, OutboxDocType,
-  SoilAnalysisDocType, FertilisationPlanDocType, OutboxEntityType,
+  SoilAnalysisDocType, FertilisationPlanDocType, OutboxEntityType, FarmRecordDocType,
 } from './rxdb/schemas';
 import { RxDocument } from 'rxdb';
 
@@ -70,7 +71,7 @@ export class FarmManagementService {
 
 
   private insertEntity<TDoc, TModel>(
-    collectionName: 'farms' | 'fields' | 'events' | 'soil_analyses' | 'fertilisation_plans',
+    collectionName: 'farms' | 'fields' | 'events' | 'soil_analyses' | 'fertilisation_plans' | 'farm_records',
     entityData: any,
     outboxPayload: any,
     mapper: (doc: TDoc) => TModel
@@ -195,6 +196,25 @@ export class FarmManagementService {
     );
   }
 
+
+  /** Get all farm records from the local RxDB database. */
+  getFarmRecords(): Observable<FarmRecord[]> {
+    return this.rxdbService.db$.pipe(
+      switchMap(db => db.farm_records.find().$ as Observable<FarmRecordDocType[]>),
+      map(docs => docs.map(doc => this.farmRecordDocToModel(doc))),
+    );
+  }
+
+  /** Add a farm record to the local RxDB database and queue an outbox entry. */
+  addFarmRecord(record: FarmRecord): Observable<FarmRecord> {
+    return this.insertEntity<FarmRecordDocType, FarmRecord>(
+      'farm_records',
+      { serverId: record.id, farm_id: record.farm_id, agricultural_area: record.agricultural_area, manure_storage_capacity: record.manure_storage_capacity, year: record.year, has_derogation: record.has_derogation },
+      { farm_id: record.farm_id, agricultural_area: record.agricultural_area, manure_storage_capacity: record.manure_storage_capacity, year: record.year, has_derogation: record.has_derogation },
+      (doc) => this.farmRecordDocToModel(doc)
+    );
+  }
+
   // ──────────────────────────────────────────────────────────
   // Fertiliser Applications (Still HTTP-only for now)
   // ──────────────────────────────────────────────────────────
@@ -241,7 +261,7 @@ export class FarmManagementService {
   private async createOutboxEntry(
     db: any,
     actionType: 'POST' | 'PUT' | 'DELETE',
-    entityType: 'farms' | 'fields' | 'events' | 'soil_analyses' | 'fertilisation_plans',
+    entityType: 'farms' | 'fields' | 'events' | 'soil_analyses' | 'fertilisation_plans' | 'farm_records',
     localDocId: string,
     payload: object,
   ): Promise<void> {
@@ -303,6 +323,17 @@ export class FarmManagementService {
       target_yield: doc.target_yield, nitrogen_requirement: doc.nitrogen_requirement,
       phosphorus_requirement: doc.phosphorus_requirement, potassium_requirement: doc.potassium_requirement,
       application_date: doc.application_date,
+    };
+  }
+
+  private farmRecordDocToModel(doc: FarmRecordDocType): FarmRecord {
+    return {
+      id: doc.serverId,
+      farm_id: doc.farm_id,
+      agricultural_area: doc.agricultural_area,
+      manure_storage_capacity: doc.manure_storage_capacity,
+      year: doc.year,
+      has_derogation: doc.has_derogation,
     };
   }
 }
