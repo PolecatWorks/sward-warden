@@ -115,9 +115,7 @@ mod tests {
     #[test]
     fn test_run_in_tokio_success() {
         let runtime = ThreadRuntime::default();
-        let result = run_in_tokio(&runtime, async {
-            Ok::<i32, MyError>(100)
-        });
+        let result = run_in_tokio(&runtime, async { Ok::<i32, MyError>(100) });
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), 100);
     }
@@ -127,9 +125,7 @@ mod tests {
         let runtime = ThreadRuntime::default();
         let cancel = CancellationToken::new();
 
-        let result = run_in_tokio_with_cancel(&runtime, cancel, async {
-            Ok::<i32, MyError>(200)
-        });
+        let result = run_in_tokio_with_cancel(&runtime, cancel, async { Ok::<i32, MyError>(200) });
 
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), 200);

@@ -1,6 +1,6 @@
 use figment::{
-    providers::{Env, Format, Yaml},
     Figment,
+    providers::{Env, Format, Yaml},
 };
 use serde::Deserialize;
 use std::time::Duration;
@@ -67,7 +67,7 @@ pub struct StartupCheckConfig {
 }
 
 impl AppConfig {
-    pub fn load() -> Result<Self, figment::Error> {
+    pub fn load() -> Result<Self, Box<figment::Error>> {
         let run_mode = std::env::var("RUN_MODE").unwrap_or_else(|_| "development".into());
 
         Figment::new()
@@ -76,6 +76,7 @@ impl AppConfig {
             .merge(Yaml::file("config/secrets.yaml"))
             .merge(Env::prefixed("SP_BE__").split("__"))
             .extract()
+            .map_err(Box::new)
     }
 }
 
