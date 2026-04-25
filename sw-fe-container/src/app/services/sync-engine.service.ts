@@ -189,11 +189,63 @@ export class SyncEngineService implements OnDestroy {
       );
 
       // Process each entity type
-      await this.upsertFarms(db, response.farms || []);
-      await this.upsertFields(db, response.fields || []);
-      await this.upsertEvents(db, response.events || []);
-      await this.upsertSoilAnalyses(db, response.soil_analyses || []);
-      await this.upsertFertilisationPlans(db, response.fertilisation_plans || []);
+      await this.upsertEntities(db, 'farms', response.farms || [], (serverFarm: any) => ({
+        id: `server-${serverFarm.id}`,
+        serverId: serverFarm.id,
+        user_id: serverFarm.user_id,
+        name: serverFarm.name,
+        location: serverFarm.location,
+        syncStatus: 'synced',
+        updatedAt: serverFarm.updated_at,
+      }));
+
+      await this.upsertEntities(db, 'fields', response.fields || [], (serverField: any) => ({
+        id: `server-${serverField.id}`,
+        serverId: serverField.id,
+        farm_id: serverField.farm_id,
+        name: serverField.name,
+        area_hectares: serverField.area_hectares,
+        syncStatus: 'synced',
+        updatedAt: serverField.updated_at,
+      }));
+
+      await this.upsertEntities(db, 'events', response.events || [], (serverEvent: any) => ({
+        id: `server-${serverEvent.id}`,
+        serverId: serverEvent.id,
+        field_id: serverEvent.field_id,
+        event_type: serverEvent.event_type,
+        description: serverEvent.description,
+        date: serverEvent.date,
+        syncStatus: 'synced',
+        updatedAt: serverEvent.updated_at,
+      }));
+
+      await this.upsertEntities(db, 'soil_analyses', response.soil_analyses || [], (serverAnalysis: any) => ({
+        id: `server-${serverAnalysis.id}`,
+        serverId: serverAnalysis.id,
+        field_id: serverAnalysis.field_id,
+        sample_date: serverAnalysis.sample_date,
+        ph_level: serverAnalysis.ph_level,
+        phosphorus_index: serverAnalysis.phosphorus_index,
+        potassium_index: serverAnalysis.potassium_index,
+        magnesium_index: serverAnalysis.magnesium_index,
+        syncStatus: 'synced',
+        updatedAt: serverAnalysis.updated_at,
+      }));
+
+      await this.upsertEntities(db, 'fertilisation_plans', response.fertilisation_plans || [], (serverPlan: any) => ({
+        id: `server-${serverPlan.id}`,
+        serverId: serverPlan.id,
+        field_id: serverPlan.field_id,
+        crop_type: serverPlan.crop_type,
+        target_yield: serverPlan.target_yield,
+        nitrogen_requirement: serverPlan.nitrogen_requirement,
+        phosphorus_requirement: serverPlan.phosphorus_requirement,
+        potassium_requirement: serverPlan.potassium_requirement,
+        application_date: serverPlan.application_date,
+        syncStatus: 'synced',
+        updatedAt: serverPlan.updated_at,
+      }));
 
       // Update checkpoint
       if (response.checkpoint) {
@@ -227,187 +279,41 @@ export class SyncEngineService implements OnDestroy {
   // ──────────────────────────────────────────────────────────
 
   /**
-   * Upsert farms from the server into local RxDB.
-   * Uses Last Write Wins (LWW) based on updatedAt.
+   * Generic upsert logic for syncing entities from the server to local RxDB.
+   * @param db Local database instance.
+   * @param collectionName Name of the collection on the db (e.g., 'farms', 'fields').
+   * @param serverEntities Array of entities returned by the server.
+   * @param mapFn Function mapping a server entity to a local document format.
    */
-  private async upsertFarms(db: SwardDatabase, serverFarms: any[]): Promise<void> {
-    for (const serverFarm of serverFarms) {
-      if (serverFarm.is_deleted) {
-        const docs = await db.farms.find({ selector: { serverId: serverFarm.id } }).exec();
+  private async upsertEntities(
+    db: SwardDatabase,
+    collectionName: keyof import('./rxdb/rxdb.service').SwardCollections,
+    serverEntities: any[],
+    mapFn: (serverEntity: any) => any
+  ): Promise<void> {
+    const collection = db[collectionName] as any;
+    for (const serverEntity of serverEntities) {
+      if (serverEntity.is_deleted) {
+        const docs = await collection.find({ selector: { serverId: serverEntity.id } }).exec();
         for (const doc of docs) { await doc.remove(); }
         continue;
       }
-      const existing = await db.farms.find({ selector: { serverId: serverFarm.id } }).exec();
+      const existing = await collection.find({ selector: { serverId: serverEntity.id } }).exec();
+      const mappedData = mapFn(serverEntity);
       if (existing.length > 0) {
         const localDoc = existing[0];
-        if (await this.shouldOverwriteLocal(db, localDoc.updatedAt, serverFarm.updated_at, localDoc.id)) {
-          await localDoc.patch({
-            name: serverFarm.name,
-            location: serverFarm.location,
-            updatedAt: serverFarm.updated_at,
-            syncStatus: 'synced',
-          });
+        if (await this.shouldOverwriteLocal(db, localDoc.updatedAt, serverEntity.updated_at, localDoc.id)) {
+          // Remove fields that should not be updated (e.g., id, serverId)
+          const { id, serverId, ...patchData } = mappedData;
+          await localDoc.patch(patchData);
         }
       } else {
-        await db.farms.upsert({
-          id: `server-${serverFarm.id}`,
-          serverId: serverFarm.id,
-          user_id: serverFarm.user_id,
-          name: serverFarm.name,
-          location: serverFarm.location,
-          syncStatus: 'synced',
-          updatedAt: serverFarm.updated_at,
-        });
+        await collection.upsert(mappedData);
       }
     }
   }
 
-  /** Upsert fields from the server into local RxDB. */
-  private async upsertFields(db: SwardDatabase, serverFields: any[]): Promise<void> {
-    for (const serverField of serverFields) {
-      if (serverField.is_deleted) {
-        const docs = await db.fields.find({ selector: { serverId: serverField.id } }).exec();
-        for (const doc of docs) { await doc.remove(); }
-        continue;
-      }
-      const existing = await db.fields.find({ selector: { serverId: serverField.id } }).exec();
-      if (existing.length > 0) {
-        const localDoc = existing[0];
-        if (await this.shouldOverwriteLocal(db, localDoc.updatedAt, serverField.updated_at, localDoc.id)) {
-          await localDoc.patch({
-            name: serverField.name,
-            area_hectares: serverField.area_hectares,
-            updatedAt: serverField.updated_at,
-            syncStatus: 'synced',
-          });
-        }
-      } else {
-        await db.fields.upsert({
-          id: `server-${serverField.id}`,
-          serverId: serverField.id,
-          farm_id: serverField.farm_id,
-          name: serverField.name,
-          area_hectares: serverField.area_hectares,
-          syncStatus: 'synced',
-          updatedAt: serverField.updated_at,
-        });
-      }
-    }
-  }
 
-  /** Upsert events from the server into local RxDB. */
-  private async upsertEvents(db: SwardDatabase, serverEvents: any[]): Promise<void> {
-    for (const serverEvent of serverEvents) {
-      if (serverEvent.is_deleted) {
-        const docs = await db.events.find({ selector: { serverId: serverEvent.id } }).exec();
-        for (const doc of docs) { await doc.remove(); }
-        continue;
-      }
-      const existing = await db.events.find({ selector: { serverId: serverEvent.id } }).exec();
-      if (existing.length > 0) {
-        const localDoc = existing[0];
-        if (await this.shouldOverwriteLocal(db, localDoc.updatedAt, serverEvent.updated_at, localDoc.id)) {
-          await localDoc.patch({
-            event_type: serverEvent.event_type,
-            description: serverEvent.description,
-            date: serverEvent.date,
-            updatedAt: serverEvent.updated_at,
-            syncStatus: 'synced',
-          });
-        }
-      } else {
-        await db.events.upsert({
-          id: `server-${serverEvent.id}`,
-          serverId: serverEvent.id,
-          field_id: serverEvent.field_id,
-          event_type: serverEvent.event_type,
-          description: serverEvent.description,
-          date: serverEvent.date,
-          syncStatus: 'synced',
-          updatedAt: serverEvent.updated_at,
-        });
-      }
-    }
-  }
-
-  /** Upsert soil analyses from the server into local RxDB. */
-  private async upsertSoilAnalyses(db: SwardDatabase, serverAnalyses: any[]): Promise<void> {
-    for (const serverAnalysis of serverAnalyses) {
-      if (serverAnalysis.is_deleted) {
-        const docs = await db.soil_analyses.find({ selector: { serverId: serverAnalysis.id } }).exec();
-        for (const doc of docs) { await doc.remove(); }
-        continue;
-      }
-      const existing = await db.soil_analyses.find({ selector: { serverId: serverAnalysis.id } }).exec();
-      if (existing.length > 0) {
-        const localDoc = existing[0];
-        if (await this.shouldOverwriteLocal(db, localDoc.updatedAt, serverAnalysis.updated_at, localDoc.id)) {
-          await localDoc.patch({
-            ph_level: serverAnalysis.ph_level,
-            phosphorus_index: serverAnalysis.phosphorus_index,
-            potassium_index: serverAnalysis.potassium_index,
-            magnesium_index: serverAnalysis.magnesium_index,
-            updatedAt: serverAnalysis.updated_at,
-            syncStatus: 'synced',
-          });
-        }
-      } else {
-        await db.soil_analyses.upsert({
-          id: `server-${serverAnalysis.id}`,
-          serverId: serverAnalysis.id,
-          field_id: serverAnalysis.field_id,
-          sample_date: serverAnalysis.sample_date,
-          ph_level: serverAnalysis.ph_level,
-          phosphorus_index: serverAnalysis.phosphorus_index,
-          potassium_index: serverAnalysis.potassium_index,
-          magnesium_index: serverAnalysis.magnesium_index,
-          syncStatus: 'synced',
-          updatedAt: serverAnalysis.updated_at,
-        });
-      }
-    }
-  }
-
-  /** Upsert fertilisation plans from the server into local RxDB. */
-  private async upsertFertilisationPlans(db: SwardDatabase, serverPlans: any[]): Promise<void> {
-    for (const serverPlan of serverPlans) {
-      if (serverPlan.is_deleted) {
-        const docs = await db.fertilisation_plans.find({ selector: { serverId: serverPlan.id } }).exec();
-        for (const doc of docs) { await doc.remove(); }
-        continue;
-      }
-      const existing = await db.fertilisation_plans.find({ selector: { serverId: serverPlan.id } }).exec();
-      if (existing.length > 0) {
-        const localDoc = existing[0];
-        if (await this.shouldOverwriteLocal(db, localDoc.updatedAt, serverPlan.updated_at, localDoc.id)) {
-          await localDoc.patch({
-            crop_type: serverPlan.crop_type,
-            target_yield: serverPlan.target_yield,
-            nitrogen_requirement: serverPlan.nitrogen_requirement,
-            phosphorus_requirement: serverPlan.phosphorus_requirement,
-            potassium_requirement: serverPlan.potassium_requirement,
-            application_date: serverPlan.application_date,
-            updatedAt: serverPlan.updated_at,
-            syncStatus: 'synced',
-          });
-        }
-      } else {
-        await db.fertilisation_plans.upsert({
-          id: `server-${serverPlan.id}`,
-          serverId: serverPlan.id,
-          field_id: serverPlan.field_id,
-          crop_type: serverPlan.crop_type,
-          target_yield: serverPlan.target_yield,
-          nitrogen_requirement: serverPlan.nitrogen_requirement,
-          phosphorus_requirement: serverPlan.phosphorus_requirement,
-          potassium_requirement: serverPlan.potassium_requirement,
-          application_date: serverPlan.application_date,
-          syncStatus: 'synced',
-          updatedAt: serverPlan.updated_at,
-        });
-      }
-    }
-  }
 
   // ──────────────────────────────────────────────────────────
   // LWW Conflict Resolution
