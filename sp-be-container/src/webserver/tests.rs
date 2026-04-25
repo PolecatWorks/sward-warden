@@ -37,7 +37,14 @@ async fn get_test_state() -> AppState {
             enabled: false,
         },
     };
-    AppState::new(config, metric_handle)
+
+    // We cannot easily test real DB without setting one up, but we can supply a dummy pool to test the hello route
+    let db_pool = sqlx::postgres::PgPoolOptions::new()
+        .max_connections(1)
+        .connect_lazy("postgres://localhost:5432/db")
+        .unwrap();
+
+    AppState::new(config, metric_handle, db_pool)
 }
 
 #[tokio::test]

@@ -64,10 +64,22 @@ async fn service_cancellable(ct: CancellationToken, config: AppConfig) -> Result
         .install_recorder()
         .map_err(|e| MyError::Message(format!("Failed to install Prometheus recorder: {e}")))?;
 
-    let state = AppState::new(config.clone(), metric_handle);
+    let db_url: url::Url = config.database.url.clone().into();
+    let db_pool = sqlx::postgres::PgPoolOptions::new()
+        .max_connections(config.database.max_connections)
+        .connect(db_url.as_str())
+        .await
+        .map_err(|e| MyError::Message(format!("Failed to connect to database: {e}")))?;
+
+    sqlx::migrate!()
+        .run(&db_pool)
+        .await
+        .map_err(|e| MyError::Message(format!("Failed to run database migrations: {e}")))?;
+
+    let state = AppState::new(config.clone(), metric_handle, db_pool.clone());
 
     if config.startup_checks.enabled {
-        startup_tools::run_startup_checks(&config).await?;
+        startup_tools::run_startup_checks(&config, &db_pool).await?;
     }
 
     let mut hams_config = config.hams.clone();
