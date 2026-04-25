@@ -3,7 +3,7 @@
 ## Goal
 Implement the client-side pull-sync mechanism that fetches only changed records from the backend using the delta sync API (spec 0011-03), and define the conflict resolution strategy for records modified both locally and on the server.
 
-## State: Open
+## State: Complete
 
 ## Technical Plan
 1. **Checkpoint Storage**:
