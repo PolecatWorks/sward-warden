@@ -118,7 +118,20 @@ jobs:
         with:
           command: test --env pr
 
+      - name: Extract Test Results
+        if: always()
+        run: |
+          NAMESPACE="sward-manager-pr-${{ env.PR_NUMBER }}"
+          mkdir -p ./robot-results
+          kubectl cp $NAMESPACE/robot-test-runner:/tmp/reports ./robot-results || echo "Failed to copy test results"
 
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: robot-test-results
+          path: ./robot-results
+          retention-days: 3
 
       - name: Teardown Garden Environment
         uses: garden-io/garden-action@v2
