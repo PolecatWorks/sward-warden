@@ -272,11 +272,8 @@ export class SyncEngineService implements OnDestroy {
 
       if (localDocs.length > 0) {
         const localDoc = localDocs[0];
-        const serverTime = new Date(serverFarm.updated_at).getTime();
-        const localTime = new Date(localDoc.updatedAt).getTime();
-        let overwrite = serverTime >= localTime || !pendingOutboxSet.has(localDoc.id);
-
-        if (overwrite) {
+        const hasPending = pendingOutboxSet.has(localDoc.id);
+        if (this.shouldOverwriteLocal(localDoc.updatedAt, serverFarm.updated_at, hasPending)) {
           toUpsert.push({
             ...localDoc.toJSON(),
             name: serverFarm.name,
@@ -348,11 +345,8 @@ export class SyncEngineService implements OnDestroy {
 
       if (localDocs.length > 0) {
         const localDoc = localDocs[0];
-        const serverTime = new Date(serverField.updated_at).getTime();
-        const localTime = new Date(localDoc.updatedAt).getTime();
-        let overwrite = serverTime >= localTime || !pendingOutboxSet.has(localDoc.id);
-
-        if (overwrite) {
+        const hasPending = pendingOutboxSet.has(localDoc.id);
+        if (this.shouldOverwriteLocal(localDoc.updatedAt, serverField.updated_at, hasPending)) {
           toUpsert.push({
             ...localDoc.toJSON(),
             name: serverField.name,
@@ -424,11 +418,8 @@ export class SyncEngineService implements OnDestroy {
 
       if (localDocs.length > 0) {
         const localDoc = localDocs[0];
-        const serverTime = new Date(serverEvent.updated_at).getTime();
-        const localTime = new Date(localDoc.updatedAt).getTime();
-        let overwrite = serverTime >= localTime || !pendingOutboxSet.has(localDoc.id);
-
-        if (overwrite) {
+        const hasPending = pendingOutboxSet.has(localDoc.id);
+        if (this.shouldOverwriteLocal(localDoc.updatedAt, serverEvent.updated_at, hasPending)) {
           toUpsert.push({
             ...localDoc.toJSON(),
             event_type: serverEvent.event_type,
@@ -515,17 +506,8 @@ export class SyncEngineService implements OnDestroy {
 
       if (localDocs.length > 0) {
         const localDoc = localDocs[0];
-        const serverTime = new Date(serverAnalysis.updated_at).getTime();
-        const localTime = new Date(localDoc.updatedAt).getTime();
-
-        let overwrite = true;
-        if (serverTime < localTime) {
-          if (pendingOutboxSet.has(localDoc.id)) {
-            overwrite = false;
-          }
-        }
-
-        if (overwrite) {
+        const hasPending = pendingOutboxSet.has(localDoc.id);
+        if (this.shouldOverwriteLocal(localDoc.updatedAt, serverAnalysis.updated_at, hasPending)) {
           toUpsert.push({
             ...localDoc.toJSON(),
             ph_level: serverAnalysis.ph_level,
@@ -607,11 +589,8 @@ export class SyncEngineService implements OnDestroy {
 
       if (localDocs.length > 0) {
         const localDoc = localDocs[0];
-        const serverTime = new Date(serverPlan.updated_at).getTime();
-        const localTime = new Date(localDoc.updatedAt).getTime();
-        let overwrite = serverTime >= localTime || !pendingOutboxSet.has(localDoc.id);
-
-        if (overwrite) {
+        const hasPending = pendingOutboxSet.has(localDoc.id);
+        if (this.shouldOverwriteLocal(localDoc.updatedAt, serverPlan.updated_at, hasPending)) {
           toUpsert.push({
             ...localDoc.toJSON(),
             crop_type: serverPlan.crop_type,
@@ -677,6 +656,17 @@ export class SyncEngineService implements OnDestroy {
     if (doc) {
       await doc.patch({ serverId, syncStatus: 'synced' as any });
     }
+  }
+
+  /**
+   * Determine if a local document should be overwritten by a server document.
+   * Uses Last-Write-Wins (LWW) conflict resolution logic, but respects local
+   * pending changes in the outbox.
+   */
+  private shouldOverwriteLocal(localUpdatedAt: string, serverUpdatedAt: string, hasPending: boolean): boolean {
+    const localTime = new Date(localUpdatedAt).getTime();
+    const serverTime = new Date(serverUpdatedAt).getTime();
+    return serverTime >= localTime || !hasPending;
   }
 
   ngOnDestroy(): void {
