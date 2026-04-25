@@ -111,6 +111,14 @@ export class FarmManagementService {
     );
   }
 
+  /** Get a single field from the local RxDB database by its server ID. */
+  getField(id: number): Observable<Field | undefined> {
+    return this.rxdbService.db$.pipe(
+      switchMap(db => db.fields.findOne({ selector: { serverId: id } }).$ as Observable<FieldDocType | null>),
+      map(doc => doc ? this.fieldDocToModel(doc) : undefined),
+    );
+  }
+
   /** Add a field to the local RxDB database and queue an outbox entry. */
   addField(field: Field): Observable<Field> {
     return this.rxdbService.db$.pipe(

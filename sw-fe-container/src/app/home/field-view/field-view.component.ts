@@ -48,8 +48,8 @@ export class FieldViewComponent implements OnInit {
   }
 
   loadFieldDetails(): void {
-    this.farmService.getFields().subscribe(allFields => {
-      this.field = allFields.find(f => f.id === this.fieldId);
+    this.farmService.getField(this.fieldId).subscribe(field => {
+      this.field = field;
     });
   }
 
