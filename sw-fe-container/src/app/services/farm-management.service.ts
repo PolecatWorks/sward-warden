@@ -12,7 +12,7 @@ import { AuthService } from './auth.service';
 import { RxdbService } from './rxdb/rxdb.service';
 import {
   FarmDocType, FieldDocType, EventDocType, OutboxDocType,
-  SoilAnalysisDocType, FertilisationPlanDocType,
+  SoilAnalysisDocType, FertilisationPlanDocType, OutboxEntityType,
 } from './rxdb/schemas';
 import { RxDocument } from 'rxdb';
 
@@ -242,12 +242,7 @@ export class FarmManagementService {
   // Delete Helpers
   // ──────────────────────────────────────────────────────────
 
-  deleteFarm(id: number): Observable<void> { return this.deleteByServerId('farms', id); }
-  deleteField(id: number): Observable<void> { return this.deleteByServerId('fields', id); }
-  deleteSoilAnalysis(id: number): Observable<void> { return this.deleteByServerId('soil_analyses', id); }
-  deleteFertilisationPlan(id: number): Observable<void> { return this.deleteByServerId('fertilisation_plans', id); }
-
-  private deleteByServerId(entity: string, serverId: number): Observable<void> {
+  deleteEntity(entity: OutboxEntityType, serverId: number): Observable<void> {
     return this.rxdbService.db$.pipe(
       switchMap(db => {
         const collection = (db as any)[entity];
