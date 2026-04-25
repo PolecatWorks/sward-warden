@@ -56,6 +56,7 @@ Once a PRD in `spec/prds/` is vetted, it is broken down into specific actionable
 - [0012-01 Adaptive Layouts Specification](./0012-01-adaptive-layouts.md)
 - [0012-02 Component Scaling and Typography Specification](./0012-02-component-scaling-and-typography.md)
 - [0012-03 Responsive Design Implementation Guidelines](./0012-03-implementation-guidelines.md)
+- [0014-01 Seed Data Generator](./0014-01-seed-data-generator.md)
 
 ## Implementation Sequence for Remaining Work
 
@@ -92,8 +93,13 @@ These specs implement the local-first architecture and synchronisation layer. Th
 15. **[0011-05 Delta Sync Client and Conflict Resolution Specification](./0011-05-delta-sync-client-and-conflict-resolution.md)** — Pull path: fetches server changes, merges into local DB, and resolves conflicts via LWW. Depends on 0011-01, 0011-03, and 0011-04.
 
 
+
 ### Phase 6: Responsive Design
 These specs handle adapting the UI for larger screens.
 16. **[0012-01 Adaptive Layouts Specification](./0012-01-adaptive-layouts.md)**
 17. **[0012-02 Component Scaling and Typography Specification](./0012-02-component-scaling-and-typography.md)**
 18. **[0012-03 Responsive Design Implementation Guidelines](./0012-03-implementation-guidelines.md)**
+
+### Phase 7: Tooling
+These specs outline development tools and utilities.
+19. **[0014-01 Seed Data Generator](./0014-01-seed-data-generator.md)**
