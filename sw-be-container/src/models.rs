@@ -47,6 +47,7 @@ pub struct FarmRecord {
     pub agricultural_area: f64,
     pub manure_storage_capacity: f64,
     pub year: i32,
+    pub has_derogation: Option<bool>,
     pub updated_at: Option<DateTime<Utc>>,
     pub is_deleted: Option<bool>,
 }

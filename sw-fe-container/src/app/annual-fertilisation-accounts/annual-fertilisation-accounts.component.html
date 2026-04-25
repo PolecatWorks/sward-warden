@@ -4,24 +4,42 @@
     <h2 class="text-3xl font-black text-primary">Annual Fertilisation Account</h2>
   </div>
 
-  <div class="bg-surface-container-low rounded-xl p-6">
+  <div class="bg-surface-container-low rounded-xl p-6" *ngIf="derogatedAccount">
     <div class="flex justify-between items-start mb-6">
       <div>
-        <h3 class="font-bold text-xl text-on-surface">Derogation Submission</h3>
+        <h3 class="font-bold text-xl text-on-surface">Derogation Submission - {{ derogatedAccount.year }}</h3>
         <p class="text-sm text-on-surface-variant mt-1">Previous calendar year records.</p>
+        <span *ngIf="derogatedAccount.hasDerogation" class="inline-block mt-2 bg-primary/10 text-primary px-2 py-1 rounded text-xs font-bold uppercase">Approved Derogation</span>
       </div>
       <span class="bg-error/10 text-error px-2 py-1 rounded text-xs font-bold uppercase">Due 1 March</span>
     </div>
 
     <div class="space-y-4 mb-6">
-      <div class="p-4 bg-surface rounded-xl border border-outline-variant flex justify-between items-center">
-        <span class="font-medium text-on-surface">2023 Account</span>
-        <span class="text-sm font-semibold text-primary">Ready</span>
+      <div class="p-4 bg-surface rounded-xl border border-outline-variant flex flex-col gap-2">
+        <div class="flex justify-between items-center border-b border-outline-variant pb-2">
+          <span class="text-on-surface-variant text-sm">Agricultural Area</span>
+          <span class="font-bold">{{ derogatedAccount.totalArea }} ha</span>
+        </div>
+        <div class="flex justify-between items-center border-b border-outline-variant pb-2">
+          <span class="text-on-surface-variant text-sm">Total Nitrogen Applied</span>
+          <span class="font-bold">{{ derogatedAccount.totalN | number:'1.0-2' }} kg N</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-on-surface-variant text-sm">N per Hectare</span>
+          <span class="font-bold" [ngClass]="{'text-error': derogatedAccount.hasDerogation && derogatedAccount.nPerHa > 250}">
+            {{ derogatedAccount.nPerHa | number:'1.0-2' }} kg N/ha
+            <span class="text-xs text-on-surface-variant font-normal">(Limit: {{ derogatedAccount.limit }})</span>
+          </span>
+        </div>
       </div>
     </div>
 
-    <button class="bg-primary text-white w-full py-3 rounded-full font-bold shadow flex items-center justify-center gap-2">
+    <button *ngIf="derogatedAccount.hasDerogation" class="bg-primary text-white w-full py-3 rounded-full font-bold shadow flex items-center justify-center gap-2">
       <span class="material-symbols-outlined">send</span> Format for NIEA Submit
     </button>
+  </div>
+
+  <div class="bg-surface-container-low rounded-xl p-6 text-center" *ngIf="!derogatedAccount">
+    <p class="text-on-surface-variant">No farm records available for this account.</p>
   </div>
 </div>

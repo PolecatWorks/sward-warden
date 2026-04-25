@@ -161,9 +161,41 @@ export const fertilisationPlanSchema: RxJsonSchema<FertilisationPlanDocType> = {
   indexes: ['syncStatus', 'updatedAt'],
 };
 
+
+export interface FarmRecordDocType {
+  id: string;
+  serverId?: number;
+  farm_id: number;
+  agricultural_area: number;
+  manure_storage_capacity: number;
+  year: number;
+  has_derogation?: boolean;
+  syncStatus: SyncStatus;
+  updatedAt: string;
+}
+
+export const farmRecordSchema: RxJsonSchema<FarmRecordDocType> = {
+  version: 0,
+  primaryKey: 'id',
+  type: 'object',
+  properties: {
+    id: { type: 'string', maxLength: 64 },
+    serverId: { type: 'number' },
+    farm_id: { type: 'number' },
+    agricultural_area: { type: 'number' },
+    manure_storage_capacity: { type: 'number' },
+    year: { type: 'number' },
+    has_derogation: { type: 'boolean' },
+    syncStatus: { type: 'string', maxLength: 16, enum: ['synced', 'pending', 'failed'], default: 'pending' },
+    updatedAt: { type: 'string', maxLength: 32 },
+  },
+  required: ['id', 'farm_id', 'agricultural_area', 'manure_storage_capacity', 'year', 'syncStatus', 'updatedAt'],
+  indexes: ['syncStatus', 'updatedAt'],
+};
+
 /** Outbox entry for queuing offline writes. */
 export type OutboxActionType = 'POST' | 'PUT' | 'DELETE';
-export type OutboxEntityType = 'farms' | 'fields' | 'events' | 'soil_analyses' | 'fertilisation_plans';
+export type OutboxEntityType = 'farms' | 'fields' | 'events' | 'soil_analyses' | 'fertilisation_plans' | 'farm_records';
 export type OutboxStatus = 'pending' | 'failed';
 
 export interface OutboxDocType {
@@ -186,7 +218,7 @@ export const outboxSchema: RxJsonSchema<OutboxDocType> = {
   properties: {
     id: { type: 'string', maxLength: 64 },
     actionType: { type: 'string', maxLength: 8, enum: ['POST', 'PUT', 'DELETE'] },
-    entityType: { type: 'string', maxLength: 32, enum: ['farms', 'fields', 'events', 'soil_analyses', 'fertilisation_plans'] },
+    entityType: { type: 'string', maxLength: 32, enum: ['farms', 'fields', 'events', 'soil_analyses', 'fertilisation_plans', 'farm_records'] },
     localDocId: { type: 'string', maxLength: 64 },
     payload: { type: 'string' },
     timestamp: { type: 'string', maxLength: 32 },
