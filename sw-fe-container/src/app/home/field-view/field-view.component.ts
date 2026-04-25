@@ -25,7 +25,11 @@ export class FieldViewComponent implements OnInit {
     date: new Date().toISOString().split('T')[0],
     description: '',
     fertiliser_type: '',
-    amount_applied: 0
+    amount_applied: 0,
+    nitrogen_content: 0,
+    phosphorus_content: 0,
+    is_protected_urea: false,
+    buffer_zone_confirmed: false
   };
   fertiliserApplications: FertiliserApplication[] = [];
 
@@ -102,6 +106,9 @@ export class FieldViewComponent implements OnInit {
         fertiliser_type: this.newFertiliser.fertiliser_type!,
         amount_applied: this.newFertiliser.amount_applied!,
         nitrogen_content: this.newFertiliser.nitrogen_content,
+        phosphorus_content: this.newFertiliser.phosphorus_content,
+        is_protected_urea: this.newFertiliser.is_protected_urea,
+        buffer_zone_confirmed: this.newFertiliser.buffer_zone_confirmed,
         evidence_of_control: this.newFertiliser.evidence_of_control
       };
 
@@ -109,7 +116,16 @@ export class FieldViewComponent implements OnInit {
       this.farmService.addFertiliserApplication(application as FertiliserApplication).subscribe(() => {
         this.loadEvents();
         this.showFertiliserForm = false;
-        this.newFertiliser = { date: new Date().toISOString().split('T')[0], description: '', fertiliser_type: '', amount_applied: 0 };
+        this.newFertiliser = {
+          date: new Date().toISOString().split('T')[0],
+          description: '',
+          fertiliser_type: '',
+          amount_applied: 0,
+          nitrogen_content: 0,
+          phosphorus_content: 0,
+          is_protected_urea: false,
+          buffer_zone_confirmed: false
+        };
       });
     });
   }

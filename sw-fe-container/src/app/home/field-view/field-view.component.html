@@ -38,9 +38,25 @@
             <label class="block text-sm font-medium text-on-surface mb-1">Amount Applied (kg/ha)</label>
             <input type="number" [(ngModel)]="newFertiliser.amount_applied" name="amount" required class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary">
           </div>
-          <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">Nitrogen Content (%)</label>
-            <input type="number" [(ngModel)]="newFertiliser.nitrogen_content" name="nitrogen" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-on-surface mb-1">Nitrogen (%)</label>
+              <input type="number" [(ngModel)]="newFertiliser.nitrogen_content" name="nitrogen" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-on-surface mb-1">Phosphorus (%)</label>
+              <input type="number" [(ngModel)]="newFertiliser.phosphorus_content" name="phosphorus" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary">
+            </div>
+          </div>
+          <div class="space-y-2">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" [(ngModel)]="newFertiliser.is_protected_urea" name="protected_urea" class="w-4 h-4 text-primary rounded border-outline focus:ring-primary">
+              <span class="text-sm font-medium text-on-surface">Urease Inhibitor (Protected Urea)</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" [(ngModel)]="newFertiliser.buffer_zone_confirmed" name="buffer_zone" required class="w-4 h-4 text-primary rounded border-outline focus:ring-primary">
+              <span class="text-sm font-medium text-on-surface">Confirm 2m Buffer Zone from Water</span>
+            </label>
           </div>
           <div>
              <label class="block text-sm font-medium text-on-surface mb-1">Description / Notes</label>
@@ -156,6 +172,8 @@
                   <div><span class="text-on-surface-variant font-medium">Type:</span> {{ fa.fertiliser_type }}</div>
                   <div><span class="text-on-surface-variant font-medium">Amount:</span> {{ fa.amount_applied }} kg/ha</div>
                   <div *ngIf="fa.nitrogen_content"><span class="text-on-surface-variant font-medium">N Content:</span> {{ fa.nitrogen_content }}%</div>
+                  <div *ngIf="fa.phosphorus_content"><span class="text-on-surface-variant font-medium">P Content:</span> {{ fa.phosphorus_content }}%</div>
+                  <div *ngIf="fa.is_protected_urea" class="col-span-2 text-primary font-bold text-[10px] uppercase">Protected Urea</div>
                 </div>
               </div>
 

@@ -25,6 +25,7 @@ pub struct Field {
     pub farm_id: i64,
     pub name: String,
     pub area_hectares: f64,
+    pub land_use: Option<String>,
     pub updated_at: Option<DateTime<Utc>>,
     pub is_deleted: Option<bool>,
 }
@@ -65,6 +66,7 @@ pub struct SyncResponse {
     pub farm_records: Vec<FarmRecord>,
     pub soil_analyses: Vec<SoilAnalysis>,
     pub fertilisation_plans: Vec<FertilisationPlan>,
+    pub fertiliser_applications: Vec<FertiliserApplication>,
 }
 
 /// Query parameters for the delta sync endpoint.
@@ -102,10 +104,15 @@ pub struct FertilisationPlan {
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct FertiliserApplication {
-    pub id: i64,
+    pub id: Option<i64>,
     pub event_id: i64,
     pub fertiliser_type: String,
     pub amount_applied: f64,
     pub nitrogen_content: Option<f64>,
+    pub phosphorus_content: Option<f64>,
+    pub is_protected_urea: Option<bool>,
+    pub buffer_zone_confirmed: Option<bool>,
     pub evidence_of_control: Option<String>,
+    pub updated_at: Option<DateTime<Utc>>,
+    pub is_deleted: Option<bool>,
 }

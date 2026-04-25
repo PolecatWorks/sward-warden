@@ -18,6 +18,7 @@ use crate::models::{
     Event, Farm, FarmRecord, FertilisationPlan, FertiliserApplication, Field, SoilAnalysis,
     SyncQuery, SyncResponse, User,
 };
+use crate::rules::{validate_fertiliser_application, ValidationResult};
 use crate::state::AppState;
 
 // Central API Router
@@ -267,29 +268,48 @@ async fn create_farm_record(
 async fn list_fertiliser_applications(
     State(state): State<AppState>,
 ) -> Result<Json<Vec<FertiliserApplication>>, MyError> {
-    let applications = sqlx::query_as::<_, FertiliserApplication>(
-        "SELECT fa.id, fa.event_id, fa.fertiliser_type, fa.amount_applied, fa.nitrogen_content, fa.evidence_of_control FROM fertiliser_applications fa JOIN events e ON fa.event_id = e.id JOIN fields f ON e.field_id = f.id JOIN farms fm ON f.farm_id = fm.id WHERE fm.user_id = 1"
+    let apps = sqlx::query_as::<_, FertiliserApplication>(
+        "SELECT id, event_id, fertiliser_type, amount_applied, nitrogen_content, phosphorus_content, is_protected_urea, buffer_zone_confirmed, evidence_of_control, updated_at, is_deleted FROM fertiliser_applications WHERE is_deleted = FALSE"
     )
     .fetch_all(&state.db_pool)
     .await;
-    Ok(Json(applications?))
+    Ok(Json(apps?))
 }
 
 async fn create_fertiliser_application(
     State(state): State<AppState>,
-    Json(application): Json<FertiliserApplication>,
+    Json(app): Json<FertiliserApplication>,
 ) -> Result<Json<FertiliserApplication>, MyError> {
-    let new_application = sqlx::query_as::<_, FertiliserApplication>(
-        "INSERT INTO fertiliser_applications (event_id, fertiliser_type, amount_applied, nitrogen_content, evidence_of_control) VALUES ($1, $2, $3, $4, $5) RETURNING id, event_id, fertiliser_type, amount_applied, nitrogen_content, evidence_of_control"
+    // Fetch Event and Field for validation
+    let event = sqlx::query_as::<_, Event>("SELECT * FROM events WHERE id = $1")
+        .bind(app.event_id)
+        .fetch_one(&state.db_pool)
+        .await?;
+
+    let field = sqlx::query_as::<_, Field>("SELECT * FROM fields WHERE id = $1")
+        .bind(event.field_id)
+        .fetch_one(&state.db_pool)
+        .await?;
+
+    match validate_fertiliser_application(&event, &app, &field) {
+        ValidationResult::Valid => (),
+        ValidationResult::Invalid(reason) => return Err(MyError::BadRequest(reason)),
+    }
+
+    let new_app = sqlx::query_as::<_, FertiliserApplication>(
+        "INSERT INTO fertiliser_applications (event_id, fertiliser_type, amount_applied, nitrogen_content, phosphorus_content, is_protected_urea, buffer_zone_confirmed, evidence_of_control) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id, event_id, fertiliser_type, amount_applied, nitrogen_content, phosphorus_content, is_protected_urea, buffer_zone_confirmed, evidence_of_control, updated_at, is_deleted"
     )
-    .bind(application.event_id)
-    .bind(&application.fertiliser_type)
-    .bind(application.amount_applied)
-    .bind(application.nitrogen_content)
-    .bind(&application.evidence_of_control)
+    .bind(app.event_id)
+    .bind(&app.fertiliser_type)
+    .bind(app.amount_applied)
+    .bind(app.nitrogen_content)
+    .bind(app.phosphorus_content)
+    .bind(app.is_protected_urea)
+    .bind(app.buffer_zone_confirmed)
+    .bind(&app.evidence_of_control)
     .fetch_one(&state.db_pool)
     .await;
-    Ok(Json(new_application?))
+    Ok(Json(new_app?))
 }
 
 async fn list_soil_analyses(
@@ -432,6 +452,13 @@ async fn delta_sync(
     .fetch_all(&state.db_pool)
     .await?;
 
+    let fertiliser_applications = sqlx::query_as::<_, FertiliserApplication>(
+        "SELECT fa.id, fa.event_id, fa.fertiliser_type, fa.amount_applied, fa.nitrogen_content, fa.phosphorus_content, fa.is_protected_urea, fa.buffer_zone_confirmed, fa.evidence_of_control, fa.updated_at, fa.is_deleted FROM fertiliser_applications fa JOIN events e ON fa.event_id = e.id JOIN fields f ON e.field_id = f.id JOIN farms far ON f.farm_id = far.id WHERE far.user_id = 1 AND fa.updated_at > $1"
+    )
+    .bind(since)
+    .fetch_all(&state.db_pool)
+    .await?;
+
     let checkpoint = Utc::now();
 
     Ok(Json(SyncResponse {
@@ -442,6 +469,7 @@ async fn delta_sync(
         farm_records,
         soil_analyses,
         fertilisation_plans,
+        fertiliser_applications,
     }))
 }
 

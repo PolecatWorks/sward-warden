@@ -4,6 +4,7 @@ pub mod error;
 pub mod hams;
 pub mod metrics;
 pub mod models;
+mod rules;
 pub mod seed;
 pub mod startup_tools;
 pub mod state;
