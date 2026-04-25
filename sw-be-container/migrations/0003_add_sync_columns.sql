@@ -38,3 +38,10 @@ CREATE TRIGGER trg_events_updated_at
 CREATE TRIGGER trg_farm_records_updated_at
     BEFORE UPDATE ON farm_records FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
+
+ALTER TABLE soil_analyses ADD COLUMN updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+ALTER TABLE soil_analyses ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT FALSE;
+
+CREATE TRIGGER trg_soil_analyses_updated_at
+    BEFORE UPDATE ON soil_analyses FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
