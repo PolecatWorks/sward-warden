@@ -95,3 +95,13 @@ pub struct FertilisationPlan {
     pub updated_at: Option<DateTime<Utc>>,
     pub is_deleted: Option<bool>,
 }
+
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+pub struct FertiliserApplication {
+    pub id: i64,
+    pub event_id: i64,
+    pub fertiliser_type: String,
+    pub amount_applied: f64,
+    pub nitrogen_content: Option<f64>,
+    pub evidence_of_control: Option<String>,
+}

@@ -14,7 +14,7 @@ use chrono::{DateTime, Utc};
 
 use crate::state::AppState;
 use crate::error::MyError;
-use crate::models::{User, Farm, Field, Event, FarmRecord, SoilAnalysis, FertilisationPlan, SyncResponse, SyncQuery};
+use crate::models::{User, Farm, Field, Event, FarmRecord, FertiliserApplication, SoilAnalysis, FertilisationPlan, SyncResponse, SyncQuery};
 
 // Central API Router
 pub fn app_router(state: AppState) -> Router {
@@ -33,6 +33,7 @@ pub fn app_router(state: AppState) -> Router {
         .route("/v0/fertilisation_plans", get(list_fertilisation_plans).post(create_fertilisation_plan))
         .route("/v0/fertilisation_plans/{id}", delete(delete_fertilisation_plan))
         .route("/v0/farm_records", get(list_farm_records).post(create_farm_record))
+        .route("/v0/fertiliser_applications", get(list_fertiliser_applications).post(create_fertiliser_application))
         .route("/v0/sync", get(delta_sync))
         .with_state(state)
 }
@@ -201,6 +202,29 @@ async fn create_farm_record(State(state): State<AppState>, Json(record): Json<Fa
     .fetch_one(&state.db_pool)
     .await;
     Ok(Json(new_record?))
+}
+
+async fn list_fertiliser_applications(State(state): State<AppState>) -> Result<Json<Vec<FertiliserApplication>>, MyError> {
+    let applications = sqlx::query_as::<_, FertiliserApplication>(
+        "SELECT fa.id, fa.event_id, fa.fertiliser_type, fa.amount_applied, fa.nitrogen_content, fa.evidence_of_control FROM fertiliser_applications fa JOIN events e ON fa.event_id = e.id JOIN fields f ON e.field_id = f.id JOIN farms fm ON f.farm_id = fm.id WHERE fm.user_id = 1"
+    )
+    .fetch_all(&state.db_pool)
+    .await;
+    Ok(Json(applications?))
+}
+
+async fn create_fertiliser_application(State(state): State<AppState>, Json(application): Json<FertiliserApplication>) -> Result<Json<FertiliserApplication>, MyError> {
+    let new_application = sqlx::query_as::<_, FertiliserApplication>(
+        "INSERT INTO fertiliser_applications (event_id, fertiliser_type, amount_applied, nitrogen_content, evidence_of_control) VALUES ($1, $2, $3, $4, $5) RETURNING id, event_id, fertiliser_type, amount_applied, nitrogen_content, evidence_of_control"
+    )
+    .bind(application.event_id)
+    .bind(&application.fertiliser_type)
+    .bind(application.amount_applied)
+    .bind(application.nitrogen_content)
+    .bind(&application.evidence_of_control)
+    .fetch_one(&state.db_pool)
+    .await;
+    Ok(Json(new_application?))
 }
 
 async fn list_soil_analyses(State(state): State<AppState>) -> Result<Json<Vec<SoilAnalysis>>, MyError> {

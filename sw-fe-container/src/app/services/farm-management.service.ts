@@ -5,6 +5,7 @@ import { User } from '../models/user';
 import { Farm } from '../models/farm';
 import { Field } from '../models/field';
 import { Event } from '../models/event';
+import { FertiliserApplication } from '../models/fertiliser-application';
 import { SoilAnalysis } from '../models/soil-analysis';
 import { FertilisationPlan } from '../models/fertilisation-plan';
 import { AuthService } from './auth.service';
@@ -218,6 +219,22 @@ export class FarmManagementService {
         );
       }),
       map(doc => this.fertilisationPlanDocToModel(doc)),
+    );
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // Fertiliser Applications (Still HTTP-only for now)
+  // ──────────────────────────────────────────────────────────
+
+  getFertiliserApplications(): Observable<FertiliserApplication[]> {
+    return this.apiUrl$.pipe(
+      switchMap(apiUrl => this.http.get<FertiliserApplication[]>(`${apiUrl}/fertiliser_applications`, { headers: this.getHeaders() }))
+    );
+  }
+
+  addFertiliserApplication(application: FertiliserApplication): Observable<FertiliserApplication> {
+    return this.apiUrl$.pipe(
+      switchMap(apiUrl => this.http.post<FertiliserApplication>(`${apiUrl}/fertiliser_applications`, application, { headers: this.getHeaders() }))
     );
   }
 

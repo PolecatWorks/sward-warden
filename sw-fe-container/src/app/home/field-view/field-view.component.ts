@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FarmManagementService } from '../../services/farm-management.service';
 import { Field } from '../../models/field';
 import { Event } from '../../models/event';
+import { FertiliserApplication } from '../../models/fertiliser-application';
 
 @Component({
   selector: 'app-field-view',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   providers: [DatePipe],
   templateUrl: './field-view.component.html',
   styleUrl: './field-view.component.css'
@@ -17,6 +19,16 @@ export class FieldViewComponent implements OnInit {
   fieldId: number = 0;
   field: Field | undefined;
   events: Event[] = [];
+
+  showFertiliserForm: boolean = false;
+  newFertiliser: Partial<FertiliserApplication> & { date: string, description: string } = {
+    date: new Date().toISOString().split('T')[0],
+    description: '',
+    fertiliser_type: '',
+    amount_applied: 0
+  };
+  fertiliserApplications: FertiliserApplication[] = [];
+
 
   constructor(
     private route: ActivatedRoute,
@@ -41,9 +53,50 @@ export class FieldViewComponent implements OnInit {
     });
   }
 
+
   loadEvents(): void {
     this.farmService.getEvents().subscribe(allEvents => {
       this.events = allEvents.filter(e => e.field_id === this.fieldId).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    });
+    this.farmService.getFertiliserApplications().subscribe(apps => {
+      this.fertiliserApplications = apps;
+    });
+  }
+
+  getFertiliserAppForEvent(eventId: number): FertiliserApplication | undefined {
+    return this.fertiliserApplications.find(fa => fa.event_id === eventId);
+  }
+
+  toggleFertiliserForm(): void {
+    this.showFertiliserForm = !this.showFertiliserForm;
+  }
+
+  submitFertiliserApplication(): void {
+    if (!this.newFertiliser.fertiliser_type || !this.newFertiliser.amount_applied || !this.newFertiliser.date) return;
+
+    const event: Omit<Event, 'id'> = {
+      field_id: this.fieldId,
+      event_type: 'Fertiliser',
+      description: this.newFertiliser.description || `Applied ${this.newFertiliser.amount_applied} of ${this.newFertiliser.fertiliser_type}`,
+      date: this.newFertiliser.date
+    };
+
+    // First create the event
+    this.farmService.addEvent(event as Event).subscribe(createdEvent => {
+      const application: Omit<FertiliserApplication, 'id'> = {
+        event_id: createdEvent.id,
+        fertiliser_type: this.newFertiliser.fertiliser_type!,
+        amount_applied: this.newFertiliser.amount_applied!,
+        nitrogen_content: this.newFertiliser.nitrogen_content,
+        evidence_of_control: this.newFertiliser.evidence_of_control
+      };
+
+      // Then create the fertiliser application
+      this.farmService.addFertiliserApplication(application as FertiliserApplication).subscribe(() => {
+        this.loadEvents();
+        this.showFertiliserForm = false;
+        this.newFertiliser = { date: new Date().toISOString().split('T')[0], description: '', fertiliser_type: '', amount_applied: 0 };
+      });
     });
   }
 
