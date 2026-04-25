@@ -2,7 +2,7 @@ kind: Deploy
 type: kubernetes
 name: robot-test-runner
 dependencies:
-  - deploy.sward-manager
+  - deploy.sward-warden
 spec:
   manifests:
     - apiVersion: v1

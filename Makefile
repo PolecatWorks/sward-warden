@@ -5,7 +5,7 @@
 
 BASE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-HELM_CHART := sward-manager
+HELM_CHART := sward-warden
 HELM_DIR := charts/$(HELM_CHART)
 
 RUST_APPS := sw-be
@@ -27,10 +27,10 @@ test:
 all: build-frontend build-backend helm-package
 
 build-frontend:
-	docker build -t sward-manager-frontend:latest sw-fe-container
+	docker build -t sward-warden-frontend:latest sw-fe-container
 
 build-backend:
-	docker build -t sward-manager-backend:latest sw-be-container
+	docker build -t sward-warden-backend:latest sw-be-container
 
 helm-package:
 	helm package $(HELM_DIR) -d charts
@@ -70,14 +70,14 @@ $(foreach app,$(NODE_APPS),$(app)-test):%-test:%-container/node_modules
 # --- Docker ---
 
 $(foreach app,$(APPS),$(app)-docker):%-docker:
-	cd $*-container && docker build -t sward-manager-$*:latest .
+	cd $*-container && docker build -t sward-warden-$*:latest .
 
 # Docker Run
 $(foreach app,$(APPS),$(app)-docker-run):%-docker-run:%-docker
-	docker run -it --rm --name sward-manager-$* \
+	docker run -it --rm --name sward-warden-$* \
 		-p $($*_PORT):$($*_INTERNAL_PORT) \
 		$(if $($*_HEALTH_PORT),-p $($*_HEALTH_PORT):$($*_INTERNAL_HEALTH_PORT)) \
-		sward-manager-$*:latest
+		sward-warden-$*:latest
 
 .PHONY: tests
 tests: $(foreach app,$(APPS),$(app)-test)

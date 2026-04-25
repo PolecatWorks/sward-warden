@@ -14,7 +14,7 @@ spec:
       retries: 3
   values:
     image:
-      repository: ghcr.io/polecatworks/sward-manager-frontend
+      repository: ghcr.io/polecatworks/sward-warden-frontend
       tag: latest
       pullPolicy: Always # Dev ONLY
     env:
@@ -33,7 +33,7 @@ metadata:
   name: sward-warden
 spec:
   interval: 10m
-  url: oci://ghcr.io/polecatworks/sward-warden/helm/sward-manager
+  url: oci://ghcr.io/polecatworks/sward-warden/helm/sward-warden
   ref:
     semver: ">= 0.1.x-0"
     semverFilter: .*-main
@@ -54,7 +54,7 @@ spec:
   values:
     backend:
       image:
-        repository: ghcr.io/polecatworks/sward-manager-backend
+        repository: ghcr.io/polecatworks/sward-warden-backend
         tag: latest
         pullPolicy: Always
       configs:
