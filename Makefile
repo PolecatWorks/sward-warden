@@ -42,6 +42,8 @@ helm-deploy:
 
 # Run development server
 $(foreach app,$(RUST_APPS),$(app)-dev):%-dev:
+	-@lsof -t -i :$($*_PORT) | xargs kill -9 2>/dev/null || true
+	$(if $($*_HEALTH_PORT),-@lsof -t -i :$($*_HEALTH_PORT) | xargs kill -9 2>/dev/null || true)
 	cd $*-container && \
 	cargo run -- serve
 
@@ -58,6 +60,7 @@ $(foreach app,$(NODE_APPS),$(app)-container/node_modules):%-container/node_modul
 
 # Run dev server (Node)
 $(foreach app,$(NODE_APPS),$(app)-dev):%-dev:%-container/node_modules
+	-@lsof -t -i :$($*_PORT) | xargs kill -9 2>/dev/null || true
 	cd $*-container && npm start
 
 # Run tests (Node)
@@ -72,8 +75,8 @@ $(foreach app,$(APPS),$(app)-docker):%-docker:
 # Docker Run
 $(foreach app,$(APPS),$(app)-docker-run):%-docker-run:%-docker
 	docker run -it --rm --name sward-manager-$* \
-		-p ${$*_PORT}:${$*_INTERNAL_PORT} \
-		$(if ${$*_HEALTH_PORT},-p ${$*_HEALTH_PORT}:${$*_INTERNAL_HEALTH_PORT}) \
+		-p $($*_PORT):$($*_INTERNAL_PORT) \
+		$(if $($*_HEALTH_PORT),-p $($*_HEALTH_PORT):$($*_INTERNAL_HEALTH_PORT)) \
 		sward-manager-$*:latest
 
 .PHONY: tests
@@ -81,7 +84,12 @@ tests: $(foreach app,$(APPS),$(app)-test)
 
 # --- Database ---
 compose-db:
-	docker compose -f docker-compose/postgres.yaml up
+	@if docker ps --format '{{.Names}}' | grep -Eq "^sward-postgres$$"; then \
+		echo "Container sward-postgres is already running. Attaching to logs..."; \
+		docker logs -f sward-postgres; \
+	else \
+		docker compose -f docker-compose/postgres.yaml up; \
+	fi
 
 db-local:
 	docker container stop sward-postgres || true

@@ -20,7 +20,7 @@ LABEL org.opencontainers.image.description="Slurry-pal User Interface (Angular)"
 LABEL org.opencontainers.image.authors="Ben Greene <BenJGreene@gmail.com>"
 LABEL org.opencontainers.image.source="https://github.com/PolecatWorks/Slurry-pal"
 
-COPY --from=build /app/dist/sp-fe-container/browser /usr/share/nginx/html
+COPY --from=build /app/dist/sw-fe-container/browser /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 8080
