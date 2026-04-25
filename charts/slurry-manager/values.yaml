@@ -1,11 +1,11 @@
-# Default values for slurry-manager.
+# Default values for sward-manager.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 frontend:
   replicaCount: 1
   image:
-    repository: slurry-manager-frontend
+    repository: sward-manager-frontend
     pullPolicy: IfNotPresent
     tag: "latest"
   service:
@@ -15,7 +15,7 @@ frontend:
 backend:
   replicaCount: 1
   image:
-    repository: slurry-manager-backend
+    repository: sward-manager-backend
     pullPolicy: IfNotPresent
     tag: "latest"
   service:

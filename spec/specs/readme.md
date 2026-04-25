@@ -32,7 +32,7 @@ Once a PRD in `spec/prds/` is vetted, it is broken down into specific actionable
 - [0004-07 Spreading Equipment Exemptions Specification](./0004-07-spreading-equipment-exemptions.md)
 - [0005-01 Spraying (Pesticide Use) Records Specification](./0005-01-spraying-records.md)
 - [0005-02 Chemical Fertiliser Management Specification](./0005-02-chemical-fertiliser-management.md)
-- [0005-03 Slurry and Organic Manure Management Specification](./0005-03-slurry-and-organic-manure-management.md)
+- [0005-03 Sward and Organic Manure Management Specification](./0005-03-sward-and-organic-manure-management.md)
 - [0005-04 Compliance Penalty Matrix Specification](./0005-04-compliance-penalty-matrix.md)
 - [0006-01 Storage Capacity Tracking Specification](./0006-01-storage-capacity-tracking.md)
 - [0006-02 Chemical and Pesticide Inventory Specification](./0006-02-chemical-and-pesticide-inventory.md)

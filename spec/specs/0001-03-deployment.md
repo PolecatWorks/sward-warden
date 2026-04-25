@@ -6,7 +6,7 @@
 This specification details the deployment and infrastructure mechanisms as per PRD 0001.
 
 ## Containerization
-- Both the frontend (`sp-fe-container/`) and backend (`sp-be-container/`) must be containerized.
+- Both the frontend (`sw-fe-container/`) and backend (`sw-be-container/`) must be containerized.
 - Dockerfiles to be created for both services to produce deployable Docker images.
 
 ## Kubernetes Integration

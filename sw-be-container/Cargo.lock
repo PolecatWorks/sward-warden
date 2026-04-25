@@ -2547,45 +2547,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "sp-be-container"
-version = "0.1.0"
-dependencies = [
- "axum",
- "axum-prometheus",
- "chrono",
- "clap",
- "dashmap",
- "dotenv",
- "env_logger",
- "ffi-log2",
- "figment",
- "figment_file_provider_adapter",
- "futures",
- "hams",
- "http-body-util",
- "humantime-serde",
- "log",
- "opentelemetry",
- "opentelemetry-prometheus-text-exporter",
- "opentelemetry_sdk",
- "prometheus",
- "reqwest 0.13.2",
- "serde",
- "serde_json",
- "serde_with",
- "sqlx",
- "thiserror 2.0.18",
- "tokio",
- "tokio-util",
- "tower",
- "tower-http",
- "tracing",
- "tracing-opentelemetry",
- "tracing-subscriber",
- "url",
-]
-
-[[package]]
 name = "spin"
 version = "0.9.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2828,6 +2789,45 @@ name = "subtle"
 version = "2.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "13c2bddecc57b384dee18652358fb23172facb8a2c51ccc10d74c157bdea3292"
+
+[[package]]
+name = "sw-be-container"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "axum-prometheus",
+ "chrono",
+ "clap",
+ "dashmap",
+ "dotenv",
+ "env_logger",
+ "ffi-log2",
+ "figment",
+ "figment_file_provider_adapter",
+ "futures",
+ "hams",
+ "http-body-util",
+ "humantime-serde",
+ "log",
+ "opentelemetry",
+ "opentelemetry-prometheus-text-exporter",
+ "opentelemetry_sdk",
+ "prometheus",
+ "reqwest 0.13.2",
+ "serde",
+ "serde_json",
+ "serde_with",
+ "sqlx",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-util",
+ "tower",
+ "tower-http",
+ "tracing",
+ "tracing-opentelemetry",
+ "tracing-subscriber",
+ "url",
+]
 
 [[package]]
 name = "syn"

@@ -6,12 +6,12 @@ This document defines the requirements for the application's intelligent optimiz
 ## Key Features
 
 ### 1. Optimization Engine
-- **Nutrient Calculation**: Suggest optimal slurry application rates based on specific crop needs, soil analysis results, and the nutrient content of the organic manure.
+- **Nutrient Calculation**: Suggest optimal sward application rates based on specific crop needs, soil analysis results, and the nutrient content of the organic manure.
 - **Strategic Planning**: Identify the best fields for application at any given time to maximize nutrient uptake and minimize environmental runoff.
 
 ### 2. Weather Integration
 - **Live Data**: Incorporate weather data and 48-hour forecasts (provided as **static datasets** for the initial version; API integration is planned for future phases).
-- **Safety Lock**: Automatically prevent the scheduling or logging of slurry application if heavy rain is forecast within 48 hours or if current conditions (e.g., snow, frost) prohibit spreading.
+- **Safety Lock**: Automatically prevent the scheduling or logging of sward application if heavy rain is forecast within 48 hours or if current conditions (e.g., snow, frost) prohibit spreading.
 - **Visual Indicators**: Provide clear, high-quality weather widgets showing "Application Windows" based on forecast reliability.
 
 ### 3. Topology & Field Mapping
@@ -22,7 +22,7 @@ This document defines the requirements for the application's intelligent optimiz
 ### 4. Waterway Protection
 - **Buffer Zone Enforcement**: Automatically calculate and visualize mandatory buffer zones based on application type:
   - **Chemical Fertilisers**: 2 metres from all waterways.
-  - **Slurry/Organic Manures**: Standard (10m waterways, 20m lakes) or Increased (15m waterways, 30m lakes during high-risk periods).
+  - **Sward/Organic Manures**: Standard (10m waterways, 20m lakes) or Increased (15m waterways, 30m lakes during high-risk periods).
 - **Preventative Blocking**: The system must prevent any application events from being recorded or planned within these zones.
 
 ## UI Requirements

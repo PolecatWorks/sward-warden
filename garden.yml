@@ -1,23 +1,23 @@
 kind: Project
-name: slurry-pal
+name: sward-warden
 environments:
   - name: local
   - name: pr
 variables:
-  current-namespace: ${environment.name == "pr" ? "slurry-manager-pr-${env.PR_NUMBER}" : "slurry-manager-local"}
+  current-namespace: ${environment.name == "pr" ? "sward-manager-pr-${env.PR_NUMBER}" : "sward-manager-local"}
 
 ---
 kind: Deploy
 type: helm
-name: slurry-manager
+name: sward-manager
 spec:
-  chart: ./charts/slurry-manager
+  chart: ./charts/sward-manager
   values:
     frontend:
       image:
-        repository: ${env.SP_FE_IMAGE || "slurry-manager-frontend"}
+        repository: ${env.SP_FE_IMAGE || "sward-manager-frontend"}
         tag: ${env.SP_FE_TAG || "latest"}
     backend:
       image:
-        repository: ${env.SP_BE_IMAGE || "slurry-manager-backend"}
+        repository: ${env.SP_BE_IMAGE || "sward-manager-backend"}
         tag: ${env.SP_BE_TAG || "latest"}

@@ -9,7 +9,7 @@ This specification covers the implementation details of event tracking as outlin
 - Record events for each field, including:
   - Planting
   - Fertiliser application
-  - Slurry application
+  - Sward application
   - Spraying
   - Harvesting
   - Tilling

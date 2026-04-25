@@ -4,12 +4,12 @@
 Complete
 
 ## Overview
-This document outlines the requirements for reporting the movement of manure and slurry, based on Feature 5 of PRD 0007.
+This document outlines the requirements for reporting the movement of manure and sward, based on Feature 5 of PRD 0007.
 
 ## Requirements
 
 1. **Export Generation**
-   - Generate export records detailing all slurry/manure movements (imports and exports).
+   - Generate export records detailing all sward/manure movements (imports and exports).
 
 2. **Authority Submission Formatting**
    - Format the records for annual submission to NIEA.

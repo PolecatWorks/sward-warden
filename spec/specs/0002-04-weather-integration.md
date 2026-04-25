@@ -10,4 +10,4 @@ This specification details the UI implementation for Weather Integration as deri
 - Prevent/warn application scheduling during heavy rain or adverse weather conditions that could lead to runoff.
 
 ## Technical Details
-- Must be implemented using Angular and Angular Material in the `sp-fe-container`.
+- Must be implemented using Angular and Angular Material in the `sw-fe-container`.

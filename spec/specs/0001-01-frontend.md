@@ -8,7 +8,7 @@ This specification covers the implementation details of the frontend application
 ## Technical Stack
 - **Framework**: Angular (specifically requested for the UI)
 - **UI Component Library**: Angular Material (specifically requested for the UI)
-- **Location**: All source code will reside in `sp-fe-container/`
+- **Location**: All source code will reside in `sw-fe-container/`
 
 ## Deployment Strategy
 - The application will be packaged into an nginx container serving the compiled json statically.

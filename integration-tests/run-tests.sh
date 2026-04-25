@@ -2,7 +2,7 @@
 set -ex
 
 # Use Garden's provided namespace if available, otherwise fallback to the PR pattern
-NS="${GARDEN_NAMESPACE:-slurry-manager-pr-${PR_NUMBER:-local}}"
+NS="${GARDEN_NAMESPACE:-sward-manager-pr-${PR_NUMBER:-local}}"
 
 echo "Using namespace: $NS"
 

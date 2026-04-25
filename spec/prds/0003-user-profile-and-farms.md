@@ -21,7 +21,7 @@ This document defines the requirements for user profiles and the management of f
    - **Supported Event Types**:
      - **Planting**: Crop type and variety.
      - **Fertiliser Application**: Product name, quantity, and N-P-K values.
-     - **Slurry Application**: Quantity, application method (LESSE vs Splash Plate), and nitrogen loading.
+     - **Sward Application**: Quantity, application method (LESSE vs Splash Plate), and nitrogen loading.
      - **Spraying**: **CRITICAL**: Must include MAPP number, EPPO crop code, and BBCH growth stage as per [PRD 0005](./0005-farm-sustainability-standards.md).
      - **Harvesting**: Yield quantity and quality notes.
      - **Tilling**: Method used (e.g., ploughing, min-till).

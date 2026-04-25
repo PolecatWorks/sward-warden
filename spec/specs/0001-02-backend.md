@@ -9,7 +9,7 @@ This specification covers the implementation details of the backend application 
 - **Language**: Rust
 - **Web Framework**: Axum
 - **Database**: PostgreSQL (relational storage)
-- **Location**: All source code will reside in `sp-be-container/`
+- **Location**: All source code will reside in `sw-be-container/`
 
 ## Deployment Strategy
 - The application will be packaged into a Docker container.

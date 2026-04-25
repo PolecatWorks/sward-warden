@@ -12,7 +12,7 @@ This document specifies the requirements for recording and tracking farm equipme
    - Record details of all farm equipment used for application.
 
 2. **LESSE Tracking**
-   - Specifically focus on Low Emission Slurry Spreading Equipment (LESSE).
+   - Specifically focus on Low Emission Sward Spreading Equipment (LESSE).
    - Allow selection of equipment types such as:
      - Dribble bars
      - Trailing shoes

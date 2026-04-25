@@ -7,14 +7,14 @@ Implement a PostgreSQL connection pool using `sqlx`, migrate all CRUD operations
 
 ## Technical Plan
 1. **Schema Initialization**:
-   - Add database schema initialization. Use `sqlx` migrations by creating a `migrations/` folder at the root of `sp-be-container`.
+   - Add database schema initialization. Use `sqlx` migrations by creating a `migrations/` folder at the root of `sw-be-container`.
    - Migration 1: Create `users`, `farms`, `fields`, `events`, and `farm_records` tables with strict foreign key constraints.
 2. **AppState Modification (`src/state.rs`)**:
    - Add `db_pool: sqlx::PgPool` to `AppState`.
    - Remove the old `Arc<RwLock<Vec<T>>>` fields and the associated fake data defaults.
    - Update `AppState::new()` to accept and construct the `PgPool`.
 3. **Application Bootstrapping (`src/main.rs`)**:
-   - Extract the `DATABASE_URL` from the config (e.g., `postgres://user:pass@localhost:5432/slurrydb`).
+   - Extract the `DATABASE_URL` from the config (e.g., `postgres://user:pass@localhost:5432/swarddb`).
    - Create the `PgPoolOptions` configuration and connect to the database.
    - Inject the `PgPool` into `AppState`.
    - Add a database reachability check into `src/startup_tools.rs` to ensure the application only starts when the DB is online.
