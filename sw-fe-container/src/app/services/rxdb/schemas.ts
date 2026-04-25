@@ -128,3 +128,20 @@ export const outboxSchema: RxJsonSchema<OutboxDocType> = {
   required: ['id', 'actionType', 'entityType', 'localDocId', 'payload', 'timestamp', 'status', 'retryCount'],
   indexes: ['status', 'timestamp'],
 };
+
+/** Key-value metadata store (e.g., sync checkpoint). */
+export interface MetadataDocType {
+  key: string;
+  value: string;
+}
+
+export const metadataSchema: RxJsonSchema<MetadataDocType> = {
+  version: 0,
+  primaryKey: 'key',
+  type: 'object',
+  properties: {
+    key: { type: 'string', maxLength: 64 },
+    value: { type: 'string' },
+  },
+  required: ['key', 'value'],
+};

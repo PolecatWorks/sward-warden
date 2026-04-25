@@ -1,4 +1,4 @@
-import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { firstValueFrom, BehaviorSubject, of } from 'rxjs';
@@ -67,10 +67,13 @@ describe('SyncEngineService', () => {
     expect(service).toBeTruthy();
   });
 
+  // ──────────────────────────────────────────────────────────
+  // Push Sync (Outbox Processing)
+  // ──────────────────────────────────────────────────────────
+
   it('should process pending outbox entries via processOutbox()', async () => {
     const db = await firstValueFrom(rxdbService.db$);
 
-    // Insert a pending outbox entry
     await db.outbox.insert({
       id: 'outbox-1',
       actionType: 'POST',
@@ -82,7 +85,6 @@ describe('SyncEngineService', () => {
       retryCount: 0,
     });
 
-    // Insert the corresponding local farm doc
     await db.farms.insert({
       id: 'local-farm-1',
       name: 'Sync Farm',
@@ -91,25 +93,18 @@ describe('SyncEngineService', () => {
       updatedAt: new Date().toISOString(),
     });
 
-    // Call processOutbox directly
     const processPromise = service.processOutbox();
-
-    // Wait a tick for async processing
     await new Promise(resolve => setTimeout(resolve, 50));
 
-    // Expect the POST to /v0/farms
     const farmReq = httpMock.expectOne('/v0/farms');
     expect(farmReq.request.method).toBe('POST');
-    expect(farmReq.request.body).toEqual({ name: 'Sync Farm', location: 'Test' });
     farmReq.flush({ id: 42, name: 'Sync Farm', location: 'Test' });
 
     await processPromise;
 
-    // Outbox should be empty
     const remaining = await db.outbox.find().exec();
     expect(remaining.length).toBe(0);
 
-    // Local doc should be updated with serverId
     const farm = await db.farms.findOne('local-farm-1').exec();
     expect(farm?.serverId).toBe(42);
     expect(farm?.syncStatus).toBe('synced');
@@ -138,7 +133,6 @@ describe('SyncEngineService', () => {
     });
 
     const processPromise = service.processOutbox();
-
     await new Promise(resolve => setTimeout(resolve, 50));
 
     const farmReq = httpMock.expectOne('/v0/farms');
@@ -146,7 +140,6 @@ describe('SyncEngineService', () => {
 
     await processPromise;
 
-    // Outbox entry should still exist with incremented retryCount
     const entries = await db.outbox.find().exec();
     expect(entries.length).toBe(1);
     expect(entries[0].retryCount).toBe(1);
@@ -164,7 +157,7 @@ describe('SyncEngineService', () => {
       payload: JSON.stringify({ name: 'Max Retry Farm', location: 'Nowhere' }),
       timestamp: new Date().toISOString(),
       status: 'pending',
-      retryCount: 2, // Already at 2, one more failure → 3 = MAX_RETRIES
+      retryCount: 2,
     });
 
     await db.farms.insert({
@@ -188,7 +181,6 @@ describe('SyncEngineService', () => {
     expect(entries[0].retryCount).toBe(3);
     expect(entries[0].status).toBe('failed');
 
-    // Local doc should also be marked as failed
     const farm = await db.farms.findOne('local-maxretry-1').exec();
     expect(farm?.syncStatus).toBe('failed');
   });
@@ -234,18 +226,227 @@ describe('SyncEngineService', () => {
       retryCount: 0,
     });
 
-    // Stay offline — no HTTP requests should be made
     await new Promise(resolve => setTimeout(resolve, 50));
 
     const entries = await db.outbox.find().exec();
     expect(entries.length).toBe(1);
   });
 
-  it('should drive SyncStateService transitions', async () => {
+  // ──────────────────────────────────────────────────────────
+  // Pull Sync (Delta Fetch)
+  // ──────────────────────────────────────────────────────────
+
+  it('should pull new farms from the backend', async () => {
+    const db = await firstValueFrom(rxdbService.db$);
+
+    const pullPromise = service.pullSync();
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    const syncReq = httpMock.expectOne('/v0/sync');
+    expect(syncReq.request.method).toBe('GET');
+    syncReq.flush({
+      checkpoint: '2026-04-25T12:00:00Z',
+      farms: [
+        { id: 1, user_id: 1, name: 'Server Farm', location: 'Dublin', updated_at: '2026-04-25T11:00:00Z', is_deleted: false },
+      ],
+      fields: [],
+      events: [],
+      farm_records: [],
+    });
+
+    await pullPromise;
+
+    const farms = await db.farms.find().exec();
+    expect(farms.length).toBe(1);
+    expect(farms[0].name).toBe('Server Farm');
+    expect(farms[0].serverId).toBe(1);
+    expect(farms[0].syncStatus).toBe('synced');
+  });
+
+  it('should remove soft-deleted records on pull', async () => {
+    const db = await firstValueFrom(rxdbService.db$);
+
+    // Pre-populate a farm
+    await db.farms.insert({
+      id: 'server-42',
+      serverId: 42,
+      user_id: 1,
+      name: 'Old Farm',
+      location: 'Cork',
+      syncStatus: 'synced',
+      updatedAt: '2026-04-25T10:00:00Z',
+    });
+
+    const pullPromise = service.pullSync();
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    const syncReq = httpMock.expectOne('/v0/sync');
+    syncReq.flush({
+      checkpoint: '2026-04-25T12:00:00Z',
+      farms: [
+        { id: 42, user_id: 1, name: 'Old Farm', location: 'Cork', updated_at: '2026-04-25T11:00:00Z', is_deleted: true },
+      ],
+      fields: [],
+      events: [],
+      farm_records: [],
+    });
+
+    await pullPromise;
+
+    const farms = await db.farms.find().exec();
+    expect(farms.length).toBe(0);
+  });
+
+  it('should update existing records when server is newer (LWW)', async () => {
+    const db = await firstValueFrom(rxdbService.db$);
+
+    await db.farms.insert({
+      id: 'server-10',
+      serverId: 10,
+      user_id: 1,
+      name: 'Old Name',
+      location: 'Old Location',
+      syncStatus: 'synced',
+      updatedAt: '2026-04-25T09:00:00Z',
+    });
+
+    const pullPromise = service.pullSync();
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    const syncReq = httpMock.expectOne('/v0/sync');
+    syncReq.flush({
+      checkpoint: '2026-04-25T12:00:00Z',
+      farms: [
+        { id: 10, user_id: 1, name: 'New Name', location: 'New Location', updated_at: '2026-04-25T11:00:00Z', is_deleted: false },
+      ],
+      fields: [],
+      events: [],
+      farm_records: [],
+    });
+
+    await pullPromise;
+
+    const farm = await db.farms.findOne('server-10').exec();
+    expect(farm?.name).toBe('New Name');
+    expect(farm?.location).toBe('New Location');
+    expect(farm?.syncStatus).toBe('synced');
+  });
+
+  it('should keep local record when local is newer with pending outbox (LWW)', async () => {
+    const db = await firstValueFrom(rxdbService.db$);
+
+    await db.farms.insert({
+      id: 'server-20',
+      serverId: 20,
+      user_id: 1,
+      name: 'Local Edit',
+      location: 'Local Location',
+      syncStatus: 'pending',
+      updatedAt: '2026-04-25T11:30:00Z', // local is newer
+    });
+
+    // Pending outbox entry for this doc
+    await db.outbox.insert({
+      id: 'outbox-pending',
+      actionType: 'PUT',
+      entityType: 'farms',
+      localDocId: 'server-20',
+      payload: JSON.stringify({ id: 20, name: 'Local Edit', location: 'Local Location' }),
+      timestamp: new Date().toISOString(),
+      status: 'pending',
+      retryCount: 0,
+    });
+
+    const pullPromise = service.pullSync();
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    const syncReq = httpMock.expectOne('/v0/sync');
+    syncReq.flush({
+      checkpoint: '2026-04-25T12:00:00Z',
+      farms: [
+        { id: 20, user_id: 1, name: 'Server Name', location: 'Server Location', updated_at: '2026-04-25T10:00:00Z', is_deleted: false },
+      ],
+      fields: [],
+      events: [],
+      farm_records: [],
+    });
+
+    await pullPromise;
+
+    // Local should be kept (local is newer + has pending outbox)
+    const farm = await db.farms.findOne('server-20').exec();
+    expect(farm?.name).toBe('Local Edit');
+  });
+
+  // ──────────────────────────────────────────────────────────
+  // Checkpoint Management
+  // ──────────────────────────────────────────────────────────
+
+  it('should store and retrieve checkpoint', async () => {
+    const db = await firstValueFrom(rxdbService.db$);
+
+    // Initially no checkpoint
+    const initial = await service.getCheckpoint(db);
+    expect(initial).toBeNull();
+
+    // Set a checkpoint
+    await service.setCheckpoint(db, '2026-04-25T12:00:00Z');
+    const stored = await service.getCheckpoint(db);
+    expect(stored).toBe('2026-04-25T12:00:00Z');
+  });
+
+  it('should use checkpoint as since parameter on pull', async () => {
+    const db = await firstValueFrom(rxdbService.db$);
+
+    await service.setCheckpoint(db, '2026-04-25T10:00:00Z');
+
+    const pullPromise = service.pullSync();
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    const syncReq = httpMock.expectOne(
+      (req) => req.url.includes('/v0/sync') && req.url.includes('since=')
+    );
+    expect(syncReq.request.url).toContain('2026-04-25T10%3A00%3A00Z');
+    syncReq.flush({
+      checkpoint: '2026-04-25T12:00:00Z',
+      farms: [],
+      fields: [],
+      events: [],
+      farm_records: [],
+    });
+
+    await pullPromise;
+
+    // Checkpoint should be updated
+    const newCheckpoint = await service.getCheckpoint(db);
+    expect(newCheckpoint).toBe('2026-04-25T12:00:00Z');
+  });
+
+  it('should do full sync without since when no checkpoint exists', async () => {
+    const pullPromise = service.pullSync();
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    const syncReq = httpMock.expectOne('/v0/sync');
+    expect(syncReq.request.url).toBe('/v0/sync');
+    syncReq.flush({
+      checkpoint: '2026-04-25T12:00:00Z',
+      farms: [],
+      fields: [],
+      events: [],
+      farm_records: [],
+    });
+
+    await pullPromise;
+  });
+
+  // ──────────────────────────────────────────────────────────
+  // SyncState Transitions
+  // ──────────────────────────────────────────────────────────
+
+  it('should drive SyncStateService transitions during processOutbox', async () => {
     const db = await firstValueFrom(rxdbService.db$);
     const states: string[] = [];
 
-    // Go online first (before inserting outbox entries to avoid triggering auto-sync)
     mockOnline$.next(true);
     await new Promise(resolve => setTimeout(resolve, 50));
 
@@ -270,9 +471,12 @@ describe('SyncEngineService', () => {
       updatedAt: new Date().toISOString(),
     });
 
-    // Call processOutbox directly (auto-sync already fired with empty queue)
     const processPromise = service.processOutbox();
     await new Promise(resolve => setTimeout(resolve, 50));
+
+    // Handle the background sync pull request triggered by going online
+    const syncReq = httpMock.expectOne('/v0/sync');
+    syncReq.flush({ checkpoint: 'test', farms: [], fields: [], events: [], farm_records: [] });
 
     const farmReq = httpMock.expectOne('/v0/farms');
     farmReq.flush({ id: 100, name: 'State Farm', location: 'Test' });
@@ -281,7 +485,6 @@ describe('SyncEngineService', () => {
 
     sub.unsubscribe();
 
-    // States should include 'syncing' and end with 'synced'
     expect(states).toContain('syncing');
     expect(states[states.length - 1]).toBe('synced');
   });

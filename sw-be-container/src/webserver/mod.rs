@@ -3,7 +3,10 @@ use axum::{
     Router, Json, extract::{State, Path, Query},
 };
 use axum_prometheus::PrometheusMetricLayer;
-use tower_http::trace::{DefaultOnFailure, DefaultOnRequest, DefaultOnResponse, TraceLayer};
+use tower_http::{
+    trace::{DefaultOnFailure, DefaultOnRequest, DefaultOnResponse, TraceLayer},
+    cors::{CorsLayer, Any},
+};
 use tracing::{Level, info};
 use tokio_util::sync::CancellationToken;
 use reqwest::StatusCode;
@@ -38,6 +41,12 @@ pub async fn start_app_api(state: AppState, ct: CancellationToken) -> Result<(),
                 .on_request(DefaultOnRequest::new().level(Level::DEBUG))
                 .on_response(DefaultOnResponse::new().level(Level::DEBUG))
                 .on_failure(DefaultOnFailure::new().level(Level::ERROR)),
+        )
+        .layer(
+            CorsLayer::new()
+                .allow_origin(Any)
+                .allow_methods(Any)
+                .allow_headers(Any),
         )
         .layer(metric_layer);
 
@@ -203,7 +212,9 @@ async fn delta_sync(
     State(state): State<AppState>,
     Query(params): Query<SyncQuery>,
 ) -> Result<Json<SyncResponse>, MyError> {
-    let since: DateTime<Utc> = params.since.unwrap_or(DateTime::<Utc>::MIN_UTC);
+    let since: DateTime<Utc> = params.since.unwrap_or_else(|| {
+        DateTime::from_timestamp(0, 0).unwrap()
+    });
 
     let farms = sqlx::query_as::<_, Farm>(
         "SELECT id, user_id, name, location, updated_at, is_deleted FROM farms WHERE user_id = 1 AND updated_at > $1"
