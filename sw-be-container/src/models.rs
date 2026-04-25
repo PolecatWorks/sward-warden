@@ -41,3 +41,14 @@ pub struct FarmRecord {
     pub manure_storage_capacity: f64,
     pub year: i32,
 }
+
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+pub struct SoilAnalysis {
+    pub id: i64,
+    pub field_id: i64,
+    pub sample_date: String,
+    pub ph_level: Option<f64>,
+    pub phosphorus_index: Option<i32>,
+    pub potassium_index: Option<i32>,
+    pub magnesium_index: Option<i32>,
+}

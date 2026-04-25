@@ -1,6 +1,6 @@
 # 0004-07 Soil Analysis Results Specification
 
-**State**: Open
+**State**: Complete
 
 ## Scope
 This specification covers the soil analysis results required to maintain compliance with NAP regulations (PRD 0004).

@@ -1,3 +1,5 @@
+import { FertilisationPlansComponent } from './fertilisation-plans/fertilisation-plans.component';
+import { SoilAnalysisResults } from './soil-analysis-results/soil-analysis-results';
 import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './main-layout/main-layout.component';
 
@@ -30,6 +32,8 @@ import { ImportExportReportingComponent } from './import-export-reporting/import
 
 
 export const routes: Routes = [
+  { path: 'fertilisation-plans', component: FertilisationPlansComponent },
+  { path: 'soil-analysis-results', component: SoilAnalysisResults },
   {
     path: '',
     component: MainLayoutComponent,
