@@ -8,6 +8,7 @@ import { of, throwError } from 'rxjs';
 
 import { FarmsComponent } from './farms.component';
 import { FarmManagementService } from '../../services/farm-management.service';
+import { LoggerService } from '../../services/logger.service';
 import { Farm } from '../../models/farm';
 
 const mockFarms: Farm[] = [
@@ -19,8 +20,10 @@ describe('FarmsComponent', () => {
   let component: FarmsComponent;
   let fixture: ComponentFixture<FarmsComponent>;
   let farmServiceSpy: jasmine.SpyObj<FarmManagementService>;
+  let loggerServiceSpy: jasmine.SpyObj<LoggerService>;
 
   beforeEach(async () => {
+    const loggerSpy = jasmine.createSpyObj('LoggerService', ['log', 'info', 'warn', 'error']);
     const spy = jasmine.createSpyObj('FarmManagementService', [
       'getFarms',
       'addFarm',
@@ -34,6 +37,7 @@ describe('FarmsComponent', () => {
       providers: [
         { provide: ActivatedRoute, useValue: {} },
         { provide: FarmManagementService, useValue: spy },
+        { provide: LoggerService, useValue: loggerSpy },
         provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -42,6 +46,7 @@ describe('FarmsComponent', () => {
     }).compileComponents();
 
     farmServiceSpy = TestBed.inject(FarmManagementService) as jasmine.SpyObj<FarmManagementService>;
+    loggerServiceSpy = TestBed.inject(LoggerService) as jasmine.SpyObj<LoggerService>;
     fixture = TestBed.createComponent(FarmsComponent);
     component = fixture.componentInstance;
   });
@@ -78,7 +83,6 @@ describe('FarmsComponent', () => {
     });
 
     it('should show error banner when getFarms fails', () => {
-      spyOn(console, 'error');
       farmServiceSpy.getFarms.and.returnValue(throwError(() => new Error('Network error')));
       fixture.detectChanges();
       expect(component.errorMessage).toContain('Failed to load farms');
@@ -184,7 +188,6 @@ describe('FarmsComponent', () => {
     });
 
     it('should set errorMessage if addFarm fails', () => {
-      spyOn(console, 'error');
       farmServiceSpy.addFarm.and.returnValue(throwError(() => new Error('Server error')));
       component.newFarmName = 'New Farm';
       component.newFarmLocation = 'Galway, Ireland';
@@ -212,7 +215,6 @@ describe('FarmsComponent', () => {
     });
 
     it('should show error message when delete fails', () => {
-      spyOn(console, 'error');
       farmServiceSpy.deleteEntity.and.returnValue(throwError(() => new Error('Delete failed')));
       component.deleteFarm(1);
       expect(component.errorMessage).toContain('Failed to delete farm');

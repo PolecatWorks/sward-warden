@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FarmManagementService } from '../../services/farm-management.service';
+import { LoggerService } from '../../services/logger.service';
 import { Farm } from '../../models/farm';
 import { FormsModule } from '@angular/forms';
 
@@ -21,7 +22,10 @@ export class FarmsComponent implements OnInit {
   isSaving: boolean = false;
   errorMessage: string | null = null;
 
-  constructor(private farmService: FarmManagementService) {}
+  constructor(
+    private farmService: FarmManagementService,
+    private logger: LoggerService
+  ) {}
 
   ngOnInit(): void {
     this.loadFarms();
@@ -38,7 +42,7 @@ export class FarmsComponent implements OnInit {
       error: (err) => {
         this.errorMessage = 'Failed to load farms. Please try again.';
         this.isLoading = false;
-        console.error('Error loading farms:', err);
+        this.logger.error('Error loading farms:', err);
       }
     });
   }
@@ -65,7 +69,7 @@ export class FarmsComponent implements OnInit {
       error: (err) => {
         this.errorMessage = 'Failed to add farm. Please try again.';
         this.isSaving = false;
-        console.error('Error adding farm:', err);
+        this.logger.error('Error adding farm:', err);
       }
     });
   }
@@ -77,7 +81,7 @@ export class FarmsComponent implements OnInit {
       },
       error: (err) => {
         this.errorMessage = 'Failed to delete farm. Please try again.';
-        console.error('Error deleting farm:', err);
+        this.logger.error('Error deleting farm:', err);
       }
     });
   }
