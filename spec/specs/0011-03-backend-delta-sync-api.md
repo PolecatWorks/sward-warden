@@ -3,7 +3,7 @@
 ## Goal
 Extend the backend PostgreSQL schema and Axum API to support delta synchronisation. This enables the frontend to pull only records modified since a given checkpoint, rather than downloading the full dataset.
 
-## State: Open
+## State: Complete
 
 ## Technical Plan
 1. **Schema Migration**:

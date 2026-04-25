@@ -1,16 +1,17 @@
 use axum::{
     routing::{get, delete},
-    Router, Json, extract::{State, Path},
+    Router, Json, extract::{State, Path, Query},
 };
 use axum_prometheus::PrometheusMetricLayer;
 use tower_http::trace::{DefaultOnFailure, DefaultOnRequest, DefaultOnResponse, TraceLayer};
 use tracing::{Level, info};
 use tokio_util::sync::CancellationToken;
 use reqwest::StatusCode;
+use chrono::{DateTime, Utc};
 
 use crate::state::AppState;
 use crate::error::MyError;
-use crate::models::{User, Farm, Field, Event, FarmRecord, SoilAnalysis};
+use crate::models::{User, Farm, Field, Event, FarmRecord, SoilAnalysis, SyncResponse, SyncQuery};
 
 // Central API Router
 pub fn app_router(state: AppState) -> Router {
@@ -27,6 +28,7 @@ pub fn app_router(state: AppState) -> Router {
         .route("/v0/soil_analyses", get(list_soil_analyses).post(create_soil_analysis))
         .route("/v0/soil_analyses/{id}", delete(delete_soil_analysis))
         .route("/v0/farm_records", get(list_farm_records).post(create_farm_record))
+        .route("/v0/sync", get(delta_sync))
         .with_state(state)
 }
 
@@ -57,6 +59,10 @@ pub async fn start_app_api(state: AppState, ct: CancellationToken) -> Result<(),
     Ok(())
 }
 
+// ──────────────────────────────────────────────────────────
+// Users (unchanged — no sync tracking on users)
+// ──────────────────────────────────────────────────────────
+
 async fn list_users(State(state): State<AppState>) -> Result<Json<Vec<User>>, MyError> {
     let users = sqlx::query_as::<_, User>("SELECT id, name, email FROM users")
         .fetch_all(&state.db_pool)
@@ -74,15 +80,21 @@ async fn create_user(State(state): State<AppState>, Json(user): Json<User>) -> R
     Ok(Json(new_user?))
 }
 
+// ──────────────────────────────────────────────────────────
+// Farms
+// ──────────────────────────────────────────────────────────
+
 async fn list_farms(State(state): State<AppState>) -> Result<Json<Vec<Farm>>, MyError> {
-    let farms = sqlx::query_as::<_, Farm>("SELECT id, user_id, name, location FROM farms WHERE user_id = 1")
-        .fetch_all(&state.db_pool)
-        .await;
+    let farms = sqlx::query_as::<_, Farm>(
+        "SELECT id, user_id, name, location, updated_at, is_deleted FROM farms WHERE user_id = 1 AND is_deleted = FALSE"
+    )
+    .fetch_all(&state.db_pool)
+    .await;
     Ok(Json(farms?))
 }
 async fn create_farm(State(state): State<AppState>, Json(farm): Json<Farm>) -> Result<Json<Farm>, MyError> {
     let new_farm = sqlx::query_as::<_, Farm>(
-        "INSERT INTO farms (user_id, name, location) VALUES ($1, $2, $3) RETURNING id, user_id, name, location"
+        "INSERT INTO farms (user_id, name, location) VALUES ($1, $2, $3) RETURNING id, user_id, name, location, updated_at, is_deleted"
     )
     .bind(1i64)
     .bind(&farm.name)
@@ -92,16 +104,20 @@ async fn create_farm(State(state): State<AppState>, Json(farm): Json<Farm>) -> R
     Ok(Json(new_farm?))
 }
 async fn delete_farm(State(state): State<AppState>, Path(id): Path<i64>) -> Result<StatusCode, MyError> {
-    sqlx::query("DELETE FROM farms WHERE id = $1 AND user_id = 1")
+    sqlx::query("UPDATE farms SET is_deleted = TRUE, updated_at = NOW() WHERE id = $1 AND user_id = 1")
         .bind(id)
         .execute(&state.db_pool)
         .await?;
     Ok(StatusCode::NO_CONTENT)
 }
 
+// ──────────────────────────────────────────────────────────
+// Fields
+// ──────────────────────────────────────────────────────────
+
 async fn list_fields(State(state): State<AppState>) -> Result<Json<Vec<Field>>, MyError> {
     let fields = sqlx::query_as::<_, Field>(
-        "SELECT f.id, f.farm_id, f.name, f.area_hectares FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1"
+        "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.updated_at, f.is_deleted FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1 AND f.is_deleted = FALSE"
     )
     .fetch_all(&state.db_pool)
     .await;
@@ -109,7 +125,7 @@ async fn list_fields(State(state): State<AppState>) -> Result<Json<Vec<Field>>, 
 }
 async fn create_field(State(state): State<AppState>, Json(field): Json<Field>) -> Result<Json<Field>, MyError> {
     let new_field = sqlx::query_as::<_, Field>(
-        "INSERT INTO fields (farm_id, name, area_hectares) VALUES ($1, $2, $3) RETURNING id, farm_id, name, area_hectares"
+        "INSERT INTO fields (farm_id, name, area_hectares) VALUES ($1, $2, $3) RETURNING id, farm_id, name, area_hectares, updated_at, is_deleted"
     )
     .bind(field.farm_id)
     .bind(&field.name)
@@ -119,16 +135,20 @@ async fn create_field(State(state): State<AppState>, Json(field): Json<Field>) -
     Ok(Json(new_field?))
 }
 async fn delete_field(State(state): State<AppState>, Path(id): Path<i64>) -> Result<StatusCode, MyError> {
-    sqlx::query("DELETE FROM fields WHERE id = $1 AND farm_id IN (SELECT id FROM farms WHERE user_id = 1)")
+    sqlx::query("UPDATE fields SET is_deleted = TRUE, updated_at = NOW() WHERE id = $1 AND farm_id IN (SELECT id FROM farms WHERE user_id = 1)")
         .bind(id)
         .execute(&state.db_pool)
         .await?;
     Ok(StatusCode::NO_CONTENT)
 }
 
+// ──────────────────────────────────────────────────────────
+// Events
+// ──────────────────────────────────────────────────────────
+
 async fn list_events(State(state): State<AppState>) -> Result<Json<Vec<Event>>, MyError> {
     let events = sqlx::query_as::<_, Event>(
-        "SELECT e.id, e.field_id, e.event_type, e.description, e.date FROM events e JOIN fields f ON e.field_id = f.id JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1"
+        "SELECT e.id, e.field_id, e.event_type, e.description, e.date, e.updated_at, e.is_deleted FROM events e JOIN fields f ON e.field_id = f.id JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1 AND e.is_deleted = FALSE"
     )
     .fetch_all(&state.db_pool)
     .await;
@@ -136,7 +156,7 @@ async fn list_events(State(state): State<AppState>) -> Result<Json<Vec<Event>>, 
 }
 async fn create_event(State(state): State<AppState>, Json(event): Json<Event>) -> Result<Json<Event>, MyError> {
     let new_event = sqlx::query_as::<_, Event>(
-        "INSERT INTO events (field_id, event_type, description, date) VALUES ($1, $2, $3, $4) RETURNING id, field_id, event_type, description, date"
+        "INSERT INTO events (field_id, event_type, description, date) VALUES ($1, $2, $3, $4) RETURNING id, field_id, event_type, description, date, updated_at, is_deleted"
     )
     .bind(event.field_id)
     .bind(&event.event_type)
@@ -147,9 +167,13 @@ async fn create_event(State(state): State<AppState>, Json(event): Json<Event>) -
     Ok(Json(new_event?))
 }
 
+// ──────────────────────────────────────────────────────────
+// Farm Records
+// ──────────────────────────────────────────────────────────
+
 async fn list_farm_records(State(state): State<AppState>) -> Result<Json<Vec<FarmRecord>>, MyError> {
     let records = sqlx::query_as::<_, FarmRecord>(
-        "SELECT fr.id, fr.farm_id, fr.agricultural_area, fr.manure_storage_capacity, fr.year FROM farm_records fr JOIN farms fa ON fr.farm_id = fa.id WHERE fa.user_id = 1"
+        "SELECT fr.id, fr.farm_id, fr.agricultural_area, fr.manure_storage_capacity, fr.year, fr.updated_at, fr.is_deleted FROM farm_records fr JOIN farms fa ON fr.farm_id = fa.id WHERE fa.user_id = 1 AND fr.is_deleted = FALSE"
     )
     .fetch_all(&state.db_pool)
     .await;
@@ -157,7 +181,7 @@ async fn list_farm_records(State(state): State<AppState>) -> Result<Json<Vec<Far
 }
 async fn create_farm_record(State(state): State<AppState>, Json(record): Json<FarmRecord>) -> Result<Json<FarmRecord>, MyError> {
     let new_record = sqlx::query_as::<_, FarmRecord>(
-        "INSERT INTO farm_records (farm_id, agricultural_area, manure_storage_capacity, year) VALUES ($1, $2, $3, $4) RETURNING id, farm_id, agricultural_area, manure_storage_capacity, year"
+        "INSERT INTO farm_records (farm_id, agricultural_area, manure_storage_capacity, year) VALUES ($1, $2, $3, $4) RETURNING id, farm_id, agricultural_area, manure_storage_capacity, year, updated_at, is_deleted"
     )
     .bind(record.farm_id)
     .bind(record.agricultural_area)
@@ -199,6 +223,60 @@ async fn delete_soil_analysis(State(state): State<AppState>, Path(id): Path<i64>
         .execute(&state.db_pool)
         .await?;
     Ok(StatusCode::NO_CONTENT)
+}
+
+// ──────────────────────────────────────────────────────────
+// Delta Sync Endpoint
+// ──────────────────────────────────────────────────────────
+
+/// GET /v0/sync?since=<ISO 8601 timestamp>
+///
+/// Returns all records across all entity types where `updated_at > $since`,
+/// including soft-deleted records so the client can remove them locally.
+/// If `since` is not provided, returns all records (full sync).
+async fn delta_sync(
+    State(state): State<AppState>,
+    Query(params): Query<SyncQuery>,
+) -> Result<Json<SyncResponse>, MyError> {
+    let since: DateTime<Utc> = params.since.unwrap_or(DateTime::<Utc>::MIN_UTC);
+
+    let farms = sqlx::query_as::<_, Farm>(
+        "SELECT id, user_id, name, location, updated_at, is_deleted FROM farms WHERE user_id = 1 AND updated_at > $1"
+    )
+    .bind(since)
+    .fetch_all(&state.db_pool)
+    .await?;
+
+    let fields = sqlx::query_as::<_, Field>(
+        "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.updated_at, f.is_deleted FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1 AND f.updated_at > $1"
+    )
+    .bind(since)
+    .fetch_all(&state.db_pool)
+    .await?;
+
+    let events = sqlx::query_as::<_, Event>(
+        "SELECT e.id, e.field_id, e.event_type, e.description, e.date, e.updated_at, e.is_deleted FROM events e JOIN fields f ON e.field_id = f.id JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1 AND e.updated_at > $1"
+    )
+    .bind(since)
+    .fetch_all(&state.db_pool)
+    .await?;
+
+    let farm_records = sqlx::query_as::<_, FarmRecord>(
+        "SELECT fr.id, fr.farm_id, fr.agricultural_area, fr.manure_storage_capacity, fr.year, fr.updated_at, fr.is_deleted FROM farm_records fr JOIN farms fa ON fr.farm_id = fa.id WHERE fa.user_id = 1 AND fr.updated_at > $1"
+    )
+    .bind(since)
+    .fetch_all(&state.db_pool)
+    .await?;
+
+    let checkpoint = Utc::now();
+
+    Ok(Json(SyncResponse {
+        checkpoint,
+        farms,
+        fields,
+        events,
+        farm_records,
+    }))
 }
 #[cfg(test)]
 mod tests;
