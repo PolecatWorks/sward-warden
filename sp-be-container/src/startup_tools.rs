@@ -67,16 +67,24 @@ where
     )))
 }
 
-pub async fn run_startup_checks(config: &AppConfig) -> Result<(), MyError> {
+pub async fn run_startup_checks(config: &AppConfig, db_pool: &sqlx::PgPool) -> Result<(), MyError> {
     let _checks_config = &config.startup_checks;
     let mut futures = Vec::new();
 
-    // TODO: Add database connectivity check here once sqlx pool is configured
+    let pool_clone = db_pool.clone();
     futures.push(
         run_check(
-            "Dummy DB Check".to_string(),
+            "Database Connectivity Check".to_string(),
             &config.startup_checks,
-            || async { Ok::<(), MyError>(()) },
+            move || {
+                let pool = pool_clone.clone();
+                async move {
+                    pool.acquire()
+                        .await
+                        .map_err(|e| MyError::Message(format!("DB Check Failed: {}", e)))?;
+                    Ok::<(), MyError>(())
+                }
+            },
         )
         .boxed(),
     );
