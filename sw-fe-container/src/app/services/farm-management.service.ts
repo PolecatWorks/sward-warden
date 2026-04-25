@@ -24,6 +24,7 @@ function generateLocalId(): string {
   providedIn: 'root'
 })
 export class FarmManagementService {
+  /** The resolved API URL, shared for use by the sync engine. */
   readonly apiUrl$: Observable<string>;
 
   constructor(
@@ -46,6 +47,10 @@ export class FarmManagementService {
     });
   }
 
+  // ──────────────────────────────────────────────────────────
+  // Users — still HTTP-only (no local schema for users yet)
+  // ──────────────────────────────────────────────────────────
+
   getUsers(): Observable<User[]> {
     return this.apiUrl$.pipe(
       switchMap(apiUrl => this.http.get<User[]>(`${apiUrl}/users`, { headers: this.getHeaders() }))
@@ -62,6 +67,7 @@ export class FarmManagementService {
   // Local-First CRUD Logic
   // ──────────────────────────────────────────────────────────
 
+  /** Get all farms from the local RxDB database as a reactive observable. */
   getFarms(): Observable<Farm[]> {
     return this.rxdbService.db$.pipe(
       switchMap(db => db.farms.find().$ as Observable<FarmDocType[]>),
@@ -69,21 +75,34 @@ export class FarmManagementService {
     );
   }
 
+  /** Add a farm to the local RxDB database and queue an outbox entry. */
   addFarm(farm: Farm): Observable<Farm> {
     return this.rxdbService.db$.pipe(
       switchMap(db => {
         const localId = generateLocalId();
-        return from(db.farms.insert({
-          id: localId, serverId: farm.id, user_id: farm.user_id, name: farm.name,
-          location: farm.location, syncStatus: 'pending', updatedAt: new Date().toISOString(),
-        })).pipe(
-          switchMap(doc => from(this.createOutboxEntry(db, 'POST', 'farms', localId, { name: farm.name, location: farm.location })).pipe(map(() => doc))),
+        const now = new Date().toISOString();
+        const farmDoc = {
+          id: localId,
+          serverId: farm.id,
+          user_id: farm.user_id,
+          name: farm.name,
+          location: farm.location,
+          syncStatus: 'pending' as const,
+          updatedAt: now,
+        };
+        return from(db.farms.insert(farmDoc)).pipe(
+          switchMap(doc =>
+            from(this.createOutboxEntry(db, 'POST', 'farms', localId, { name: farm.name, location: farm.location })).pipe(
+              map(() => doc),
+            )
+          ),
         );
       }),
       map(doc => this.farmDocToModel(doc)),
     );
   }
 
+  /** Get all fields from the local RxDB database. */
   getFields(): Observable<Field[]> {
     return this.rxdbService.db$.pipe(
       switchMap(db => db.fields.find().$ as Observable<FieldDocType[]>),
@@ -91,21 +110,32 @@ export class FarmManagementService {
     );
   }
 
+  /** Add a field to the local RxDB database and queue an outbox entry. */
   addField(field: Field): Observable<Field> {
     return this.rxdbService.db$.pipe(
       switchMap(db => {
         const localId = generateLocalId();
         return from(db.fields.insert({
-          id: localId, serverId: field.id, farm_id: field.farm_id, name: field.name,
-          area_hectares: field.area_hectares, syncStatus: 'pending', updatedAt: new Date().toISOString(),
+          id: localId,
+          serverId: field.id,
+          farm_id: field.farm_id,
+          name: field.name,
+          area_hectares: field.area_hectares,
+          syncStatus: 'pending',
+          updatedAt: new Date().toISOString(),
         })).pipe(
-          switchMap(doc => from(this.createOutboxEntry(db, 'POST', 'fields', localId, { farm_id: field.farm_id, name: field.name, area_hectares: field.area_hectares })).pipe(map(() => doc))),
+          switchMap(doc =>
+            from(this.createOutboxEntry(db, 'POST', 'fields', localId, { farm_id: field.farm_id, name: field.name, area_hectares: field.area_hectares })).pipe(
+              map(() => doc),
+            )
+          ),
         );
       }),
       map(doc => this.fieldDocToModel(doc)),
     );
   }
 
+  /** Get all events from the local RxDB database. */
   getEvents(): Observable<Event[]> {
     return this.rxdbService.db$.pipe(
       switchMap(db => db.events.find().$ as Observable<EventDocType[]>),
@@ -113,21 +143,34 @@ export class FarmManagementService {
     );
   }
 
+  /** Add an event to the local RxDB database and queue an outbox entry. */
   addEvent(event: Event): Observable<Event> {
     return this.rxdbService.db$.pipe(
       switchMap(db => {
         const localId = generateLocalId();
         return from(db.events.insert({
-          id: localId, serverId: event.id, field_id: event.field_id, event_type: event.event_type,
-          description: event.description, date: event.date, syncStatus: 'pending', updatedAt: new Date().toISOString(),
+          id: localId,
+          serverId: event.id,
+          field_id: event.field_id,
+          event_type: event.event_type,
+          description: event.description,
+          date: event.date,
+          syncStatus: 'pending',
+          updatedAt: new Date().toISOString(),
         })).pipe(
-          switchMap(doc => from(this.createOutboxEntry(db, 'POST', 'events', localId, { field_id: event.field_id, event_type: event.event_type, description: event.description, date: event.date })).pipe(map(() => doc))),
+          switchMap(doc =>
+            from(this.createOutboxEntry(db, 'POST', 'events', localId, {
+              field_id: event.field_id, event_type: event.event_type,
+              description: event.description, date: event.date,
+            })).pipe(map(() => doc))
+          ),
         );
       }),
       map(doc => this.eventDocToModel(doc)),
     );
   }
 
+  /** Get all soil analyses from the local RxDB database. */
   getSoilAnalyses(): Observable<SoilAnalysis[]> {
     return this.rxdbService.db$.pipe(
       switchMap(db => db.soil_analyses.find().$ as Observable<SoilAnalysisDocType[]>),
@@ -135,6 +178,7 @@ export class FarmManagementService {
     );
   }
 
+  /** Add a soil analysis to the local RxDB database and queue an outbox entry. */
   addSoilAnalysis(analysis: SoilAnalysis): Observable<SoilAnalysis> {
     return this.rxdbService.db$.pipe(
       switchMap(db => {
@@ -151,6 +195,7 @@ export class FarmManagementService {
     );
   }
 
+  /** Get all fertilisation plans from the local RxDB database. */
   getFertilisationPlans(): Observable<FertilisationPlan[]> {
     return this.rxdbService.db$.pipe(
       switchMap(db => db.fertilisation_plans.find().$ as Observable<FertilisationPlanDocType[]>),
@@ -158,6 +203,7 @@ export class FarmManagementService {
     );
   }
 
+  /** Add a fertilisation plan to the local RxDB database and queue an outbox entry. */
   addFertilisationPlan(plan: FertilisationPlan): Observable<FertilisationPlan> {
     return this.rxdbService.db$.pipe(
       switchMap(db => {
@@ -208,13 +254,21 @@ export class FarmManagementService {
   // ──────────────────────────────────────────────────────────
 
   private async createOutboxEntry(
-    db: any, actionType: 'POST' | 'PUT' | 'DELETE',
-    entityType: 'farms' | 'fields' | 'events' | 'soil_analyses' | 'fertilisation_plans', localDocId: string, payload: object,
+    db: any,
+    actionType: 'POST' | 'PUT' | 'DELETE',
+    entityType: 'farms' | 'fields' | 'events' | 'soil_analyses' | 'fertilisation_plans',
+    localDocId: string,
+    payload: object,
   ): Promise<void> {
     await db.outbox.insert({
-      id: generateLocalId(), actionType, entityType, localDocId,
-      payload: JSON.stringify(payload), timestamp: new Date().toISOString(),
-      status: 'pending', retryCount: 0,
+      id: generateLocalId(),
+      actionType,
+      entityType,
+      localDocId,
+      payload: JSON.stringify(payload),
+      timestamp: new Date().toISOString(),
+      status: 'pending',
+      retryCount: 0,
     } satisfies OutboxDocType);
   }
 
@@ -222,9 +276,34 @@ export class FarmManagementService {
   // Mapping helpers
   // ──────────────────────────────────────────────────────────
 
-  private farmDocToModel(doc: FarmDocType): Farm { return { id: doc.serverId, user_id: doc.user_id, name: doc.name, location: doc.location }; }
-  private fieldDocToModel(doc: FieldDocType): Field { return { id: doc.serverId ?? 0, farm_id: doc.farm_id, name: doc.name, area_hectares: doc.area_hectares }; }
-  private eventDocToModel(doc: EventDocType): Event { return { id: doc.serverId ?? 0, field_id: doc.field_id, event_type: doc.event_type, description: doc.description, date: doc.date }; }
+  private farmDocToModel(doc: FarmDocType): Farm {
+    return {
+      id: doc.serverId,
+      user_id: doc.user_id,
+      name: doc.name,
+      location: doc.location,
+    };
+  }
+
+  private fieldDocToModel(doc: FieldDocType): Field {
+    return {
+      id: doc.serverId ?? 0,
+      farm_id: doc.farm_id,
+      name: doc.name,
+      area_hectares: doc.area_hectares,
+    };
+  }
+
+  private eventDocToModel(doc: EventDocType): Event {
+    return {
+      id: doc.serverId ?? 0,
+      field_id: doc.field_id,
+      event_type: doc.event_type,
+      description: doc.description,
+      date: doc.date,
+    };
+  }
+
   private soilAnalysisDocToModel(doc: SoilAnalysisDocType): SoilAnalysis {
     return {
       id: doc.serverId ?? 0, field_id: doc.field_id, sample_date: doc.sample_date,
@@ -232,6 +311,7 @@ export class FarmManagementService {
       potassium_index: doc.potassium_index, magnesium_index: doc.magnesium_index,
     };
   }
+
   private fertilisationPlanDocToModel(doc: FertilisationPlanDocType): FertilisationPlan {
     return {
       id: doc.serverId ?? 0, field_id: doc.field_id, crop_type: doc.crop_type,

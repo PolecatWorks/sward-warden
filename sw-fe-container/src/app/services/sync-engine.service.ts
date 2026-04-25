@@ -226,6 +226,10 @@ export class SyncEngineService implements OnDestroy {
   // Upsert Logic with LWW Conflict Resolution
   // ──────────────────────────────────────────────────────────
 
+  /**
+   * Upsert farms from the server into local RxDB.
+   * Uses Last Write Wins (LWW) based on updatedAt.
+   */
   private async upsertFarms(db: SwardDatabase, serverFarms: any[]): Promise<void> {
     for (const serverFarm of serverFarms) {
       if (serverFarm.is_deleted) {
@@ -258,6 +262,7 @@ export class SyncEngineService implements OnDestroy {
     }
   }
 
+  /** Upsert fields from the server into local RxDB. */
   private async upsertFields(db: SwardDatabase, serverFields: any[]): Promise<void> {
     for (const serverField of serverFields) {
       if (serverField.is_deleted) {
@@ -290,6 +295,7 @@ export class SyncEngineService implements OnDestroy {
     }
   }
 
+  /** Upsert events from the server into local RxDB. */
   private async upsertEvents(db: SwardDatabase, serverEvents: any[]): Promise<void> {
     for (const serverEvent of serverEvents) {
       if (serverEvent.is_deleted) {
@@ -324,6 +330,7 @@ export class SyncEngineService implements OnDestroy {
     }
   }
 
+  /** Upsert soil analyses from the server into local RxDB. */
   private async upsertSoilAnalyses(db: SwardDatabase, serverAnalyses: any[]): Promise<void> {
     for (const serverAnalysis of serverAnalyses) {
       if (serverAnalysis.is_deleted) {
@@ -361,6 +368,7 @@ export class SyncEngineService implements OnDestroy {
     }
   }
 
+  /** Upsert fertilisation plans from the server into local RxDB. */
   private async upsertFertilisationPlans(db: SwardDatabase, serverPlans: any[]): Promise<void> {
     for (const serverPlan of serverPlans) {
       if (serverPlan.is_deleted) {
@@ -401,6 +409,18 @@ export class SyncEngineService implements OnDestroy {
     }
   }
 
+  // ──────────────────────────────────────────────────────────
+  // LWW Conflict Resolution
+  // ──────────────────────────────────────────────────────────
+
+  /**
+   * Determine whether the local doc should be overwritten by the server record.
+   *
+   * Last Write Wins (LWW) strategy:
+   *  - If server is newer → overwrite
+   *  - If local is newer with pending outbox entry → keep local (will be pushed next sync)
+   *  - If local is newer without pending outbox entry → overwrite (local changes already pushed)
+   */
   private async shouldOverwriteLocal(
     db: SwardDatabase,
     localUpdatedAt: string,
@@ -409,13 +429,28 @@ export class SyncEngineService implements OnDestroy {
   ): Promise<boolean> {
     const serverTime = new Date(serverUpdatedAt).getTime();
     const localTime = new Date(localUpdatedAt).getTime();
-    if (serverTime >= localTime) return true;
+
+    if (serverTime >= localTime) {
+      return true; // Server is newer
+    }
+
+    // Local is newer — check for pending outbox entry
     const pendingOutbox = await db.outbox.find({
       selector: { localDocId, status: 'pending' },
     }).exec();
-    return pendingOutbox.length === 0;
+
+    if (pendingOutbox.length > 0) {
+      return false; // Local has pending changes, keep them
+    }
+
+    return true; // Local changes were already pushed, overwrite with server
   }
 
+  // ──────────────────────────────────────────────────────────
+  // Local Doc Helpers
+  // ──────────────────────────────────────────────────────────
+
+  /** Update a local RxDB document's syncStatus. */
   private async updateLocalDocStatus(
     db: SwardDatabase,
     entityType: string,
@@ -425,9 +460,12 @@ export class SyncEngineService implements OnDestroy {
     const collection = (db as any)[entityType];
     if (!collection) return;
     const doc = await collection.findOne(localDocId).exec();
-    if (doc) { await doc.patch({ syncStatus: status }); }
+    if (doc) {
+      await doc.patch({ syncStatus: status });
+    }
   }
 
+  /** Update a local RxDB document with the server-assigned ID and mark as synced. */
   private async updateLocalDocServerId(
     db: SwardDatabase,
     entityType: string,
@@ -437,7 +475,9 @@ export class SyncEngineService implements OnDestroy {
     const collection = (db as any)[entityType];
     if (!collection) return;
     const doc = await collection.findOne(localDocId).exec();
-    if (doc) { await doc.patch({ serverId, syncStatus: 'synced' }); }
+    if (doc) {
+      await doc.patch({ serverId, syncStatus: 'synced' });
+    }
   }
 
   ngOnDestroy(): void {

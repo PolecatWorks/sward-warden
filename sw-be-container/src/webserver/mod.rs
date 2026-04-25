@@ -203,7 +203,6 @@ async fn create_farm_record(State(state): State<AppState>, Json(record): Json<Fa
     Ok(Json(new_record?))
 }
 
-
 async fn list_soil_analyses(State(state): State<AppState>) -> Result<Json<Vec<SoilAnalysis>>, MyError> {
     let analyses = sqlx::query_as::<_, SoilAnalysis>(
         "SELECT sa.id, sa.field_id, sa.sample_date, sa.ph_level, sa.phosphorus_index, sa.potassium_index, sa.magnesium_index, sa.updated_at, sa.is_deleted FROM soil_analyses sa JOIN fields f ON sa.field_id = f.id JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1 AND sa.is_deleted = FALSE"
@@ -340,5 +339,6 @@ async fn delta_sync(
         fertilisation_plans,
     }))
 }
+
 #[cfg(test)]
 mod tests;

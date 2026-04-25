@@ -29,6 +29,13 @@ export type SwardDatabase = RxDatabase<SwardCollections>;
 
 /**
  * Service responsible for creating and exposing the RxDB database.
+ *
+ * Consumers should use the `db$` observable or the typed collection
+ * accessors (`farmsCollection$`, `fieldsCollection$`, `eventsCollection$`, etc.)
+ * to interact with local data.
+ *
+ * For testing, provide `RXDB_STORAGE` with `getRxStorageMemory()` and
+ * `RXDB_DB_NAME` with a unique name to avoid cross-test contamination.
  */
 @Injectable({
   providedIn: 'root'
