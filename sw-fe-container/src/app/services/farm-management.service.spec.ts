@@ -102,8 +102,8 @@ describe('FarmManagementService', () => {
     });
   });
 
-  // ── deleteFarm (local-first) ────────────────────────────
-  describe('deleteFarm', () => {
+  // ── deleteEntity (local-first) ────────────────────────────
+  describe('deleteEntity', () => {
     it('should remove a farm from the local RxDB database by serverId', async () => {
       const db = await firstValueFrom(rxdbService.db$);
       await db.farms.insert({
@@ -116,7 +116,7 @@ describe('FarmManagementService', () => {
         updatedAt: new Date().toISOString(),
       });
 
-      await firstValueFrom(service.deleteFarm(42));
+      await firstValueFrom(service.deleteEntity('farms', 42));
 
       const remaining = await db.farms.find().exec();
       expect(remaining.length).toBe(0);
@@ -134,7 +134,7 @@ describe('FarmManagementService', () => {
         updatedAt: new Date().toISOString(),
       });
 
-      await firstValueFrom(service.deleteFarm(99));
+      await firstValueFrom(service.deleteEntity('farms', 99));
 
       const outbox = await db.outbox.find().exec();
       expect(outbox.length).toBe(1);
@@ -143,7 +143,7 @@ describe('FarmManagementService', () => {
     });
 
     it('should not throw when deleting a non-existent farm', async () => {
-      await firstValueFrom(service.deleteFarm(999));
+      await firstValueFrom(service.deleteEntity('farms', 999));
     });
   });
 
