@@ -10,7 +10,7 @@ use reqwest::StatusCode;
 
 use crate::state::AppState;
 use crate::error::MyError;
-use crate::models::{User, Farm, Field, Event, FarmRecord};
+use crate::models::{User, Farm, Field, Event, FarmRecord, FertiliserApplication};
 
 // Central API Router
 pub fn app_router(state: AppState) -> Router {
@@ -25,6 +25,7 @@ pub fn app_router(state: AppState) -> Router {
         .route("/v0/fields/{id}", delete(delete_field))
         .route("/v0/events", get(list_events).post(create_event))
         .route("/v0/farm_records", get(list_farm_records).post(create_farm_record))
+        .route("/v0/fertiliser_applications", get(list_fertiliser_applications).post(create_fertiliser_application))
         .with_state(state)
 }
 
@@ -164,6 +165,30 @@ async fn create_farm_record(State(state): State<AppState>, Json(record): Json<Fa
     .fetch_one(&state.db_pool)
     .await;
     Ok(Json(new_record?))
+}
+
+
+async fn list_fertiliser_applications(State(state): State<AppState>) -> Result<Json<Vec<FertiliserApplication>>, MyError> {
+    let applications = sqlx::query_as::<_, FertiliserApplication>(
+        "SELECT fa.id, fa.event_id, fa.fertiliser_type, fa.amount_applied, fa.nitrogen_content, fa.evidence_of_control FROM fertiliser_applications fa JOIN events e ON fa.event_id = e.id JOIN fields f ON e.field_id = f.id JOIN farms fm ON f.farm_id = fm.id WHERE fm.user_id = 1"
+    )
+    .fetch_all(&state.db_pool)
+    .await;
+    Ok(Json(applications?))
+}
+
+async fn create_fertiliser_application(State(state): State<AppState>, Json(application): Json<FertiliserApplication>) -> Result<Json<FertiliserApplication>, MyError> {
+    let new_application = sqlx::query_as::<_, FertiliserApplication>(
+        "INSERT INTO fertiliser_applications (event_id, fertiliser_type, amount_applied, nitrogen_content, evidence_of_control) VALUES ($1, $2, $3, $4, $5) RETURNING id, event_id, fertiliser_type, amount_applied, nitrogen_content, evidence_of_control"
+    )
+    .bind(application.event_id)
+    .bind(&application.fertiliser_type)
+    .bind(application.amount_applied)
+    .bind(application.nitrogen_content)
+    .bind(&application.evidence_of_control)
+    .fetch_one(&state.db_pool)
+    .await;
+    Ok(Json(new_application?))
 }
 
 #[cfg(test)]

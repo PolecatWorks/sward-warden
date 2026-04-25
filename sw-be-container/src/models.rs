@@ -41,3 +41,13 @@ pub struct FarmRecord {
     pub manure_storage_capacity: f64,
     pub year: i32,
 }
+
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+pub struct FertiliserApplication {
+    pub id: i64,
+    pub event_id: i64,
+    pub fertiliser_type: String,
+    pub amount_applied: f64,
+    pub nitrogen_content: Option<f64>,
+    pub evidence_of_control: Option<String>,
+}

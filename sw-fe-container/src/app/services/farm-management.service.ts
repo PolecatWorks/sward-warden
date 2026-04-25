@@ -5,6 +5,7 @@ import { User } from '../models/user';
 import { Farm } from '../models/farm';
 import { Field } from '../models/field';
 import { Event } from '../models/event';
+import { FertiliserApplication } from '../models/fertiliser-application';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -81,6 +82,19 @@ export class FarmManagementService {
   deleteFarm(id: number): Observable<void> {
     return this.apiUrl$.pipe(
       switchMap(apiUrl => this.http.delete<void>(`${apiUrl}/farms/${id}`, { headers: this.getHeaders() }))
+    );
+  }
+
+
+  getFertiliserApplications(): Observable<FertiliserApplication[]> {
+    return this.apiUrl$.pipe(
+      switchMap(apiUrl => this.http.get<FertiliserApplication[]>(`${apiUrl}/fertiliser_applications`, { headers: this.getHeaders() }))
+    );
+  }
+
+  addFertiliserApplication(application: FertiliserApplication): Observable<FertiliserApplication> {
+    return this.apiUrl$.pipe(
+      switchMap(apiUrl => this.http.post<FertiliserApplication>(`${apiUrl}/fertiliser_applications`, application, { headers: this.getHeaders() }))
     );
   }
 
