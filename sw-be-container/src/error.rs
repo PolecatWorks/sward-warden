@@ -53,6 +53,9 @@ pub enum MyError {
 
     #[error("Invalid header value")]
     InvalidHeaderValue(#[from] reqwest::header::InvalidHeaderValue),
+
+    #[error("Database error")]
+    DatabaseError(#[from] sqlx::Error),
 }
 
 impl axum::response::IntoResponse for MyError {
@@ -101,6 +104,13 @@ impl axum::response::IntoResponse for MyError {
                 reqwest::StatusCode::INTERNAL_SERVER_ERROR,
                 "Invalid Header Value".to_string(),
             ),
+            MyError::DatabaseError(error) => {
+                tracing::error!("Database error: {}", error);
+                (
+                    reqwest::StatusCode::INTERNAL_SERVER_ERROR,
+                    "Database Error".to_string(),
+                )
+            },
         };
 
         (status, axum::Json(ErrorResponse { message })).into_response()
