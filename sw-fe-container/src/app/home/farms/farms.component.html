@@ -57,7 +57,7 @@
 </div>
 
 <!-- Bento Layout for Farms -->
-<div *ngIf="!isLoading" class="grid grid-cols-1 gap-4">
+<div *ngIf="!isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 <!-- Farm Cards -->
 <div *ngFor="let farm of farms; let i = index" class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm group" [attr.data-testid]="'farm-card-' + farm.id">
 <div class="h-40 relative">
@@ -107,7 +107,7 @@
 </section>
 </main>
 <!-- FAB: Add New Farm -->
-<button (click)="openAddFarmModal()" id="add-farm-fab" class="fixed right-6 bottom-24 w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center z-40 active:scale-90 transition-transform" aria-label="Add new farm">
+<button (click)="openAddFarmModal()" id="add-farm-fab" class="fixed right-6 bottom-24 lg:bottom-8 w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center z-40 active:scale-90 transition-transform" aria-label="Add new farm">
 <span class="material-symbols-outlined text-2xl">add</span>
 </button>
 

@@ -10,8 +10,16 @@ body {
     font-family: 'Inter', sans-serif;
     background-color: #faf9f5;
     min-height: max(884px, 100dvh);
+    @apply text-base lg:text-lg;
 }
 
 h1, h2, h3, .headline {
     font-family: 'Work Sans', sans-serif;
+}
+
+/* Adaptive Scaling */
+@layer components {
+  .card-adaptive {
+    @apply rounded-xl lg:rounded-3xl transition-all duration-500;
+  }
 }

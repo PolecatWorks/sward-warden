@@ -28,4 +28,4 @@ This specification details the implementation of adaptive layouts across mobile,
 4. Implement a responsive navigation component that conditionally renders a bottom nav using `block lg:hidden` and a sidebar/top nav using `hidden lg:flex` (or similar utility combinations).
 
 ## 4. State
-Open
+Complete
