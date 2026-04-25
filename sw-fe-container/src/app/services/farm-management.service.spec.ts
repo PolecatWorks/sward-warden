@@ -122,8 +122,46 @@ describe('FarmManagementService', () => {
       expect(remaining.length).toBe(0);
     });
 
+    it('should create a DELETE outbox entry when deleting a farm', async () => {
+      const db = await firstValueFrom(rxdbService.db$);
+      await db.farms.insert({
+        id: 'farm-del-outbox',
+        serverId: 99,
+        user_id: 1,
+        name: 'Outbox Farm',
+        location: 'Outbox',
+        syncStatus: 'synced',
+        updatedAt: new Date().toISOString(),
+      });
+
+      await firstValueFrom(service.deleteFarm(99));
+
+      const outbox = await db.outbox.find().exec();
+      expect(outbox.length).toBe(1);
+      expect(outbox[0].actionType).toBe('DELETE');
+      expect(outbox[0].entityType).toBe('farms');
+    });
+
     it('should not throw when deleting a non-existent farm', async () => {
       await firstValueFrom(service.deleteFarm(999));
+    });
+  });
+
+  // ── Outbox entries on writes ────────────────────────────
+  describe('outbox entries', () => {
+    it('should create a POST outbox entry when adding a farm', async () => {
+      const newFarm: Farm = { name: 'Outbox Farm', location: 'Test' };
+      await firstValueFrom(service.addFarm(newFarm));
+
+      const db = await firstValueFrom(rxdbService.db$);
+      const outbox = await db.outbox.find().exec();
+      expect(outbox.length).toBe(1);
+      expect(outbox[0].actionType).toBe('POST');
+      expect(outbox[0].entityType).toBe('farms');
+      expect(outbox[0].status).toBe('pending');
+
+      const payload = JSON.parse(outbox[0].payload);
+      expect(payload.name).toBe('Outbox Farm');
     });
   });
 

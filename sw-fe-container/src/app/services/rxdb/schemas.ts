@@ -92,3 +92,39 @@ export const eventSchema: RxJsonSchema<EventDocType> = {
   required: ['id', 'field_id', 'event_type', 'description', 'date', 'syncStatus', 'updatedAt'],
   indexes: ['syncStatus', 'updatedAt'],
 };
+
+/** Outbox entry for queuing offline writes. */
+export type OutboxActionType = 'POST' | 'PUT' | 'DELETE';
+export type OutboxEntityType = 'farms' | 'fields' | 'events';
+export type OutboxStatus = 'pending' | 'failed';
+
+export interface OutboxDocType {
+  id: string;
+  actionType: OutboxActionType;
+  entityType: OutboxEntityType;
+  /** The local RxDB document id that this outbox entry relates to. */
+  localDocId: string;
+  /** JSON-serialised payload for the HTTP request body. */
+  payload: string;
+  timestamp: string;
+  status: OutboxStatus;
+  retryCount: number;
+}
+
+export const outboxSchema: RxJsonSchema<OutboxDocType> = {
+  version: 0,
+  primaryKey: 'id',
+  type: 'object',
+  properties: {
+    id: { type: 'string', maxLength: 64 },
+    actionType: { type: 'string', maxLength: 8, enum: ['POST', 'PUT', 'DELETE'] },
+    entityType: { type: 'string', maxLength: 16, enum: ['farms', 'fields', 'events'] },
+    localDocId: { type: 'string', maxLength: 64 },
+    payload: { type: 'string' },
+    timestamp: { type: 'string', maxLength: 32 },
+    status: { type: 'string', maxLength: 16, enum: ['pending', 'failed'], default: 'pending' },
+    retryCount: { type: 'number', default: 0 },
+  },
+  required: ['id', 'actionType', 'entityType', 'localDocId', 'payload', 'timestamp', 'status', 'retryCount'],
+  indexes: ['status', 'timestamp'],
+};
