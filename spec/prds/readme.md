@@ -17,6 +17,7 @@ PRDs dictate the high-level features and requirements of the project. Every PRD 
 - [0009 Backend Architecture Refactor](./0009-backend-architecture-refactor.md)
 - [0010 Database Integration](./0010-database-integration.md)
 - [0011 Offline Capabilities](./0011-offline-capabilities.md)
+- [0012 Responsive Design](./0012-responsive-design.md)
 
 ## Implementation Sequence for Remaining Work
 
@@ -24,3 +25,4 @@ Based on dependencies and logical flow, the following order is proposed for the 
 
 1. **[0008 Optimization, Weather, and Topology Mapping](./0008-optimization-and-mapping.md)**: Break this down into specs and implement. This provides the core intelligence engine that features like reporting and advanced farm management might depend on.
 2. **[0011 Offline Capabilities](./0011-offline-capabilities.md)**: Break this down into specs and implement. This is an architectural enhancement that should ideally be added once core application and data flows are stabilized.
+3. **[0012 Responsive Design](./0012-responsive-design.md)**: Break this down into specs and implement. This ensures the application is usable across all devices, particularly addressing current issues with wide-screen scaling.
