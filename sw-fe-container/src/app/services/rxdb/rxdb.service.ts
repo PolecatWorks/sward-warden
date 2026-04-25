@@ -3,8 +3,8 @@ import { createRxDatabase, RxDatabase, RxCollection, RxStorage } from 'rxdb';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { Observable, from, shareReplay, switchMap } from 'rxjs';
 import {
-  FarmDocType, FieldDocType, EventDocType,
-  farmSchema, fieldSchema, eventSchema,
+  FarmDocType, FieldDocType, EventDocType, OutboxDocType,
+  farmSchema, fieldSchema, eventSchema, outboxSchema,
 } from './schemas';
 
 /** Injection token for providing an alternative RxStorage (e.g. memory for tests). */
@@ -18,6 +18,7 @@ export type SwardCollections = {
   farms: RxCollection<FarmDocType>;
   fields: RxCollection<FieldDocType>;
   events: RxCollection<EventDocType>;
+  outbox: RxCollection<OutboxDocType>;
 };
 export type SwardDatabase = RxDatabase<SwardCollections>;
 
@@ -62,6 +63,7 @@ export class RxdbService implements OnDestroy {
       farms: { schema: farmSchema },
       fields: { schema: fieldSchema },
       events: { schema: eventSchema },
+      outbox: { schema: outboxSchema },
     });
 
     return db;
@@ -80,6 +82,11 @@ export class RxdbService implements OnDestroy {
   /** Observable emitting the events RxCollection. */
   get eventsCollection$(): Observable<RxCollection<EventDocType>> {
     return this.db$.pipe(switchMap(db => from(Promise.resolve(db.events))));
+  }
+
+  /** Observable emitting the outbox RxCollection. */
+  get outboxCollection$(): Observable<RxCollection<OutboxDocType>> {
+    return this.db$.pipe(switchMap(db => from(Promise.resolve(db.outbox))));
   }
 
   async ngOnDestroy(): Promise<void> {
