@@ -30,8 +30,7 @@ export class FarmManagementService {
     private authService: AuthService,
     private rxdbService: RxdbService,
   ) {
-    const basePath = new URL('./', import.meta.url).href;
-    const configPath = basePath.endsWith('/') ? `${basePath}assets/contents/config.json` : `${basePath}/assets/contents/config.json`;
+    const configPath = 'assets/contents/config.json';
     this.apiUrl$ = this.http.get<{ apiUrl: string }>(configPath).pipe(
       map(config => config.apiUrl),
       shareReplay(1)
