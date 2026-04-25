@@ -18,6 +18,7 @@ PRDs dictate the high-level features and requirements of the project. Every PRD 
 - [0010 Database Integration](./0010-database-integration.md)
 - [0011 Offline Capabilities](./0011-offline-capabilities.md)
 - [0012 Responsive Design](./0012-responsive-design.md)
+- [0013 Administration and Support Console](./0013-administration-console.md)
 
 ## Implementation Sequence for Remaining Work
 
