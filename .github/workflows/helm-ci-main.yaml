@@ -1,8 +1,8 @@
-name: Helm CI (Main)
+name: Helm CI (main)
 
 on:
   push:
-    branches: ["Main"]
+    branches: ["main"]
 
 env:
   REGISTRY: ghcr.io
@@ -38,7 +38,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: azure/setup-helm@v4.2.0
 
-      - name: Lint sp-be
+      - name: Lint sw-be
         run: helm lint charts/slurry-manager
 
   publish:
@@ -76,7 +76,7 @@ jobs:
           echo "Updated Agent BE Version:"
           grep "^version:" charts/slurry-manager/Chart.yaml
 
-      - name: Push Helm chart to OCI for sp-be
+      - name: Push Helm chart to OCI for sw-be
         uses: bsord/helm-push@v4
         with:
           chart-folder: charts/slurry-manager
