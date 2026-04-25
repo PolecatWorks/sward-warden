@@ -15,9 +15,9 @@
     <div class="mb-8 flex gap-3">
     <div class="relative flex-1">
     <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">search</span>
-    <input class="w-full pl-12 pr-4 py-4 bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-primary placeholder:text-outline-variant" placeholder="Find a field..." type="text"/>
+    <input class="w-full pl-12 pr-4 py-4 bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-primary placeholder:text-outline-variant" placeholder="Find a field..." type="text" aria-label="Search fields"/>
     </div>
-    <button class="bg-surface-container-high p-4 rounded-xl text-primary">
+    <button class="bg-surface-container-high p-4 rounded-xl text-primary" aria-label="Filter fields">
     <span class="material-symbols-outlined">filter_list</span>
     </button>
     </div>
@@ -41,8 +41,8 @@
             </div>
         </div>
         <div class="flex justify-end gap-2 border-t border-surface-container-low pt-4">
-            <button class="px-4 py-2 text-sm font-semibold text-primary bg-primary-container/10 hover:bg-primary-container/20 rounded-lg transition-colors" [routerLink]="['/fields', field.id]">View Details</button>
-            <button class="px-4 py-2 text-sm font-semibold text-error bg-error-container/50 hover:bg-error-container rounded-lg transition-colors" (click)="deleteField(field.id)">Delete</button>
+            <button class="px-4 py-2 text-sm font-semibold text-primary bg-primary-container/10 hover:bg-primary-container/20 rounded-lg transition-colors" [routerLink]="['/fields', field.id]" [attr.aria-label]="'View details for ' + field.name">View Details</button>
+            <button class="px-4 py-2 text-sm font-semibold text-error bg-error-container/50 hover:bg-error-container rounded-lg transition-colors" (click)="deleteField(field.id)" [attr.aria-label]="'Delete ' + field.name">Delete</button>
         </div>
     </div>
 
@@ -57,8 +57,14 @@
       <div *ngIf="showAddForm" class="bg-surface-container-lowest p-6 rounded-xl shadow-md mb-6">
         <h3 class="text-lg font-bold text-primary mb-4">Add New Field</h3>
         <div class="flex flex-col gap-4">
-            <input type="text" [(ngModel)]="newFieldName" class="w-full px-4 py-3 bg-surface-container-low border border-surface-container-high rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Field Name">
-            <input type="number" [(ngModel)]="newFieldArea" class="w-full px-4 py-3 bg-surface-container-low border border-surface-container-high rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="Area (Hectares)">
+            <div class="flex flex-col gap-1">
+                <label for="newFieldName" class="text-sm font-medium text-on-surface-variant">Field Name</label>
+                <input id="newFieldName" type="text" [(ngModel)]="newFieldName" class="w-full px-4 py-3 bg-surface-container-low border border-surface-container-high rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="e.g. North Pasture">
+            </div>
+            <div class="flex flex-col gap-1">
+                <label for="newFieldArea" class="text-sm font-medium text-on-surface-variant">Area (Hectares)</label>
+                <input id="newFieldArea" type="number" [(ngModel)]="newFieldArea" class="w-full px-4 py-3 bg-surface-container-low border border-surface-container-high rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="e.g. 12.5">
+            </div>
             <div class="flex gap-2 justify-end mt-2">
                 <button (click)="toggleAddForm()" class="px-5 py-2 font-semibold text-on-surface-variant bg-surface-container-high rounded-lg hover:bg-surface-variant transition-colors">Cancel</button>
                 <button (click)="addField()" [disabled]="!newFieldName || newFieldArea === null" class="px-5 py-2 font-semibold text-on-primary bg-primary rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50">Save Field</button>
@@ -77,7 +83,7 @@
     </div>
     <!-- FAB -->
     <div class="fixed bottom-24 right-6 flex flex-col items-center justify-center z-40">
-    <button class="w-16 h-16 bg-primary-container text-white rounded-full shadow-2xl flex items-center justify-center active:scale-90 transition-transform" routerLink="/topology">
+    <button class="w-16 h-16 bg-primary-container text-white rounded-full shadow-2xl flex items-center justify-center active:scale-90 transition-transform" routerLink="/topology" aria-label="View map">
     <span class="material-symbols-outlined text-3xl">map</span>
     </button>
     </div>
