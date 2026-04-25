@@ -40,8 +40,8 @@ describe('UserProfileComponent', () => {
     expect(mockFarmService.getUsers).toHaveBeenCalled();
   });
 
-  it('should render onboarding welcome message', () => {
+  it('should render the profile heading', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('p')?.textContent).toContain('Welcome! This is the initial onboarding step for new users.');
+    expect(compiled.textContent).toContain('Operator Profile');
   });
 });

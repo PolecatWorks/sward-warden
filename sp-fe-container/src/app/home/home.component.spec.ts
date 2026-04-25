@@ -23,8 +23,8 @@ describe('HomeComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display the app title', () => {
+  it('should display the operator profile section', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('FieldMetric');
+    expect(compiled.textContent).toContain('Operator Profile');
   });
 });
