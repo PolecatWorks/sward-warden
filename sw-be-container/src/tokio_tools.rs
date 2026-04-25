@@ -81,3 +81,76 @@ where
         }
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::time::Duration;
+    use tokio::time::sleep;
+
+    #[test]
+    fn test_rt_multithreaded_current_thread() {
+        let runtime = ThreadRuntime {
+            threads: 0,
+            stack_size: 2_000_000,
+            name: "test-current".into(),
+        };
+        let rt = rt_multithreaded(&runtime).expect("Failed to build current thread runtime");
+        let result = rt.block_on(async { 42 });
+        assert_eq!(result, 42);
+    }
+
+    #[test]
+    fn test_rt_multithreaded_multi_thread() {
+        let runtime = ThreadRuntime {
+            threads: 2,
+            stack_size: 2_000_000,
+            name: "test-multi".into(),
+        };
+        let rt = rt_multithreaded(&runtime).expect("Failed to build multi-thread runtime");
+        let result = rt.block_on(async { 42 });
+        assert_eq!(result, 42);
+    }
+
+    #[test]
+    fn test_run_in_tokio_success() {
+        let runtime = ThreadRuntime::default();
+        let result = run_in_tokio(&runtime, async {
+            Ok::<i32, MyError>(100)
+        });
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), 100);
+    }
+
+    #[test]
+    fn test_run_in_tokio_with_cancel_success() {
+        let runtime = ThreadRuntime::default();
+        let cancel = CancellationToken::new();
+
+        let result = run_in_tokio_with_cancel(&runtime, cancel, async {
+            Ok::<i32, MyError>(200)
+        });
+
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), 200);
+    }
+
+    #[test]
+    fn test_run_in_tokio_with_cancel_cancelled() {
+        let runtime = ThreadRuntime::default();
+        let cancel = CancellationToken::new();
+        let cancel_clone = cancel.clone();
+
+        let result = run_in_tokio_with_cancel(&runtime, cancel, async move {
+            cancel_clone.cancel();
+            sleep(Duration::from_millis(50)).await;
+            Ok::<i32, MyError>(300)
+        });
+
+        assert!(result.is_err());
+        match result.unwrap_err() {
+            MyError::Cancelled => (), // Expected
+            _ => panic!("Expected MyError::Cancelled"),
+        }
+    }
+}
