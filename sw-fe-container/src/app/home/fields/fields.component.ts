@@ -67,7 +67,7 @@ export class FieldsComponent implements OnInit {
   }
 
   deleteField(id: number): void {
-    this.farmService.deleteField(id).subscribe(() => {
+    this.farmService.deleteEntity('fields', id).subscribe(() => {
       this.loadFields();
     });
   }

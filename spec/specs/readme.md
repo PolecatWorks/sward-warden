@@ -43,6 +43,10 @@ Once a PRD in `spec/prds/` is vetted, it is broken down into specific actionable
 - [0007-03 General Farm Records Export Specification](./0007-03-general-farm-records-export.md)
 - [0007-04 Soil Analysis Reports Specification](./0007-04-soil-analysis-reports.md)
 - [0007-05 Import and Export Reporting Specification](./0007-05-import-export-reporting.md)
+- [0008-01 Optimization Engine Core Specification](./0008-01-optimization-engine-core.md)
+- [0008-02 Weather Integration Data Specification](./0008-02-weather-integration-data.md)
+- [0008-03 Topology and Waterway Data Specification](./0008-03-topology-and-waterway-data.md)
+- [0008-04 Optimization & Mapping UI Specification](./0008-04-optimization-mapping-ui.md)
 - [0011-01 RxDB Local Database Setup Specification](./0011-01-rxdb-local-database.md)
 - [0011-02 Network Status and Sync UI Specification](./0011-02-network-status-ui.md)
 - [0011-03 Backend Delta Sync API Specification](./0011-03-backend-delta-sync-api.md)
@@ -83,4 +87,3 @@ These specs implement the local-first architecture and synchronisation layer. Th
 14. **[0011-04 Outbox Pattern and Push Sync Specification](./0011-04-outbox-pattern-push-sync.md)** — Push path: queues offline writes and sends them when connectivity returns. Depends on 0011-01 and 0011-02.
 15. **[0011-05 Delta Sync Client and Conflict Resolution Specification](./0011-05-delta-sync-client-and-conflict-resolution.md)** — Pull path: fetches server changes, merges into local DB, and resolves conflicts via LWW. Depends on 0011-01, 0011-03, and 0011-04.
 
-*(Note: Uncompleted PRD 0008 will generate additional specs once analyzed).*

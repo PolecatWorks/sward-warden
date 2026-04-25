@@ -1,6 +1,6 @@
 # 0004-03 Fertiliser Application Records Specification
 
-**State**: Open
+**State**: Complete
 
 ## Scope
 This specification covers the fertiliser application records required to maintain compliance with NAP regulations (PRD 0004).

@@ -1,6 +1,6 @@
 # 0004-04 Fertilisation Plan Specification
 
-**State**: Open
+**State**: Complete
 
 ## Scope
 This specification covers the fertilisation plan requirements to maintain compliance with NAP regulations (PRD 0004).

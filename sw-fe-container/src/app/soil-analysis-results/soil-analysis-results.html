@@ -1,0 +1,73 @@
+<div class="p-6 max-w-4xl mx-auto">
+  <h2 class="text-2xl font-bold mb-6">Soil Analysis Results</h2>
+
+  <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-8">
+    <h3 class="text-lg font-semibold mb-4">Record New Analysis</h3>
+    <form (ngSubmit)="addAnalysis()" #analysisForm="ngForm" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Field</label>
+          <select [(ngModel)]="newAnalysis.field_id" name="field_id" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+            <option [ngValue]="0">Select a field</option>
+            <option *ngFor="let field of fields" [ngValue]="field.id">{{ field.name }} ({{field.area_hectares}} ha)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Sample Date</label>
+          <input type="date" [(ngModel)]="newAnalysis.sample_date" name="sample_date" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">pH Level</label>
+          <input type="number" step="0.1" [(ngModel)]="newAnalysis.ph_level" name="ph_level" class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Phosphorus Index</label>
+          <input type="number" [(ngModel)]="newAnalysis.phosphorus_index" name="phosphorus_index" class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Potassium Index</label>
+          <input type="number" [(ngModel)]="newAnalysis.potassium_index" name="potassium_index" class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Magnesium Index</label>
+          <input type="number" [(ngModel)]="newAnalysis.magnesium_index" name="magnesium_index" class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+        </div>
+      </div>
+      <button type="submit" [disabled]="!analysisForm.form.valid || newAnalysis.field_id === 0" class="mt-4 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50">
+        Save Analysis
+      </button>
+    </form>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Field</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">pH</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">P Index</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">K Index</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mg Index</th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let analysis of analyses">
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ getFieldName(analysis.field_id) }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ analysis.sample_date }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ analysis.ph_level || '-' }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ analysis.phosphorus_index !== null ? analysis.phosphorus_index : '-' }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ analysis.potassium_index !== null ? analysis.potassium_index : '-' }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ analysis.magnesium_index !== null ? analysis.magnesium_index : '-' }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <button (click)="deleteAnalysis(analysis.id)" class="text-red-600 hover:text-red-900">Delete</button>
+          </td>
+        </tr>
+        <tr *ngIf="analyses.length === 0">
+          <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">No soil analyses recorded yet.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
