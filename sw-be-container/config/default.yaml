@@ -4,8 +4,6 @@ webservice:
 database:
   url:
     url: "postgres://localhost:5432/swarddb"
-    username: "postgres"
-    password: "mysecretpassword"
   max_connections: 10
 hams:
   name: "sw-be"

@@ -78,3 +78,37 @@ impl AppConfig {
             .extract()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::env;
+
+    #[test]
+    fn test_config_load_without_credentials() {
+        // Ensure no env vars are interfering
+        env::remove_var("SP_BE__DATABASE__URL__USERNAME");
+        env::remove_var("SP_BE__DATABASE__URL__PASSWORD");
+
+        let config_res = AppConfig::load();
+        assert!(config_res.is_ok(), "Config should load even without credentials: {:?}", config_res.err());
+        let config = config_res.unwrap();
+
+        assert!(config.database.url.username.is_none());
+        assert!(config.database.url.password.is_none());
+    }
+
+    #[test]
+    fn test_config_load_with_env_vars() {
+        env::set_var("SP_BE__DATABASE__URL__USERNAME", "envuser");
+        env::set_var("SP_BE__DATABASE__URL__PASSWORD", "envpass");
+
+        let config = AppConfig::load().unwrap();
+
+        assert_eq!(config.database.url.username.as_deref(), Some("envuser"));
+        assert_eq!(config.database.url.password.as_deref(), Some("envpass"));
+
+        env::remove_var("SP_BE__DATABASE__URL__USERNAME");
+        env::remove_var("SP_BE__DATABASE__URL__PASSWORD");
+    }
+}
