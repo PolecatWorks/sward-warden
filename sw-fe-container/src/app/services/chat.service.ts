@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, Subject, map, shareReplay, switchMap, tap } from 'rxjs';
 import { AuthService } from './auth.service';
+import { LoggerService } from './logger.service';
 
 export interface Thread {
   thread_id: string;
@@ -83,7 +84,11 @@ export interface VisualizationsResponse {
 export class ChatService {
   private apiUrl$: Observable<string>;
 
-  constructor(private http: HttpClient, private authService: AuthService) {
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+    private logger: LoggerService
+  ) {
     const basePath = new URL('./', import.meta.url).href;
     const configPath = basePath.endsWith('/') ? `${basePath}assets/contents/config.json` : `${basePath}/assets/contents/config.json`;
     this.apiUrl$ = this.http.get<{ apiUrl: string }>(configPath).pipe(
@@ -122,7 +127,7 @@ export class ChatService {
       next: (res) => {
         this.threadsSubject.next(res.threads);
       },
-      error: (err) => console.error('Error refreshing threads', err)
+      error: (err) => this.logger.error('Error refreshing threads', err)
     });
   }
 
