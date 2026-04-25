@@ -1,29 +1,165 @@
-<div class="user-profile">
-  <h2>User Profiles</h2>
-  <p>Welcome! This is the initial onboarding step for new users. Please create your profile to get started.</p>
+<div class="px-6 py-8 max-w-2xl mx-auto">
 
-  <h3>Create User</h3>
-  <form [formGroup]="userForm" (ngSubmit)="onSubmitUser()">
-    <div>
-      <label for="name">Name:</label>
-      <input id="name" formControlName="name" type="text">
+  <!-- Farm Identity Header -->
+  <div class="relative h-48 rounded-2xl overflow-hidden mb-6">
+    <img class="w-full h-full object-cover"
+      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpUbw8FgRlO8hU7OQviIeaedg3jVkQ8wC6LKAEVOnCcX1wzdAoKSDSZ-2aT3zxALtCjIZtoZ3bbldW5pbPGC3SucmOI9BjylgN-qDtBsbn0DqWwEnlfzqZSo9wZ1shUzv3WaW8ncD6u3ZYkZCdHSMWH8SnUow1fi98v4iNPMFo3d3cMIK3GfE4KsKOV86idIulWp2BQdMwQ2FwlcpzD0mL7cKf8n8-TmsT9jUEeSRy02IBFf_NITf3ZMX9ZN9fr5Sk9IMNPIY-rQ"
+      alt="Farm landscape">
+    <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+    <div class="absolute bottom-4 left-6">
+      <p class="text-[10px] uppercase tracking-[0.2em] font-bold text-white/70 mb-1">Operator Profile</p>
+      <h1 class="text-3xl font-black text-white font-['Work_Sans'] tracking-tight">Arthur Miller</h1>
     </div>
-    <div>
-      <label for="email">Email:</label>
-      <input id="email" formControlName="email" type="email">
+    <div class="absolute top-4 right-4">
+      <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-white/30">
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEGLVw7OJxGjDvarhM4qk8kwucVrFtr2LhZEnaBrkmsU-zTvETHxqqhqPe8uNJGzakLfepGm665SgCJvPPpt8B83L8FPfZpDnLS88vJsBQzhXdlteqviG82bhlHXzWn2za5JxQWWf3-Xd13318Hmd3MYo1wmxKnO2sR09K4ZrygrJ_0tOrra17-xn9c5GgOBifkKCV5dVJhoufTcuHGNXs0PIvQgPvANInQWOqHjOxi8gMnO-Vg_yXzQqHdPttBr-CvunJqZnhsA"
+          alt="Profile" class="w-full h-full object-cover">
+      </div>
     </div>
-    <button type="submit" [disabled]="!userForm.valid">Add User</button>
-  </form>
-
-  <div *ngIf="users$ | async as users; else loading">
-    <ul class="user-list">
-      <li *ngFor="let user of users">
-        <strong>Name:</strong> {{ user.name }} <br>
-        <strong>Email:</strong> {{ user.email }}
-      </li>
-    </ul>
   </div>
-  <ng-template #loading>
-    <p>Loading users...</p>
-  </ng-template>
+
+  <!-- Contact Info -->
+  <div class="bg-surface-container p-6 rounded-xl space-y-4 mb-6">
+    <div class="flex items-center gap-4">
+      <div class="bg-surface-container-lowest p-3 rounded-full">
+        <span class="material-symbols-outlined text-secondary">mail</span>
+      </div>
+      <div>
+        <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Email Address</p>
+        <p class="font-semibold text-primary">a.miller&#64;fieldmetric.com</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="bg-surface-container-lowest p-3 rounded-full">
+        <span class="material-symbols-outlined text-secondary">call</span>
+      </div>
+      <div>
+        <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Contact Phone</p>
+        <p class="font-semibold text-primary">+1 (555) 342-8812</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subscription & Billing (Glassmorphism) -->
+  <div class="relative bg-primary rounded-2xl p-6 mb-6 overflow-hidden">
+    <div class="absolute -right-8 -top-8 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+    <div class="relative z-10">
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <p class="text-[10px] uppercase tracking-widest text-primary-fixed/70 font-bold mb-1">Subscription</p>
+          <h2 class="text-2xl font-black text-white">Pro Operator</h2>
+        </div>
+        <div class="flex items-center gap-1 bg-white/20 px-3 py-1 rounded-full">
+          <span class="material-symbols-outlined text-white text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+          <span class="text-white text-[10px] font-bold uppercase tracking-wider">Active</span>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
+        <div>
+          <p class="text-[10px] uppercase tracking-widest text-primary-fixed/70 font-bold mb-1">Member Since</p>
+          <p class="text-white font-bold">March 2018</p>
+        </div>
+        <div>
+          <p class="text-[10px] uppercase tracking-widest text-primary-fixed/70 font-bold mb-1">Renews</p>
+          <p class="text-white font-bold">March 2025</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Modules -->
+  <div class="bg-surface-container-low p-6 rounded-xl mb-6">
+    <h2 class="text-lg font-bold text-on-surface mb-4">Active Modules</h2>
+    <div class="space-y-3">
+      <div *ngFor="let module of activeModules" class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary text-xl">{{ module.icon }}</span>
+          <span class="font-medium text-on-surface text-sm">{{ module.name }}</span>
+        </div>
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
+          [ngClass]="module.active ? 'bg-tertiary-container text-on-tertiary-container' : 'bg-surface-variant text-on-surface-variant'">
+          {{ module.active ? 'Enabled' : 'Disabled' }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="space-y-3 mb-6">
+    <a routerLink="/farms" class="flex items-center gap-4 p-4 bg-surface-container-lowest rounded-xl hover:bg-surface-container transition-colors">
+      <div class="w-10 h-10 bg-primary-container rounded-full flex items-center justify-center">
+        <span class="material-symbols-outlined text-on-primary-container">agriculture</span>
+      </div>
+      <div class="flex-1">
+        <p class="font-semibold text-on-surface">Manage Farms</p>
+        <p class="text-xs text-on-surface-variant">View and edit your farm portfolio</p>
+      </div>
+      <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+    </a>
+    <a routerLink="/reporting" class="flex items-center gap-4 p-4 bg-surface-container-lowest rounded-xl hover:bg-surface-container transition-colors">
+      <div class="w-10 h-10 bg-secondary-container rounded-full flex items-center justify-center">
+        <span class="material-symbols-outlined text-on-secondary-container">summarize</span>
+      </div>
+      <div class="flex-1">
+        <p class="font-semibold text-on-surface">Reports & Export</p>
+        <p class="text-xs text-on-surface-variant">Export compliance records to NIEA</p>
+      </div>
+      <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+    </a>
+    <a routerLink="/inventory" class="flex items-center gap-4 p-4 bg-surface-container-lowest rounded-xl hover:bg-surface-container transition-colors">
+      <div class="w-10 h-10 bg-tertiary-container rounded-full flex items-center justify-center">
+        <span class="material-symbols-outlined text-on-tertiary-container">inventory</span>
+      </div>
+      <div class="flex-1">
+        <p class="font-semibold text-on-surface">Inventory & Equipment</p>
+        <p class="text-xs text-on-surface-variant">Tanks, chemicals, and fleet</p>
+      </div>
+      <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+    </a>
+  </div>
+
+  <!-- User Management Form -->
+  <div class="bg-surface-container-lowest p-6 rounded-xl">
+    <h2 class="text-lg font-bold text-on-surface mb-4">Add Team Member</h2>
+    <form [formGroup]="userForm" (ngSubmit)="onSubmitUser()" class="space-y-4">
+      <div class="space-y-2">
+        <label class="text-sm font-medium text-on-surface-variant" for="name">Name</label>
+        <input id="name" formControlName="name" type="text" placeholder="e.g. John Smith"
+          class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+      </div>
+      <div class="space-y-2">
+        <label class="text-sm font-medium text-on-surface-variant" for="email">Email</label>
+        <input id="email" formControlName="email" type="email" placeholder="e.g. john@farm.com"
+          class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+      </div>
+      <button type="submit" [disabled]="!userForm.valid"
+        class="w-full py-3 bg-primary text-on-primary rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary/90 disabled:opacity-50 transition-all">
+        <span class="material-symbols-outlined text-lg">person_add</span>
+        Add Team Member
+      </button>
+    </form>
+
+    <div *ngIf="users$ | async as users; else loading" class="mt-6">
+      <h3 class="text-sm font-bold text-on-surface-variant uppercase tracking-widest mb-3">Current Members</h3>
+      <ul class="space-y-3">
+        <li *ngFor="let user of users" class="flex items-center gap-3 p-3 bg-surface-container-low rounded-xl">
+          <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-secondary-container text-sm">person</span>
+          </div>
+          <div>
+            <p class="font-semibold text-on-surface text-sm">{{ user.name }}</p>
+            <p class="text-xs text-on-surface-variant">{{ user.email }}</p>
+          </div>
+          <span class="ml-auto px-2 py-0.5 bg-tertiary-container text-on-tertiary-container rounded-full text-[10px] font-bold uppercase">Member</span>
+        </li>
+      </ul>
+    </div>
+    <ng-template #loading>
+      <div class="mt-4 flex items-center gap-2 text-on-surface-variant">
+        <span class="material-symbols-outlined animate-spin text-sm">progress_activity</span>
+        <p class="text-sm">Loading team...</p>
+      </div>
+    </ng-template>
+  </div>
+
 </div>

@@ -1,24 +1,7 @@
-<!-- TopAppBar -->
-<header class="bg-[#faf9f5] dark:bg-stone-950 flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto sticky top-0 z-50">
-<div class="flex items-center gap-3">
-<span class="material-symbols-outlined text-[#154212] dark:text-emerald-500 text-3xl">agriculture</span>
-<h1 class="font-['Work_Sans'] font-black tracking-tighter text-[#154212] dark:text-emerald-500 text-2xl">SwardWarden</h1>
-</div>
-<div class="hidden md:flex items-center gap-8">
-<nav class="flex gap-6">
-<a class="text-[#154212] dark:text-emerald-400 font-bold text-sm tracking-widest uppercase" routerLink="/slurry-dashboard">Dashboard</a>
-<a class="text-[#1a1c1a] dark:text-stone-400 hover:bg-[#f4f4f0] dark:hover:bg-stone-900 transition-colors px-3 py-1 rounded-xl text-sm tracking-widest uppercase" routerLink="/home/farms">Farms</a>
-<a class="text-[#1a1c1a] dark:text-stone-400 hover:bg-[#f4f4f0] dark:hover:bg-stone-900 transition-colors px-3 py-1 rounded-xl text-sm tracking-widest uppercase" routerLink="/compliance-tracking">Compliance</a>
-</nav>
-<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container">
-<img class="w-full h-full object-cover" data-alt="Portrait of a modern farmer in a clean linen shirt against a blurred rural landscape background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAD_kRs1g083G-UWNs6BT4Uv9vSKAztajH6cvyA3cEyL2RzWueXiBL2FOVXBE7dIIg84pGOUCMOzjeFq0pCwghS4t5bS9-I1ERJaz32iMinZ-9p3YkWr1bgxFlV7_foPoF2qoLFl3ov0m_Jb8Mba_1PtIw-mHJ-hbEHc_meHJgCuA3RFJx-XouQvPAFbkCN9okwNWQsKGmqpmRLdm2g9Q3psvMfAxNpxe1cAKgCb8FQa4dqBmn83wUdmult092SBXWrnWqlBPB1vA"/>
-</div>
-</div>
-</header>
-<main class="max-w-7xl mx-auto px-6 py-8">
+<main class="max-w-2xl mx-auto px-6 py-8">
 <!-- Dashboard Header -->
 <div class="mb-12">
-<h2 class="font-display font-black text-6xl text-primary tracking-tight leading-none mb-2">Slurry Management</h2>
+<h1 class="font-display font-black text-5xl text-primary tracking-tight leading-none mb-2">Slurry Management</h1>
 <p class="text-on-surface-variant font-medium text-lg max-w-2xl">Real-time nitrogen cycles, nutrient retention, and storage telemetry across your holdings.</p>
 </div>
 <!-- Bento Grid Layout -->
@@ -111,7 +94,7 @@
 <p class="text-on-surface-variant text-sm">Storage accumulation vs. application cycles</p>
 </div>
 <div class="flex gap-2">
-<button class="px-6 py-2 bg-surface-container-low text-on-surface-variant rounded-xl font-bold text-xs uppercase tracking-widest">Download Report</button>
+<button class="px-6 py-2 bg-surface-container-low text-on-surface-variant rounded-xl font-bold text-xs uppercase tracking-widest" routerLink="/reporting">Download Report</button>
 <button class="px-6 py-2 bg-primary text-white rounded-xl font-bold text-xs uppercase tracking-widest">Live View</button>
 </div>
 </div>
@@ -175,7 +158,7 @@
 <span class="text-[10px] font-black text-white/70 uppercase tracking-[0.2em] mb-1 block">Site Location</span>
 <h4 class="font-display font-black text-3xl text-white">East-Ridge Valley Complex</h4>
 </div>
-<div class="glass-card px-4 py-2 rounded-xl text-primary font-black text-xs tracking-widest uppercase">
+<div class="glass-card px-4 py-2 rounded-xl text-primary font-black text-xs tracking-widest uppercase cursor-pointer" routerLink="/topology">
                             View Maps
                         </div>
 </div>
@@ -183,22 +166,3 @@
 </div>
 </div>
 </main>
-<!-- BottomNavBar -->
-<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-[#faf9f5]/80 dark:bg-stone-950/80 backdrop-blur-xl md:hidden">
-<a class="flex flex-col items-center justify-center bg-[#154212] text-white dark:bg-emerald-600 dark:text-white rounded-xl px-5 py-2 active:scale-90 transition-transform duration-200" routerLink="/slurry-dashboard">
-<span class="material-symbols-outlined">dashboard</span>
-<span class="font-['Inter'] font-bold text-[10px] uppercase tracking-widest mt-1">Dashboard</span>
-</a>
-<a class="flex flex-col items-center justify-center text-[#795950] dark:text-stone-500 px-5 py-2 hover:text-[#154212] dark:hover:text-emerald-400 active:scale-90 transition-transform duration-200" routerLink="/home/farms">
-<span class="material-symbols-outlined">potted_plant</span>
-<span class="font-['Inter'] font-bold text-[10px] uppercase tracking-widest mt-1">Farms</span>
-</a>
-<a class="flex flex-col items-center justify-center text-[#795950] dark:text-stone-500 px-5 py-2 hover:text-[#154212] dark:hover:text-emerald-400 active:scale-90 transition-transform duration-200" routerLink="/compliance-tracking">
-<span class="material-symbols-outlined">assignment_turned_in</span>
-<span class="font-['Inter'] font-bold text-[10px] uppercase tracking-widest mt-1">Compliance</span>
-</a>
-<a class="flex flex-col items-center justify-center text-[#795950] dark:text-stone-500 px-5 py-2 hover:text-[#154212] dark:hover:text-emerald-400 active:scale-90 transition-transform duration-200" routerLink="/user-profile">
-<span class="material-symbols-outlined">person</span>
-<span class="font-['Inter'] font-bold text-[10px] uppercase tracking-widest mt-1">Profile</span>
-</a>
-</nav>
