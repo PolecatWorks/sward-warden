@@ -2,8 +2,8 @@
 Library    RequestsLibrary
 
 *** Variables ***
-${BASE_URL}      http://sward-manager-backend:8080
-${HEALTH_URL}    http://sward-manager-backend:8079
+${BASE_URL}      http://sward-warden-backend:8080
+${HEALTH_URL}    http://sward-warden-backend:8079
 
 *** Test Cases ***
 Backend Health Check

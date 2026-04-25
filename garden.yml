@@ -24,19 +24,19 @@ environments:
 ---
 kind: Deploy
 type: helm
-name: sward-manager
+name: sward-warden
 description: "Deploy the sward manager"
 source:
-  path: charts/sward-manager
+  path: charts/sward-warden
 include:
-  - charts/sward-manager/**/*
+  - charts/sward-warden/**/*
 spec:
   values:
     frontend:
       image:
-        repository: ${local.env.SW_FE_IMAGE || "sward-manager-frontend"}
+        repository: ${local.env.SW_FE_IMAGE || "sward-warden-frontend"}
         tag: ${local.env.SW_FE_TAG || "latest"}
     backend:
       image:
-        repository: ${local.env.SW_BE_IMAGE || "sward-manager-backend"}
+        repository: ${local.env.SW_BE_IMAGE || "sward-warden-backend"}
         tag: ${local.env.SW_BE_TAG || "latest"}

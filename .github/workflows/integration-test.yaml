@@ -121,7 +121,7 @@ jobs:
       - name: Extract Test Results
         if: always()
         run: |
-          NAMESPACE="sward-manager-pr-${{ env.PR_NUMBER }}"
+          NAMESPACE="sward-warden-pr-${{ env.PR_NUMBER }}"
           mkdir -p ./robot-results
           kubectl cp $NAMESPACE/robot-test-runner:/tmp/reports ./robot-results || echo "Failed to copy test results"
 

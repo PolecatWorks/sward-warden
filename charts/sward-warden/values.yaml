@@ -1,11 +1,11 @@
-# Default values for sward-manager.
+# Default values for sward-warden.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 frontend:
   replicaCount: 1
   image:
-    repository: sward-manager-frontend
+    repository: sward-warden-frontend
     pullPolicy: IfNotPresent
     tag: "latest"
   service:
@@ -15,7 +15,7 @@ frontend:
 backend:
   replicaCount: 1
   image:
-    repository: sward-manager-backend
+    repository: sward-warden-backend
     pullPolicy: IfNotPresent
     tag: "latest"
   service:

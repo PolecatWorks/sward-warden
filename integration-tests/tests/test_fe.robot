@@ -2,7 +2,7 @@
 Library    RequestsLibrary
 
 *** Variables ***
-${BASE_URL}    http://sward-manager-frontend:8080
+${BASE_URL}    http://sward-warden-frontend:8080
 
 *** Test Cases ***
 Frontend Index Check

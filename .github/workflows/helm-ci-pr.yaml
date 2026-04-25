@@ -15,6 +15,7 @@ jobs:
   check-paths:
     runs-on: ubuntu-latest
     permissions:
+      pull-requests: read
       contents: read
     outputs:
       charts: ${{ steps.filter.outputs.charts }}
@@ -41,7 +42,7 @@ jobs:
       - uses: azure/setup-helm@v4.2.0
 
       - name: Lint sw-be
-        run: helm lint charts/slurry-manager
+        run: helm lint charts/sward-warden
 
   ci-success:
     name: Helm CI Success
