@@ -38,6 +38,9 @@ pub struct Event {
     pub date: String,
     pub updated_at: Option<DateTime<Utc>>,
     pub is_deleted: Option<bool>,
+    pub mapp_number: Option<String>,
+    pub eppo_code: Option<String>,
+    pub bbch_growth_stage: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]

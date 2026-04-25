@@ -209,7 +209,7 @@ async fn delete_field(
 
 async fn list_events(State(state): State<AppState>) -> Result<Json<Vec<Event>>, MyError> {
     let events = sqlx::query_as::<_, Event>(
-        "SELECT e.id, e.field_id, e.event_type, e.description, e.date, e.updated_at, e.is_deleted FROM events e JOIN fields f ON e.field_id = f.id JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1 AND e.is_deleted = FALSE"
+        "SELECT e.id, e.field_id, e.event_type, e.description, e.date, e.updated_at, e.is_deleted, e.mapp_number, e.eppo_code, e.bbch_growth_stage FROM events e JOIN fields f ON e.field_id = f.id JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1 AND e.is_deleted = FALSE"
     )
     .fetch_all(&state.db_pool)
     .await;
@@ -220,12 +220,15 @@ async fn create_event(
     Json(event): Json<Event>,
 ) -> Result<Json<Event>, MyError> {
     let new_event = sqlx::query_as::<_, Event>(
-        "INSERT INTO events (field_id, event_type, description, date) VALUES ($1, $2, $3, $4) RETURNING id, field_id, event_type, description, date, updated_at, is_deleted"
+        "INSERT INTO events (field_id, event_type, description, date, mapp_number, eppo_code, bbch_growth_stage) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, field_id, event_type, description, date, updated_at, is_deleted, mapp_number, eppo_code, bbch_growth_stage"
     )
     .bind(event.field_id)
     .bind(&event.event_type)
     .bind(&event.description)
     .bind(&event.date)
+    .bind(&event.mapp_number)
+    .bind(&event.eppo_code)
+    .bind(&event.bbch_growth_stage)
     .fetch_one(&state.db_pool)
     .await;
     Ok(Json(new_event?))
@@ -402,7 +405,7 @@ async fn delta_sync(
     .await?;
 
     let events = sqlx::query_as::<_, Event>(
-        "SELECT e.id, e.field_id, e.event_type, e.description, e.date, e.updated_at, e.is_deleted FROM events e JOIN fields f ON e.field_id = f.id JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1 AND e.updated_at > $1"
+        "SELECT e.id, e.field_id, e.event_type, e.description, e.date, e.updated_at, e.is_deleted, e.mapp_number, e.eppo_code, e.bbch_growth_stage FROM events e JOIN fields f ON e.field_id = f.id JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1 AND e.updated_at > $1"
     )
     .bind(since)
     .fetch_all(&state.db_pool)

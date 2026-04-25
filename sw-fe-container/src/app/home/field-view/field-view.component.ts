@@ -29,6 +29,16 @@ export class FieldViewComponent implements OnInit {
   };
   fertiliserApplications: FertiliserApplication[] = [];
 
+  showSprayingForm: boolean = false;
+  newSpraying: Partial<Event> = {
+    date: new Date().toISOString().split('T')[0],
+    event_type: 'Spraying',
+    description: '',
+    mapp_number: '',
+    eppo_code: '',
+    bbch_growth_stage: ''
+  };
+
 
   constructor(
     private route: ActivatedRoute,
@@ -71,6 +81,10 @@ export class FieldViewComponent implements OnInit {
     this.showFertiliserForm = !this.showFertiliserForm;
   }
 
+  toggleSprayingForm(): void {
+    this.showSprayingForm = !this.showSprayingForm;
+  }
+
   submitFertiliserApplication(): void {
     if (!this.newFertiliser.fertiliser_type || !this.newFertiliser.amount_applied || !this.newFertiliser.date) return;
 
@@ -84,7 +98,7 @@ export class FieldViewComponent implements OnInit {
     // First create the event
     this.farmService.addEvent(event as Event).subscribe(createdEvent => {
       const application: Omit<FertiliserApplication, 'id'> = {
-        event_id: createdEvent.id,
+        event_id: createdEvent.id!,
         fertiliser_type: this.newFertiliser.fertiliser_type!,
         amount_applied: this.newFertiliser.amount_applied!,
         nitrogen_content: this.newFertiliser.nitrogen_content,
@@ -97,6 +111,33 @@ export class FieldViewComponent implements OnInit {
         this.showFertiliserForm = false;
         this.newFertiliser = { date: new Date().toISOString().split('T')[0], description: '', fertiliser_type: '', amount_applied: 0 };
       });
+    });
+  }
+
+  submitSprayingRecord(): void {
+    if (!this.newSpraying.date || !this.newSpraying.mapp_number) return;
+
+    const event: Omit<Event, 'id'> = {
+      field_id: this.fieldId,
+      event_type: 'Spraying',
+      description: this.newSpraying.description || `Pesticide application (MAPP: ${this.newSpraying.mapp_number})`,
+      date: this.newSpraying.date,
+      mapp_number: this.newSpraying.mapp_number,
+      eppo_code: this.newSpraying.eppo_code,
+      bbch_growth_stage: this.newSpraying.bbch_growth_stage
+    };
+
+    this.farmService.addEvent(event as Event).subscribe(() => {
+      this.loadEvents();
+      this.showSprayingForm = false;
+      this.newSpraying = {
+        date: new Date().toISOString().split('T')[0],
+        event_type: 'Spraying',
+        description: '',
+        mapp_number: '',
+        eppo_code: '',
+        bbch_growth_stage: ''
+      };
     });
   }
 

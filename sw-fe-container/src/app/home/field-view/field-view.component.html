@@ -54,6 +54,47 @@
       </div>
     </div>
 
+    <!-- Spraying Record Form Modal -->
+    <div *ngIf="showSprayingForm" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div class="bg-surface rounded-xl shadow-2xl p-6 w-full max-w-md">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-headline font-bold text-xl text-on-surface">Log Spraying</h3>
+          <button (click)="toggleSprayingForm()" class="text-on-surface-variant hover:text-error">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <form (ngSubmit)="submitSprayingRecord()" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-on-surface mb-1">Date</label>
+            <input type="date" [(ngModel)]="newSpraying.date" name="s_date" required class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface mb-1">Product MAPP Number</label>
+            <input type="text" [(ngModel)]="newSpraying.mapp_number" name="mapp" required placeholder="e.g. 12345" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary">
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-on-surface mb-1">EPPO Code</label>
+              <input type="text" [(ngModel)]="newSpraying.eppo_code" name="eppo" placeholder="e.g. HORVX" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-on-surface mb-1">BBCH Stage</label>
+              <input type="text" [(ngModel)]="newSpraying.bbch_growth_stage" name="bbch" placeholder="e.g. 31" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary">
+            </div>
+          </div>
+          <div>
+             <label class="block text-sm font-medium text-on-surface mb-1">Description / Notes</label>
+             <input type="text" [(ngModel)]="newSpraying.description" name="s_description" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary">
+          </div>
+          <div class="pt-4 flex justify-end gap-3">
+            <button type="button" (click)="toggleSprayingForm()" class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md">Cancel</button>
+            <button type="submit" class="px-4 py-2 bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90">Save Record</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- CTA: Record Event -->
     <section class="mb-12">
       <button class="w-full group bg-primary text-on-primary rounded-xl py-6 px-6 flex items-center justify-between shadow-2xl transition-all active:scale-95">
@@ -75,9 +116,9 @@
           <span class="material-symbols-outlined text-tertiary-container">water_drop</span>
           <span class="text-[10px] font-bold uppercase tracking-wider text-tertiary-container">Fertiliser</span>
         </button>
-        <button class="flex flex-col items-center gap-2 p-4 bg-surface-container-low rounded-xl hover:bg-surface-container transition-colors">
+        <button (click)="toggleSprayingForm()" class="flex flex-col items-center gap-2 p-4 bg-surface-container-low rounded-xl hover:bg-surface-container transition-colors">
           <span class="material-symbols-outlined text-primary-container">science</span>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-primary-container">Soil Lab</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-primary-container">Spraying</span>
         </button>
       </div>
     </section>
@@ -115,6 +156,15 @@
                   <div><span class="text-on-surface-variant font-medium">Type:</span> {{ fa.fertiliser_type }}</div>
                   <div><span class="text-on-surface-variant font-medium">Amount:</span> {{ fa.amount_applied }} kg/ha</div>
                   <div *ngIf="fa.nitrogen_content"><span class="text-on-surface-variant font-medium">N Content:</span> {{ fa.nitrogen_content }}%</div>
+                </div>
+              </div>
+
+              <!-- Spraying Details -->
+              <div *ngIf="event.event_type === 'Spraying'" class="mt-3 bg-surface-container-lowest border border-outline-variant p-3 rounded-lg text-sm">
+                <div class="grid grid-cols-1 gap-1">
+                  <div><span class="text-on-surface-variant font-medium">MAPP:</span> {{ event.mapp_number }}</div>
+                  <div *ngIf="event.eppo_code"><span class="text-on-surface-variant font-medium">EPPO Code:</span> {{ event.eppo_code }}</div>
+                  <div *ngIf="event.bbch_growth_stage"><span class="text-on-surface-variant font-medium">BBCH Stage:</span> {{ event.bbch_growth_stage }}</div>
                 </div>
               </div>
 

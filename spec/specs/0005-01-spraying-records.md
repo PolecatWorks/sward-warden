@@ -1,6 +1,6 @@
 # 0005-02 Spraying (Pesticide Use) Records Specification
 
-**State**: Open
+**State**: Complete
 
 ## Scope
 This specification covers the implementation details for Spraying (Pesticide Use) Records under the Farm Sustainability Standards (FSS) as outlined in PRD 0005.
