@@ -1,0 +1,3 @@
+## 2024-04-25 - Field List Accessibility Enhancements
+**Learning:** Found a recurring pattern in the fields component where inputs relied solely on placeholders without explicit `<label>` tags, icon-only buttons lacked `aria-label`s, and action buttons ("View Details", "Delete") lacked context for screen readers in iterative lists.
+**Action:** Always pair inputs with `<label>` tags (using `sr-only` if visual hiding is necessary, though visible labels are better), ensure every icon-only button has an `aria-label`, and use `[attr.aria-label]` with dynamic text (like item names) for repetitive action buttons in lists.
