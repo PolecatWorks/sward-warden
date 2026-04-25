@@ -3,7 +3,7 @@
 ## Goal
 Implement the outbox pattern so that user write operations are queued locally and pushed to the backend when connectivity is available. This ensures offline writes never fail from the user's perspective.
 
-## State: Open
+## State: Complete
 
 ## Technical Plan
 1. **Outbox Collection in RxDB**:

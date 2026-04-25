@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FarmManagementService } from '../services/farm-management.service';
-import { Farm } from '../models/farm';
+import { Field } from '../models/field';
 import { FertilisationPlan } from '../models/fertilisation-plan';
 
 @Component({
@@ -13,16 +13,16 @@ import { FertilisationPlan } from '../models/fertilisation-plan';
   styleUrls: ['./fertilisation-plans.component.css']
 })
 export class FertilisationPlansComponent implements OnInit {
-  farms: Farm[] = [];
+  fields: Field[] = [];
   plans: FertilisationPlan[] = [];
   newPlan: FertilisationPlan = {
-    farm_id: 0,
-    year: new Date().getFullYear(),
-    plan_content: '',
-    derogation_status: false,
-    chemical_p_grassland: false,
-    high_p_manure: false,
-    anaerobic_digestate: false
+    field_id: 0,
+    crop_type: '',
+    target_yield: 0,
+    nitrogen_requirement: 0,
+    phosphorus_requirement: 0,
+    potassium_requirement: 0,
+    application_date: new Date().toISOString().split('T')[0]
   };
 
   constructor(private farmService: FarmManagementService) {}
@@ -32,22 +32,22 @@ export class FertilisationPlansComponent implements OnInit {
   }
 
   loadData(): void {
-    this.farmService.getFarms().subscribe(farms => this.farms = farms);
+    this.farmService.getFields().subscribe(fields => this.fields = fields);
     this.farmService.getFertilisationPlans().subscribe(plans => this.plans = plans);
   }
 
   addPlan(): void {
-    if (this.newPlan.farm_id > 0 && this.newPlan.year && this.newPlan.plan_content) {
+    if (this.newPlan.field_id > 0 && this.newPlan.crop_type && this.newPlan.application_date) {
       this.farmService.addFertilisationPlan(this.newPlan).subscribe(() => {
         this.loadData();
         this.newPlan = {
-          farm_id: 0,
-          year: new Date().getFullYear(),
-          plan_content: '',
-          derogation_status: false,
-          chemical_p_grassland: false,
-          high_p_manure: false,
-          anaerobic_digestate: false
+          field_id: 0,
+          crop_type: '',
+          target_yield: 0,
+          nitrogen_requirement: 0,
+          phosphorus_requirement: 0,
+          potassium_requirement: 0,
+          application_date: new Date().toISOString().split('T')[0]
         };
       });
     }
@@ -61,8 +61,8 @@ export class FertilisationPlansComponent implements OnInit {
     }
   }
 
-  getFarmName(farmId: number): string {
-    const farm = this.farms.find(f => f.id === farmId);
-    return farm ? farm.name : 'Unknown Farm';
+  getFieldName(fieldId: number): string {
+    const field = this.fields.find(f => f.id === fieldId);
+    return field ? field.name : 'Unknown Field';
   }
 }

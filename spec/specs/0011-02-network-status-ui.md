@@ -3,7 +3,7 @@
 ## Goal
 Implement network connectivity detection and a visual sync-state indicator so users always know whether the application is online, offline, or actively syncing.
 
-## State: Open
+## State: Complete
 
 ## Technical Plan
 1. **Network Status Service (`NetworkService`)**:
