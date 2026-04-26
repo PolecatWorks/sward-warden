@@ -1,9 +1,11 @@
+import { forkJoin } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FarmManagementService } from '../../services/farm-management.service';
 import { LoggerService } from '../../services/logger.service';
 import { Farm } from '../../models/farm';
+import { Field } from '../../models/field';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -15,6 +17,8 @@ import { FormsModule } from '@angular/forms';
 })
 export class FarmsComponent implements OnInit {
   farms: Farm[] = [];
+  totalFieldsCount: number = 0;
+  farmFieldCounts: { [farmId: string]: number } = {};
   newFarmName: string = '';
   newFarmLocation: string = '';
   showAddFarmModal: boolean = false;
@@ -34,18 +38,28 @@ export class FarmsComponent implements OnInit {
   loadFarms(): void {
     this.isLoading = true;
     this.errorMessage = null;
-    this.farmService.getFarms().subscribe({
-      next: (farms) => {
+    forkJoin({
+      farms: this.farmService.getFarms(),
+      fields: this.farmService.getFields()
+    }).subscribe({
+      next: ({ farms, fields }) => {
         this.farms = farms;
+        this.totalFieldsCount = fields.length;
+        this.farmFieldCounts = {};
+        for (const field of fields) {
+          const farmIdStr = String(field.farm_id);
+          this.farmFieldCounts[farmIdStr] = (this.farmFieldCounts[farmIdStr] || 0) + 1;
+        }
         this.isLoading = false;
       },
       error: (err) => {
-        this.errorMessage = 'Failed to load farms. Please try again.';
+        this.errorMessage = 'Failed to load data. Please try again.';
         this.isLoading = false;
-        this.logger.error('Error loading farms:', err);
+        this.logger.error('Error loading data:', err);
       }
     });
   }
+
 
   addFarm(): void {
     if (!this.newFarmName || !this.newFarmLocation) {
