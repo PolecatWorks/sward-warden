@@ -56,6 +56,7 @@ mod tests {
             buffer_zone_distance_meters: Some(5),
             equipment_used: Some("Splash Plate".to_string()),
             lesse_exemption_reason: None,
+            geometry_wkt: None,
             updated_at: None,
             is_deleted: Some(false),
         };
@@ -95,6 +96,7 @@ mod tests {
             buffer_zone_distance_meters: Some(5),
             equipment_used: Some("Splash Plate".to_string()),
             lesse_exemption_reason: Some("Field slope too steep for LESSE".to_string()),
+            geometry_wkt: None,
             updated_at: None,
             is_deleted: Some(false),
         };
@@ -131,6 +133,7 @@ mod tests {
             buffer_zone_distance_meters: Some(5),
             equipment_used: Some("Splash Plate".to_string()),
             lesse_exemption_reason: None,
+            geometry_wkt: None,
             updated_at: None,
             is_deleted: Some(false),
         };

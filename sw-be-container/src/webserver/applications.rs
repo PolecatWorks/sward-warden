@@ -45,7 +45,7 @@ pub async fn create_fertiliser_application(
 
     // Spatial Validation
     if let Some(ref wkt) = app.geometry_wkt {
-        crate::spatial::SpatialService::validate_application_area(&state.db_pool, field.id, wkt, false).await?;
+        crate::spatial::SpatialService::validate_application_area(&state.db_pool, field.id.unwrap(), wkt, false).await?;
     }
 
     let new_app = sqlx::query_as::<_, FertiliserApplication>(
@@ -104,7 +104,7 @@ pub async fn create_organic_manure_application(
 
     // Spatial Validation
     if let Some(ref wkt) = app.geometry_wkt {
-        crate::spatial::SpatialService::validate_application_area(&state.db_pool, field.id, wkt, true).await?;
+        crate::spatial::SpatialService::validate_application_area(&state.db_pool, field.id.unwrap(), wkt, true).await?;
     }
 
     // Fetch previous apps for 3-week gap rule

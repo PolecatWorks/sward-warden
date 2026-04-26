@@ -8,6 +8,7 @@ pub mod compliance;
 pub mod movements;
 pub mod admin;
 pub mod applications;
+pub mod optimization;
 
 use axum::{
     Json, Router,
@@ -59,6 +60,7 @@ pub fn app_router(state: AppState) -> Router {
             "/v0/sward-movements",
             get(movements::list_sward_movements).post(movements::create_sward_movement),
         )
+        .route("/v0/optimization/suggestions/{farm_id}", get(optimization::get_farm_suggestions))
         .route("/v0/sync/delta", get(sync::delta_sync))
         .route(
             "/v0/soil_analyses",

@@ -41,7 +41,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0007-03 General Farm Records Export Specification](./0007/0007-03-general-farm-records-export.md) | Complete |
 | [0007-04 Soil Analysis Reports Specification](./0007/0007-04-soil-analysis-reports.md) | Complete |
 | [0007-05 Import and Export Reporting Specification](./0007/0007-05-import-export-reporting.md) | Complete |
-| [0008-01 Optimization Engine Core Specification](./0008/0008-01-optimization-engine-core.md) | Open |
+| [0008-01 Optimization Engine Core Specification](./0008/0008-01-optimization-engine-core.md) | Complete |
 | [0008-02 Weather Integration Data Specification](./0008/0008-02-weather-integration-data.md) | Complete |
 | [0008-03 Topology and Waterway Data Specification](./0008/0008-03-topology-and-waterway-data.md) | Complete |
 | [0008-04 Optimization & Mapping UI Specification](./0008/0008-04-optimization-mapping-ui.md) | Open |
@@ -72,7 +72,7 @@ The following "Open" specifications will be implemented in the order listed belo
 | 2 | [0004-07 Spreading Equipment Exemptions](./0004/0004-07-spreading-equipment-exemptions.md) | Complete |
 | 3 | [0008-02 Weather Integration Data](./0008/0008-02-weather-integration-data.md) | Complete |
 | 4 | [0008-03 Topology and Waterway Data](./0008/0008-03-topology-and-waterway-data.md) | Complete |
-| 5 | [0008-01 Optimization Engine Core](./0008/0008-01-optimization-engine-core.md) | 0008-02, 0008-03 |
+| 5 | [0008-01 Optimization Engine Core](./0008/0008-01-optimization-engine-core.md) | Complete |
 | 6 | [0008-04 Optimization & Mapping UI](./0008/0008-04-optimization-mapping-ui.md) | 0008-01, 0008-02, 0008-03 |
 
 ## PostGIS Requirement

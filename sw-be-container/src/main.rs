@@ -6,6 +6,7 @@ pub mod metrics;
 pub mod models;
 mod rules;
 mod rules_tests;
+pub mod optimization;
 pub mod seed;
 pub mod spatial;
 pub mod startup_tools;
