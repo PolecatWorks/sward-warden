@@ -27,4 +27,5 @@ This file describes the workflow and development patterns for our agents to foll
 - Prd files should be numbered. Spec files should be numbers deriving from the prd it is from.
 - Spec files should be sorted into subdirectories based on their PRD number.
 - The specs readme (`spec/specs/readme.md`) should show a summary of the specs as a table, noting their state.
+
 - **NOTE**: PRD files can mutate over time. Spec files are immutable, however when a spec file has updates and it is not complete (ie still in open state) then it can be modified and does not need to be superceeded. Spec files can be in the following states: Open / Complete / Deprecated / Superceeded.

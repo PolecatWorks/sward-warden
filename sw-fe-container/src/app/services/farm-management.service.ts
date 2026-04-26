@@ -433,6 +433,8 @@ export class FarmManagementService {
       is_lesse_applied: doc.is_lesse_applied,
       weather_conditions_confirmed: doc.weather_conditions_confirmed,
       buffer_zone_distance_meters: doc.buffer_zone_distance_meters,
+      equipment_used: doc.equipment_used,
+      exemption_reason: doc.exemption_reason,
     };
   }
 
@@ -483,13 +485,15 @@ export class FarmManagementService {
         serverId: app.id, event_id: app.event_id, manure_type: app.manure_type,
         volume_applied_m3_per_ha: app.volume_applied_m3_per_ha, weight_applied_tonnes_per_ha: app.weight_applied_tonnes_per_ha,
         nitrogen_content_kg_per_unit: app.nitrogen_content_kg_per_unit, is_lesse_applied: app.is_lesse_applied,
-        weather_conditions_confirmed: app.weather_conditions_confirmed, buffer_zone_distance_meters: app.buffer_zone_distance_meters
+        weather_conditions_confirmed: app.weather_conditions_confirmed, buffer_zone_distance_meters: app.buffer_zone_distance_meters,
+        equipment_used: app.equipment_used, exemption_reason: app.exemption_reason
       },
       {
         event_id: app.event_id, manure_type: app.manure_type, volume_applied_m3_per_ha: app.volume_applied_m3_per_ha,
         weight_applied_tonnes_per_ha: app.weight_applied_tonnes_per_ha, nitrogen_content_kg_per_unit: app.nitrogen_content_kg_per_unit,
         is_lesse_applied: app.is_lesse_applied, weather_conditions_confirmed: app.weather_conditions_confirmed,
-        buffer_zone_distance_meters: app.buffer_zone_distance_meters
+        buffer_zone_distance_meters: app.buffer_zone_distance_meters,
+        equipment_used: app.equipment_used, exemption_reason: app.exemption_reason
       },
       (doc) => this.organicManureApplicationDocToModel(doc)
     );
@@ -506,6 +510,8 @@ export class FarmManagementService {
     if (app.is_lesse_applied !== undefined) updates.is_lesse_applied = outboxPayload.is_lesse_applied = app.is_lesse_applied;
     if (app.weather_conditions_confirmed !== undefined) updates.weather_conditions_confirmed = outboxPayload.weather_conditions_confirmed = app.weather_conditions_confirmed;
     if (app.buffer_zone_distance_meters !== undefined) updates.buffer_zone_distance_meters = outboxPayload.buffer_zone_distance_meters = app.buffer_zone_distance_meters;
+    if (app.equipment_used !== undefined) updates.equipment_used = outboxPayload.equipment_used = app.equipment_used;
+    if (app.exemption_reason !== undefined) updates.exemption_reason = outboxPayload.exemption_reason = app.exemption_reason;
 
     return this.updateEntity<OrganicManureApplicationDocType, OrganicManureApplication>(
       'organic_manure_applications',
