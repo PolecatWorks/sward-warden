@@ -5,10 +5,10 @@ import { Observable, from, shareReplay, switchMap } from 'rxjs';
 import {
   FarmDocType, FieldDocType, EventDocType, OutboxDocType, MetadataDocType,
   SoilAnalysisDocType, FertilisationPlanDocType, FarmRecordDocType,
-  OrganicManureApplicationDocType, ComplianceBreachDocType,
+  OrganicManureApplicationDocType, ComplianceBreachDocType, SwardMovementDocType,
   farmSchema, fieldSchema, eventSchema, outboxSchema, metadataSchema,
   soilAnalysisSchema, fertilisationPlanSchema, farmRecordSchema,
-  organicManureApplicationSchema, complianceBreachSchema
+  organicManureApplicationSchema, complianceBreachSchema, swardMovementSchema
 } from './schemas';
 
 /** Injection token for providing an alternative RxStorage (e.g. memory for tests). */
@@ -27,6 +27,7 @@ export type SwardCollections = {
   farm_records: RxCollection<FarmRecordDocType>;
   organic_manure_applications: RxCollection<OrganicManureApplicationDocType>;
   compliance_breaches: RxCollection<ComplianceBreachDocType>;
+  sward_movements: RxCollection<SwardMovementDocType>;
   outbox: RxCollection<OutboxDocType>;
   metadata: RxCollection<MetadataDocType>;
 };
@@ -78,6 +79,7 @@ export class RxdbService implements OnDestroy {
       farm_records: { schema: farmRecordSchema },
       organic_manure_applications: { schema: organicManureApplicationSchema },
       compliance_breaches: { schema: complianceBreachSchema },
+      sward_movements: { schema: swardMovementSchema },
       outbox: { schema: outboxSchema },
       metadata: { schema: metadataSchema },
     });
@@ -114,6 +116,11 @@ export class RxdbService implements OnDestroy {
   /** Observable emitting the farm records RxCollection. */
   get farmRecordsCollection$(): Observable<RxCollection<FarmRecordDocType>> {
     return this.db$.pipe(switchMap(db => from(Promise.resolve(db.farm_records))));
+  }
+
+  /** Observable emitting the sward movements RxCollection. */
+  get swardMovementsCollection$(): Observable<RxCollection<SwardMovementDocType>> {
+    return this.db$.pipe(switchMap(db => from(Promise.resolve(db.sward_movements))));
   }
 
   /** Observable emitting the outbox RxCollection. */

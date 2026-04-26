@@ -16,7 +16,7 @@ use tracing::{Level, info};
 use crate::error::MyError;
 use crate::models::{
     Event, Farm, FarmRecord, FertilisationPlan, FertiliserApplication, Field, OrganicManureApplication, SoilAnalysis,
-    ComplianceBreach, SyncQuery, SyncResponse, User,
+    ComplianceBreach, SwardMovement, SyncQuery, SyncResponse, User,
 };
 use crate::rules::{validate_fertiliser_application, validate_organic_manure_application, ValidationResult};
 use crate::state::AppState;
@@ -38,6 +38,7 @@ pub fn app_router(state: AppState) -> Router {
         .route("/v0/fertiliser-applications", get(list_fertiliser_applications).post(create_fertiliser_application))
         .route("/v0/organic-manure-applications", get(list_organic_manure_applications).post(create_organic_manure_application))
         .route("/v0/compliance-breaches", get(list_compliance_breaches).post(create_compliance_breach))
+        .route("/v0/sward-movements", get(list_sward_movements).post(create_sward_movement))
         .route("/v0/sync/delta", get(delta_sync))
         .route(
             "/v0/soil_analyses",
@@ -572,6 +573,13 @@ async fn delta_sync(
     .fetch_all(&state.db_pool)
     .await?;
 
+    let sward_movements = sqlx::query_as::<_, SwardMovement>(
+        "SELECT sm.id, sm.farm_id, sm.movement_type, sm.quantity_m3, sm.date, sm.manure_type, sm.consignee_name, sm.consignee_address, sm.consignor_name, sm.consignor_address, sm.transporter_name, sm.contract_length_months, sm.updated_at, sm.is_deleted FROM sward_movements sm JOIN farms fa ON sm.farm_id = fa.id WHERE fa.user_id = 1 AND sm.updated_at > $1"
+    )
+    .bind(since)
+    .fetch_all(&state.db_pool)
+    .await?;
+
     let checkpoint = Utc::now();
 
     Ok(Json(SyncResponse {
@@ -585,7 +593,44 @@ async fn delta_sync(
         fertiliser_applications,
         organic_manure_applications,
         compliance_breaches,
+        sward_movements,
     }))
+}
+
+async fn list_sward_movements(
+    State(state): State<AppState>,
+) -> Result<Json<Vec<SwardMovement>>, MyError> {
+    let movements = sqlx::query_as::<_, SwardMovement>(
+        "SELECT sm.id, sm.farm_id, sm.movement_type, sm.quantity_m3, sm.date, sm.manure_type, sm.consignee_name, sm.consignee_address, sm.consignor_name, sm.consignor_address, sm.transporter_name, sm.contract_length_months, sm.updated_at, sm.is_deleted FROM sward_movements sm JOIN farms fa ON sm.farm_id = fa.id WHERE fa.user_id = 1 AND sm.is_deleted = FALSE"
+    )
+    .fetch_all(&state.db_pool)
+    .await?;
+    Ok(Json(movements))
+}
+
+async fn create_sward_movement(
+    State(state): State<AppState>,
+    Json(movement): Json<SwardMovement>,
+) -> Result<Json<SwardMovement>, MyError> {
+    let new_movement = sqlx::query_as::<_, SwardMovement>(
+        "INSERT INTO sward_movements (farm_id, movement_type, quantity_m3, date, manure_type, consignee_name, consignee_address, consignor_name, consignor_address, transporter_name, contract_length_months)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+         RETURNING id, farm_id, movement_type, quantity_m3, date, manure_type, consignee_name, consignee_address, consignor_name, consignor_address, transporter_name, contract_length_months, updated_at, is_deleted"
+    )
+    .bind(movement.farm_id)
+    .bind(&movement.movement_type)
+    .bind(movement.quantity_m3)
+    .bind(&movement.date)
+    .bind(&movement.manure_type)
+    .bind(&movement.consignee_name)
+    .bind(&movement.consignee_address)
+    .bind(&movement.consignor_name)
+    .bind(&movement.consignor_address)
+    .bind(&movement.transporter_name)
+    .bind(movement.contract_length_months)
+    .fetch_one(&state.db_pool)
+    .await?;
+    Ok(Json(new_movement))
 }
 
 #[cfg(test)]

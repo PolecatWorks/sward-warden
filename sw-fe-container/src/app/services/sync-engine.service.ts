@@ -32,6 +32,7 @@ interface SyncResponse {
   fertiliser_applications: any[];
   organic_manure_applications: any[];
   compliance_breaches: any[];
+  sward_movements: any[];
 }
 
 /**
@@ -204,6 +205,7 @@ export class SyncEngineService implements OnDestroy {
       await this.upsertFarmRecords(db, response.farm_records || []);
       await this.upsertOrganicManureApplications(db, response.organic_manure_applications || []);
       await this.upsertComplianceBreaches(db, response.compliance_breaches || []);
+      await this.upsertSwardMovements(db, response.sward_movements || []);
 
       // Update checkpoint
       if (response.checkpoint) {
@@ -801,6 +803,67 @@ export class SyncEngineService implements OnDestroy {
     if (idsToRemove.length > 0) await db.compliance_breaches.bulkRemove(idsToRemove);
     if (toUpsert.length > 0) await db.compliance_breaches.bulkUpsert(toUpsert);
   }
+
+  private async upsertSwardMovements(db: SwardDatabase, serverMovements: any[]): Promise<void> {
+    if (!serverMovements || serverMovements.length === 0) return;
+    const serverIds = serverMovements.map(m => m.id);
+    const existingDocs = await db.sward_movements.find({ selector: { serverId: { $in: serverIds } } }).exec();
+    const existingMap = new Map(existingDocs.map(d => [d.serverId, d]));
+
+    const toUpsert: any[] = [];
+    const idsToRemove: string[] = [];
+
+    for (const sMove of serverMovements) {
+      const localDoc = existingMap.get(sMove.id);
+      if (sMove.is_deleted) {
+        if (localDoc && localDoc.syncStatus !== 'pending') idsToRemove.push(localDoc.id);
+        continue;
+      }
+
+      if (localDoc) {
+        const localUpdatedAt = new Date(localDoc.updatedAt).getTime();
+        const serverUpdatedAt = sMove.updated_at ? new Date(sMove.updated_at).getTime() : 0;
+        if (localDoc.syncStatus === 'pending' && localUpdatedAt > serverUpdatedAt) continue;
+        toUpsert.push({
+          ...localDoc.toJSON(),
+          farm_id: sMove.farm_id,
+          movement_type: sMove.movement_type,
+          quantity_m3: sMove.quantity_m3,
+          date: sMove.date,
+          manure_type: sMove.manure_type,
+          consignee_name: sMove.consignee_name,
+          consignee_address: sMove.consignee_address,
+          consignor_name: sMove.consignor_name,
+          consignor_address: sMove.consignor_address,
+          transporter_name: sMove.transporter_name,
+          contract_length_months: sMove.contract_length_months,
+          updatedAt: sMove.updated_at || new Date().toISOString(),
+          syncStatus: 'synced',
+        });
+      } else {
+        toUpsert.push({
+          id: generateLocalId(),
+          serverId: sMove.id,
+          farm_id: sMove.farm_id,
+          movement_type: sMove.movement_type,
+          quantity_m3: sMove.quantity_m3,
+          date: sMove.date,
+          manure_type: sMove.manure_type,
+          consignee_name: sMove.consignee_name,
+          consignee_address: sMove.consignee_address,
+          consignor_name: sMove.consignor_name,
+          consignor_address: sMove.consignor_address,
+          transporter_name: sMove.transporter_name,
+          contract_length_months: sMove.contract_length_months,
+          syncStatus: 'synced',
+          updatedAt: sMove.updated_at || new Date().toISOString(),
+        });
+      }
+    }
+    if (idsToRemove.length > 0) await db.sward_movements.bulkRemove(idsToRemove);
+    if (toUpsert.length > 0) await db.sward_movements.bulkUpsert(toUpsert);
+  }
+
 
   private async updateLocalDocStatus(
     db: SwardDatabase,

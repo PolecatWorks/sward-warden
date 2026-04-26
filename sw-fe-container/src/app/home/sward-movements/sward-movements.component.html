@@ -1,0 +1,102 @@
+<div class="container">
+  <a routerLink="/home" class="back-link">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    Back to Farms
+  </a>
+
+  <h1>Sward Movements</h1>
+  <p class="movement-details">Import and Export records for Farm #{{farmId}}</p>
+
+  <div class="bento-grid">
+    <!-- Log New Movement Card -->
+    <div class="bento-card">
+      <h2>Log Movement</h2>
+      <form (ngSubmit)="onSubmit()" #movementForm="ngForm">
+        <div class="form-group">
+          <label>Movement Type</label>
+          <select [(ngModel)]="newMovement.movement_type" name="movement_type">
+            <option value="import">Import (Onto Farm)</option>
+            <option value="export">Export (Off Farm)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Quantity (m³)</label>
+          <input type="number" [(ngModel)]="newMovement.quantity_m3" name="quantity_m3" required>
+        </div>
+
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" [(ngModel)]="newMovement.date" name="date" required>
+        </div>
+
+        <div class="form-group">
+          <label>Manure Type</label>
+          <select [(ngModel)]="newMovement.manure_type" name="manure_type">
+            <option *ngFor="let type of manureTypes" [value]="type">{{type}}</option>
+          </select>
+        </div>
+
+        <!-- Conditional fields based on type -->
+        <ng-container *ngIf="newMovement.movement_type === 'export'">
+          <div class="form-group">
+            <label>Consignee Name</label>
+            <input type="text" [(ngModel)]="newMovement.consignee_name" name="consignee_name">
+          </div>
+          <div class="form-group">
+            <label>Consignee Address</label>
+            <textarea [(ngModel)]="newMovement.consignee_address" name="consignee_address"></textarea>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="newMovement.movement_type === 'import'">
+          <div class="form-group">
+            <label>Consignor Name</label>
+            <input type="text" [(ngModel)]="newMovement.consignor_name" name="consignor_name">
+          </div>
+          <div class="form-group">
+            <label>Consignor Address</label>
+            <textarea [(ngModel)]="newMovement.consignor_address" name="consignor_address"></textarea>
+          </div>
+        </ng-container>
+
+        <div class="form-group">
+          <label>Transporter Name</label>
+          <input type="text" [(ngModel)]="newMovement.transporter_name" name="transporter_name">
+        </div>
+
+        <button type="submit" class="btn-primary" [disabled]="!movementForm.form.valid">
+          Save Record
+        </button>
+      </form>
+    </div>
+
+    <!-- Movement History Card -->
+    <div class="bento-card">
+      <h2>History</h2>
+      <div class="movement-list" *ngIf="(movements$ | async) as movements; else loading">
+        <div *ngFor="let movement of movements" class="movement-item">
+          <div class="movement-info">
+            <span class="movement-type" [ngClass]="movement.movement_type">
+              {{movement.movement_type}}
+            </span>
+            <span class="movement-main">{{movement.quantity_m3}} m³ of {{movement.manure_type}}</span>
+            <span class="movement-details">{{movement.date}}</span>
+            <div class="movement-details" *ngIf="movement.consignee_name">
+              To: {{movement.consignee_name}}
+            </div>
+            <div class="movement-details" *ngIf="movement.consignor_name">
+              From: {{movement.consignor_name}}
+            </div>
+          </div>
+        </div>
+        <div *ngIf="movements.length === 0" class="empty-state">
+          No records found.
+        </div>
+      </div>
+      <ng-template #loading>
+        <div class="empty-state">Loading...</div>
+      </ng-template>
+    </div>
+  </div>
+</div>

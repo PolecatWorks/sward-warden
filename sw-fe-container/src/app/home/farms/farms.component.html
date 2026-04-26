@@ -92,6 +92,9 @@
     <a [routerLink]="['/farms', farm.id, 'compliance']" (click)="$event.stopPropagation()" class="text-primary hover:text-primary/80 transition-colors" title="Compliance Report">
       <span class="material-symbols-outlined text-lg">shield_with_heart</span>
     </a>
+    <a [routerLink]="['/farms', farm.id, 'movements']" (click)="$event.stopPropagation()" class="text-secondary hover:text-secondary/80 transition-colors" title="Sward Movements">
+      <span class="material-symbols-outlined text-lg">local_shipping</span>
+    </a>
     <span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
   </div>
 </div>

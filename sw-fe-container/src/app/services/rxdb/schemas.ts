@@ -100,6 +100,24 @@ export interface ComplianceBreachDocType {
   updatedAt: string;
 }
 
+export interface SwardMovementDocType {
+  id: string;
+  serverId?: number;
+  farm_id: number;
+  movement_type: string;
+  quantity_m3: number;
+  date: string;
+  manure_type: string;
+  consignee_name?: string;
+  consignee_address?: string;
+  consignor_name?: string;
+  consignor_address?: string;
+  transporter_name?: string;
+  contract_length_months?: number;
+  syncStatus: SyncStatus;
+  updatedAt: string;
+}
+
 export const farmSchema: RxJsonSchema<FarmDocType> = {
   version: 0,
   primaryKey: 'id',
@@ -239,6 +257,31 @@ export const complianceBreachSchema: RxJsonSchema<ComplianceBreachDocType> = {
   indexes: ['syncStatus', 'updatedAt'],
 };
 
+export const swardMovementSchema: RxJsonSchema<SwardMovementDocType> = {
+  version: 0,
+  primaryKey: 'id',
+  type: 'object',
+  properties: {
+    id: { type: 'string', maxLength: 64 },
+    serverId: { type: 'number' },
+    farm_id: { type: 'number' },
+    movement_type: { type: 'string', enum: ['import', 'export'] },
+    quantity_m3: { type: 'number' },
+    date: { type: 'string' },
+    manure_type: { type: 'string' },
+    consignee_name: { type: 'string' },
+    consignee_address: { type: 'string' },
+    consignor_name: { type: 'string' },
+    consignor_address: { type: 'string' },
+    transporter_name: { type: 'string' },
+    contract_length_months: { type: 'number' },
+    syncStatus: { type: 'string', maxLength: 16, enum: ['synced', 'pending', 'failed'], default: 'pending' },
+    updatedAt: { type: 'string', maxLength: 32 },
+  },
+  required: ['id', 'farm_id', 'movement_type', 'quantity_m3', 'date', 'manure_type', 'syncStatus', 'updatedAt'],
+  indexes: ['syncStatus', 'updatedAt'],
+};
+
 
 export interface FarmRecordDocType {
   id: string;
@@ -273,7 +316,7 @@ export const farmRecordSchema: RxJsonSchema<FarmRecordDocType> = {
 
 /** Outbox entry for queuing offline writes. */
 export type OutboxActionType = 'POST' | 'PUT' | 'DELETE';
-export type OutboxEntityType = 'farms' | 'fields' | 'events' | 'soil_analyses' | 'fertilisation_plans' | 'farm_records' | 'fertiliser_applications' | 'organic_manure_applications' | 'compliance_breaches';
+export type OutboxEntityType = 'farms' | 'fields' | 'events' | 'soil_analyses' | 'fertilisation_plans' | 'farm_records' | 'fertiliser_applications' | 'organic_manure_applications' | 'compliance_breaches' | 'sward_movements';
 export type OutboxStatus = 'pending' | 'failed';
 
 export interface OutboxDocType {
@@ -296,7 +339,7 @@ export const outboxSchema: RxJsonSchema<OutboxDocType> = {
   properties: {
     id: { type: 'string', maxLength: 64 },
     actionType: { type: 'string', maxLength: 8, enum: ['POST', 'PUT', 'DELETE'] },
-    entityType: { type: 'string', maxLength: 32, enum: ['farms', 'fields', 'events', 'soil_analyses', 'fertilisation_plans', 'farm_records', 'fertiliser_applications', 'organic_manure_applications', 'compliance_breaches'] },
+    entityType: { type: 'string', maxLength: 32, enum: ['farms', 'fields', 'events', 'soil_analyses', 'fertilisation_plans', 'farm_records', 'fertiliser_applications', 'organic_manure_applications', 'compliance_breaches', 'sward_movements'] },
     localDocId: { type: 'string', maxLength: 64 },
     payload: { type: 'string' },
     timestamp: { type: 'string', maxLength: 32 },

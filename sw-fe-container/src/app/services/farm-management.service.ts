@@ -11,12 +11,13 @@ import { SoilAnalysis } from '../models/soil-analysis';
 import { FertilisationPlan } from '../models/fertilisation-plan';
 import { OrganicManureApplication } from '../models/organic-manure-application';
 import { ComplianceBreach } from '../models/compliance-breach';
+import { SwardMovement } from '../models/sward-movement';
 import { AuthService } from './auth.service';
 import { RxdbService } from './rxdb/rxdb.service';
 import {
   FarmDocType, FieldDocType, EventDocType, OutboxDocType,
   SoilAnalysisDocType, FertilisationPlanDocType, OutboxEntityType, FarmRecordDocType,
-  OrganicManureApplicationDocType, ComplianceBreachDocType,
+  OrganicManureApplicationDocType, ComplianceBreachDocType, SwardMovementDocType,
 } from './rxdb/schemas';
 import { RxDocument } from 'rxdb';
 
@@ -74,7 +75,7 @@ export class FarmManagementService {
 
 
   private insertEntity<TDoc, TModel>(
-    collectionName: 'farms' | 'fields' | 'events' | 'soil_analyses' | 'fertilisation_plans' | 'farm_records' | 'compliance_breaches' | 'organic_manure_applications',
+    collectionName: OutboxEntityType,
     entityData: any,
     outboxPayload: any,
     mapper: (doc: TDoc) => TModel
@@ -276,7 +277,7 @@ export class FarmManagementService {
   private async createOutboxEntry(
     db: any,
     actionType: 'POST' | 'PUT' | 'DELETE',
-    entityType: 'farms' | 'fields' | 'events' | 'soil_analyses' | 'fertilisation_plans' | 'farm_records' | 'compliance_breaches' | 'organic_manure_applications',
+    entityType: OutboxEntityType,
     localDocId: string,
     payload: object,
   ): Promise<void> {
@@ -425,5 +426,51 @@ export class FarmManagementService {
       },
       (doc) => this.organicManureApplicationDocToModel(doc)
     );
+  }
+
+  getSwardMovementsForFarm(farmId: number): Observable<SwardMovement[]> {
+    return this.rxdbService.db$.pipe(
+      switchMap(db => from(db.sward_movements.find({ selector: { farm_id: farmId } }).$)),
+      map((docs: any[]) => docs.map(doc => this.swardMovementDocToModel(doc)))
+    );
+  }
+
+  addSwardMovement(movement: SwardMovement): Observable<SwardMovement> {
+    return this.insertEntity<SwardMovementDocType, SwardMovement>(
+      'sward_movements',
+      {
+        serverId: movement.id as any, farm_id: movement.farm_id as any, movement_type: movement.movement_type,
+        quantity_m3: movement.quantity_m3, date: movement.date, manure_type: movement.manure_type,
+        consignee_name: movement.consignee_name, consignee_address: movement.consignee_address,
+        consignor_name: movement.consignor_name, consignor_address: movement.consignor_address,
+        transporter_name: movement.transporter_name, contract_length_months: movement.contract_length_months
+      },
+      {
+        farm_id: movement.farm_id as any, movement_type: movement.movement_type,
+        quantity_m3: movement.quantity_m3, date: movement.date, manure_type: movement.manure_type,
+        consignee_name: movement.consignee_name, consignee_address: movement.consignee_address,
+        consignor_name: movement.consignor_name, consignor_address: movement.consignor_address,
+        transporter_name: movement.transporter_name, contract_length_months: movement.contract_length_months
+      },
+      (doc) => this.swardMovementDocToModel(doc)
+    );
+  }
+
+  private swardMovementDocToModel(doc: SwardMovementDocType): SwardMovement {
+    return {
+      id: doc.serverId ?? doc.id,
+      farm_id: doc.farm_id,
+      movement_type: doc.movement_type as any,
+      quantity_m3: doc.quantity_m3,
+      date: doc.date,
+      manure_type: doc.manure_type,
+      consignee_name: doc.consignee_name,
+      consignee_address: doc.consignee_address,
+      consignor_name: doc.consignor_name,
+      consignor_address: doc.consignor_address,
+      transporter_name: doc.transporter_name,
+      contract_length_months: doc.contract_length_months,
+      updated_at: doc.updatedAt,
+    };
   }
 }
