@@ -110,12 +110,12 @@ mod tests {
 
         let config = AppConfig::load().unwrap();
 
-        assert_eq!(config.database.url.username.as_deref(), Some("envuser"));
-        assert_eq!(config.database.url.password.as_deref(), Some("envpass"));
-
         unsafe {
             env::remove_var("SP_BE__DATABASE__URL__USERNAME");
             env::remove_var("SP_BE__DATABASE__URL__PASSWORD");
         }
+
+        assert_eq!(config.database.url.username.as_deref(), Some("envuser"));
+        assert_eq!(config.database.url.password.as_deref(), Some("envpass"));
     }
 }
