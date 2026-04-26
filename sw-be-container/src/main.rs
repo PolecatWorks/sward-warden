@@ -5,10 +5,14 @@ pub mod hams;
 pub mod metrics;
 pub mod models;
 mod rules;
+mod rules_tests;
+pub mod optimization;
 pub mod seed;
+pub mod spatial;
 pub mod startup_tools;
 pub mod state;
 pub mod tokio_tools;
+pub mod weather;
 pub mod webserver;
 
 use axum_prometheus::metrics_exporter_prometheus::PrometheusBuilder;
@@ -24,7 +28,7 @@ use ::hams::probe::manual::Manual as ProbeManual;
 
 use crate::cli::{Cli, Commands};
 use crate::config::AppConfig;
-use crate::error::MyError;
+use crate::error::AppError;
 use crate::metrics::{prometheus_response_free, prometheus_response_mystate};
 use crate::state::AppState;
 use crate::tokio_tools::run_in_tokio;
@@ -33,7 +37,7 @@ use crate::webserver::start_app_api;
 pub const NAME: &str = env!("CARGO_PKG_NAME");
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-fn main() -> Result<(), MyError> {
+fn main() -> Result<(), AppError> {
     // Initialize structured logging
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
@@ -58,12 +62,12 @@ fn main() -> Result<(), MyError> {
                     .max_connections(1)
                     .connect(db_url.as_str())
                     .await
-                    .map_err(|e| MyError::Message(format!("Failed to connect to database: {e}")))?;
+                    .map_err(|e| AppError::Message(format!("Failed to connect to database: {e}")))?;
 
                 sqlx::migrate!()
                     .run(&db_pool)
                     .await
-                    .map_err(|e| MyError::Message(format!("Failed to run migrations: {e}")))?;
+                    .map_err(|e| AppError::Message(format!("Failed to run migrations: {e}")))?;
 
                 println!("Migrations completed successfully.");
                 Ok(())
@@ -77,7 +81,7 @@ fn main() -> Result<(), MyError> {
                     .max_connections(1)
                     .connect(db_url.as_str())
                     .await
-                    .map_err(|e| MyError::Message(format!("Failed to connect to database: {e}")))?;
+                    .map_err(|e| AppError::Message(format!("Failed to connect to database: {e}")))?;
                 seed::seed_database(&db_pool, *user_id).await
             })?;
         }
@@ -86,25 +90,25 @@ fn main() -> Result<(), MyError> {
     Ok(())
 }
 
-async fn service_cancellable(ct: CancellationToken, config: AppConfig) -> Result<(), MyError> {
+async fn service_cancellable(ct: CancellationToken, config: AppConfig) -> Result<(), AppError> {
     info!("Starting service {} v{}", NAME, VERSION);
 
     // Setup Prometheus Recorder
     let metric_handle = PrometheusBuilder::new()
         .install_recorder()
-        .map_err(|e| MyError::Message(format!("Failed to install Prometheus recorder: {e}")))?;
+        .map_err(|e| AppError::Message(format!("Failed to install Prometheus recorder: {e}")))?;
 
     let db_url: url::Url = config.database.url.clone().into();
     let db_pool = sqlx::postgres::PgPoolOptions::new()
         .max_connections(config.database.max_connections)
         .connect(db_url.as_str())
         .await
-        .map_err(|e| MyError::Message(format!("Failed to connect to database: {e}")))?;
+        .map_err(|e| AppError::Message(format!("Failed to connect to database: {e}")))?;
 
     sqlx::migrate!()
         .run(&db_pool)
         .await
-        .map_err(|e| MyError::Message(format!("Failed to run database migrations: {e}")))?;
+        .map_err(|e| AppError::Message(format!("Failed to run database migrations: {e}")))?;
 
     let state = AppState::new(config.clone(), metric_handle, db_pool.clone());
 
@@ -125,10 +129,10 @@ async fn service_cancellable(ct: CancellationToken, config: AppConfig) -> Result
         let db_probe = ProbeManual::new("db-connected", true); // placeholder
         hams.ready_insert(Box::new(FFIProbe::from(db_probe.clone())) as Box<dyn AsyncHealthProbe>);
 
-        Ok::<_, MyError>(SendHams(hams))
+        Ok::<_, AppError>(SendHams(hams))
     })
     .await
-    .map_err(|e| MyError::Message(format!("Tokio join error: {}", e)))??;
+    .map_err(|e| AppError::Message(format!("Tokio join error: {}", e)))??;
 
     let mut hams = hams_wrapper.0;
 

@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { WeatherService, WeatherData } from '../services/weather.service';
 
 @Component({
   selector: 'app-weather-integration',
@@ -10,12 +11,17 @@ import { MatButtonModule } from '@angular/material/button';
   templateUrl: './weather-integration.component.html',
   styleUrl: './weather-integration.component.css'
 })
-export class WeatherIntegrationComponent {
-  currentWeather = {
-    condition: 'Heavy Rain',
-    temp: '10°C',
-    forecast: 'Rain expected to continue for 48 hours.'
-  };
+export class WeatherIntegrationComponent implements OnInit {
+  forecast: WeatherData[] = [];
+  isApplicationAllowed: boolean = true;
 
-  isApplicationAllowed: boolean = false; // Prevent application during heavy rain
+  constructor(private weatherService: WeatherService) {}
+
+  ngOnInit() {
+    this.weatherService.getForecast(0, 0).subscribe(data => {
+      this.forecast = data;
+      // Simple logic: if any forecast in next 48h has > 10mm rain, block
+      this.isApplicationAllowed = !data.some(d => d.precipitation_amount_mm > 10 || d.precipitation_probability > 75);
+    });
+  }
 }

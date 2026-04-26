@@ -1,6 +1,6 @@
 //! Provide a custom error struct
 //!
-//! Allow derriving MyError from other Error types from dependant packages.
+//! Allow derriving AppError from other Error types from dependant packages.
 
 use std::io;
 
@@ -11,7 +11,7 @@ use tracing_subscriber::filter::FromEnvError;
 
 /// Error type for handling errors on Sample
 #[derive(Error, Debug)]
-pub enum MyError {
+pub enum AppError {
     #[error("General error `{0}`")]
     Message(String),
     #[error("Bad Request `{0}`")]
@@ -62,7 +62,7 @@ pub enum MyError {
     DatabaseError(#[from] sqlx::Error),
 }
 
-impl axum::response::IntoResponse for MyError {
+impl axum::response::IntoResponse for AppError {
     fn into_response(self) -> axum::response::Response {
         #[derive(serde::Serialize)]
         struct ErrorResponse {
@@ -70,54 +70,54 @@ impl axum::response::IntoResponse for MyError {
         }
 
         let (status, message) = match self {
-            MyError::Message(msg) => (reqwest::StatusCode::INTERNAL_SERVER_ERROR, msg.to_string()),
-            MyError::BadRequest(msg) => (reqwest::StatusCode::BAD_REQUEST, msg.to_string()),
-            MyError::NotFound(msg) => (reqwest::StatusCode::NOT_FOUND, msg.to_string()),
-            MyError::SchemaMismatch { .. } => (
+            AppError::Message(msg) => (reqwest::StatusCode::INTERNAL_SERVER_ERROR, msg.to_string()),
+            AppError::BadRequest(msg) => (reqwest::StatusCode::BAD_REQUEST, msg.to_string()),
+            AppError::NotFound(msg) => (reqwest::StatusCode::NOT_FOUND, msg.to_string()),
+            AppError::SchemaMismatch { .. } => (
                 reqwest::StatusCode::INTERNAL_SERVER_ERROR,
                 "Schema Mismatch".to_string(),
             ),
-            MyError::Cancelled => (
+            AppError::Cancelled => (
                 reqwest::StatusCode::INTERNAL_SERVER_ERROR,
                 "Cancelled".to_string(),
             ),
-            MyError::Unauthorized(msg) => (reqwest::StatusCode::UNAUTHORIZED, msg.to_string()),
-            MyError::Forbidden(msg) => (reqwest::StatusCode::FORBIDDEN, msg.to_string()),
-            MyError::HamsError(_error) => (
+            AppError::Unauthorized(msg) => (reqwest::StatusCode::UNAUTHORIZED, msg.to_string()),
+            AppError::Forbidden(msg) => (reqwest::StatusCode::FORBIDDEN, msg.to_string()),
+            AppError::HamsError(_error) => (
                 reqwest::StatusCode::INTERNAL_SERVER_ERROR,
                 "Hams Error".to_string(),
             ),
-            MyError::Serde(_error) => (reqwest::StatusCode::BAD_REQUEST, "Serde Error".to_string()),
-            MyError::Io(_error) => (
+            AppError::Serde(_error) => (reqwest::StatusCode::BAD_REQUEST, "Serde Error".to_string()),
+            AppError::Io(_error) => (
                 reqwest::StatusCode::INTERNAL_SERVER_ERROR,
                 "IO Error".to_string(),
             ),
-            MyError::ShutdownCheck => (
+            AppError::ShutdownCheck => (
                 reqwest::StatusCode::INTERNAL_SERVER_ERROR,
                 "Shutdown Check Failed".to_string(),
             ),
-            MyError::PreflightCheck => (
+            AppError::PreflightCheck => (
                 reqwest::StatusCode::INTERNAL_SERVER_ERROR,
                 "Preflight Check Failed".to_string(),
             ),
-            MyError::FigmentError(_error) => (
+            AppError::FigmentError(_error) => (
                 reqwest::StatusCode::INTERNAL_SERVER_ERROR,
                 "Config Error".to_string(),
             ),
-            MyError::JsonRejection(rejection) => (rejection.status(), rejection.body_text()),
-            MyError::PrometheusError(_error) => (
+            AppError::JsonRejection(rejection) => (rejection.status(), rejection.body_text()),
+            AppError::PrometheusError(_error) => (
                 reqwest::StatusCode::INTERNAL_SERVER_ERROR,
                 "Prometheus Error".to_string(),
             ),
-            MyError::EnvFilterError(_error) => (
+            AppError::EnvFilterError(_error) => (
                 reqwest::StatusCode::INTERNAL_SERVER_ERROR,
                 "EnvFilter Error".to_string(),
             ),
-            MyError::InvalidHeaderValue(_error) => (
+            AppError::InvalidHeaderValue(_error) => (
                 reqwest::StatusCode::INTERNAL_SERVER_ERROR,
                 "Invalid Header Value".to_string(),
             ),
-            MyError::DatabaseError(error) => {
+            AppError::DatabaseError(error) => {
                 tracing::error!("Database error: {}", error);
                 (
                     reqwest::StatusCode::INTERNAL_SERVER_ERROR,

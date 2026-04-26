@@ -1,17 +1,34 @@
-<mat-card>
-  <mat-card-header>
-    <mat-card-title>Topology & Field Mapping</mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
-    <h3>Field Runoff Risk Assessment</h3>
-    <mat-list>
-      <mat-list-item *ngFor="let field of fields">
-        <mat-icon matListItemIcon *ngIf="field.riskLevel === 'High'" color="warn">warning</mat-icon>
-        <mat-icon matListItemIcon *ngIf="field.riskLevel === 'Medium'" color="accent">info</mat-icon>
-        <mat-icon matListItemIcon *ngIf="field.riskLevel === 'Low'" style="color: green;">check_circle</mat-icon>
-        <div matListItemTitle>{{ field.name }}</div>
-        <div matListItemLine>Slope: {{ field.slope }} | Risk Level: {{ field.riskLevel }}</div>
-      </mat-list-item>
-    </mat-list>
-  </mat-card-content>
-</mat-card>
+<div class="p-6 bg-slate-900 rounded-[40px] shadow-2xl border border-slate-800 overflow-hidden">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h2 class="text-2xl font-bold text-white tracking-tight">Interactive Topology Map</h2>
+      <p class="text-slate-400 text-sm">Visualizing waterways and 10m organic manure buffer zones</p>
+    </div>
+    <div class="flex gap-2">
+        <div class="flex items-center gap-2 px-3 py-1 bg-rose-500/10 border border-rose-500/20 rounded-full text-[10px] text-rose-400 font-bold uppercase tracking-wider">
+            <div class="w-1.5 h-1.5 bg-rose-500 rounded-full"></div>
+            Buffer Zone
+        </div>
+        <div class="flex items-center gap-2 px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-[10px] text-blue-400 font-bold uppercase tracking-wider">
+            <div class="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+            Waterway
+        </div>
+    </div>
+  </div>
+
+  <div id="map" class="w-full h-[500px] rounded-3xl z-10 border border-slate-700/50 grayscale-[0.2] brightness-[0.9] contrast-[1.1]"></div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+    <div *ngFor="let field of fields"
+         class="p-4 bg-slate-800/50 rounded-2xl border border-slate-700/50 hover:bg-slate-800 transition-colors cursor-pointer group">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-white font-bold">{{ field.name }}</span>
+        <span [class]="field.riskLevel === 'High' ? 'text-rose-400' : 'text-emerald-400'" class="text-[10px] font-black uppercase tracking-tighter">{{ field.riskLevel }} RISK</span>
+      </div>
+      <div class="flex items-center gap-2 text-slate-400 text-sm">
+        <span class="material-symbols-outlined text-sm">terrain</span>
+        {{ field.slope }} Slope
+      </div>
+    </div>
+  </div>
+</div>

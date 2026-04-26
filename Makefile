@@ -104,4 +104,4 @@ db-local:
 		-e POSTGRES_PASSWORD=mysecretpassword \
 		-e POSTGRES_DB=swarddb \
 		-p 5432:5432 \
-		pgvector/pgvector:pg15
+		postgis/postgis:15-3.3

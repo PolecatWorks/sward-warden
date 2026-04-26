@@ -8,7 +8,7 @@ use tracing::{error, info};
 
 use url::Url;
 
-use crate::error::MyError;
+use crate::error::AppError;
 
 #[serde_as]
 #[derive(Deserialize, Debug, Clone)]
@@ -21,7 +21,7 @@ pub struct Checks {
 }
 
 impl Checks {
-    pub async fn preflight(&self, client: &Client) -> Result<u32, MyError> {
+    pub async fn preflight(&self, client: &Client) -> Result<u32, AppError> {
         let mut fails = self.fails;
         for preflight in self.preflights.iter() {
             info!("Checking preflight: {}", preflight);
@@ -42,10 +42,10 @@ impl Checks {
             Ok(fails)
         } else {
             error!("Preflight FAIL");
-            Err(MyError::PreflightCheck)
+            Err(AppError::PreflightCheck)
         }
     }
-    pub async fn shutdown(&self, client: &Client) -> Result<u32, MyError> {
+    pub async fn shutdown(&self, client: &Client) -> Result<u32, AppError> {
         let mut fails = self.fails;
         for shutdown in self.shutdowns.iter() {
             info!("Checking shutdown: {}", shutdown);
@@ -66,7 +66,7 @@ impl Checks {
             Ok(fails)
         } else {
             error!("Shutdown FAIL");
-            Err(MyError::ShutdownCheck)
+            Err(AppError::ShutdownCheck)
         }
     }
 }

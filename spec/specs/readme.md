@@ -27,7 +27,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0004-05 Fertilisation Account Specification](./0004/0004-04-fertilisation-account.md) | Complete |
 | [0004-06 Import and Export Records Specification](./0004/0004-05-import-export-records.md) | Complete |
 | [0004-07 Soil Analysis Results Specification](./0004/0004-06-soil-analysis-results.md) | Complete |
-| [0004-08 Spreading Equipment Exemptions Specification](./0004/0004-07-spreading-equipment-exemptions.md) | Open |
+| [0004-07 Spreading Equipment Exemptions Specification](./0004/0004-07-spreading-equipment-exemptions.md) | Complete |
 | [0005-02 Spraying (Pesticide Use) Records Specification](./0005/0005-01-spraying-records.md) | Complete |
 | [0005-03 Chemical Fertiliser Management Specification](./0005/0005-02-chemical-fertiliser-management.md) | Complete |
 | [0005-04 Sward and Organic Manure Management Specification](./0005/0005-03-slurry-and-organic-manure-management.md) | Complete |
@@ -41,11 +41,11 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0007-03 General Farm Records Export Specification](./0007/0007-03-general-farm-records-export.md) | Complete |
 | [0007-04 Soil Analysis Reports Specification](./0007/0007-04-soil-analysis-reports.md) | Complete |
 | [0007-05 Import and Export Reporting Specification](./0007/0007-05-import-export-reporting.md) | Complete |
-| [0008-01 Optimization Engine Core Specification](./0008/0008-01-optimization-engine-core.md) | Open |
-| [0008-02 Weather Integration Data Specification](./0008/0008-02-weather-integration-data.md) | Open |
-| [0008-03 Topology and Waterway Data Specification](./0008/0008-03-topology-and-waterway-data.md) | Open |
-| [0008-04 Optimization & Mapping UI Specification](./0008/0008-04-optimization-mapping-ui.md) | Open |
-| [Spec 0009-01: Backend Architecture Implementation](./0009/0009-01-backend-refactor.md) | Open |
+| [0008-01 Optimization Engine Core Specification](./0008/0008-01-optimization-engine-core.md) | Complete |
+| [0008-02 Weather Integration Data Specification](./0008/0008-02-weather-integration-data.md) | Complete |
+| [0008-03 Topology and Waterway Data Specification](./0008/0008-03-topology-and-waterway-data.md) | Complete |
+| [0008-04 Optimization & Mapping UI Specification](./0008/0008-04-optimization-mapping-ui.md) | Complete |
+| [Spec 0009-01: Backend Architecture Implementation](./0009/0009-01-backend-refactor.md) | Complete |
 | [Specification 0010-01: Database Implementation](./0010/0010-01-database-implementation.md) | Complete |
 | [Specification 0011-01: RxDB Local Database Setup](./0011/0011-01-rxdb-local-database.md) | Complete |
 | [Specification 0011-02: Network Status and Sync UI](./0011/0011-02-network-status-ui.md) | Complete |
@@ -61,3 +61,27 @@ This directory contains Technical Specifications derived from the PRDs.
 | [Spec 0013-03: User Administration UI](./0013/0013-03-user-administration-ui.md) | Complete |
 | [Spec 0013-04: Support Entity Explorer](./0013/0013-04-support-entity-views.md) | Complete |
 | [Spec 0013-05: Administrative Audit Logging](./0013/0013-05-admin-audit-logging.md) | Complete |
+
+## Implementation Roadmap
+
+The following "Open" specifications will be implemented in the order listed below to respect technical dependencies and architectural foundations.
+
+| Order | Specification | Primary Dependency |
+| :--- | :--- | :--- |
+| 1 | [0009-01 Backend Architecture Refactor](./0009/0009-01-backend-refactor.md) | Complete (Foundation) |
+| 2 | [0004-07 Spreading Equipment Exemptions](./0004/0004-07-spreading-equipment-exemptions.md) | Complete |
+| 3 | [0008-02 Weather Integration Data](./0008/0008-02-weather-integration-data.md) | Complete |
+| 4 | [0008-03 Topology and Waterway Data](./0008/0008-03-topology-and-waterway-data.md) | Complete |
+| 5 | [0008-01 Optimization Engine Core](./0008/0008-01-optimization-engine-core.md) | Complete |
+| 6 | [0008-04 Optimization & Mapping UI](./0008/0008-04-optimization-mapping-ui.md) | Complete |
+
+## PostGIS Requirement
+
+Specifications under PRD 0008 (Spatial Optimization) require the PostGIS extension to be enabled in PostgreSQL.
+
+1.  **Image Update**: The `Makefile` and `docker-compose/postgres.yaml` have been updated to use `postgis/postgis:15-3.3`.
+2.  **Restart Database**: Restart your local database container to use the new image.
+3.  **Enable Extension**: Run the following command against your database:
+    ```sql
+    CREATE EXTENSION postgis;
+    ```

@@ -28,4 +28,4 @@ This specification covers the implementation of the backend architecture refacto
 7. **Rewrite main.rs**: Connect all the pieces together (config load -> startup checks -> hams start -> tokio runtime/axum serve).
 
 ## 4. State
-Open
+Complete

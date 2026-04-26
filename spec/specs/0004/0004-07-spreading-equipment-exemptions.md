@@ -1,6 +1,6 @@
-# 0004-08 Spreading Equipment Exemptions Specification
+# 0004-07 Spreading Equipment Exemptions Specification
 
-**State**: Open
+**State**: Complete
 
 ## Scope
 This specification covers the spreading equipment exemptions required to maintain compliance with NAP regulations (PRD 0004).
