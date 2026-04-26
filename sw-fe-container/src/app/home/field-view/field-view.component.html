@@ -236,7 +236,7 @@
 
 
               <!-- Dummy data specific to design references if matches -->
-              <div *ngIf="getFertiliserAppForEvent(event.id) as fa" class="mt-3 bg-surface-container-lowest border border-outline-variant p-3 rounded-lg text-sm">
+              <div *ngIf="event.id && getFertiliserAppForEvent(event.id) as fa" class="mt-3 bg-surface-container-lowest border border-outline-variant p-3 rounded-lg text-sm">
                 <div class="grid grid-cols-2 gap-2">
                   <div><span class="text-on-surface-variant font-medium">Type:</span> {{ fa.fertiliser_type }}</div>
                   <div><span class="text-on-surface-variant font-medium">Amount:</span> {{ fa.amount_applied }} kg/ha</div>
@@ -256,7 +256,7 @@
               </div>
 
               <!-- Organic Manure Details -->
-              <div *ngIf="getOrganicManureAppForEvent(event.id) as oma" class="mt-3 bg-surface-container-lowest border border-outline-variant p-3 rounded-lg text-sm">
+              <div *ngIf="event.id && getOrganicManureAppForEvent(event.id) as oma" class="mt-3 bg-surface-container-lowest border border-outline-variant p-3 rounded-lg text-sm">
                 <div class="grid grid-cols-2 gap-2">
                   <div><span class="text-on-surface-variant font-medium">Type:</span> {{ oma.manure_type }}</div>
                   <div *ngIf="oma.volume_applied_m3_per_ha"><span class="text-on-surface-variant font-medium">Vol:</span> {{ oma.volume_applied_m3_per_ha }} m³/ha</div>

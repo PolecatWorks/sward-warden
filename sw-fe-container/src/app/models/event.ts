@@ -1,6 +1,6 @@
 export interface Event {
-  id?: number;
-  field_id: number;
+  id?: number | string;
+  field_id: number | string;
   event_type: string;
   description: string;
   date: string;

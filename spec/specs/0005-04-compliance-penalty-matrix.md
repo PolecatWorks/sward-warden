@@ -1,6 +1,6 @@
 # 0005-05 Compliance Penalty Matrix Specification
 
-**State**: Open
+**State**: Complete
 
 ## Scope
 This specification covers the implementation details for tracking the Compliance Penalty Matrix under the Farm Sustainability Standards (FSS) as outlined in PRD 0005.

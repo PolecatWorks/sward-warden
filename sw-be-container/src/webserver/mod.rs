@@ -16,7 +16,7 @@ use tracing::{Level, info};
 use crate::error::MyError;
 use crate::models::{
     Event, Farm, FarmRecord, FertilisationPlan, FertiliserApplication, Field, OrganicManureApplication, SoilAnalysis,
-    SyncQuery, SyncResponse, User,
+    ComplianceBreach, SyncQuery, SyncResponse, User,
 };
 use crate::rules::{validate_fertiliser_application, validate_organic_manure_application, ValidationResult};
 use crate::state::AppState;
@@ -37,6 +37,7 @@ pub fn app_router(state: AppState) -> Router {
         .route("/v0/events", get(list_events).post(create_event))
         .route("/v0/fertiliser-applications", get(list_fertiliser_applications).post(create_fertiliser_application))
         .route("/v0/organic-manure-applications", get(list_organic_manure_applications).post(create_organic_manure_application))
+        .route("/v0/compliance-breaches", get(list_compliance_breaches).post(create_compliance_breach))
         .route("/v0/sync/delta", get(delta_sync))
         .route(
             "/v0/soil_analyses",
@@ -135,7 +136,7 @@ async fn list_farms(State(state): State<AppState>) -> Result<Json<Vec<Farm>>, My
     }
 
     let farms = sqlx::query_as::<_, Farm>(
-        "SELECT id, user_id, name, location, updated_at, is_deleted FROM farms WHERE user_id = 1 AND is_deleted = FALSE"
+        "SELECT id, user_id, name, location, has_derogation, updated_at, is_deleted FROM farms WHERE user_id = 1 AND is_deleted = FALSE"
     )
     .fetch_all(&state.db_pool)
     .await?;
@@ -147,11 +148,12 @@ async fn create_farm(
     Json(farm): Json<Farm>,
 ) -> Result<Json<Farm>, MyError> {
     let new_farm = sqlx::query_as::<_, Farm>(
-        "INSERT INTO farms (user_id, name, location) VALUES ($1, $2, $3) RETURNING id, user_id, name, location, updated_at, is_deleted"
+        "INSERT INTO farms (user_id, name, location, has_derogation) VALUES ($1, $2, $3, $4) RETURNING id, user_id, name, location, has_derogation, updated_at, is_deleted"
     )
     .bind(1i64)
     .bind(&farm.name)
     .bind(&farm.location)
+    .bind(farm.has_derogation.unwrap_or(false))
     .fetch_one(&state.db_pool)
     .await?;
     *state.farms_cache.write().await = None;
@@ -177,7 +179,7 @@ async fn delete_farm(
 
 async fn list_fields(State(state): State<AppState>) -> Result<Json<Vec<Field>>, MyError> {
     let fields = sqlx::query_as::<_, Field>(
-        "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.updated_at, f.is_deleted FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1 AND f.is_deleted = FALSE"
+        "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, f.updated_at, f.is_deleted FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1 AND f.is_deleted = FALSE"
     )
     .fetch_all(&state.db_pool)
     .await;
@@ -188,11 +190,12 @@ async fn create_field(
     Json(field): Json<Field>,
 ) -> Result<Json<Field>, MyError> {
     let new_field = sqlx::query_as::<_, Field>(
-        "INSERT INTO fields (farm_id, name, area_hectares) VALUES ($1, $2, $3) RETURNING id, farm_id, name, area_hectares, updated_at, is_deleted"
+        "INSERT INTO fields (farm_id, name, area_hectares, land_use) VALUES ($1, $2, $3, $4) RETURNING id, farm_id, name, area_hectares, land_use, updated_at, is_deleted"
     )
     .bind(field.farm_id)
     .bind(&field.name)
     .bind(field.area_hectares)
+    .bind(&field.land_use)
     .fetch_one(&state.db_pool)
     .await;
     Ok(Json(new_field?))
@@ -247,7 +250,7 @@ async fn list_farm_records(
     State(state): State<AppState>,
 ) -> Result<Json<Vec<FarmRecord>>, MyError> {
     let records = sqlx::query_as::<_, FarmRecord>(
-        "SELECT fr.id, fr.farm_id, fr.agricultural_area, fr.manure_storage_capacity, fr.year, fr.updated_at, fr.is_deleted FROM farm_records fr JOIN farms fa ON fr.farm_id = fa.id WHERE fa.user_id = 1 AND fr.is_deleted = FALSE"
+        "SELECT fr.id, fr.farm_id, fr.agricultural_area, fr.manure_storage_capacity, fr.year, fr.has_derogation, fr.updated_at, fr.is_deleted FROM farm_records fr JOIN farms fa ON fr.farm_id = fa.id WHERE fa.user_id = 1 AND fr.is_deleted = FALSE"
     )
     .fetch_all(&state.db_pool)
     .await;
@@ -258,12 +261,13 @@ async fn create_farm_record(
     Json(record): Json<FarmRecord>,
 ) -> Result<Json<FarmRecord>, MyError> {
     let new_record = sqlx::query_as::<_, FarmRecord>(
-        "INSERT INTO farm_records (farm_id, agricultural_area, manure_storage_capacity, year) VALUES ($1, $2, $3, $4) RETURNING id, farm_id, agricultural_area, manure_storage_capacity, year, updated_at, is_deleted"
+        "INSERT INTO farm_records (farm_id, agricultural_area, manure_storage_capacity, year, has_derogation) VALUES ($1, $2, $3, $4, $5) RETURNING id, farm_id, agricultural_area, manure_storage_capacity, year, has_derogation, updated_at, is_deleted"
     )
     .bind(record.farm_id)
     .bind(record.agricultural_area)
     .bind(record.manure_storage_capacity)
     .bind(record.year)
+    .bind(record.has_derogation.unwrap_or(false))
     .fetch_one(&state.db_pool)
     .await;
     Ok(Json(new_record?))
@@ -376,6 +380,37 @@ async fn create_organic_manure_application(
     Ok(Json(new_app?))
 }
 
+async fn list_compliance_breaches(
+    State(state): State<AppState>,
+) -> Result<Json<Vec<ComplianceBreach>>, MyError> {
+    let breaches = sqlx::query_as::<_, ComplianceBreach>(
+        "SELECT id, farm_id, breach_type, severity, estimated_penalty_percentage, mandatory_training_required, breach_date, notes, is_repeat, updated_at, is_deleted FROM compliance_breaches WHERE is_deleted = FALSE"
+    )
+    .fetch_all(&state.db_pool)
+    .await;
+    Ok(Json(breaches?))
+}
+
+async fn create_compliance_breach(
+    State(state): State<AppState>,
+    Json(breach): Json<ComplianceBreach>,
+) -> Result<Json<ComplianceBreach>, MyError> {
+    let new_breach = sqlx::query_as::<_, ComplianceBreach>(
+        "INSERT INTO compliance_breaches (farm_id, breach_type, severity, estimated_penalty_percentage, mandatory_training_required, breach_date, notes, is_repeat) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id, farm_id, breach_type, severity, estimated_penalty_percentage, mandatory_training_required, breach_date, notes, is_repeat, updated_at, is_deleted"
+    )
+    .bind(breach.farm_id)
+    .bind(&breach.breach_type)
+    .bind(&breach.severity)
+    .bind(breach.estimated_penalty_percentage)
+    .bind(&breach.mandatory_training_required)
+    .bind(&breach.breach_date)
+    .bind(&breach.notes)
+    .bind(breach.is_repeat)
+    .fetch_one(&state.db_pool)
+    .await;
+    Ok(Json(new_breach?))
+}
+
 async fn list_soil_analyses(
     State(state): State<AppState>,
 ) -> Result<Json<Vec<SoilAnalysis>>, MyError> {
@@ -475,14 +510,14 @@ async fn delta_sync(
         .unwrap_or_else(|| DateTime::from_timestamp(0, 0).unwrap());
 
     let farms = sqlx::query_as::<_, Farm>(
-        "SELECT id, user_id, name, location, updated_at, is_deleted FROM farms WHERE user_id = 1 AND updated_at > $1"
+        "SELECT id, user_id, name, location, has_derogation, updated_at, is_deleted FROM farms WHERE user_id = 1 AND updated_at > $1"
     )
     .bind(since)
     .fetch_all(&state.db_pool)
     .await?;
 
     let fields = sqlx::query_as::<_, Field>(
-        "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.updated_at, f.is_deleted FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1 AND f.updated_at > $1"
+        "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, f.updated_at, f.is_deleted FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = 1 AND f.updated_at > $1"
     )
     .bind(since)
     .fetch_all(&state.db_pool)
@@ -496,7 +531,7 @@ async fn delta_sync(
     .await?;
 
     let farm_records = sqlx::query_as::<_, FarmRecord>(
-        "SELECT fr.id, fr.farm_id, fr.agricultural_area, fr.manure_storage_capacity, fr.year, fr.updated_at, fr.is_deleted FROM farm_records fr JOIN farms fa ON fr.farm_id = fa.id WHERE fa.user_id = 1 AND fr.updated_at > $1"
+        "SELECT fr.id, fr.farm_id, fr.agricultural_area, fr.manure_storage_capacity, fr.year, fr.has_derogation, fr.updated_at, fr.is_deleted FROM farm_records fr JOIN farms fa ON fr.farm_id = fa.id WHERE fa.user_id = 1 AND fr.updated_at > $1"
     )
     .bind(since)
     .fetch_all(&state.db_pool)
@@ -530,6 +565,13 @@ async fn delta_sync(
     .fetch_all(&state.db_pool)
     .await?;
 
+    let compliance_breaches = sqlx::query_as::<_, ComplianceBreach>(
+        "SELECT cb.id, cb.farm_id, cb.breach_type, cb.severity, cb.estimated_penalty_percentage, cb.mandatory_training_required, cb.breach_date, cb.notes, cb.is_repeat, cb.updated_at, cb.is_deleted FROM compliance_breaches cb JOIN farms fa ON cb.farm_id = fa.id WHERE fa.user_id = 1 AND cb.updated_at > $1"
+    )
+    .bind(since)
+    .fetch_all(&state.db_pool)
+    .await?;
+
     let checkpoint = Utc::now();
 
     Ok(Json(SyncResponse {
@@ -542,6 +584,7 @@ async fn delta_sync(
         fertilisation_plans,
         fertiliser_applications,
         organic_manure_applications,
+        compliance_breaches,
     }))
 }
 

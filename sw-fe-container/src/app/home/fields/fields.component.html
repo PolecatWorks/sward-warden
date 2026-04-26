@@ -42,7 +42,7 @@
         </div>
         <div class="flex justify-end gap-2 border-t border-surface-container-low pt-4">
             <button class="px-4 py-2 text-sm font-semibold text-primary bg-primary-container/10 hover:bg-primary-container/20 rounded-lg transition-colors" [routerLink]="['/fields', field.id]" [attr.aria-label]="'View details for ' + field.name">View Details</button>
-            <button class="px-4 py-2 text-sm font-semibold text-error bg-error-container/50 hover:bg-error-container rounded-lg transition-colors" (click)="deleteField(field.id)" [attr.aria-label]="'Delete ' + field.name">Delete</button>
+            <button *ngIf="field.id" class="p-2 text-error hover:bg-error/10 rounded-full transition-colors" (click)="deleteField(field.id)" [attr.aria-label]="'Delete ' + field.name">Delete</button>
         </div>
     </div>
 

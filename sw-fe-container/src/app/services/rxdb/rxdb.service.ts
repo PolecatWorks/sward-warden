@@ -5,8 +5,10 @@ import { Observable, from, shareReplay, switchMap } from 'rxjs';
 import {
   FarmDocType, FieldDocType, EventDocType, OutboxDocType, MetadataDocType,
   SoilAnalysisDocType, FertilisationPlanDocType, FarmRecordDocType,
+  OrganicManureApplicationDocType, ComplianceBreachDocType,
   farmSchema, fieldSchema, eventSchema, outboxSchema, metadataSchema,
   soilAnalysisSchema, fertilisationPlanSchema, farmRecordSchema,
+  organicManureApplicationSchema, complianceBreachSchema
 } from './schemas';
 
 /** Injection token for providing an alternative RxStorage (e.g. memory for tests). */
@@ -23,6 +25,8 @@ export type SwardCollections = {
   soil_analyses: RxCollection<SoilAnalysisDocType>;
   fertilisation_plans: RxCollection<FertilisationPlanDocType>;
   farm_records: RxCollection<FarmRecordDocType>;
+  organic_manure_applications: RxCollection<OrganicManureApplicationDocType>;
+  compliance_breaches: RxCollection<ComplianceBreachDocType>;
   outbox: RxCollection<OutboxDocType>;
   metadata: RxCollection<MetadataDocType>;
 };
@@ -72,6 +76,8 @@ export class RxdbService implements OnDestroy {
       soil_analyses: { schema: soilAnalysisSchema },
       fertilisation_plans: { schema: fertilisationPlanSchema },
       farm_records: { schema: farmRecordSchema },
+      organic_manure_applications: { schema: organicManureApplicationSchema },
+      compliance_breaches: { schema: complianceBreachSchema },
       outbox: { schema: outboxSchema },
       metadata: { schema: metadataSchema },
     });

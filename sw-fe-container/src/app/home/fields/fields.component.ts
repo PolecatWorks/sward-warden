@@ -14,7 +14,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class FieldsComponent implements OnInit {
   fields: Field[] = [];
-  farmId: number = 0;
+  farmId: number | string = 0;
   newFieldName: string = '';
   newFieldArea: number | null = null;
   showAddForm: boolean = false;
@@ -32,7 +32,7 @@ export class FieldsComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       const id = params.get('farmId');
       if (id) {
-        this.farmId = +id;
+        this.farmId = isNaN(+id) ? id : +id;
         this.loadFields();
       }
     });
@@ -47,7 +47,7 @@ export class FieldsComponent implements OnInit {
   addField(): void {
     if (this.newFieldName && this.newFieldArea !== null) {
       const newField: Field = {
-        id: Date.now(),
+        id: Date.now().toString(),
         farm_id: this.farmId,
         name: this.newFieldName,
         area_hectares: this.newFieldArea
@@ -66,7 +66,7 @@ export class FieldsComponent implements OnInit {
     this.showAddForm = !this.showAddForm;
   }
 
-  deleteField(id: number): void {
+  deleteField(id: number | string): void {
     this.farmService.deleteEntity('fields', id).subscribe(() => {
       this.loadFields();
     });

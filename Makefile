@@ -45,7 +45,11 @@ $(foreach app,$(RUST_APPS),$(app)-dev):%-dev:
 	-@lsof -t -i :$($*_PORT) | xargs kill -9 2>/dev/null || true
 	$(if $($*_HEALTH_PORT),-@lsof -t -i :$($*_HEALTH_PORT) | xargs kill -9 2>/dev/null || true)
 	cd $*-container && \
-	DATABASE_URL="postgres://postgres:mysecretpassword@localhost:5432/swarddb" cargo run -- serve
+	DATABASE_URL="postgres://postgres:mysecretpassword@localhost:5432/swarddb" \
+	SP_BE__DATABASE__URL__URL="postgres://localhost:5432/swarddb" \
+	SP_BE__DATABASE__URL__USERNAME="postgres" \
+	SP_BE__DATABASE__URL__PASSWORD="mysecretpassword" \
+	cargo run -- serve
 
 # Run tests
 $(foreach app,$(RUST_APPS),$(app)-test):%-test:

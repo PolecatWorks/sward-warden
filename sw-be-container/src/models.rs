@@ -69,6 +69,7 @@ pub struct SyncResponse {
     pub fertilisation_plans: Vec<FertilisationPlan>,
     pub fertiliser_applications: Vec<FertiliserApplication>,
     pub organic_manure_applications: Vec<OrganicManureApplication>,
+    pub compliance_breaches: Vec<ComplianceBreach>,
 }
 
 /// Query parameters for the delta sync endpoint.
@@ -130,6 +131,21 @@ pub struct OrganicManureApplication {
     pub is_lesse_applied: Option<bool>,
     pub weather_conditions_confirmed: Option<bool>,
     pub buffer_zone_distance_meters: Option<i32>,
+    pub updated_at: Option<DateTime<Utc>>,
+    pub is_deleted: Option<bool>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+pub struct ComplianceBreach {
+    pub id: Option<i64>,
+    pub farm_id: i64,
+    pub breach_type: String,
+    pub severity: String,
+    pub estimated_penalty_percentage: Option<f64>,
+    pub mandatory_training_required: Option<String>,
+    pub breach_date: String,
+    pub notes: Option<String>,
+    pub is_repeat: Option<bool>,
     pub updated_at: Option<DateTime<Utc>>,
     pub is_deleted: Option<bool>,
 }

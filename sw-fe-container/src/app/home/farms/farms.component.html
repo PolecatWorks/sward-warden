@@ -85,12 +85,15 @@
 <span class="text-sm font-semibold text-tertiary">Active</span>
 </div>
 </div>
-<div class="flex items-center gap-2">
-  <button (click)="deleteFarm(farm.id!); $event.stopPropagation()" class="text-error hover:text-error/80 transition-colors" [attr.data-testid]="'delete-farm-' + farm.id" [attr.aria-label]="'Delete farm ' + farm.name">
-    <span class="material-symbols-outlined text-lg">delete</span>
-  </button>
-  <span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
-</div>
+  <div class="flex items-center gap-2">
+    <button (click)="deleteFarm(farm.id!); $event.stopPropagation()" class="text-error hover:text-error/80 transition-colors" [attr.data-testid]="'delete-farm-' + farm.id" [attr.aria-label]="'Delete farm ' + farm.name">
+      <span class="material-symbols-outlined text-lg">delete</span>
+    </button>
+    <a [routerLink]="['/farms', farm.id, 'compliance']" (click)="$event.stopPropagation()" class="text-primary hover:text-primary/80 transition-colors" title="Compliance Report">
+      <span class="material-symbols-outlined text-lg">shield_with_heart</span>
+    </a>
+    <span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+  </div>
 </div>
 </div>
 
