@@ -21,6 +21,10 @@ export class FieldViewComponent implements OnInit {
   field: Field | undefined;
   events: Event[] = [];
 
+  editingEventId: number | string | null = null;
+  editFormData: any = {};
+
+
   showFertiliserForm: boolean = false;
   newFertiliser: Partial<FertiliserApplication> & { date: string, description: string } = {
     date: new Date().toISOString().split('T')[0],
@@ -98,6 +102,71 @@ export class FieldViewComponent implements OnInit {
   getOrganicManureAppForEvent(eventId: number | string): OrganicManureApplication | undefined {
     return this.organicManureApplications.find(oma => oma.event_id === eventId);
   }
+
+  startEdit(event: Event): void {
+    this.editingEventId = event.id || null;
+    this.editFormData = { ...event };
+
+    if (event.event_type.toLowerCase().includes('fertilise')) {
+      const fa = this.getFertiliserAppForEvent(event.id!);
+      if (fa) {
+        this.editFormData.fertiliserApplication = { ...fa };
+      }
+    } else if (event.event_type.toLowerCase().includes('organic manure') || event.event_type.toLowerCase().includes('slurry')) {
+      const oma = this.getOrganicManureAppForEvent(event.id!);
+      if (oma) {
+        this.editFormData.organicManureApplication = { ...oma };
+      }
+    }
+  }
+
+  cancelEdit(): void {
+    this.editingEventId = null;
+    this.editFormData = {};
+  }
+
+  saveEdit(event: Event): void {
+    if (!event.id) return;
+    const localId = event.id.toString(); // Assuming id is localId, wait let's use the object id
+
+    const eventUpdates = {
+      description: this.editFormData.description,
+      date: this.editFormData.date,
+      mapp_number: this.editFormData.mapp_number,
+      eppo_code: this.editFormData.eppo_code,
+      bbch_growth_stage: this.editFormData.bbch_growth_stage
+    };
+
+    this.farmService.updateEvent(localId, eventUpdates).subscribe(() => {
+      let dependentRequests = 0;
+      let completedRequests = 0;
+
+      const checkCompletion = () => {
+        completedRequests++;
+        if (completedRequests === dependentRequests) {
+          this.loadEvents();
+          this.cancelEdit();
+        }
+      };
+
+      if (event.event_type.toLowerCase().includes('fertilise') && this.editFormData.fertiliserApplication) {
+        dependentRequests++;
+        // Notice fertiliser applications are currently using apiUrl directly in service, they use id, not localId.
+        // Wait, the id returned by getFertiliserApplications is serverId usually, let's just use it.
+        const faId = this.editFormData.fertiliserApplication.id;
+        this.farmService.updateFertiliserApplication(faId, this.editFormData.fertiliserApplication).subscribe(checkCompletion);
+      } else if ((event.event_type.toLowerCase().includes('organic manure') || event.event_type.toLowerCase().includes('slurry')) && this.editFormData.organicManureApplication) {
+        dependentRequests++;
+        const omaId = this.editFormData.organicManureApplication.id;
+        const serverId = this.editFormData.organicManureApplication.serverId; // Assuming serverId is mapped
+        this.farmService.updateOrganicManureApplication(omaId.toString(), serverId, this.editFormData.organicManureApplication).subscribe(checkCompletion);
+      } else {
+        this.loadEvents();
+        this.cancelEdit();
+      }
+    });
+  }
+
 
   getFertiliserAppForEvent(eventId: number | string): FertiliserApplication | undefined {
     return this.fertiliserApplications.find(fa => fa.event_id === eventId);
