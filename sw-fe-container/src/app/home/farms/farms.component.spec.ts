@@ -26,10 +26,12 @@ describe('FarmsComponent', () => {
     const loggerSpy = jasmine.createSpyObj('LoggerService', ['log', 'info', 'warn', 'error']);
     const spy = jasmine.createSpyObj('FarmManagementService', [
       'getFarms',
+      'getFields',
       'addFarm',
       'deleteEntity',
     ]);
     spy.getFarms.and.returnValue(of(mockFarms));
+    spy.getFields.and.returnValue(of([]));
     spy.addFarm.and.returnValue(of({ id: 3, name: 'New Farm', location: 'Galway, Ireland' }));
     spy.deleteEntity.and.returnValue(of(undefined));
 
@@ -85,7 +87,7 @@ describe('FarmsComponent', () => {
     it('should show error banner when getFarms fails', () => {
       farmServiceSpy.getFarms.and.returnValue(throwError(() => new Error('Network error')));
       fixture.detectChanges();
-      expect(component.errorMessage).toContain('Failed to load farms');
+      expect(component.errorMessage).toContain('Failed to load data. Please try again.');
       expect(component.isLoading).toBeFalse();
     });
 
