@@ -9,6 +9,8 @@ pub mod movements;
 pub mod admin;
 pub mod applications;
 pub mod optimization;
+pub mod weather;
+pub mod spatial;
 
 use axum::{
     Json, Router,
@@ -61,6 +63,8 @@ pub fn app_router(state: AppState) -> Router {
             get(movements::list_sward_movements).post(movements::create_sward_movement),
         )
         .route("/v0/optimization/suggestions/{farm_id}", get(optimization::get_farm_suggestions))
+        .route("/v0/weather/forecast", get(weather::get_forecast))
+        .route("/v0/spatial/waterway-buffers", get(spatial::get_waterway_buffers))
         .route("/v0/sync/delta", get(sync::delta_sync))
         .route(
             "/v0/soil_analyses",

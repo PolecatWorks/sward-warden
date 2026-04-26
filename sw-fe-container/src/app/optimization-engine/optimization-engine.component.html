@@ -29,10 +29,15 @@
 </div>
 </div>
 </section>
+<!-- Weather Integration Timeline -->
+<section class="mb-12">
+    <app-weather-integration></app-weather-integration>
+</section>
+
 <!-- Bento Grid Insights -->
 <section class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-12">
 <!-- Main Impact Card -->
-<div class="md:col-span-8 bg-surface-container-lowest rounded-full p-8 relative overflow-hidden flex flex-col justify-between min-h-[400px]">
+<div class="md:col-span-8 bg-surface-container-lowest rounded-[48px] p-8 relative overflow-hidden flex flex-col justify-between min-h-[400px] border border-outline-variant/10 shadow-sm">
 <div class="relative z-10">
 <h3 class="font-display font-semibold text-3xl tracking-tight text-primary mb-4">Seasonal Efficiency Outlook</h3>
 <p class="font-body text-on-surface-variant max-w-md">Our AI analysis suggests a shift toward high-precision foliar application can reduce nitrogen runoff by 22% while maintaining current yield targets.</p>
@@ -57,12 +62,18 @@
 </div>
 <!-- Side Recommendations (Suggestions) -->
 <div class="md:col-span-4 flex flex-col gap-6">
-<div *ngFor="let suggestion of suggestions" class="bg-surface-container-high text-on-surface p-6 rounded-full flex flex-col justify-between flex-1 border border-outline-variant/30">
-<span class="material-symbols-outlined text-4xl mb-4 text-primary">psychology</span>
+<div *ngIf="isLoading" class="flex items-center justify-center h-full">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+</div>
+<div *ngFor="let suggestion of suggestions" class="bg-surface-container-high text-on-surface p-6 rounded-[32px] flex flex-col justify-between flex-1 border border-outline-variant/30 hover:border-primary/50 transition-all cursor-pointer group">
+<div class="flex justify-between items-start mb-4">
+    <span class="material-symbols-outlined text-4xl text-primary group-hover:scale-110 transition-transform">psychology</span>
+    <div class="bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-bold">{{ (suggestion.score * 100).toFixed(0) }}% Match</div>
+</div>
 <div>
-<h4 class="font-display font-bold text-xl mb-1 tracking-tight">{{ suggestion.field }}</h4>
-<p class="font-label font-bold text-xs uppercase tracking-widest text-secondary mb-2">{{ suggestion.date }} | {{ suggestion.rate }}</p>
-<p class="text-sm opacity-80 leading-relaxed">{{ suggestion.reason }}</p>
+<h4 class="font-display font-bold text-xl mb-1 tracking-tight">{{ suggestion.field_name }}</h4>
+<p class="font-label font-bold text-xs uppercase tracking-widest text-secondary mb-2">{{ suggestion.recommended_rate }}{{ suggestion.unit }} | {{ suggestion.nutrient_met }}</p>
+<p class="text-sm opacity-80 leading-relaxed">{{ suggestion.reasoning }}</p>
 </div>
 </div>
 </div>

@@ -44,7 +44,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0008-01 Optimization Engine Core Specification](./0008/0008-01-optimization-engine-core.md) | Complete |
 | [0008-02 Weather Integration Data Specification](./0008/0008-02-weather-integration-data.md) | Complete |
 | [0008-03 Topology and Waterway Data Specification](./0008/0008-03-topology-and-waterway-data.md) | Complete |
-| [0008-04 Optimization & Mapping UI Specification](./0008/0008-04-optimization-mapping-ui.md) | Open |
+| [0008-04 Optimization & Mapping UI Specification](./0008/0008-04-optimization-mapping-ui.md) | Complete |
 | [Spec 0009-01: Backend Architecture Implementation](./0009/0009-01-backend-refactor.md) | Complete |
 | [Specification 0010-01: Database Implementation](./0010/0010-01-database-implementation.md) | Complete |
 | [Specification 0011-01: RxDB Local Database Setup](./0011/0011-01-rxdb-local-database.md) | Complete |
@@ -73,7 +73,7 @@ The following "Open" specifications will be implemented in the order listed belo
 | 3 | [0008-02 Weather Integration Data](./0008/0008-02-weather-integration-data.md) | Complete |
 | 4 | [0008-03 Topology and Waterway Data](./0008/0008-03-topology-and-waterway-data.md) | Complete |
 | 5 | [0008-01 Optimization Engine Core](./0008/0008-01-optimization-engine-core.md) | Complete |
-| 6 | [0008-04 Optimization & Mapping UI](./0008/0008-04-optimization-mapping-ui.md) | 0008-01, 0008-02, 0008-03 |
+| 6 | [0008-04 Optimization & Mapping UI](./0008/0008-04-optimization-mapping-ui.md) | Complete |
 
 ## PostGIS Requirement
 
