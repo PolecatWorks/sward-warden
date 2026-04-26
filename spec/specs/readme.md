@@ -58,6 +58,6 @@ This directory contains Technical Specifications derived from the PRDs.
 | [Specification 0014-01: Seed Data Generator](./0014/0014-01-seed-data-generator.md) | Complete |
 | [Spec 0013-01: Admin Console Application Setup](./0013/0013-01-admin-console-app-setup.md) | Complete |
 | [Spec 0013-02: Backend RBAC Implementation](./0013/0013-02-admin-rbac-implementation.md) | Complete |
-| [Spec 0013-03: User Administration UI](./0013/0013-03-user-administration-ui.md) | Open |
+| [Spec 0013-03: User Administration UI](./0013/0013-03-user-administration-ui.md) | Complete |
 | [Spec 0013-04: Support Entity Explorer](./0013/0013-04-support-entity-views.md) | Open |
 | [Spec 0013-05: Administrative Audit Logging](./0013/0013-05-admin-audit-logging.md) | Open |
