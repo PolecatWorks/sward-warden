@@ -25,4 +25,6 @@ This file describes the workflow and development patterns for our agents to foll
 - Do not update spec file content and code in the same PR. However, it is expected that the status of the spec file (e.g. changing from "Open" to "Complete") is modified at the same time as code is modified, to allow code and spec files to remain in sync.
 - Only implement 1 spec file at a time in a PR.
 - Prd files should be numbered. Spec files should be numbers deriving from the prd it is from.
+- Spec files should be sorted into subdirectories based on their PRD number.
+- The specs readme (`spec/specs/readme.md`) should show a summary of the specs as a table, noting their state.
 - **NOTE**: PRD files can mutate over time. Spec files are immutable, however when a spec file has updates and it is not complete (ie still in open state) then it can be modified and does not need to be superceeded. Spec files can be in the following states: Open / Complete / Deprecated / Superceeded.
