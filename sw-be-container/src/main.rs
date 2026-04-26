@@ -10,6 +10,7 @@ pub mod seed;
 pub mod startup_tools;
 pub mod state;
 pub mod tokio_tools;
+pub mod weather;
 pub mod webserver;
 
 use axum_prometheus::metrics_exporter_prometheus::PrometheusBuilder;

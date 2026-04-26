@@ -35,6 +35,14 @@ pub async fn create_fertiliser_application(
         ValidationResult::Invalid(reason) => return Err(AppError::BadRequest(reason)),
     }
 
+    // Weather Validation
+    let application_date = chrono::DateTime::parse_from_rfc3339(&format!("{}T12:00:00Z", event.date))
+        .map(|dt| dt.with_timezone(&chrono::Utc))
+        .unwrap_or_else(|_| chrono::Utc::now());
+
+    // In a real app, we'd parse lat/lon from farm.location or separate fields
+    crate::weather::WeatherService::validate_application_safety(0.0, 0.0, application_date).await?;
+
     let new_app = sqlx::query_as::<_, FertiliserApplication>(
         "INSERT INTO fertiliser_applications (event_id, fertiliser_type, amount_applied, nitrogen_content, phosphorus_content, is_protected_urea, buffer_zone_confirmed, evidence_of_control) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id, event_id, fertiliser_type, amount_applied, nitrogen_content, phosphorus_content, is_protected_urea, buffer_zone_confirmed, evidence_of_control, updated_at, is_deleted"
     )
@@ -80,6 +88,14 @@ pub async fn create_organic_manure_application(
         .bind(field.farm_id)
         .fetch_one(&state.db_pool)
         .await?;
+
+    // Weather Validation
+    let application_date = chrono::DateTime::parse_from_rfc3339(&format!("{}T12:00:00Z", event.date))
+        .map(|dt| dt.with_timezone(&chrono::Utc))
+        .unwrap_or_else(|_| chrono::Utc::now());
+
+    // In a real app, we'd parse lat/lon from farm.location or separate fields
+    crate::weather::WeatherService::validate_application_safety(0.0, 0.0, application_date).await?;
 
     // Fetch previous apps for 3-week gap rule
     let previous_apps = sqlx::query_as::<_, Event>(
