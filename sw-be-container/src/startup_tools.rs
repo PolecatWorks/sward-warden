@@ -110,11 +110,9 @@ mod tests {
             enabled: true,
         };
 
-        let result = run_check(
-            "test".to_string(),
-            &config,
-            || async { Ok::<i32, MyError>(42) },
-        )
+        let result = run_check("test".to_string(), &config, || async {
+            Ok::<i32, MyError>(42)
+        })
         .await;
 
         assert_eq!(result.unwrap(), 42);

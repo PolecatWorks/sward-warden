@@ -81,6 +81,8 @@ export interface OrganicManureApplicationDocType {
   is_lesse_applied?: boolean;
   weather_conditions_confirmed?: boolean;
   buffer_zone_distance_meters?: number;
+  equipment_used?: string;
+  exemption_reason?: string;
   syncStatus: SyncStatus;
   updatedAt: string;
 }
@@ -228,6 +230,8 @@ export const organicManureApplicationSchema: RxJsonSchema<OrganicManureApplicati
     is_lesse_applied: { type: 'boolean' },
     weather_conditions_confirmed: { type: 'boolean' },
     buffer_zone_distance_meters: { type: 'number' },
+    equipment_used: { type: 'string' },
+    exemption_reason: { type: 'string' },
     syncStatus: { type: 'string', maxLength: 16, enum: ['synced', 'pending', 'failed'], default: 'pending' },
     updatedAt: { type: 'string', maxLength: 32 },
   },

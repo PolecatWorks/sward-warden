@@ -1,7 +1,7 @@
-use sqlx::PgPool;
 use crate::error::MyError;
-use tracing::info;
 use chrono::Utc;
+use sqlx::PgPool;
+use tracing::info;
 
 pub async fn seed_database(pool: &PgPool, user_id: i64) -> Result<(), MyError> {
     info!("Seeding database for user_id: {}", user_id);
@@ -9,7 +9,9 @@ pub async fn seed_database(pool: &PgPool, user_id: i64) -> Result<(), MyError> {
     // Ensure user exists
     sqlx::query!(
         "INSERT INTO users (id, name, email) VALUES ($1, $2, $3) ON CONFLICT (id) DO NOTHING",
-        user_id, "Demo User", format!("user{}@example.com", user_id)
+        user_id,
+        "Demo User",
+        format!("user{}@example.com", user_id)
     )
     .execute(pool)
     .await
@@ -17,7 +19,7 @@ pub async fn seed_database(pool: &PgPool, user_id: i64) -> Result<(), MyError> {
 
     for i in 1..=3 {
         let farm_name = format!("Farm {}", i);
-        let location = format!("County {}, NI", ["Down", "Antrim", "Tyrone"][i-1]);
+        let location = format!("County {}, NI", ["Down", "Antrim", "Tyrone"][i - 1]);
 
         let farm_id: i64 = sqlx::query!(
             "INSERT INTO farms (user_id, name, location, updated_at) VALUES ($1, $2, $3, $4) RETURNING id",

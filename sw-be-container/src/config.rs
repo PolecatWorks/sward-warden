@@ -94,7 +94,11 @@ mod tests {
         }
 
         let config_res = AppConfig::load();
-        assert!(config_res.is_ok(), "Config should load even without credentials: {:?}", config_res.err());
+        assert!(
+            config_res.is_ok(),
+            "Config should load even without credentials: {:?}",
+            config_res.err()
+        );
         let config = config_res.unwrap();
 
         assert!(config.database.url.username.is_none());
