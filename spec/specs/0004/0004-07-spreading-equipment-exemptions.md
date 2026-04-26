@@ -1,4 +1,4 @@
-# 0004-08 Spreading Equipment Exemptions Specification
+# 0004-07 Spreading Equipment Exemptions Specification
 
 **State**: Open
 

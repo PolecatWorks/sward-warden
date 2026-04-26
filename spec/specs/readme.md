@@ -27,7 +27,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0004-05 Fertilisation Account Specification](./0004/0004-04-fertilisation-account.md) | Complete |
 | [0004-06 Import and Export Records Specification](./0004/0004-05-import-export-records.md) | Complete |
 | [0004-07 Soil Analysis Results Specification](./0004/0004-06-soil-analysis-results.md) | Complete |
-| [0004-08 Spreading Equipment Exemptions Specification](./0004/0004-07-spreading-equipment-exemptions.md) | Open |
+| [0004-07 Spreading Equipment Exemptions Specification](./0004/0004-07-spreading-equipment-exemptions.md) | Open |
 | [0005-02 Spraying (Pesticide Use) Records Specification](./0005/0005-01-spraying-records.md) | Complete |
 | [0005-03 Chemical Fertiliser Management Specification](./0005/0005-02-chemical-fertiliser-management.md) | Complete |
 | [0005-04 Sward and Organic Manure Management Specification](./0005/0005-03-slurry-and-organic-manure-management.md) | Complete |
@@ -61,3 +61,16 @@ This directory contains Technical Specifications derived from the PRDs.
 | [Spec 0013-03: User Administration UI](./0013/0013-03-user-administration-ui.md) | Complete |
 | [Spec 0013-04: Support Entity Explorer](./0013/0013-04-support-entity-views.md) | Complete |
 | [Spec 0013-05: Administrative Audit Logging](./0013/0013-05-admin-audit-logging.md) | Complete |
+
+## Implementation Roadmap
+
+The following "Open" specifications will be implemented in the order listed below to respect technical dependencies and architectural foundations.
+
+| Order | Specification | Primary Dependency |
+| :--- | :--- | :--- |
+| 1 | [0009-01 Backend Architecture Refactor](./0009/0009-01-backend-refactor.md) | None (Foundation) |
+| 2 | [0004-07 Spreading Equipment Exemptions](./0004/0004-07-spreading-equipment-exemptions.md) | 0009-01 (Backend Pattern) |
+| 3 | [0008-02 Weather Integration Data](./0008/0008-02-weather-integration-data.md) | 0009-01 (Backend Pattern) |
+| 4 | [0008-03 Topology and Waterway Data](./0008/0008-03-topology-and-waterway-data.md) | 0009-01 (PostGIS Setup Required) |
+| 5 | [0008-01 Optimization Engine Core](./0008/0008-01-optimization-engine-core.md) | 0008-02, 0008-03 |
+| 6 | [0008-04 Optimization & Mapping UI](./0008/0008-04-optimization-mapping-ui.md) | 0008-01, 0008-02, 0008-03 |

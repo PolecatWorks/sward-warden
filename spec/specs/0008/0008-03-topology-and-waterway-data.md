@@ -25,6 +25,7 @@ This specification defines the backend processing and data structures required f
 
 ## Technical Details
 - Implemented in `sw-be-container` utilizing PostGIS extensions in the PostgreSQL database.
+  - **Prerequisite**: PostGIS must be installed on the PostgreSQL server (`apt-get install postgis`) and enabled in the database (`CREATE EXTENSION postgis;`).
 - Use `sqlx` and spatial queries (e.g., `ST_Buffer`, `ST_Intersects`) to calculate zones and validate application areas.
 - Expose endpoints to serve buffer geometries (GeoJSON format) for map rendering.
 - Ensure all application logging endpoints strictly validate against these spatial constraints.
