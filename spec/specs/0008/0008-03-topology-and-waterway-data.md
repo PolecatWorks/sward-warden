@@ -1,6 +1,6 @@
 # 0008-03 Topology and Waterway Data Specification
 
-**State**: Open
+**State**: Complete
 
 ## Scope
 This specification defines the backend processing and data structures required for topology mapping and waterway protection buffer zones (PRD 0008).

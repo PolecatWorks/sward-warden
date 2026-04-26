@@ -7,6 +7,7 @@ pub mod models;
 mod rules;
 mod rules_tests;
 pub mod seed;
+pub mod spatial;
 pub mod startup_tools;
 pub mod state;
 pub mod tokio_tools;

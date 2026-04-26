@@ -43,7 +43,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0007-05 Import and Export Reporting Specification](./0007/0007-05-import-export-reporting.md) | Complete |
 | [0008-01 Optimization Engine Core Specification](./0008/0008-01-optimization-engine-core.md) | Open |
 | [0008-02 Weather Integration Data Specification](./0008/0008-02-weather-integration-data.md) | Complete |
-| [0008-03 Topology and Waterway Data Specification](./0008/0008-03-topology-and-waterway-data.md) | Open |
+| [0008-03 Topology and Waterway Data Specification](./0008/0008-03-topology-and-waterway-data.md) | Complete |
 | [0008-04 Optimization & Mapping UI Specification](./0008/0008-04-optimization-mapping-ui.md) | Open |
 | [Spec 0009-01: Backend Architecture Implementation](./0009/0009-01-backend-refactor.md) | Complete |
 | [Specification 0010-01: Database Implementation](./0010/0010-01-database-implementation.md) | Complete |
@@ -71,6 +71,17 @@ The following "Open" specifications will be implemented in the order listed belo
 | 1 | [0009-01 Backend Architecture Refactor](./0009/0009-01-backend-refactor.md) | Complete (Foundation) |
 | 2 | [0004-07 Spreading Equipment Exemptions](./0004/0004-07-spreading-equipment-exemptions.md) | Complete |
 | 3 | [0008-02 Weather Integration Data](./0008/0008-02-weather-integration-data.md) | Complete |
-| 4 | [0008-03 Topology and Waterway Data](./0008/0008-03-topology-and-waterway-data.md) | 0009-01 (PostGIS Setup Required) |
+| 4 | [0008-03 Topology and Waterway Data](./0008/0008-03-topology-and-waterway-data.md) | Complete |
 | 5 | [0008-01 Optimization Engine Core](./0008/0008-01-optimization-engine-core.md) | 0008-02, 0008-03 |
 | 6 | [0008-04 Optimization & Mapping UI](./0008/0008-04-optimization-mapping-ui.md) | 0008-01, 0008-02, 0008-03 |
+
+## PostGIS Requirement
+
+Specifications under PRD 0008 (Spatial Optimization) require the PostGIS extension to be enabled in PostgreSQL.
+
+1.  **Image Update**: The `Makefile` and `docker-compose/postgres.yaml` have been updated to use `postgis/postgis:15-3.3`.
+2.  **Restart Database**: Restart your local database container to use the new image.
+3.  **Enable Extension**: Run the following command against your database:
+    ```sql
+    CREATE EXTENSION postgis;
+    ```
