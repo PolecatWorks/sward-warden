@@ -161,17 +161,21 @@
               <span class="text-sm font-medium text-on-surface">Confirm Soil/Weather Conditions</span>
             </label>
           </div>
-          <div>
+
+          <div *ngIf="!newOrganicManure.is_lesse_applied" class="grid grid-cols-2 gap-4 mt-4">
+             <div>
+               <label class="block text-sm font-medium text-on-surface mb-1">Equipment Used</label>
+               <input type="text" [(ngModel)]="newOrganicManure.equipment_used" name="equipment" placeholder="e.g. Inverted splash plate" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary">
+             </div>
+             <div>
+               <label class="block text-sm font-medium text-on-surface mb-1">LESSE Exemption Reason</label>
+               <input type="text" [(ngModel)]="newOrganicManure.lesse_exemption_reason" name="exemption_reason" placeholder="e.g. Field slope > 15%" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary">
+             </div>
+          </div>
+
+          <div class="mt-4">
              <label class="block text-sm font-medium text-on-surface mb-1">Buffer Zone (m)</label>
              <input type="number" [(ngModel)]="newOrganicManure.buffer_zone_distance_meters" name="buffer" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary">
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">Equipment Used</label>
-            <input type="text" [(ngModel)]="newOrganicManure.equipment_used" name="o_equip" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary">
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">Exemption Reason (if any)</label>
-            <textarea [(ngModel)]="newOrganicManure.exemption_reason" name="o_exempt" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary"></textarea>
           </div>
           <div class="pt-4 flex justify-end gap-3">
             <button type="button" (click)="toggleOrganicManureForm()" class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md">Cancel</button>
@@ -277,9 +281,9 @@
                   <div *ngIf="oma.weight_applied_tonnes_per_ha"><span class="text-on-surface-variant font-medium">Weight:</span> {{ oma.weight_applied_tonnes_per_ha }} t/ha</div>
                   <div *ngIf="oma.nitrogen_content_kg_per_unit"><span class="text-on-surface-variant font-medium">N:</span> {{ oma.nitrogen_content_kg_per_unit }} kg/unit</div>
                   <div *ngIf="oma.is_lesse_applied" class="col-span-2 text-primary font-bold text-[10px] uppercase">LESSE Applied</div>
+                  <div *ngIf="!oma.is_lesse_applied && oma.equipment_used" class="col-span-2 text-on-surface-variant text-[10px]">Equipment: {{ oma.equipment_used }}</div>
+                  <div *ngIf="!oma.is_lesse_applied && oma.lesse_exemption_reason" class="col-span-2 text-error font-medium text-[10px]">Exemption: {{ oma.lesse_exemption_reason }}</div>
                   <div class="col-span-2 text-on-surface-variant text-[10px]">Buffer: {{ oma.buffer_zone_distance_meters }}m</div>
-                  <div *ngIf="oma.equipment_used" class="col-span-2 text-on-surface-variant text-[10px]">Equipment: {{ oma.equipment_used }}</div>
-                  <div *ngIf="oma.exemption_reason" class="col-span-2 text-on-surface-variant text-[10px] italic">Exemption: {{ oma.exemption_reason }}</div>
                 </div>
               </div>
 
@@ -362,8 +366,8 @@
                       <input type="text" [(ngModel)]="editFormData.organicManureApplication.equipment_used" name="editManureEquip" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2">
                     </div>
                     <div>
-                      <label class="block text-xs font-medium text-on-surface mb-1">Exemption Reason</label>
-                      <textarea [(ngModel)]="editFormData.organicManureApplication.exemption_reason" name="editManureExempt" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2"></textarea>
+                      <label class="block text-xs font-medium text-on-surface mb-1">LESSE Exemption Reason</label>
+                      <textarea [(ngModel)]="editFormData.organicManureApplication.lesse_exemption_reason" name="editManureExempt" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2"></textarea>
                     </div>
                   </div>
 

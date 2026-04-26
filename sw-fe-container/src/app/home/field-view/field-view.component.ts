@@ -60,7 +60,7 @@ export class FieldViewComponent implements OnInit {
     weather_conditions_confirmed: false,
     buffer_zone_distance_meters: 10,
     equipment_used: '',
-    exemption_reason: ''
+    lesse_exemption_reason: ''
   };
   organicManureApplications: OrganicManureApplication[] = [];
 
@@ -302,7 +302,7 @@ export class FieldViewComponent implements OnInit {
         weather_conditions_confirmed: this.newOrganicManure.weather_conditions_confirmed,
         buffer_zone_distance_meters: this.newOrganicManure.buffer_zone_distance_meters,
         equipment_used: this.newOrganicManure.equipment_used,
-        exemption_reason: this.newOrganicManure.exemption_reason
+        lesse_exemption_reason: this.newOrganicManure.is_lesse_applied ? '' : this.newOrganicManure.lesse_exemption_reason
       };
 
       this.farmService.addOrganicManureApplication(application as OrganicManureApplication).subscribe(() => {
@@ -319,7 +319,7 @@ export class FieldViewComponent implements OnInit {
           weather_conditions_confirmed: false,
           buffer_zone_distance_meters: 10,
           equipment_used: '',
-          exemption_reason: ''
+          lesse_exemption_reason: ''
         };
       }, error => {
          // Error handled by interceptor or shown via alert

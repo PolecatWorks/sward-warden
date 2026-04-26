@@ -9,7 +9,7 @@ export interface OrganicManureApplication {
   weather_conditions_confirmed?: boolean;
   buffer_zone_distance_meters?: number;
   equipment_used?: string;
-  exemption_reason?: string;
+  lesse_exemption_reason?: string;
   updated_at?: string;
   is_deleted?: boolean;
 }
