@@ -179,3 +179,14 @@ pub struct SwardMovement {
     pub updated_at: Option<DateTime<Utc>>,
     pub is_deleted: Option<bool>,
 }
+
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+pub struct AuditLog {
+    pub id: i32,
+    pub user_id: Option<i64>,
+    pub action: String,
+    pub entity_type: Option<String>,
+    pub entity_id: Option<i64>,
+    pub details: Option<String>,
+    pub created_at: DateTime<Utc>,
+}

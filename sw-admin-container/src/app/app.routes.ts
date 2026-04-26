@@ -3,6 +3,7 @@ import { LayoutComponent } from './components/layout/layout';
 import { DashboardComponent } from './components/dashboard/dashboard';
 import { UserListComponent } from './components/user-list/user-list';
 import { EntityExplorerComponent } from './components/entity-explorer/entity-explorer';
+import { AuditLogComponent } from './components/audit-log/audit-log';
 import { roleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
@@ -14,6 +15,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },
       { path: 'explorer', component: EntityExplorerComponent },
+      { path: 'audit', component: AuditLogComponent },
       {
         path: 'users',
         component: UserListComponent,

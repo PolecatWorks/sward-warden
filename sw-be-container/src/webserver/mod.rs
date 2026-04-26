@@ -16,8 +16,8 @@ use tracing::{Level, info};
 
 use crate::error::MyError;
 use crate::models::{
-    ComplianceBreach, Event, Farm, FarmRecord, FertilisationPlan, FertiliserApplication, Field,
-    OrganicManureApplication, SoilAnalysis, SwardMovement, SyncQuery, SyncResponse, User,
+    AuditLog, ComplianceBreach, Event, Farm, FarmRecord, FertilisationPlan, FertiliserApplication,
+    Field, OrganicManureApplication, SoilAnalysis, SwardMovement, SyncQuery, SyncResponse, User,
 };
 use crate::rules::{
     ValidationResult, validate_fertiliser_application, validate_organic_manure_application,
@@ -31,6 +31,7 @@ pub fn app_router(state: AppState) -> Router {
         .route("/v0/admin/farms", get(admin_list_farms))
         .route("/v0/admin/fields", get(admin_list_fields))
         .route("/v0/admin/events", get(admin_list_events))
+        .route("/v0/admin/audit-logs", get(admin_list_audit_logs))
         .route(
             "/v0/hello",
             get(|| async { Ok::<_, MyError>(Json(serde_json::json!({ "message": "hello" }))) }),
@@ -154,6 +155,16 @@ async fn admin_list_farms(
     _: auth::SupportOnly,
     State(state): State<AppState>,
 ) -> Result<Json<Vec<Farm>>, MyError> {
+    log_admin_action(
+        &state.db_pool,
+        None, // In a real app, we'd get the user ID from auth
+        "list_farms",
+        Some("farm"),
+        None,
+        Some("Admin viewed all farms"),
+    )
+    .await?;
+
     let farms = sqlx::query_as::<_, Farm>("SELECT * FROM farms")
         .fetch_all(&state.db_pool)
         .await?;
@@ -178,6 +189,37 @@ async fn admin_list_events(
         .fetch_all(&state.db_pool)
         .await?;
     Ok(Json(events))
+}
+
+async fn admin_list_audit_logs(
+    _: auth::SupportOnly,
+    State(state): State<AppState>,
+) -> Result<Json<Vec<AuditLog>>, MyError> {
+    let logs = sqlx::query_as::<_, AuditLog>("SELECT * FROM audit_logs ORDER BY created_at DESC")
+        .fetch_all(&state.db_pool)
+        .await?;
+    Ok(Json(logs))
+}
+
+async fn log_admin_action(
+    pool: &sqlx::PgPool,
+    user_id: Option<i64>,
+    action: &str,
+    entity_type: Option<&str>,
+    entity_id: Option<i64>,
+    details: Option<&str>,
+) -> Result<(), sqlx::Error> {
+    sqlx::query(
+        "INSERT INTO audit_logs (user_id, action, entity_type, entity_id, details) VALUES ($1, $2, $3, $4, $5)"
+    )
+    .bind(user_id)
+    .bind(action)
+    .bind(entity_type)
+    .bind(entity_id)
+    .bind(details)
+    .execute(pool)
+    .await?;
+    Ok(())
 }
 
 // ──────────────────────────────────────────────────────────
