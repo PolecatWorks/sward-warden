@@ -1,3 +1,4 @@
+mod auth;
 use axum::{
     Json, Router,
     extract::{Path, Query, State},
@@ -15,8 +16,8 @@ use tracing::{Level, info};
 
 use crate::error::MyError;
 use crate::models::{
-    ComplianceBreach, Event, Farm, FarmRecord, FertilisationPlan, FertiliserApplication, Field,
-    OrganicManureApplication, SoilAnalysis, SwardMovement, SyncQuery, SyncResponse, User,
+    AuditLog, ComplianceBreach, Event, Farm, FarmRecord, FertilisationPlan, FertiliserApplication,
+    Field, OrganicManureApplication, SoilAnalysis, SwardMovement, SyncQuery, SyncResponse, User,
 };
 use crate::rules::{
     ValidationResult, validate_fertiliser_application, validate_organic_manure_application,
@@ -26,6 +27,11 @@ use crate::state::AppState;
 // Central API Router
 pub fn app_router(state: AppState) -> Router {
     Router::new()
+        .route("/v0/admin/health", get(admin_health))
+        .route("/v0/admin/farms", get(admin_list_farms))
+        .route("/v0/admin/fields", get(admin_list_fields))
+        .route("/v0/admin/events", get(admin_list_events))
+        .route("/v0/admin/audit-logs", get(admin_list_audit_logs))
         .route(
             "/v0/hello",
             get(|| async { Ok::<_, MyError>(Json(serde_json::json!({ "message": "hello" }))) }),
@@ -122,7 +128,7 @@ pub async fn start_app_api(state: AppState, ct: CancellationToken) -> Result<(),
 // ──────────────────────────────────────────────────────────
 
 async fn list_users(State(state): State<AppState>) -> Result<Json<Vec<User>>, MyError> {
-    let users = sqlx::query_as::<_, User>("SELECT id, name, email FROM users")
+    let users = sqlx::query_as::<_, User>("SELECT id, name, email, role FROM users")
         .fetch_all(&state.db_pool)
         .await;
     Ok(Json(users?))
@@ -132,13 +138,88 @@ async fn create_user(
     Json(user): Json<User>,
 ) -> Result<Json<User>, MyError> {
     let new_user = sqlx::query_as::<_, User>(
-        "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING id, name, email",
+        "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING id, name, email, role",
     )
     .bind(&user.name)
     .bind(&user.email)
     .fetch_one(&state.db_pool)
     .await;
     Ok(Json(new_user?))
+}
+
+async fn admin_health(_: auth::SupportOnly) -> Result<Json<serde_json::Value>, MyError> {
+    Ok(Json(serde_json::json!({ "status": "ok", "admin": true })))
+}
+
+async fn admin_list_farms(
+    _: auth::SupportOnly,
+    State(state): State<AppState>,
+) -> Result<Json<Vec<Farm>>, MyError> {
+    log_admin_action(
+        &state.db_pool,
+        None, // In a real app, we'd get the user ID from auth
+        "list_farms",
+        Some("farm"),
+        None,
+        Some("Admin viewed all farms"),
+    )
+    .await?;
+
+    let farms = sqlx::query_as::<_, Farm>("SELECT * FROM farms")
+        .fetch_all(&state.db_pool)
+        .await?;
+    Ok(Json(farms))
+}
+
+async fn admin_list_fields(
+    _: auth::SupportOnly,
+    State(state): State<AppState>,
+) -> Result<Json<Vec<Field>>, MyError> {
+    let fields = sqlx::query_as::<_, Field>("SELECT * FROM fields")
+        .fetch_all(&state.db_pool)
+        .await?;
+    Ok(Json(fields))
+}
+
+async fn admin_list_events(
+    _: auth::SupportOnly,
+    State(state): State<AppState>,
+) -> Result<Json<Vec<Event>>, MyError> {
+    let events = sqlx::query_as::<_, Event>("SELECT * FROM events")
+        .fetch_all(&state.db_pool)
+        .await?;
+    Ok(Json(events))
+}
+
+async fn admin_list_audit_logs(
+    _: auth::SupportOnly,
+    State(state): State<AppState>,
+) -> Result<Json<Vec<AuditLog>>, MyError> {
+    let logs = sqlx::query_as::<_, AuditLog>("SELECT * FROM audit_logs ORDER BY created_at DESC")
+        .fetch_all(&state.db_pool)
+        .await?;
+    Ok(Json(logs))
+}
+
+async fn log_admin_action(
+    pool: &sqlx::PgPool,
+    user_id: Option<i64>,
+    action: &str,
+    entity_type: Option<&str>,
+    entity_id: Option<i64>,
+    details: Option<&str>,
+) -> Result<(), sqlx::Error> {
+    sqlx::query(
+        "INSERT INTO audit_logs (user_id, action, entity_type, entity_id, details) VALUES ($1, $2, $3, $4, $5)"
+    )
+    .bind(user_id)
+    .bind(action)
+    .bind(entity_type)
+    .bind(entity_id)
+    .bind(details)
+    .execute(pool)
+    .await?;
+    Ok(())
 }
 
 // ──────────────────────────────────────────────────────────

@@ -2,11 +2,20 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, sqlx::Type)]
+#[sqlx(type_name = "user_role", rename_all = "lowercase")]
+pub enum Role {
+    User,
+    Support,
+    Admin,
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct User {
     pub id: i64,
     pub name: String,
     pub email: String,
+    pub role: Role,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
@@ -169,4 +178,15 @@ pub struct SwardMovement {
     pub contract_length_months: Option<i32>,
     pub updated_at: Option<DateTime<Utc>>,
     pub is_deleted: Option<bool>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+pub struct AuditLog {
+    pub id: i32,
+    pub user_id: Option<i64>,
+    pub action: String,
+    pub entity_type: Option<String>,
+    pub entity_id: Option<i64>,
+    pub details: Option<String>,
+    pub created_at: DateTime<Utc>,
 }

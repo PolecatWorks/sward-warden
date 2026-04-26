@@ -1,6 +1,6 @@
 # Spec 0013-03: User Administration UI
 
-## Status: Open
+## Status: Complete
 
 ## 1. Overview
 Support staff and admins need to view and search for users to provide assistance. This spec details the UI for managing users in the Admin Console.

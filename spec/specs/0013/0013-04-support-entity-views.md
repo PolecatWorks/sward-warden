@@ -1,6 +1,6 @@
 # Spec 0013-04: Support Entity Explorer
 
-## Status: Open
+## Status: Complete
 
 ## 1. Overview
 Support staff need to drill down into a user's data to troubleshoot issues. This spec covers the views for exploring Farms, Fields, Events, and Farm Records associated with a user.

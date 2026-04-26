@@ -79,9 +79,67 @@ async fn test_app_router_hello() {
     assert_eq!(body_str, r#"{"message":"hello"}"#);
 }
 
+#[tokio::test]
+async fn test_admin_health_unauthorized() {
+    let state = get_test_state();
+    let app = app_router(state);
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .uri("/v0/admin/health")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    // No header -> Default role "user" -> Forbidden
+    assert_eq!(response.status(), StatusCode::FORBIDDEN);
+}
+
+#[tokio::test]
+async fn test_admin_health_authorized_support() {
+    let state = get_test_state();
+    let app = app_router(state);
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .uri("/v0/admin/health")
+                .header("X-User-Role", "support")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::OK);
+    let body = response.into_body().collect().await.unwrap().to_bytes();
+    let body_str = String::from_utf8(body.to_vec()).unwrap();
+    assert!(body_str.contains(r#""admin":true"#));
+}
+
+#[tokio::test]
+async fn test_admin_health_authorized_admin() {
+    let state = get_test_state();
+    let app = app_router(state);
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .uri("/v0/admin/health")
+                .header("X-User-Role", "admin")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::OK);
+}
+
 /// Test that the /v0/sync route exists and is reachable.
-/// Since we use a lazy-connect pool, this will fail at the DB layer,
-/// but we verify the route is registered by checking it doesn't return 404.
 #[tokio::test]
 async fn test_sync_route_exists() {
     let state = get_test_state();
@@ -97,7 +155,6 @@ async fn test_sync_route_exists() {
         .await
         .unwrap();
 
-    // The route exists — it will fail with 500 (can't connect to DB) rather than 404
     assert_ne!(response.status(), StatusCode::NOT_FOUND);
 }
 
@@ -117,7 +174,6 @@ async fn test_sync_route_with_since_param() {
         .await
         .unwrap();
 
-    // Route exists and accepts the parameter (DB error, not 404 or 400)
     assert_ne!(response.status(), StatusCode::NOT_FOUND);
     assert_ne!(response.status(), StatusCode::BAD_REQUEST);
 }
