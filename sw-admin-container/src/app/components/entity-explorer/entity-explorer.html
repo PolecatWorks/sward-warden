@@ -1,0 +1,85 @@
+<div class="explorer-container">
+  <header class="section-header">
+    <h2>Entity Explorer</h2>
+    <p>Browse system-wide entities for support purposes.</p>
+  </header>
+
+  <nav class="tabs">
+    <button [class.active]="activeTab() === 'farms'" (click)="setTab('farms')">Farms</button>
+    <button [class.active]="activeTab() === 'fields'" (click)="setTab('fields')">Fields</button>
+    <button [class.active]="activeTab() === 'events'" (click)="setTab('events')">Events</button>
+  </nav>
+
+  <div *ngIf="loading()" class="loading-state">
+    Loading {{ activeTab() }}...
+  </div>
+
+  <div *ngIf="error()" class="error-state">
+    {{ error() }}
+    <button (click)="loadData()">Retry</button>
+  </div>
+
+  <div *ngIf="!loading() && !error()" class="table-container">
+    <!-- Farms Table -->
+    <table *ngIf="activeTab() === 'farms'" class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>User ID</th>
+          <th>Name</th>
+          <th>Location</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let farm of farms()">
+          <td>{{ farm.id }}</td>
+          <td>{{ farm.user_id }}</td>
+          <td>{{ farm.name }}</td>
+          <td>{{ farm.location }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Fields Table -->
+    <table *ngIf="activeTab() === 'fields'" class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Farm ID</th>
+          <th>Name</th>
+          <th>Area (ha)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let field of fields()">
+          <td>{{ field.id }}</td>
+          <td>{{ field.farm_id }}</td>
+          <td>{{ field.name }}</td>
+          <td>{{ field.area_hectares }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Events Table -->
+    <table *ngIf="activeTab() === 'events'" class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Field ID</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let event of events()">
+          <td>{{ event.id }}</td>
+          <td>{{ event.field_id }}</td>
+          <td>{{ event.event_type }}</td>
+          <td>{{ event.description }}</td>
+          <td>{{ event.date }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

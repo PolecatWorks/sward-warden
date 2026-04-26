@@ -28,6 +28,9 @@ use crate::state::AppState;
 pub fn app_router(state: AppState) -> Router {
     Router::new()
         .route("/v0/admin/health", get(admin_health))
+        .route("/v0/admin/farms", get(admin_list_farms))
+        .route("/v0/admin/fields", get(admin_list_fields))
+        .route("/v0/admin/events", get(admin_list_events))
         .route(
             "/v0/hello",
             get(|| async { Ok::<_, MyError>(Json(serde_json::json!({ "message": "hello" }))) }),
@@ -145,6 +148,36 @@ async fn create_user(
 
 async fn admin_health(_: auth::SupportOnly) -> Result<Json<serde_json::Value>, MyError> {
     Ok(Json(serde_json::json!({ "status": "ok", "admin": true })))
+}
+
+async fn admin_list_farms(
+    _: auth::SupportOnly,
+    State(state): State<AppState>,
+) -> Result<Json<Vec<Farm>>, MyError> {
+    let farms = sqlx::query_as::<_, Farm>("SELECT * FROM farms")
+        .fetch_all(&state.db_pool)
+        .await?;
+    Ok(Json(farms))
+}
+
+async fn admin_list_fields(
+    _: auth::SupportOnly,
+    State(state): State<AppState>,
+) -> Result<Json<Vec<Field>>, MyError> {
+    let fields = sqlx::query_as::<_, Field>("SELECT * FROM fields")
+        .fetch_all(&state.db_pool)
+        .await?;
+    Ok(Json(fields))
+}
+
+async fn admin_list_events(
+    _: auth::SupportOnly,
+    State(state): State<AppState>,
+) -> Result<Json<Vec<Event>>, MyError> {
+    let events = sqlx::query_as::<_, Event>("SELECT * FROM events")
+        .fetch_all(&state.db_pool)
+        .await?;
+    Ok(Json(events))
 }
 
 // ──────────────────────────────────────────────────────────
