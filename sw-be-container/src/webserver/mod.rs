@@ -339,7 +339,7 @@ async fn list_organic_manure_applications(
     State(state): State<AppState>,
 ) -> Result<Json<Vec<OrganicManureApplication>>, MyError> {
     let apps = sqlx::query_as::<_, OrganicManureApplication>(
-        "SELECT id, event_id, manure_type, volume_applied_m3_per_ha, weight_applied_tonnes_per_ha, nitrogen_content_kg_per_unit, is_lesse_applied, weather_conditions_confirmed, buffer_zone_distance_meters, equipment_used, exemption_reason, updated_at, is_deleted FROM organic_manure_applications WHERE is_deleted = FALSE"
+        "SELECT id, event_id, manure_type, volume_applied_m3_per_ha, weight_applied_tonnes_per_ha, nitrogen_content_kg_per_unit, is_lesse_applied, weather_conditions_confirmed, buffer_zone_distance_meters, equipment_used, lesse_exemption_reason, updated_at, is_deleted FROM organic_manure_applications WHERE is_deleted = FALSE"
     )
     .fetch_all(&state.db_pool)
     .await;

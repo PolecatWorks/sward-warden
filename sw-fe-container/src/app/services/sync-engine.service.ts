@@ -726,6 +726,8 @@ export class SyncEngineService implements OnDestroy {
           is_lesse_applied: sApp.is_lesse_applied,
           weather_conditions_confirmed: sApp.weather_conditions_confirmed,
           buffer_zone_distance_meters: sApp.buffer_zone_distance_meters,
+          equipment_used: sApp.equipment_used,
+          lesse_exemption_reason: sApp.lesse_exemption_reason,
           updatedAt: sApp.updated_at || new Date().toISOString(),
           syncStatus: 'synced',
         });
@@ -741,6 +743,8 @@ export class SyncEngineService implements OnDestroy {
           is_lesse_applied: sApp.is_lesse_applied,
           weather_conditions_confirmed: sApp.weather_conditions_confirmed,
           buffer_zone_distance_meters: sApp.buffer_zone_distance_meters,
+          equipment_used: sApp.equipment_used,
+          lesse_exemption_reason: sApp.lesse_exemption_reason,
           syncStatus: 'synced',
           updatedAt: sApp.updated_at || new Date().toISOString(),
         });
