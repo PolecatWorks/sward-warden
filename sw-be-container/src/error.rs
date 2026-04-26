@@ -18,6 +18,10 @@ pub enum MyError {
     BadRequest(String),
     #[error("Service Cancelled")]
     Cancelled,
+    #[error("Unauthorized `{0}`")]
+    Unauthorized(String),
+    #[error("Forbidden `{0}`")]
+    Forbidden(String),
 
     #[error("HaMs error `{0}`")]
     HamsError(#[from] HamsError),
@@ -77,6 +81,8 @@ impl axum::response::IntoResponse for MyError {
                 reqwest::StatusCode::INTERNAL_SERVER_ERROR,
                 "Cancelled".to_string(),
             ),
+            MyError::Unauthorized(msg) => (reqwest::StatusCode::UNAUTHORIZED, msg.to_string()),
+            MyError::Forbidden(msg) => (reqwest::StatusCode::FORBIDDEN, msg.to_string()),
             MyError::HamsError(_error) => (
                 reqwest::StatusCode::INTERNAL_SERVER_ERROR,
                 "Hams Error".to_string(),

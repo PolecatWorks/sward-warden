@@ -1,6 +1,6 @@
 # Spec 0013-02: Backend Role-Based Access Control (RBAC)
 
-## Status: Open
+## Status: Complete
 
 ## 1. Overview
 The Administration Console requires specific permissions. This spec details the implementation of `Admin` and `Support` roles in the backend to restrict access to administrative APIs.

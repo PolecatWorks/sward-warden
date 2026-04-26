@@ -2,11 +2,20 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, sqlx::Type)]
+#[sqlx(type_name = "user_role", rename_all = "lowercase")]
+pub enum Role {
+    User,
+    Support,
+    Admin,
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct User {
     pub id: i64,
     pub name: String,
     pub email: String,
+    pub role: Role,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]

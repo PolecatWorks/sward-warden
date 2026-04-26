@@ -1,3 +1,4 @@
+mod auth;
 use axum::{
     Json, Router,
     extract::{Path, Query, State},
@@ -26,6 +27,7 @@ use crate::state::AppState;
 // Central API Router
 pub fn app_router(state: AppState) -> Router {
     Router::new()
+        .route("/v0/admin/health", get(admin_health))
         .route(
             "/v0/hello",
             get(|| async { Ok::<_, MyError>(Json(serde_json::json!({ "message": "hello" }))) }),
@@ -122,7 +124,7 @@ pub async fn start_app_api(state: AppState, ct: CancellationToken) -> Result<(),
 // ──────────────────────────────────────────────────────────
 
 async fn list_users(State(state): State<AppState>) -> Result<Json<Vec<User>>, MyError> {
-    let users = sqlx::query_as::<_, User>("SELECT id, name, email FROM users")
+    let users = sqlx::query_as::<_, User>("SELECT id, name, email, role FROM users")
         .fetch_all(&state.db_pool)
         .await;
     Ok(Json(users?))
@@ -132,13 +134,17 @@ async fn create_user(
     Json(user): Json<User>,
 ) -> Result<Json<User>, MyError> {
     let new_user = sqlx::query_as::<_, User>(
-        "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING id, name, email",
+        "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING id, name, email, role",
     )
     .bind(&user.name)
     .bind(&user.email)
     .fetch_one(&state.db_pool)
     .await;
     Ok(Json(new_user?))
+}
+
+async fn admin_health(_: auth::SupportOnly) -> Result<Json<serde_json::Value>, MyError> {
+    Ok(Json(serde_json::json!({ "status": "ok", "admin": true })))
 }
 
 // ──────────────────────────────────────────────────────────

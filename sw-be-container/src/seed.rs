@@ -8,11 +8,19 @@ pub async fn seed_database(pool: &PgPool, user_id: i64) -> Result<(), MyError> {
 
     // Ensure user exists
     sqlx::query(
-        "INSERT INTO users (id, name, email) VALUES ($1, $2, $3) ON CONFLICT (id) DO NOTHING"
+        "INSERT INTO users (id, name, email, role) VALUES ($1, $2, $3, 'user') ON CONFLICT (id) DO NOTHING"
     ).bind(user_id).bind("Demo User").bind(format!("user{}@example.com", user_id))
     .execute(pool)
     .await
     .map_err(|e| MyError::Message(format!("Failed to ensure user: {e}")))?;
+
+    // Ensure admin user exists
+    sqlx::query(
+        "INSERT INTO users (id, name, email, role) VALUES ($1, $2, $3, 'admin') ON CONFLICT (id) DO NOTHING"
+    ).bind(999i64).bind("Demo Admin").bind("admin@example.com")
+    .execute(pool)
+    .await
+    .map_err(|e| MyError::Message(format!("Failed to ensure admin user: {e}")))?;
 
     for i in 1..=3 {
         let farm_name = format!("Farm {}", i);
