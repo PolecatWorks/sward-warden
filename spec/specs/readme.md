@@ -45,7 +45,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0008-02 Weather Integration Data Specification](./0008/0008-02-weather-integration-data.md) | Open |
 | [0008-03 Topology and Waterway Data Specification](./0008/0008-03-topology-and-waterway-data.md) | Open |
 | [0008-04 Optimization & Mapping UI Specification](./0008/0008-04-optimization-mapping-ui.md) | Open |
-| [Spec 0009-01: Backend Architecture Implementation](./0009/0009-01-backend-refactor.md) | Open |
+| [Spec 0009-01: Backend Architecture Implementation](./0009/0009-01-backend-refactor.md) | Complete |
 | [Specification 0010-01: Database Implementation](./0010/0010-01-database-implementation.md) | Complete |
 | [Specification 0011-01: RxDB Local Database Setup](./0011/0011-01-rxdb-local-database.md) | Complete |
 | [Specification 0011-02: Network Status and Sync UI](./0011/0011-02-network-status-ui.md) | Complete |
@@ -68,7 +68,7 @@ The following "Open" specifications will be implemented in the order listed belo
 
 | Order | Specification | Primary Dependency |
 | :--- | :--- | :--- |
-| 1 | [0009-01 Backend Architecture Refactor](./0009/0009-01-backend-refactor.md) | None (Foundation) |
+| 1 | [0009-01 Backend Architecture Refactor](./0009/0009-01-backend-refactor.md) | Complete (Foundation) |
 | 2 | [0004-07 Spreading Equipment Exemptions](./0004/0004-07-spreading-equipment-exemptions.md) | 0009-01 (Backend Pattern) |
 | 3 | [0008-02 Weather Integration Data](./0008/0008-02-weather-integration-data.md) | 0009-01 (Backend Pattern) |
 | 4 | [0008-03 Topology and Waterway Data](./0008/0008-03-topology-and-waterway-data.md) | 0009-01 (PostGIS Setup Required) |

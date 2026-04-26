@@ -5,7 +5,7 @@ use tracing::{info, warn};
 
 use crate::{
     config::{AppConfig, StartupCheckConfig},
-    error::MyError,
+    error::AppError,
 };
 
 /// Executes an asynchronous check with a retry mechanism.
@@ -22,15 +22,15 @@ use crate::{
 ///
 /// # Errors
 ///
-/// Returns `MyError` if the check fails after all configured attempts.
+/// Returns `AppError` if the check fails after all configured attempts.
 pub async fn run_check<G, F, T>(
     name: String,
     config: &StartupCheckConfig,
     mut make_future: G,
-) -> Result<T, MyError>
+) -> Result<T, AppError>
 where
     G: FnMut() -> F, // G is a generator that creates futures
-    F: Future<Output = Result<T, MyError>>,
+    F: Future<Output = Result<T, AppError>>,
 {
     info!("Running check: {name}");
 
@@ -61,13 +61,13 @@ where
         }
     }
 
-    Err(MyError::Message(format!(
+    Err(AppError::Message(format!(
         "Check {} failed after {} attempts",
         name, config.fails
     )))
 }
 
-pub async fn run_startup_checks(config: &AppConfig, db_pool: &sqlx::PgPool) -> Result<(), MyError> {
+pub async fn run_startup_checks(config: &AppConfig, db_pool: &sqlx::PgPool) -> Result<(), AppError> {
     let _checks_config = &config.startup_checks;
     let mut futures = Vec::new();
 
@@ -81,8 +81,8 @@ pub async fn run_startup_checks(config: &AppConfig, db_pool: &sqlx::PgPool) -> R
                 async move {
                     pool.acquire()
                         .await
-                        .map_err(|e| MyError::Message(format!("DB Check Failed: {}", e)))?;
-                    Ok::<(), MyError>(())
+                        .map_err(|e| AppError::Message(format!("DB Check Failed: {}", e)))?;
+                    Ok::<(), AppError>(())
                 }
             },
         )
@@ -111,7 +111,7 @@ mod tests {
         };
 
         let result = run_check("test".to_string(), &config, || async {
-            Ok::<i32, MyError>(42)
+            Ok::<i32, AppError>(42)
         })
         .await;
 
@@ -135,9 +135,9 @@ mod tests {
                 let mut attempts = attempts.lock().unwrap();
                 *attempts += 1;
                 if *attempts < 3 {
-                    Err(MyError::Message("fail".to_string()))
+                    Err(AppError::Message("fail".to_string()))
                 } else {
-                    Ok::<i32, MyError>(42)
+                    Ok::<i32, AppError>(42)
                 }
             }
         })
@@ -163,14 +163,14 @@ mod tests {
             async move {
                 let mut attempts = attempts.lock().unwrap();
                 *attempts += 1;
-                Err::<i32, MyError>(MyError::Message("fail".to_string()))
+                Err::<i32, AppError>(AppError::Message("fail".to_string()))
             }
         })
         .await;
 
         match result {
-            Err(MyError::Message(msg)) => assert_eq!(msg, "Check test failed after 3 attempts"),
-            _ => panic!("Expected MyError::Message"),
+            Err(AppError::Message(msg)) => assert_eq!(msg, "Check test failed after 3 attempts"),
+            _ => panic!("Expected AppError::Message"),
         }
         assert_eq!(*attempts.lock().unwrap(), 3);
     }

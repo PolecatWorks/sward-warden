@@ -3,7 +3,7 @@
 //! The provides two functions one function run_in_tokio creates and sends the function to tokio.
 //! The second function run_in_tokio_with_cancel allows the creation of a CancellationToken which can be used to shut down the tokio async.
 
-use crate::error::MyError;
+use crate::error::AppError;
 use futures::Future;
 use tracing::{error, info};
 
@@ -28,13 +28,13 @@ impl Default for ThreadRuntime {
     }
 }
 
-pub fn rt_multithreaded(runtime: &ThreadRuntime) -> Result<Runtime, MyError> {
+pub fn rt_multithreaded(runtime: &ThreadRuntime) -> Result<Runtime, AppError> {
     if runtime.threads == 0 {
         runtime::Builder::new_current_thread()
             .enable_io()
             .enable_time()
             .build()
-            .map_err(MyError::from)
+            .map_err(AppError::from)
     } else {
         runtime::Builder::new_multi_thread()
             .worker_threads(runtime.threads)
@@ -43,14 +43,14 @@ pub fn rt_multithreaded(runtime: &ThreadRuntime) -> Result<Runtime, MyError> {
             .enable_io()
             .enable_time()
             .build()
-            .map_err(MyError::from)
+            .map_err(AppError::from)
     }
 }
 
 /// run async function inside tokio instance on current thread
 pub fn run_in_tokio<F, T>(runtime: &ThreadRuntime, my_function: F) -> F::Output
 where
-    F: Future<Output = Result<T, MyError>>,
+    F: Future<Output = Result<T, AppError>>,
 {
     info!("Starting Tokio: {}", runtime.name);
 
@@ -66,13 +66,13 @@ pub fn run_in_tokio_with_cancel<F, T>(
     my_function: F,
 ) -> F::Output
 where
-    F: Future<Output = Result<T, MyError>>,
+    F: Future<Output = Result<T, AppError>>,
 {
     run_in_tokio(runtime, async {
         tokio::select! {
             _ = cancel.cancelled() => {
                 error!("Token cancelled");
-                Err(MyError::Cancelled)
+                Err(AppError::Cancelled)
             },
             z = my_function => {
                 eprintln!("Completed function");
@@ -115,7 +115,7 @@ mod tests {
     #[test]
     fn test_run_in_tokio_success() {
         let runtime = ThreadRuntime::default();
-        let result = run_in_tokio(&runtime, async { Ok::<i32, MyError>(100) });
+        let result = run_in_tokio(&runtime, async { Ok::<i32, AppError>(100) });
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), 100);
     }
@@ -125,7 +125,7 @@ mod tests {
         let runtime = ThreadRuntime::default();
         let cancel = CancellationToken::new();
 
-        let result = run_in_tokio_with_cancel(&runtime, cancel, async { Ok::<i32, MyError>(200) });
+        let result = run_in_tokio_with_cancel(&runtime, cancel, async { Ok::<i32, AppError>(200) });
 
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), 200);
@@ -140,13 +140,13 @@ mod tests {
         let result = run_in_tokio_with_cancel(&runtime, cancel, async move {
             cancel_clone.cancel();
             sleep(Duration::from_millis(50)).await;
-            Ok::<i32, MyError>(300)
+            Ok::<i32, AppError>(300)
         });
 
         assert!(result.is_err());
         match result.unwrap_err() {
-            MyError::Cancelled => (), // Expected
-            _ => panic!("Expected MyError::Cancelled"),
+            AppError::Cancelled => (), // Expected
+            _ => panic!("Expected AppError::Cancelled"),
         }
     }
 }

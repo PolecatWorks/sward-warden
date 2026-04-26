@@ -1,9 +1,9 @@
-use crate::error::MyError;
+use crate::error::AppError;
 use chrono::Utc;
 use sqlx::PgPool;
 use tracing::info;
 
-pub async fn seed_database(pool: &PgPool, user_id: i64) -> Result<(), MyError> {
+pub async fn seed_database(pool: &PgPool, user_id: i64) -> Result<(), AppError> {
     info!("Seeding database for user_id: {}", user_id);
 
     // Ensure user exists
@@ -12,7 +12,7 @@ pub async fn seed_database(pool: &PgPool, user_id: i64) -> Result<(), MyError> {
     ).bind(user_id).bind("Demo User").bind(format!("user{}@example.com", user_id))
     .execute(pool)
     .await
-    .map_err(|e| MyError::Message(format!("Failed to ensure user: {e}")))?;
+    .map_err(|e| AppError::Message(format!("Failed to ensure user: {e}")))?;
 
     // Ensure admin user exists
     sqlx::query(
@@ -20,7 +20,7 @@ pub async fn seed_database(pool: &PgPool, user_id: i64) -> Result<(), MyError> {
     ).bind(999i64).bind("Demo Admin").bind("admin@example.com")
     .execute(pool)
     .await
-    .map_err(|e| MyError::Message(format!("Failed to ensure admin user: {e}")))?;
+    .map_err(|e| AppError::Message(format!("Failed to ensure admin user: {e}")))?;
 
     for i in 1..=3 {
         let farm_name = format!("Farm {}", i);
@@ -31,7 +31,7 @@ pub async fn seed_database(pool: &PgPool, user_id: i64) -> Result<(), MyError> {
         ).bind(user_id).bind(farm_name).bind(location).bind(Utc::now())
         .fetch_one(pool)
         .await
-        .map_err(|e| MyError::Message(format!("Failed to insert farm: {e}")))?;
+        .map_err(|e| AppError::Message(format!("Failed to insert farm: {e}")))?;
 
 
         for j in 1..=5 {
@@ -43,7 +43,7 @@ pub async fn seed_database(pool: &PgPool, user_id: i64) -> Result<(), MyError> {
             ).bind(farm_id).bind(field_name).bind(area).bind(Utc::now())
             .fetch_one(pool)
             .await
-            .map_err(|e| MyError::Message(format!("Failed to insert field: {e}")))?;
+            .map_err(|e| AppError::Message(format!("Failed to insert field: {e}")))?;
 
 
             for k in 1..=10 {
@@ -56,7 +56,7 @@ pub async fn seed_database(pool: &PgPool, user_id: i64) -> Result<(), MyError> {
                 ).bind(field_id).bind(event_type).bind(description).bind(date).bind(Utc::now())
                 .execute(pool)
                 .await
-                .map_err(|e| MyError::Message(format!("Failed to insert event: {e}")))?;
+                .map_err(|e| AppError::Message(format!("Failed to insert event: {e}")))?;
             }
         }
     }
