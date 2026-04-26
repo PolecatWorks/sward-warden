@@ -95,3 +95,85 @@ pub async fn run_startup_checks(config: &AppConfig, db_pool: &sqlx::PgPool) -> R
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::sync::{Arc, Mutex};
+    use std::time::Duration;
+
+    #[tokio::test]
+    async fn test_run_check_success_first_try() {
+        let config = StartupCheckConfig {
+            fails: 3,
+            timeout: Duration::from_millis(1),
+            enabled: true,
+        };
+
+        let result = run_check(
+            "test".to_string(),
+            &config,
+            || async { Ok::<i32, MyError>(42) },
+        )
+        .await;
+
+        assert_eq!(result.unwrap(), 42);
+    }
+
+    #[tokio::test]
+    async fn test_run_check_success_after_retries() {
+        let config = StartupCheckConfig {
+            fails: 3,
+            timeout: Duration::from_millis(1),
+            enabled: true,
+        };
+
+        let attempts = Arc::new(Mutex::new(0));
+        let attempts_clone = attempts.clone();
+
+        let result = run_check("test".to_string(), &config, || {
+            let attempts = attempts_clone.clone();
+            async move {
+                let mut attempts = attempts.lock().unwrap();
+                *attempts += 1;
+                if *attempts < 3 {
+                    Err(MyError::Message("fail".to_string()))
+                } else {
+                    Ok::<i32, MyError>(42)
+                }
+            }
+        })
+        .await;
+
+        assert_eq!(result.unwrap(), 42);
+        assert_eq!(*attempts.lock().unwrap(), 3);
+    }
+
+    #[tokio::test]
+    async fn test_run_check_failure() {
+        let config = StartupCheckConfig {
+            fails: 3,
+            timeout: Duration::from_millis(1),
+            enabled: true,
+        };
+
+        let attempts = Arc::new(Mutex::new(0));
+        let attempts_clone = attempts.clone();
+
+        let result = run_check("test".to_string(), &config, || {
+            let attempts = attempts_clone.clone();
+            async move {
+                let mut attempts = attempts.lock().unwrap();
+                *attempts += 1;
+                Err::<i32, MyError>(MyError::Message("fail".to_string()))
+            }
+        })
+        .await;
+
+        match result {
+            Err(MyError::Message(msg)) => assert_eq!(msg, "Check test failed after 3 attempts"),
+            _ => panic!("Expected MyError::Message"),
+        }
+        assert_eq!(*attempts.lock().unwrap(), 3);
+    }
+}
