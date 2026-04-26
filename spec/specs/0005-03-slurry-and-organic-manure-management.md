@@ -1,6 +1,6 @@
 # 0005-04 Sward and Organic Manure Management Specification
 
-**State**: Open
+**State**: Complete
 
 ## Scope
 This specification covers the implementation details for Sward and Organic Manure Management under the Farm Sustainability Standards (FSS) as outlined in PRD 0005.

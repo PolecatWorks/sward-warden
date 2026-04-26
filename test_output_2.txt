@@ -1,0 +1,180 @@
+cd sw-fe-container && npm install
+
+up to date, audited 1049 packages in 2s
+
+204 packages are looking for funding
+  run `npm fund` for details
+
+48 vulnerabilities (6 low, 13 moderate, 29 high)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+cd sw-fe-container && npm test -- --watch=false --browsers=ChromeHeadless
+
+> temp-app@0.0.0 test
+> ng test --watch=false --browsers=ChromeHeadless
+
+Node.js version v25.2.1 detected.
+Odd numbered Node.js versions will not enter LTS status and should not be used for production. For more information, please see https://nodejs.org/en/about/previous-releases/.
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+26 04 2026 09:07:59.504:INFO [karma-server]: Karma v6.4.4 server started at http://localhost:9876/
+26 04 2026 09:07:59.505:INFO [launcher]: Launching browsers ChromeHeadless with concurrency unlimited
+26 04 2026 09:07:59.508:INFO [launcher]: Starting browser ChromeHeadless
+26 04 2026 09:08:01.066:INFO [Chrome Headless 147.0.0.0 (Mac OS 10.15.7)]: Connected on socket S9qpkhVoDq3OivfHAAAB with id 73918526
+Chrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 0 of 112 SUCCESS (0 secs / 0 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 1 of 112 SUCCESS (0 secs / 0.005 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 2 of 112 SUCCESS (0 secs / 0.006 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 3 of 112 SUCCESS (0 secs / 0.006 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 4 of 112 SUCCESS (0 secs / 0.007 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 5 of 112 SUCCESS (0 secs / 0.008 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 6 of 112 SUCCESS (0 secs / 0.042 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 7 of 112 SUCCESS (0 secs / 0.206 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 8 of 112 SUCCESS (0 secs / 0.359 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 9 of 112 SUCCESS (0 secs / 0.448 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 10 of 112 SUCCESS (0 secs / 0.601 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 11 of 112 SUCCESS (0 secs / 0.756 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 12 of 112 SUCCESS (0 secs / 0.909 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 13 of 112 SUCCESS (0 secs / 1.056 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 14 of 112 SUCCESS (0 secs / 1.206 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 15 of 112 SUCCESS (0 secs / 1.353 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 16 of 112 SUCCESS (0 secs / 1.445 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 17 of 112 SUCCESS (0 secs / 1.6 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 18 of 112 SUCCESS (0 secs / 1.813 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 19 of 112 SUCCESS (0 secs / 1.962 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 20 of 112 SUCCESS (0 secs / 2.112 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 21 of 112 SUCCESS (0 secs / 2.264 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 22 of 112 SUCCESS (0 secs / 2.265 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 23 of 112 SUCCESS (0 secs / 2.265 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 24 of 112 SUCCESS (0 secs / 2.265 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 25 of 112 SUCCESS (0 secs / 2.265 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 26 of 112 SUCCESS (0 secs / 2.276 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 27 of 112 SUCCESS (0 secs / 2.281 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 28 of 112 SUCCESS (0 secs / 2.282 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 29 of 112 SUCCESS (0 secs / 2.286 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 30 of 112 SUCCESS (0 secs / 2.305 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 31 of 112 SUCCESS (0 secs / 2.309 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 32 of 112 SUCCESS (0 secs / 2.312 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 33 of 112 SUCCESS (0 secs / 2.319 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 34 of 112 SUCCESS (0 secs / 2.332 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 35 of 112 SUCCESS (0 secs / 2.338 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 36 of 112 SUCCESS (0 secs / 2.34 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 37 of 112 SUCCESS (0 secs / 2.341 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 38 of 112 SUCCESS (0 secs / 2.342 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 39 of 112 SUCCESS (0 secs / 2.345 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 40 of 112 SUCCESS (0 secs / 2.352 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 41 of 112 SUCCESS (0 secs / 2.353 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 42 of 112 SUCCESS (0 secs / 2.365 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 43 of 112 SUCCESS (0 secs / 2.369 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 44 of 112 SUCCESS (0 secs / 2.372 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 45 of 112 SUCCESS (0 secs / 2.382 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 46 of 112 SUCCESS (0 secs / 2.388 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 47 of 112 SUCCESS (0 secs / 2.39 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 48 of 112 SUCCESS (0 secs / 2.393 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 49 of 112 SUCCESS (0 secs / 2.407 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 50 of 112 SUCCESS (0 secs / 2.41 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 51 of 112 SUCCESS (0 secs / 2.411 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 52 of 112 SUCCESS (0 secs / 2.413 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 53 of 112 SUCCESS (0 secs / 2.413 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 54 of 112 SUCCESS (0 secs / 2.414 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 55 of 112 SUCCESS (0 secs / 2.417 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 56 of 112 SUCCESS (0 secs / 2.418 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 57 of 112 SUCCESS (0 secs / 2.419 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 58 of 112 SUCCESS (0 secs / 2.421 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 59 of 112 SUCCESS (0 secs / 2.422 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 60 of 112 SUCCESS (0 secs / 2.424 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 61 of 112 SUCCESS (0 secs / 2.426 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 62 of 112 SUCCESS (0 secs / 2.427 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 63 of 112 SUCCESS (0 secs / 2.429 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 64 of 112 SUCCESS (0 secs / 2.431 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 65 of 112 SUCCESS (0 secs / 2.433 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 66 of 112 SUCCESS (0 secs / 2.435 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 67 of 112 SUCCESS (0 secs / 2.436 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 68 of 112 SUCCESS (0 secs / 2.438 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 69 of 112 SUCCESS (0 secs / 2.439 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 70 of 112 SUCCESS (0 secs / 2.44 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 71 of 112 SUCCESS (0 secs / 2.44 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 72 of 112 SUCCESS (0 secs / 2.44 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 73 of 112 SUCCESS (0 secs / 2.44 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 74 of 112 SUCCESS (0 secs / 2.44 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 75 of 112 SUCCESS (0 secs / 2.443 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 76 of 112 SUCCESS (0 secs / 2.534 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 77 of 112 SUCCESS (0 secs / 2.624 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 78 of 112 SUCCESS (0 secs / 2.718 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 79 of 112 SUCCESS (0 secs / 2.808 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 80 of 112 SUCCESS (0 secs / 2.9 secs)
+[1A[2KWARN: 'Spec 'FarmManagementService deleteEntity should not throw when deleting a non-existent farm' has no expectations.'
+Chrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 80 of 112 SUCCESS (0 secs / 2.9 secs)
+WARN: 'Spec 'FarmManagementService deleteEntity should not throw when deleting a non-existent farm' has no expectations.'
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 81 of 112 SUCCESS (0 secs / 2.989 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 82 of 112 SUCCESS (0 secs / 3.081 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 83 of 112 SUCCESS (0 secs / 3.176 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 84 of 112 SUCCESS (0 secs / 3.267 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 85 of 112 SUCCESS (0 secs / 3.267 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 86 of 112 SUCCESS (0 secs / 3.268 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 87 of 112 SUCCESS (0 secs / 3.268 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 88 of 112 SUCCESS (0 secs / 3.269 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 89 of 112 SUCCESS (0 secs / 3.269 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 90 of 112 SUCCESS (0 secs / 3.269 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 91 of 112 SUCCESS (0 secs / 3.27 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 92 of 112 SUCCESS (0 secs / 3.274 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 93 of 112 SUCCESS (0 secs / 3.285 secs)
+[1A[2KWARN: '-------------- RxDB Open Core RxStorage -------------------------------
+You are using the free Dexie.js based RxStorage implementation from RxDB https://rxdb.info/rx-storage-dexie.html?console=dexie
+While this is a great option, we want to let you know that there are faster storage solutions available in our premium plugins.
+For professional users and production environments, we highly recommend considering these premium options to enhance performance and reliability.
+ https://rxdb.info/premium/?console=dexie
+If you already purchased premium access you can disable this log by calling the setPremiumFlag() function from rxdb-premium/plugins/shared.
+---------------------------------------------------------------------'
+Chrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 93 of 112 SUCCESS (0 secs / 3.285 secs)
+WARN: '-------------- RxDB Open Core RxStorage -------------------------------
+You are using the free Dexie.js based RxStorage implementation from RxDB https://rxdb.info/rx-storage-dexie.html?console=dexie
+While this is a great option, we want to let you know that there are faster storage solutions available in our premium plugins.
+For professional users and production environments, we highly recommend considering these premium options to enhance performance and reliability.
+ https://rxdb.info/premium/?console=dexie
+If you already purchased premium access you can disable this log by calling the setPremiumFlag() function from rxdb-premium/plugins/shared.
+---------------------------------------------------------------------'
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 94 of 112 SUCCESS (0 secs / 3.288 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 95 of 112 SUCCESS (0 secs / 3.29 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 96 of 112 SUCCESS (0 secs / 3.293 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 97 of 112 SUCCESS (0 secs / 3.384 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 98 of 112 SUCCESS (0 secs / 3.474 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 99 of 112 SUCCESS (0 secs / 3.565 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 100 of 112 SUCCESS (0 secs / 3.653 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 101 of 112 SUCCESS (0 secs / 3.746 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 102 of 112 SUCCESS (0 secs / 3.839 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 103 of 112 SUCCESS (0 secs / 3.931 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 104 of 112 SUCCESS (0 secs / 4.023 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 105 of 112 SUCCESS (0 secs / 4.123 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 106 of 112 SUCCESS (0 secs / 4.126 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 107 of 112 SUCCESS (0 secs / 4.134 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 108 of 112 SUCCESS (0 secs / 4.138 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7) SwardMovementsComponent should create FAILED
+	TypeError: Cannot read properties of undefined (reading 'subscribe')
+	    at SwardMovementsComponent.call [as ngOnInit] (src/app/home/sward-movements/sward-movements.component.ts:41:23)
+	    at callHookInternal (node_modules/@angular/core/fesm2022/core.mjs:5154:14)
+	    at callHook (node_modules/@angular/core/fesm2022/core.mjs:5181:13)
+	    at callHooks (node_modules/@angular/core/fesm2022/core.mjs:5135:17)
+	    at executeInitAndCheckHooks (node_modules/@angular/core/fesm2022/core.mjs:5085:9)
+	    at refreshView (node_modules/@angular/core/fesm2022/core.mjs:13792:21)
+	    at detectChangesInView (node_modules/@angular/core/fesm2022/core.mjs:13993:9)
+	    at detectChangesInViewWhileDirty (node_modules/@angular/core/fesm2022/core.mjs:13688:9)
+	    at detectChangesInternal (node_modules/@angular/core/fesm2022/core.mjs:13667:9)
+	    at ViewRef$1.detectChanges (node_modules/@angular/core/fesm2022/core.mjs:14297:9)
+Chrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 109 of 112 (1 FAILED) (0 secs / 4.149 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 110 of 112 (1 FAILED) (0 secs / 4.152 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 111 of 112 (1 FAILED) (0 secs / 4.161 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 112 of 112 (1 FAILED) (0 secs / 4.179 secs)
+[1A[2KChrome Headless 147.0.0.0 (Mac OS 10.15.7): Executed 112 of 112 (1 FAILED) (4.272 secs / 4.179 secs)
+TOTAL: 1 FAILED, 111 SUCCESS
+✔ Browser application bundle generation complete.
+✔ Browser application bundle generation complete.
+make: *** [sw-fe-test] Error 1

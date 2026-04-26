@@ -29,6 +29,10 @@ interface SyncResponse {
   farm_records: any[];
   soil_analyses: any[];
   fertilisation_plans: any[];
+  fertiliser_applications: any[];
+  organic_manure_applications: any[];
+  compliance_breaches: any[];
+  sward_movements: any[];
 }
 
 /**
@@ -199,6 +203,9 @@ export class SyncEngineService implements OnDestroy {
       await this.upsertSoilAnalyses(db, response.soil_analyses || []);
       await this.upsertFertilisationPlans(db, response.fertilisation_plans || []);
       await this.upsertFarmRecords(db, response.farm_records || []);
+      await this.upsertOrganicManureApplications(db, response.organic_manure_applications || []);
+      await this.upsertComplianceBreaches(db, response.compliance_breaches || []);
+      await this.upsertSwardMovements(db, response.sward_movements || []);
 
       // Update checkpoint
       if (response.checkpoint) {
@@ -688,6 +695,175 @@ export class SyncEngineService implements OnDestroy {
     if (idsToRemove.length > 0) await db.farm_records.bulkRemove(idsToRemove);
     if (toUpsert.length > 0) await db.farm_records.bulkUpsert(toUpsert);
   }
+
+  private async upsertOrganicManureApplications(db: SwardDatabase, serverApps: any[]): Promise<void> {
+    if (!serverApps || serverApps.length === 0) return;
+    const serverIds = serverApps.map(a => a.id);
+    const existingDocs = await db.organic_manure_applications.find({ selector: { serverId: { $in: serverIds } } }).exec();
+    const existingMap = new Map(existingDocs.map(d => [d.serverId, d]));
+
+    const toUpsert: any[] = [];
+    const idsToRemove: string[] = [];
+
+    for (const sApp of serverApps) {
+      const localDoc = existingMap.get(sApp.id);
+      if (sApp.is_deleted) {
+        if (localDoc && localDoc.syncStatus !== 'pending') idsToRemove.push(localDoc.id);
+        continue;
+      }
+
+      if (localDoc) {
+        const localUpdatedAt = new Date(localDoc.updatedAt).getTime();
+        const serverUpdatedAt = sApp.updated_at ? new Date(sApp.updated_at).getTime() : 0;
+        if (localDoc.syncStatus === 'pending' && localUpdatedAt > serverUpdatedAt) continue;
+        toUpsert.push({
+          ...localDoc.toJSON(),
+          event_id: sApp.event_id,
+          manure_type: sApp.manure_type,
+          volume_applied_m3_per_ha: sApp.volume_applied_m3_per_ha,
+          weight_applied_tonnes_per_ha: sApp.weight_applied_tonnes_per_ha,
+          nitrogen_content_kg_per_unit: sApp.nitrogen_content_kg_per_unit,
+          is_lesse_applied: sApp.is_lesse_applied,
+          weather_conditions_confirmed: sApp.weather_conditions_confirmed,
+          buffer_zone_distance_meters: sApp.buffer_zone_distance_meters,
+          updatedAt: sApp.updated_at || new Date().toISOString(),
+          syncStatus: 'synced',
+        });
+      } else {
+        toUpsert.push({
+          id: generateLocalId(),
+          serverId: sApp.id,
+          event_id: sApp.event_id,
+          manure_type: sApp.manure_type,
+          volume_applied_m3_per_ha: sApp.volume_applied_m3_per_ha,
+          weight_applied_tonnes_per_ha: sApp.weight_applied_tonnes_per_ha,
+          nitrogen_content_kg_per_unit: sApp.nitrogen_content_kg_per_unit,
+          is_lesse_applied: sApp.is_lesse_applied,
+          weather_conditions_confirmed: sApp.weather_conditions_confirmed,
+          buffer_zone_distance_meters: sApp.buffer_zone_distance_meters,
+          syncStatus: 'synced',
+          updatedAt: sApp.updated_at || new Date().toISOString(),
+        });
+      }
+    }
+    if (idsToRemove.length > 0) await db.organic_manure_applications.bulkRemove(idsToRemove);
+    if (toUpsert.length > 0) await db.organic_manure_applications.bulkUpsert(toUpsert);
+  }
+
+  private async upsertComplianceBreaches(db: SwardDatabase, serverBreaches: any[]): Promise<void> {
+    if (!serverBreaches || serverBreaches.length === 0) return;
+    const serverIds = serverBreaches.map(b => b.id);
+    const existingDocs = await db.compliance_breaches.find({ selector: { serverId: { $in: serverIds } } }).exec();
+    const existingMap = new Map(existingDocs.map(d => [d.serverId, d]));
+
+    const toUpsert: any[] = [];
+    const idsToRemove: string[] = [];
+
+    for (const sBreach of serverBreaches) {
+      const localDoc = existingMap.get(sBreach.id);
+      if (sBreach.is_deleted) {
+        if (localDoc && localDoc.syncStatus !== 'pending') idsToRemove.push(localDoc.id);
+        continue;
+      }
+
+      if (localDoc) {
+        const localUpdatedAt = new Date(localDoc.updatedAt).getTime();
+        const serverUpdatedAt = sBreach.updated_at ? new Date(sBreach.updated_at).getTime() : 0;
+        if (localDoc.syncStatus === 'pending' && localUpdatedAt > serverUpdatedAt) continue;
+        toUpsert.push({
+          ...localDoc.toJSON(),
+          farm_id: sBreach.farm_id,
+          breach_type: sBreach.breach_type,
+          severity: sBreach.severity,
+          estimated_penalty_percentage: sBreach.estimated_penalty_percentage,
+          mandatory_training_required: sBreach.mandatory_training_required,
+          breach_date: sBreach.breach_date,
+          notes: sBreach.notes,
+          is_repeat: sBreach.is_repeat,
+          updatedAt: sBreach.updated_at || new Date().toISOString(),
+          syncStatus: 'synced',
+        });
+      } else {
+        toUpsert.push({
+          id: generateLocalId(),
+          serverId: sBreach.id,
+          farm_id: sBreach.farm_id,
+          breach_type: sBreach.breach_type,
+          severity: sBreach.severity,
+          estimated_penalty_percentage: sBreach.estimated_penalty_percentage,
+          mandatory_training_required: sBreach.mandatory_training_required,
+          breach_date: sBreach.breach_date,
+          notes: sBreach.notes,
+          is_repeat: sBreach.is_repeat,
+          syncStatus: 'synced',
+          updatedAt: sBreach.updated_at || new Date().toISOString(),
+        });
+      }
+    }
+    if (idsToRemove.length > 0) await db.compliance_breaches.bulkRemove(idsToRemove);
+    if (toUpsert.length > 0) await db.compliance_breaches.bulkUpsert(toUpsert);
+  }
+
+  private async upsertSwardMovements(db: SwardDatabase, serverMovements: any[]): Promise<void> {
+    if (!serverMovements || serverMovements.length === 0) return;
+    const serverIds = serverMovements.map(m => m.id);
+    const existingDocs = await db.sward_movements.find({ selector: { serverId: { $in: serverIds } } }).exec();
+    const existingMap = new Map(existingDocs.map(d => [d.serverId, d]));
+
+    const toUpsert: any[] = [];
+    const idsToRemove: string[] = [];
+
+    for (const sMove of serverMovements) {
+      const localDoc = existingMap.get(sMove.id);
+      if (sMove.is_deleted) {
+        if (localDoc && localDoc.syncStatus !== 'pending') idsToRemove.push(localDoc.id);
+        continue;
+      }
+
+      if (localDoc) {
+        const localUpdatedAt = new Date(localDoc.updatedAt).getTime();
+        const serverUpdatedAt = sMove.updated_at ? new Date(sMove.updated_at).getTime() : 0;
+        if (localDoc.syncStatus === 'pending' && localUpdatedAt > serverUpdatedAt) continue;
+        toUpsert.push({
+          ...localDoc.toJSON(),
+          farm_id: sMove.farm_id,
+          movement_type: sMove.movement_type,
+          quantity_m3: sMove.quantity_m3,
+          date: sMove.date,
+          manure_type: sMove.manure_type,
+          consignee_name: sMove.consignee_name,
+          consignee_address: sMove.consignee_address,
+          consignor_name: sMove.consignor_name,
+          consignor_address: sMove.consignor_address,
+          transporter_name: sMove.transporter_name,
+          contract_length_months: sMove.contract_length_months,
+          updatedAt: sMove.updated_at || new Date().toISOString(),
+          syncStatus: 'synced',
+        });
+      } else {
+        toUpsert.push({
+          id: generateLocalId(),
+          serverId: sMove.id,
+          farm_id: sMove.farm_id,
+          movement_type: sMove.movement_type,
+          quantity_m3: sMove.quantity_m3,
+          date: sMove.date,
+          manure_type: sMove.manure_type,
+          consignee_name: sMove.consignee_name,
+          consignee_address: sMove.consignee_address,
+          consignor_name: sMove.consignor_name,
+          consignor_address: sMove.consignor_address,
+          transporter_name: sMove.transporter_name,
+          contract_length_months: sMove.contract_length_months,
+          syncStatus: 'synced',
+          updatedAt: sMove.updated_at || new Date().toISOString(),
+        });
+      }
+    }
+    if (idsToRemove.length > 0) await db.sward_movements.bulkRemove(idsToRemove);
+    if (toUpsert.length > 0) await db.sward_movements.bulkUpsert(toUpsert);
+  }
+
 
   private async updateLocalDocStatus(
     db: SwardDatabase,

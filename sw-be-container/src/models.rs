@@ -15,6 +15,7 @@ pub struct Farm {
     pub user_id: Option<i64>,
     pub name: String,
     pub location: String,
+    pub has_derogation: Option<bool>,
     pub updated_at: Option<DateTime<Utc>>,
     pub is_deleted: Option<bool>,
 }
@@ -25,6 +26,7 @@ pub struct Field {
     pub farm_id: i64,
     pub name: String,
     pub area_hectares: f64,
+    pub land_use: Option<String>,
     pub updated_at: Option<DateTime<Utc>>,
     pub is_deleted: Option<bool>,
 }
@@ -38,6 +40,9 @@ pub struct Event {
     pub date: String,
     pub updated_at: Option<DateTime<Utc>>,
     pub is_deleted: Option<bool>,
+    pub mapp_number: Option<String>,
+    pub eppo_code: Option<String>,
+    pub bbch_growth_stage: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
@@ -62,6 +67,10 @@ pub struct SyncResponse {
     pub farm_records: Vec<FarmRecord>,
     pub soil_analyses: Vec<SoilAnalysis>,
     pub fertilisation_plans: Vec<FertilisationPlan>,
+    pub fertiliser_applications: Vec<FertiliserApplication>,
+    pub organic_manure_applications: Vec<OrganicManureApplication>,
+    pub compliance_breaches: Vec<ComplianceBreach>,
+    pub sward_movements: Vec<SwardMovement>,
 }
 
 /// Query parameters for the delta sync endpoint.
@@ -99,10 +108,63 @@ pub struct FertilisationPlan {
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct FertiliserApplication {
-    pub id: i64,
+    pub id: Option<i64>,
     pub event_id: i64,
     pub fertiliser_type: String,
     pub amount_applied: f64,
     pub nitrogen_content: Option<f64>,
+    pub phosphorus_content: Option<f64>,
+    pub is_protected_urea: Option<bool>,
+    pub buffer_zone_confirmed: Option<bool>,
     pub evidence_of_control: Option<String>,
+    pub updated_at: Option<DateTime<Utc>>,
+    pub is_deleted: Option<bool>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+pub struct OrganicManureApplication {
+    pub id: Option<i64>,
+    pub event_id: i64,
+    pub manure_type: String,
+    pub volume_applied_m3_per_ha: Option<f64>,
+    pub weight_applied_tonnes_per_ha: Option<f64>,
+    pub nitrogen_content_kg_per_unit: Option<f64>,
+    pub is_lesse_applied: Option<bool>,
+    pub weather_conditions_confirmed: Option<bool>,
+    pub buffer_zone_distance_meters: Option<i32>,
+    pub updated_at: Option<DateTime<Utc>>,
+    pub is_deleted: Option<bool>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+pub struct ComplianceBreach {
+    pub id: Option<i64>,
+    pub farm_id: i64,
+    pub breach_type: String,
+    pub severity: String,
+    pub estimated_penalty_percentage: Option<f64>,
+    pub mandatory_training_required: Option<String>,
+    pub breach_date: String,
+    pub notes: Option<String>,
+    pub is_repeat: Option<bool>,
+    pub updated_at: Option<DateTime<Utc>>,
+    pub is_deleted: Option<bool>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
+pub struct SwardMovement {
+    pub id: Option<i64>,
+    pub farm_id: i64,
+    pub movement_type: String, // 'import' or 'export'
+    pub quantity_m3: f64,
+    pub date: String,
+    pub manure_type: String,
+    pub consignee_name: Option<String>,
+    pub consignee_address: Option<String>,
+    pub consignor_name: Option<String>,
+    pub consignor_address: Option<String>,
+    pub transporter_name: Option<String>,
+    pub contract_length_months: Option<i32>,
+    pub updated_at: Option<DateTime<Utc>>,
+    pub is_deleted: Option<bool>,
 }

@@ -1,3 +1,23 @@
+/* ── Sidebar Nav Item ── */
+.sidebar-item {
+  color: #77574d;
+}
+
+.sidebar-item.sidebar-active {
+  background-color: #2d5a27;
+  color: #ffffff;
+}
+
+.sidebar-item.sidebar-active span {
+  opacity: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sidebar-item {
+    color: #c2c9bb;
+  }
+}
+
 /* ── Bottom Nav Item Base ── */
 .nav-item {
   color: #77574d;

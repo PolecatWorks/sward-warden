@@ -15,6 +15,12 @@ pub enum Commands {
     Version,
     /// Execute schema migrations against PostgreSQL
     Migrate,
+    /// Seed the database with realistic sample data
+    Seed {
+        /// The user ID to seed data for
+        #[arg(long, default_value_t = 1)]
+        user_id: i64,
+    },
 }
 
 #[cfg(test)]

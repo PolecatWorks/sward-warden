@@ -1,58 +1,113 @@
-<!-- Persistent TopAppBar -->
-<header class="bg-[#faf9f5]/90 dark:bg-[#1a1c1a]/90 backdrop-blur-xl sticky top-0 z-40 border-b border-black/5">
-  <div class="flex justify-between items-center w-full px-6 py-4 max-w-2xl mx-auto">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container">
-        <img alt="Seamus O'Neill Profile"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEGLVw7OJxGjDvarhM4qk8kwucVrFtr2LhZEnaBrkmsU-zTvETHxqqhqPe8uNJGzakLfepGm665SgCJvPPpt8B83L8FPfZpDnLS88vJsBQzhXdlteqviG82bhlHXzWn2za5JxQWWf3-Xd13318Hmd3MYo1wmxKnO2sR09K4ZrygrJ_0tOrra17-xn9c5GgOBifkKCV5dVJhoufTcuHGNXs0PIvQgPvANInQWOqHjOxi8gMnO-Vg_yXzQqHdPttBr-CvunJqZnhsA"
-          class="w-full h-full object-cover" />
+<div class="flex min-h-screen bg-[#faf9f5] dark:bg-[#1a1c1a]">
+  <!-- Desktop Sidebar -->
+  <aside class="hidden lg:flex w-72 flex-col fixed inset-y-0 border-r border-black/5 bg-white/40 dark:bg-black/20 backdrop-blur-2xl z-50 overflow-y-auto">
+    <div class="p-8">
+      <div class="flex items-center gap-3 mb-12">
+        <div class="w-12 h-12 rounded-2xl overflow-hidden bg-primary/10 flex items-center justify-center">
+          <span class="material-symbols-outlined text-primary text-3xl">agriculture</span>
+        </div>
+        <div>
+          <h1 class="text-2xl font-black text-[#154212] dark:text-white font-['Work_Sans'] tracking-tighter leading-none">Sward</h1>
+          <p class="text-[10px] font-bold text-primary tracking-widest uppercase opacity-60">Warden</p>
+        </div>
       </div>
-      <h1 class="text-xl font-black text-[#154212] dark:text-white font-['Work_Sans'] tracking-tight">SwardWarden</h1>
-      <app-sync-status></app-sync-status>
+
+      <nav class="space-y-2">
+        <a routerLink="/dashboard" routerLinkActive="sidebar-active"
+           class="sidebar-item flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 hover:bg-black/5 dark:hover:bg-white/5 group">
+          <span class="material-symbols-outlined text-2xl opacity-60 group-hover:opacity-100 transition-opacity">dashboard</span>
+          <span class="font-['Work_Sans'] font-bold text-sm tracking-tight">Dashboard</span>
+        </a>
+
+        <a routerLink="/farms" routerLinkActive="sidebar-active"
+           class="sidebar-item flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 hover:bg-black/5 dark:hover:bg-white/5 group">
+          <span class="material-symbols-outlined text-2xl opacity-60 group-hover:opacity-100 transition-opacity">agriculture</span>
+          <span class="font-['Work_Sans'] font-bold text-sm tracking-tight">Farms & Fields</span>
+        </a>
+
+        <a routerLink="/compliance" routerLinkActive="sidebar-active"
+           class="sidebar-item flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 hover:bg-black/5 dark:hover:bg-white/5 group">
+          <span class="material-symbols-outlined text-2xl opacity-60 group-hover:opacity-100 transition-opacity">event_note</span>
+          <span class="font-['Work_Sans'] font-bold text-sm tracking-tight">Compliance</span>
+        </a>
+
+        <a routerLink="/profile" routerLinkActive="sidebar-active"
+           class="sidebar-item flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 hover:bg-black/5 dark:hover:bg-white/5 group">
+          <span class="material-symbols-outlined text-2xl opacity-60 group-hover:opacity-100 transition-opacity">account_circle</span>
+          <span class="font-['Work_Sans'] font-bold text-sm tracking-tight">My Profile</span>
+        </a>
+      </nav>
+
+      <div class="mt-auto pt-12">
+        <div class="p-6 rounded-[2rem] bg-primary text-white relative overflow-hidden">
+          <div class="relative z-10">
+            <h4 class="font-bold text-lg leading-tight mb-1">Local Mode</h4>
+            <p class="text-[10px] opacity-80 uppercase tracking-widest font-black">Syncing Enabled</p>
+          </div>
+          <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
+        </div>
+      </div>
     </div>
-    <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#f4f4f0] dark:hover:bg-[#2d302d] transition-colors active:scale-95"
-      id="settings-btn" aria-label="Settings">
-      <span class="material-symbols-outlined text-[#154212] dark:text-[#f4f4f0]">settings</span>
-    </button>
+  </aside>
+
+  <!-- Main Area -->
+  <div class="flex-1 flex flex-col lg:pl-72">
+    <!-- Persistent TopAppBar -->
+    <header class="bg-[#faf9f5]/90 dark:bg-[#1a1c1a]/90 backdrop-blur-xl sticky top-0 z-40 border-b border-black/5">
+      <div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container lg:hidden">
+            <img alt="Seamus O'Neill Profile"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEGLVw7OJxGjDvarhM4qk8kwucVrFtr2LhZEnaBrkmsU-zTvETHxqqhqPe8uNJGzakLfepGm665SgCJvPPpt8B83L8FPfZpDnLS88vJsBQzhXdlteqviG82bhlHXzWn2za5JxQWWf3-Xd13318Hmd3MYo1wmxKnO2sR09K4ZrygrJ_0tOrra17-xn9c5GgOBifkKCV5dVJhoufTcuHGNXs0PIvQgPvANInQWOqHjOxi8gMnO-Vg_yXzQqHdPttBr-CvunJqZnhsA"
+              class="w-full h-full object-cover" />
+          </div>
+          <h1 class="text-xl font-black text-[#154212] dark:text-white font-['Work_Sans'] tracking-tight lg:hidden">SwardWarden</h1>
+          <app-sync-status></app-sync-status>
+        </div>
+        <div class="flex items-center gap-4">
+           <div class="hidden lg:flex items-center gap-3 mr-4">
+             <span class="text-sm font-bold text-on-surface-variant font-['Work_Sans']">Seamus O'Neill</span>
+             <div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container">
+               <img alt="Profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEGLVw7OJxGjDvarhM4qk8kwucVrFtr2LhZEnaBrkmsU-zTvETHxqqhqPe8uNJGzakLfepGm665SgCJvPPpt8B83L8FPfZpDnLS88vJsBQzhXdlteqviG82bhlHXzWn2za5JxQWWf3-Xd13318Hmd3MYo1wmxKnO2sR09K4ZrygrJ_0tOrra17-xn9c5GgOBifkKCV5dVJhoufTcuHGNXs0PIvQgPvANInQWOqHjOxi8gMnO-Vg_yXzQqHdPttBr-CvunJqZnhsA" class="w-full h-full object-cover" />
+             </div>
+           </div>
+           <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#f4f4f0] dark:hover:bg-[#2d302d] transition-colors active:scale-95"
+            id="settings-btn" aria-label="Settings">
+            <span class="material-symbols-outlined text-[#154212] dark:text-[#f4f4f0]">settings</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow pb-28 lg:pb-12 max-w-7xl mx-auto w-full px-4 sm:px-8">
+      <router-outlet></router-outlet>
+    </main>
+
+    <!-- Bottom Navigation (Mobile Only) -->
+    <nav class="fixed bottom-0 left-0 w-full z-50 bg-[#faf9f5]/80 dark:bg-[#1a1c1a]/80 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,0,0,0.06)] rounded-t-2xl lg:hidden">
+      <div class="flex justify-around items-center px-4 py-3 pb-safe max-w-2xl mx-auto">
+        <a routerLink="/dashboard" routerLinkActive="nav-active"
+           class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
+          <span class="material-symbols-outlined nav-icon">dashboard</span>
+          <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Dashboard</span>
+        </a>
+        <a routerLink="/farms" routerLinkActive="nav-active"
+           class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
+          <span class="material-symbols-outlined nav-icon">agriculture</span>
+          <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Farms</span>
+        </a>
+        <a routerLink="/compliance" routerLinkActive="nav-active"
+           class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
+          <span class="material-symbols-outlined nav-icon">event_note</span>
+          <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Compliance</span>
+        </a>
+        <a routerLink="/profile" routerLinkActive="nav-active"
+           class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
+          <span class="material-symbols-outlined nav-icon">account_circle</span>
+          <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Profile</span>
+        </a>
+      </div>
+    </nav>
   </div>
-</header>
-
-<!-- Main Content Area — Child Routes Render Here -->
-<main class="flex-grow pb-28 max-w-2xl mx-auto w-full">
-  <router-outlet></router-outlet>
-</main>
-
-<!-- Persistent Glassmorphism Bottom Navigation -->
-<nav class="fixed bottom-0 left-0 w-full z-50 bg-[#faf9f5]/80 dark:bg-[#1a1c1a]/80 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,0,0,0.06)] rounded-t-2xl">
-  <div class="flex justify-around items-center px-4 py-3 pb-safe max-w-2xl mx-auto">
-
-    <!-- Dashboard -->
-    <a routerLink="/dashboard" routerLinkActive="nav-active"
-       class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
-      <span class="material-symbols-outlined nav-icon">dashboard</span>
-      <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Dashboard</span>
-    </a>
-
-    <!-- Farms / Fields -->
-    <a routerLink="/farms" routerLinkActive="nav-active"
-       class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
-      <span class="material-symbols-outlined nav-icon">agriculture</span>
-      <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Farms</span>
-    </a>
-
-    <!-- Compliance / Events -->
-    <a routerLink="/compliance" routerLinkActive="nav-active"
-       class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
-      <span class="material-symbols-outlined nav-icon">event_note</span>
-      <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Compliance</span>
-    </a>
-
-    <!-- Profile -->
-    <a routerLink="/profile" routerLinkActive="nav-active"
-       class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
-      <span class="material-symbols-outlined nav-icon">account_circle</span>
-      <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Profile</span>
-    </a>
-
-  </div>
-</nav>
+</div>

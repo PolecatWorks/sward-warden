@@ -1,6 +1,6 @@
 # 0004-06 Import and Export Records Specification
 
-**State**: Open
+**State**: Complete
 
 ## Scope
 This specification covers the import and export records required to maintain compliance with NAP regulations (PRD 0004).

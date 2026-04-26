@@ -1,6 +1,6 @@
 # 0005-03 Chemical Fertiliser Management Specification
 
-**State**: Open
+**State**: Complete
 
 ## Scope
 This specification covers the implementation details for Chemical Fertiliser Management under the Farm Sustainability Standards (FSS) as outlined in PRD 0005.

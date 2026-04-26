@@ -2,12 +2,10 @@
 -- updated_at is automatically managed by a trigger on each table.
 
 DO $$
+DECLARE
+    tables TEXT[] := ARRAY['farms', 'fields', 'events', 'farm_records', 'soil_analyses', 'fertilisation_plans'];
+    t TEXT;
 BEGIN
-    -- List of tables to add columns and triggers to
-    DECLARE
-        tables TEXT[] := ARRAY['farms', 'fields', 'events', 'farm_records', 'soil_analyses', 'fertilisation_plans'];
-        t TEXT;
-    BEGIN
         -- Create the trigger function if it doesn't exist
         CREATE OR REPLACE FUNCTION update_updated_at_column()
         RETURNS TRIGGER AS $inner$
