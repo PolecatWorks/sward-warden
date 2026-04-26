@@ -27,7 +27,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0004-05 Fertilisation Account Specification](./0004/0004-04-fertilisation-account.md) | Complete |
 | [0004-06 Import and Export Records Specification](./0004/0004-05-import-export-records.md) | Complete |
 | [0004-07 Soil Analysis Results Specification](./0004/0004-06-soil-analysis-results.md) | Complete |
-| [0004-07 Spreading Equipment Exemptions Specification](./0004/0004-07-spreading-equipment-exemptions.md) | Open |
+| [0004-07 Spreading Equipment Exemptions Specification](./0004/0004-07-spreading-equipment-exemptions.md) | Complete |
 | [0005-02 Spraying (Pesticide Use) Records Specification](./0005/0005-01-spraying-records.md) | Complete |
 | [0005-03 Chemical Fertiliser Management Specification](./0005/0005-02-chemical-fertiliser-management.md) | Complete |
 | [0005-04 Sward and Organic Manure Management Specification](./0005/0005-03-slurry-and-organic-manure-management.md) | Complete |
@@ -69,7 +69,7 @@ The following "Open" specifications will be implemented in the order listed belo
 | Order | Specification | Primary Dependency |
 | :--- | :--- | :--- |
 | 1 | [0009-01 Backend Architecture Refactor](./0009/0009-01-backend-refactor.md) | Complete (Foundation) |
-| 2 | [0004-07 Spreading Equipment Exemptions](./0004/0004-07-spreading-equipment-exemptions.md) | 0009-01 (Backend Pattern) |
+| 2 | [0004-07 Spreading Equipment Exemptions](./0004/0004-07-spreading-equipment-exemptions.md) | Complete |
 | 3 | [0008-02 Weather Integration Data](./0008/0008-02-weather-integration-data.md) | 0009-01 (Backend Pattern) |
 | 4 | [0008-03 Topology and Waterway Data](./0008/0008-03-topology-and-waterway-data.md) | 0009-01 (PostGIS Setup Required) |
 | 5 | [0008-01 Optimization Engine Core](./0008/0008-01-optimization-engine-core.md) | 0008-02, 0008-03 |

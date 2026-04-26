@@ -5,6 +5,7 @@ pub mod hams;
 pub mod metrics;
 pub mod models;
 mod rules;
+mod rules_tests;
 pub mod seed;
 pub mod startup_tools;
 pub mod state;
