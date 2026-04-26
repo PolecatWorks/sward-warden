@@ -9,16 +9,18 @@ HELM_CHART := sward-warden
 HELM_DIR := charts/$(HELM_CHART)
 
 RUST_APPS := sw-be
-NODE_APPS := sw-fe
+NODE_APPS := sw-fe sw-admin
 APPS := $(RUST_APPS) $(NODE_APPS)
 
 sw-be_PORT := 8080
 sw-be_HEALTH_PORT := 8079
 sw-fe_PORT := 4200
+sw-admin_PORT := 4201
 
 sw-be_INTERNAL_PORT := 8080
 sw-be_INTERNAL_HEALTH_PORT := 8079
 sw-fe_INTERNAL_PORT := 80
+sw-admin_INTERNAL_PORT := 80
 
 # Original commands
 test:
