@@ -60,7 +60,7 @@
 <div *ngIf="!isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 <!-- Farm Cards -->
 <div *ngFor="let farm of farms; let i = index" class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm group" [attr.data-testid]="'farm-card-' + farm.id">
-<div class="h-40 relative">
+<div class="h-40 relative cursor-pointer" [routerLink]="['/farms', farm.id, 'fields']">
 <!-- Mock image logic based on index -->
 <img *ngIf="i % 3 === 0" alt="{{ farm.name }}" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtKP4X7e4twRuDt4tLqhsErU--zOjrZ08jgLGBuJQgeEfqhDzuypE98m4l1aHiinATw5qrN2GWVchDtjhvre9LQbYGGByB3tkr_hcErnAIcX7-GbOWOYaJzhfM_JPiNYSn--YmRosGsmGj7gQiQPMmpwKYf_uVc6_4wcAM0j-8UsLGNKLQjqwAxAUyXQrhLd35_gR9hLLYc28_gt6DlJV9LuuL_rFtEqG5FxzRvMYDJZmP8LScItDHJiPdaJ3YpcKmf1TCnqBavQ"/>
 <img *ngIf="i % 3 === 1" alt="{{ farm.name }}" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFSKBzWHF9vDzzRotdi_g4qMbnotM7ZmwucIBilC93PmuacgH147f_4bDlZ0X5fKiPg058S5lbaKHC75goD_GOuKKoz1DlDPZo4l8eAgXxWmTZKm8vtaw30TKMY2RFkvFDsHwhLI-ErfC3KAzu9HMY7w0TuY4ICY8cDTO1lw9Q1Afpj_ZdHffZXPH1EKVwworohW5DM0rxWl0QKrnFfzHl6Wgd6qLK6Yle7UhyTla_nKMWbz61lrKCbCypUkngSNUeMlZZD56yrg"/>
