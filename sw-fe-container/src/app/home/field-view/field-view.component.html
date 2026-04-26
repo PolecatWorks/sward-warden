@@ -165,6 +165,14 @@
              <label class="block text-sm font-medium text-on-surface mb-1">Buffer Zone (m)</label>
              <input type="number" [(ngModel)]="newOrganicManure.buffer_zone_distance_meters" name="buffer" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary">
           </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface mb-1">Equipment Used</label>
+            <input type="text" [(ngModel)]="newOrganicManure.equipment_used" name="o_equip" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface mb-1">Exemption Reason (if any)</label>
+            <textarea [(ngModel)]="newOrganicManure.exemption_reason" name="o_exempt" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary"></textarea>
+          </div>
           <div class="pt-4 flex justify-end gap-3">
             <button type="button" (click)="toggleOrganicManureForm()" class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md">Cancel</button>
             <button type="submit" class="px-4 py-2 bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90">Save Record</button>
@@ -270,6 +278,8 @@
                   <div *ngIf="oma.nitrogen_content_kg_per_unit"><span class="text-on-surface-variant font-medium">N:</span> {{ oma.nitrogen_content_kg_per_unit }} kg/unit</div>
                   <div *ngIf="oma.is_lesse_applied" class="col-span-2 text-primary font-bold text-[10px] uppercase">LESSE Applied</div>
                   <div class="col-span-2 text-on-surface-variant text-[10px]">Buffer: {{ oma.buffer_zone_distance_meters }}m</div>
+                  <div *ngIf="oma.equipment_used" class="col-span-2 text-on-surface-variant text-[10px]">Equipment: {{ oma.equipment_used }}</div>
+                  <div *ngIf="oma.exemption_reason" class="col-span-2 text-on-surface-variant text-[10px] italic">Exemption: {{ oma.exemption_reason }}</div>
                 </div>
               </div>
 
@@ -303,7 +313,6 @@
                     <textarea [(ngModel)]="editFormData.description" name="editDesc" rows="2" class="w-full px-3 py-2 border border-outline rounded-md text-sm"></textarea>
                   </div>
 
-                  <!-- Specific fields based on type -->
                   <div *ngIf="event.event_type === 'Spraying'">
                     <label class="block text-xs font-medium text-on-surface mb-1">MAPP Number</label>
                     <input type="text" [(ngModel)]="editFormData.mapp_number" name="editMapp" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2">
@@ -347,6 +356,14 @@
                         <label class="block text-xs font-medium text-on-surface mb-1">Weight (t/ha)</label>
                         <input type="number" [(ngModel)]="editFormData.organicManureApplication.weight_applied_tonnes_per_ha" name="editManureWeight" class="w-full px-3 py-2 border border-outline rounded-md text-sm">
                       </div>
+                    </div>
+                    <div>
+                      <label class="block text-xs font-medium text-on-surface mb-1">Equipment Used</label>
+                      <input type="text" [(ngModel)]="editFormData.organicManureApplication.equipment_used" name="editManureEquip" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2">
+                    </div>
+                    <div>
+                      <label class="block text-xs font-medium text-on-surface mb-1">Exemption Reason</label>
+                      <textarea [(ngModel)]="editFormData.organicManureApplication.exemption_reason" name="editManureExempt" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2"></textarea>
                     </div>
                   </div>
 

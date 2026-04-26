@@ -325,7 +325,7 @@ async fn list_organic_manure_applications(
     State(state): State<AppState>,
 ) -> Result<Json<Vec<OrganicManureApplication>>, MyError> {
     let apps = sqlx::query_as::<_, OrganicManureApplication>(
-        "SELECT id, event_id, manure_type, volume_applied_m3_per_ha, weight_applied_tonnes_per_ha, nitrogen_content_kg_per_unit, is_lesse_applied, weather_conditions_confirmed, buffer_zone_distance_meters, updated_at, is_deleted FROM organic_manure_applications WHERE is_deleted = FALSE"
+        "SELECT id, event_id, manure_type, volume_applied_m3_per_ha, weight_applied_tonnes_per_ha, nitrogen_content_kg_per_unit, is_lesse_applied, weather_conditions_confirmed, buffer_zone_distance_meters, equipment_used, exemption_reason, updated_at, is_deleted FROM organic_manure_applications WHERE is_deleted = FALSE"
     )
     .fetch_all(&state.db_pool)
     .await;
@@ -366,7 +366,7 @@ async fn create_organic_manure_application(
     }
 
     let new_app = sqlx::query_as::<_, OrganicManureApplication>(
-        "INSERT INTO organic_manure_applications (event_id, manure_type, volume_applied_m3_per_ha, weight_applied_tonnes_per_ha, nitrogen_content_kg_per_unit, is_lesse_applied, weather_conditions_confirmed, buffer_zone_distance_meters) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id, event_id, manure_type, volume_applied_m3_per_ha, weight_applied_tonnes_per_ha, nitrogen_content_kg_per_unit, is_lesse_applied, weather_conditions_confirmed, buffer_zone_distance_meters, updated_at, is_deleted"
+        "INSERT INTO organic_manure_applications (event_id, manure_type, volume_applied_m3_per_ha, weight_applied_tonnes_per_ha, nitrogen_content_kg_per_unit, is_lesse_applied, weather_conditions_confirmed, buffer_zone_distance_meters, equipment_used, exemption_reason) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id, event_id, manure_type, volume_applied_m3_per_ha, weight_applied_tonnes_per_ha, nitrogen_content_kg_per_unit, is_lesse_applied, weather_conditions_confirmed, buffer_zone_distance_meters, equipment_used, exemption_reason, updated_at, is_deleted"
     )
     .bind(app.event_id)
     .bind(&app.manure_type)
@@ -376,6 +376,8 @@ async fn create_organic_manure_application(
     .bind(app.is_lesse_applied)
     .bind(app.weather_conditions_confirmed)
     .bind(app.buffer_zone_distance_meters)
+    .bind(&app.equipment_used)
+    .bind(&app.exemption_reason)
     .fetch_one(&state.db_pool)
     .await;
     Ok(Json(new_app?))
@@ -560,7 +562,7 @@ async fn delta_sync(
     .await?;
 
     let organic_manure_applications = sqlx::query_as::<_, OrganicManureApplication>(
-        "SELECT oma.id, oma.event_id, oma.manure_type, oma.volume_applied_m3_per_ha, oma.weight_applied_tonnes_per_ha, oma.nitrogen_content_kg_per_unit, oma.is_lesse_applied, oma.weather_conditions_confirmed, oma.buffer_zone_distance_meters, oma.updated_at, oma.is_deleted FROM organic_manure_applications oma JOIN events e ON oma.event_id = e.id JOIN fields f ON e.field_id = f.id JOIN farms far ON f.farm_id = far.id WHERE far.user_id = 1 AND oma.updated_at > $1"
+        "SELECT oma.id, oma.event_id, oma.manure_type, oma.volume_applied_m3_per_ha, oma.weight_applied_tonnes_per_ha, oma.nitrogen_content_kg_per_unit, oma.is_lesse_applied, oma.weather_conditions_confirmed, oma.buffer_zone_distance_meters, oma.equipment_used, oma.exemption_reason, oma.updated_at, oma.is_deleted FROM organic_manure_applications oma JOIN events e ON oma.event_id = e.id JOIN fields f ON e.field_id = f.id JOIN farms far ON f.farm_id = far.id WHERE far.user_id = 1 AND oma.updated_at > $1"
     )
     .bind(since)
     .fetch_all(&state.db_pool)
