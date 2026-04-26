@@ -133,7 +133,7 @@ pub struct OrganicManureApplication {
     pub weather_conditions_confirmed: Option<bool>,
     pub buffer_zone_distance_meters: Option<i32>,
     pub equipment_used: Option<String>,
-    pub exemption_reason: Option<String>,
+    pub lesse_exemption_reason: Option<String>,
     pub updated_at: Option<DateTime<Utc>>,
     pub is_deleted: Option<bool>,
 }
