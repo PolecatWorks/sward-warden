@@ -102,6 +102,46 @@ export class FarmManagementService {
     );
   }
 
+  private updateEntity<TDoc, TModel>(
+    collectionName: OutboxEntityType,
+    localId: string,
+    serverId: number | string | undefined,
+    updates: any,
+    outboxPayload: any,
+    mapper: (doc: TDoc) => TModel
+  ): Observable<TModel> {
+    return this.rxdbService.db$.pipe(
+      switchMap(db => {
+        const collection = (db as any)[collectionName];
+        return from(collection.findOne({ selector: { id: localId } }).exec()).pipe(
+          switchMap((doc: any) => {
+            if (!doc) {
+              throw new Error(`Document with localId ${localId} not found in ${collectionName}`);
+            }
+            const updateData = {
+              ...updates,
+              syncStatus: 'pending',
+              updatedAt: new Date().toISOString()
+            };
+
+            return from(doc.patch(updateData)).pipe(
+              switchMap((patchedDoc: any) => {
+                const payload = { ...outboxPayload };
+                if (serverId) {
+                    payload.id = serverId;
+                }
+                return from(this.createOutboxEntry(db, 'PUT', collectionName, localId, payload)).pipe(
+                  map(() => patchedDoc as TDoc)
+                );
+              })
+            );
+          })
+        );
+      }),
+      map(doc => mapper(doc))
+    );
+  }
+
   /** Get all farms from the local RxDB database as a reactive observable. */
   getFarms(): Observable<Farm[]> {
     return this.rxdbService.db$.pipe(
@@ -161,6 +201,26 @@ export class FarmManagementService {
       'events',
       { serverId: event.id, field_id: event.field_id, event_type: event.event_type, description: event.description, date: event.date },
       { field_id: event.field_id, event_type: event.event_type, description: event.description, date: event.date },
+      (doc) => this.eventDocToModel(doc)
+    );
+  }
+/** Update an event in the local RxDB database and queue an outbox entry. */
+  updateEvent(localId: string, event: Partial<Event>): Observable<Event> {
+    const updates: any = {};
+    const outboxPayload: any = {};
+
+    if (event.description !== undefined) updates.description = outboxPayload.description = event.description;
+    if (event.date !== undefined) updates.date = outboxPayload.date = event.date;
+    if (event.mapp_number !== undefined) updates.mapp_number = outboxPayload.mapp_number = event.mapp_number;
+    if (event.eppo_code !== undefined) updates.eppo_code = outboxPayload.eppo_code = event.eppo_code;
+    if (event.bbch_growth_stage !== undefined) updates.bbch_growth_stage = outboxPayload.bbch_growth_stage = event.bbch_growth_stage;
+
+    return this.updateEntity<EventDocType, Event>(
+      'events',
+      localId,
+      event.id,
+      updates,
+      outboxPayload,
       (doc) => this.eventDocToModel(doc)
     );
   }
@@ -235,6 +295,13 @@ export class FarmManagementService {
       switchMap(apiUrl => this.http.post<FertiliserApplication>(`${apiUrl}/fertiliser_applications`, application, { headers: this.getHeaders() }))
     );
   }
+
+  updateFertiliserApplication(id: number | string, application: Partial<FertiliserApplication>): Observable<FertiliserApplication> {
+    return this.apiUrl$.pipe(
+      switchMap(apiUrl => this.http.put<FertiliserApplication>(`${apiUrl}/fertiliser_applications/${id}`, application, { headers: this.getHeaders() }))
+    );
+  }
+
 
   // Organic Manure Applications
   // ──────────────────────────────────────────────────────────
@@ -427,6 +494,29 @@ export class FarmManagementService {
       (doc) => this.organicManureApplicationDocToModel(doc)
     );
   }
+
+  updateOrganicManureApplication(localId: string, serverId: number | string | undefined, app: Partial<OrganicManureApplication>): Observable<OrganicManureApplication> {
+    const updates: any = {};
+    const outboxPayload: any = {};
+
+    if (app.manure_type !== undefined) updates.manure_type = outboxPayload.manure_type = app.manure_type;
+    if (app.volume_applied_m3_per_ha !== undefined) updates.volume_applied_m3_per_ha = outboxPayload.volume_applied_m3_per_ha = app.volume_applied_m3_per_ha;
+    if (app.weight_applied_tonnes_per_ha !== undefined) updates.weight_applied_tonnes_per_ha = outboxPayload.weight_applied_tonnes_per_ha = app.weight_applied_tonnes_per_ha;
+    if (app.nitrogen_content_kg_per_unit !== undefined) updates.nitrogen_content_kg_per_unit = outboxPayload.nitrogen_content_kg_per_unit = app.nitrogen_content_kg_per_unit;
+    if (app.is_lesse_applied !== undefined) updates.is_lesse_applied = outboxPayload.is_lesse_applied = app.is_lesse_applied;
+    if (app.weather_conditions_confirmed !== undefined) updates.weather_conditions_confirmed = outboxPayload.weather_conditions_confirmed = app.weather_conditions_confirmed;
+    if (app.buffer_zone_distance_meters !== undefined) updates.buffer_zone_distance_meters = outboxPayload.buffer_zone_distance_meters = app.buffer_zone_distance_meters;
+
+    return this.updateEntity<OrganicManureApplicationDocType, OrganicManureApplication>(
+      'organic_manure_applications',
+      localId,
+      serverId,
+      updates,
+      outboxPayload,
+      (doc) => this.organicManureApplicationDocToModel(doc)
+    );
+  }
+
 
   getSwardMovementsForFarm(farmId: number): Observable<SwardMovement[]> {
     return this.rxdbService.db$.pipe(

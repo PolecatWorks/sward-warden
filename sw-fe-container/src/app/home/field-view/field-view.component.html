@@ -225,10 +225,16 @@
           <div class="flex-1">
             <div class="flex items-center justify-between mb-1">
               <span class="font-headline font-extrabold text-lg" [ngClass]="getEventTextColorClass(event.event_type)">{{ event.event_type }}</span>
-              <span class="text-xs font-medium text-on-surface-variant">{{ event.date | date:'MMM dd, yyyy' }}</span>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-medium text-on-surface-variant" *ngIf="editingEventId !== event.id">{{ event.date | date:'MMM dd, yyyy' }}</span>
+                <button *ngIf="editingEventId !== event.id" (click)="startEdit(event)" class="text-on-surface-variant hover:text-primary transition-colors">
+                  <span class="material-symbols-outlined text-[18px]">edit</span>
+                </button>
+              </div>
             </div>
 
-            <!-- Content Card -->
+            <ng-container *ngIf="editingEventId !== event.id">
+<!-- Content Card -->
             <div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm" [ngClass]="{'border-l-4 border-secondary': event.event_type.toLowerCase().includes('harvest'), 'bg-surface-container-low border-0 shadow-none': !event.event_type.toLowerCase().includes('harvest')}">
               <p class="text-sm font-medium text-on-surface leading-relaxed" [ngClass]="{'mb-3': event.event_type.toLowerCase().includes('harvest'), 'text-on-surface-variant': !event.event_type.toLowerCase().includes('harvest')}">
                 {{ event.description }}
@@ -284,6 +290,73 @@
                 <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Field ID: {{ event.field_id }}</span>
               </div>
             </div>
+</ng-container>
+            <ng-container *ngIf="editingEventId === event.id">
+              <div class="bg-surface-container-low p-5 rounded-xl border border-outline-variant mt-2">
+                <form (ngSubmit)="saveEdit(event)" class="flex flex-col gap-3">
+                  <div>
+                    <label class="block text-xs font-medium text-on-surface mb-1">Date</label>
+                    <input type="date" [(ngModel)]="editFormData.date" name="editDate" class="w-full px-3 py-2 border border-outline rounded-md text-sm">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-on-surface mb-1">Description</label>
+                    <textarea [(ngModel)]="editFormData.description" name="editDesc" rows="2" class="w-full px-3 py-2 border border-outline rounded-md text-sm"></textarea>
+                  </div>
+
+                  <!-- Specific fields based on type -->
+                  <div *ngIf="event.event_type === 'Spraying'">
+                    <label class="block text-xs font-medium text-on-surface mb-1">MAPP Number</label>
+                    <input type="text" [(ngModel)]="editFormData.mapp_number" name="editMapp" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2">
+
+                    <label class="block text-xs font-medium text-on-surface mb-1">EPPO Code</label>
+                    <input type="text" [(ngModel)]="editFormData.eppo_code" name="editEppo" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2">
+
+                    <label class="block text-xs font-medium text-on-surface mb-1">BBCH Growth Stage</label>
+                    <input type="text" [(ngModel)]="editFormData.bbch_growth_stage" name="editBbch" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2">
+                  </div>
+
+                  <div *ngIf="event.event_type.toLowerCase().includes('fertilise') && editFormData.fertiliserApplication">
+                    <label class="block text-xs font-medium text-on-surface mb-1">Type</label>
+                    <input type="text" [(ngModel)]="editFormData.fertiliserApplication.fertiliser_type" name="editFertType" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2">
+
+                    <label class="block text-xs font-medium text-on-surface mb-1">Amount (kg/ha)</label>
+                    <input type="number" [(ngModel)]="editFormData.fertiliserApplication.amount_applied" name="editFertAmount" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2">
+
+                    <div class="flex gap-2 mb-2">
+                      <div class="flex-1">
+                        <label class="block text-xs font-medium text-on-surface mb-1">N%</label>
+                        <input type="number" [(ngModel)]="editFormData.fertiliserApplication.nitrogen_content" name="editFertN" class="w-full px-3 py-2 border border-outline rounded-md text-sm">
+                      </div>
+                      <div class="flex-1">
+                        <label class="block text-xs font-medium text-on-surface mb-1">P%</label>
+                        <input type="number" [(ngModel)]="editFormData.fertiliserApplication.phosphorus_content" name="editFertP" class="w-full px-3 py-2 border border-outline rounded-md text-sm">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div *ngIf="(event.event_type.toLowerCase().includes('organic manure') || event.event_type.toLowerCase().includes('slurry')) && editFormData.organicManureApplication">
+                    <label class="block text-xs font-medium text-on-surface mb-1">Manure Type</label>
+                    <input type="text" [(ngModel)]="editFormData.organicManureApplication.manure_type" name="editManureType" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2">
+
+                    <div class="flex gap-2 mb-2">
+                      <div class="flex-1">
+                        <label class="block text-xs font-medium text-on-surface mb-1">Vol (m³/ha)</label>
+                        <input type="number" [(ngModel)]="editFormData.organicManureApplication.volume_applied_m3_per_ha" name="editManureVol" class="w-full px-3 py-2 border border-outline rounded-md text-sm">
+                      </div>
+                      <div class="flex-1">
+                        <label class="block text-xs font-medium text-on-surface mb-1">Weight (t/ha)</label>
+                        <input type="number" [(ngModel)]="editFormData.organicManureApplication.weight_applied_tonnes_per_ha" name="editManureWeight" class="w-full px-3 py-2 border border-outline rounded-md text-sm">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex justify-end gap-2 mt-2">
+                    <button type="button" (click)="cancelEdit()" class="px-3 py-1 text-sm text-primary font-medium hover:bg-surface-variant rounded-md">Cancel</button>
+                    <button type="submit" class="px-3 py-1 text-sm bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90">Save</button>
+                  </div>
+                </form>
+              </div>
+            </ng-container>
           </div>
         </div>
       </div>
