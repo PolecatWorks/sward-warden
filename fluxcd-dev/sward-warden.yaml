@@ -34,6 +34,8 @@ metadata:
 spec:
   interval: 10m
   url: oci://ghcr.io/polecatworks/sward-warden/helm/sward-warden
+  secretRef:
+    name: sw-gh-pat
   ref:
     semver: ">= 0.1.x-0"
     semverFilter: .*-main
