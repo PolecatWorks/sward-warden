@@ -27,6 +27,9 @@ spec:
             "apiUrl": "/sward-be/v0"
           }
 ---
+# If this is failing with 'DENIED', ensure the PAT in 'sw-gh-pat' has 'read:packages' scope.
+# For private GHCR repositories, the username must be the GitHub username.
+# Using a 'kubernetes.io/dockerconfigjson' secret is also recommended for OCI.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:

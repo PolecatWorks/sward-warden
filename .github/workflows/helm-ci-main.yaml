@@ -2,7 +2,7 @@ name: Helm CI (main)
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
 
 env:
   REGISTRY: ghcr.io
@@ -39,10 +39,10 @@ jobs:
       - uses: azure/setup-helm@v4.2.0
 
       - name: Lint sw-be
-        run: helm lint charts/slurry-manager
+        run: helm lint charts/sward-warden
 
   publish:
-    needs: [check-paths, lint]
+    needs: [ check-paths, lint ]
     if: needs.check-paths.outputs.charts == 'true'
     runs-on: ubuntu-latest
     permissions:
@@ -64,7 +64,7 @@ jobs:
         id: content_sha
         run: |
           # Get the short SHA of the last commit that modified the chart directory
-          SHA_SHORT=$(git log -1 --format=%h -- charts/slurry-manager)
+          SHA_SHORT=$(git log -1 --format=%h -- charts/sward-warden)
           TIMESTAMP=$(date +%Y%m%d%H%M%S)
           echo "sha_short=${TIMESTAMP}-${SHA_SHORT}" >> $GITHUB_OUTPUT
 
@@ -72,14 +72,14 @@ jobs:
         run: |
           # Use the content SHA in the version
           suffix="-main-${{ steps.content_sha.outputs.sha_short }}"
-          sed -i "s/^version: .*/&${suffix}/" charts/slurry-manager/Chart.yaml
-          echo "Updated Agent BE Version:"
-          grep "^version:" charts/slurry-manager/Chart.yaml
+          sed -i "s/^version: .*/&${suffix}/" charts/sward-warden/Chart.yaml
+          echo "Updated sward-warden Version:"
+          grep "^version:" charts/sward-warden/Chart.yaml
 
-      - name: Push Helm chart to OCI for sw-be
+      - name: Push Helm chart to OCI for sward-warden
         uses: bsord/helm-push@v4
         with:
-          chart-folder: charts/slurry-manager
+          chart-folder: charts/sward-warden
           useOCIRegistry: true
           registry-url: oci://ghcr.io/${{ steps.lower-repo.outputs.repository }}/helm
           username: ${{ github.actor }}
@@ -88,7 +88,7 @@ jobs:
 
   ci-success:
     name: Helm CI Success
-    needs: [check-paths, lint, publish]
+    needs: [ check-paths, lint, publish ]
     if: always()
     runs-on: ubuntu-latest
     permissions: {}
