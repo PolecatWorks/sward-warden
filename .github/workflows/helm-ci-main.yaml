@@ -26,7 +26,7 @@ jobs:
           filters: |
             charts:
               - 'charts/**'
-              - '.github/workflows/helm-ci-main.yaml'
+              - '.github/workflows/helm-ci-*.yaml'
 
   lint:
     needs: check-paths
