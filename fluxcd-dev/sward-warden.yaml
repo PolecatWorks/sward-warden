@@ -68,12 +68,12 @@ spec:
       - name: ghcr-docker-auth
     backend:
       image:
-        repository: ghcr.io/polecatworks/sward-warden-backend
+        repository: ghcr.io/polecatworks/sward-warden-be
         tag: main
         pullPolicy: Always
     frontend:
       image:
-        repository: ghcr.io/polecatworks/sward-warden-frontend
+        repository: ghcr.io/polecatworks/sward-warden-fe
         tag: main
         pullPolicy: Always
       configs:
