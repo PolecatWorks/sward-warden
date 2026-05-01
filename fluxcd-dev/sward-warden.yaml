@@ -69,7 +69,12 @@ spec:
     backend:
       image:
         repository: ghcr.io/polecatworks/sward-warden-backend
-        tag: latest
+        tag: main
+        pullPolicy: Always
+    frontend:
+      image:
+        repository: ghcr.io/polecatworks/sward-warden-frontend
+        tag: main
         pullPolicy: Always
       configs:
         database:
