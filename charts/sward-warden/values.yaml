@@ -7,7 +7,7 @@ imagePullSecrets: []
 frontend:
   replicaCount: 1
   image:
-    repository: sward-warden-frontend
+    repository: sward-warden-fe
     pullPolicy: IfNotPresent
     tag: "latest"
   service:

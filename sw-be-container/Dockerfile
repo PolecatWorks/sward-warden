@@ -37,6 +37,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
+COPY config/ /app/config/
 COPY --from=build /app/target/release/sw-be-container /usr/local/bin/
 
 EXPOSE 8080 8079
