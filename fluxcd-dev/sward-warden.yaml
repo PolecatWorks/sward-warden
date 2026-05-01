@@ -8,6 +8,7 @@ spec:
   chartRef:
     kind: OCIRepository
     name: mfe-shell
+    namespace: dev
   interval: 50m
   install:
     remediation:
@@ -30,6 +31,12 @@ spec:
 # If this is failing with 'DENIED', ensure the PAT in 'sw-gh-pat' has 'read:packages' scope.
 # For private GHCR repositories, the username must be the GitHub username.
 # Using a 'kubernetes.io/dockerconfigjson' secret is also recommended for OCI.
+
+# kubectl create secret docker-registry ghcr-docker-auth -n sward-warden-dev \
+#   --docker-server=ghcr.io \
+#   --docker-username=<USERNAME> \
+#   --docker-password='<YOUR_WORKING_PAT>'
+
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
@@ -38,10 +45,10 @@ spec:
   interval: 10m
   url: oci://ghcr.io/polecatworks/sward-warden/helm/sward-warden
   secretRef:
-    name: sw-gh-pat
+    name: ghcr-docker-auth
   ref:
     semver: ">= 0.1.x-0"
-    semverFilter: .*-main
+    semverFilter: .*-main-*
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -57,6 +64,8 @@ spec:
     remediation:
       retries: 3
   values:
+    imagePullSecrets:
+      - name: ghcr-docker-auth
     backend:
       image:
         repository: ghcr.io/polecatworks/sward-warden-backend
