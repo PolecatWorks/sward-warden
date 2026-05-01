@@ -25,12 +25,12 @@ spec:
         - name: migrate
           image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
-          command: ["/app/sw-be-container", "migrate"]
+          command: ["/usr/local/bin/sw-be-container", "migrate"]
       containers:
         - name: backend
           image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
-          command: ["/app/sw-be-container", "serve"]
+          command: ["/usr/local/bin/sw-be-container", "serve"]
           ports:
             - name: http
               containerPort: {{ .Values.backend.service.appPort }}
