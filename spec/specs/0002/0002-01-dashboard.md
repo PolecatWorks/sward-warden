@@ -11,4 +11,4 @@ This specification details the implementation for the Sward Management Dashboard
 
 ## Technical Details
 - Must be implemented using Angular and Angular Material in the `sw-fe-container`.
-- The dashboard UI must be responsive and accessible, suitable for use on mobile devices by farmers in the field.
+- The dashboard FE must be responsive and accessible, suitable for use on mobile devices by farmers in the field.

@@ -1,4 +1,4 @@
-# 0002-07 User Profile and Farm Management UI Specification
+# 0002-07 User Profile and Farm Management FE Specification
 
 ## Status
 Complete

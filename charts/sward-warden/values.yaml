@@ -4,20 +4,20 @@
 
 imagePullSecrets: []
 
-frontend:
+fe:
   replicaCount: 1
   image:
-    repository: sward-warden-frontend
+    repository: sward-warden-fe
     pullPolicy: IfNotPresent
     tag: "latest"
   service:
     type: ClusterIP
     port: 8080
 
-backend:
+be:
   replicaCount: 1
   image:
-    repository: sward-warden-backend
+    repository: sward-warden-be
     pullPolicy: IfNotPresent
     tag: "latest"
   service:

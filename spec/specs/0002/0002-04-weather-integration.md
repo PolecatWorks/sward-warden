@@ -3,10 +3,10 @@
 **State**: Complete
 
 ## Scope
-This specification details the UI implementation for Weather Integration as derived from PRD 0002.
+This specification details the FE implementation for Weather Integration as derived from PRD 0002.
 
 ## Requirements
-- Incorporate real-time and forecasted weather data into the UI.
+- Incorporate real-time and forecasted weather data into the FE.
 - Prevent/warn application scheduling during heavy rain or adverse weather conditions that could lead to runoff.
 
 ## Technical Details

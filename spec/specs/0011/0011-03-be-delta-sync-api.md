@@ -1,7 +1,7 @@
-# Specification 0011-03: Backend Delta Sync API
+# Specification 0011-03: Be Delta Sync API
 
 ## Goal
-Extend the backend PostgreSQL schema and Axum API to support delta synchronisation. This enables the frontend to pull only records modified since a given checkpoint, rather than downloading the full dataset.
+Extend the be PostgreSQL schema and Axum API to support delta synchronisation. This enables the fe to pull only records modified since a given checkpoint, rather than downloading the full dataset.
 
 ## State: Complete
 

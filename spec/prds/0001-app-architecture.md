@@ -1,9 +1,9 @@
 # PRD 0001: Application Architecture
 
 ## Overview
-This document defines the overarching application architecture for the sward management application, covering frontend, backend, and deployment strategies.
+This document defines the overarching application architecture for the sward management application, covering fe, be, and deployment strategies.
 
-## Frontend Requirements
+## Fe Requirements
 - **Framework:** Angular
 - **Layout Pattern:** Persistent shell layout using a `MainLayoutComponent` with nested `<router-outlet>` to ensure stable navigation (Header/BottomNav) across view transitions.
 - **Design System:** Transition from generic Angular Material to a custom premium aesthetic using Tailwind CSS, Google Fonts (Work Sans), and curated HSL color palettes. Angular Material remains supported for low-level primitive components.
@@ -13,7 +13,7 @@ This document defines the overarching application architecture for the sward man
 ## Development Workflow
 - All development actions will be triggered by `Makefile` targets.
 
-## Backend Requirements
+## Be Requirements
 - **Language/Framework:** Rust using the Axum web framework.
 - **Location:** Code to be placed in `sw-be-container` directory.
 - **Deployment:** Packaged as a Docker container.
@@ -37,6 +37,6 @@ This document defines the overarching application architecture for the sward man
   - Liveness, readiness, startup, shutdown lifecycle, and health events will be served via HTTP on port 8079.
 
 ## Deployment Requirements
-- Both frontend and backend applications will be built as Docker containers.
+- Both fe and be applications will be built as Docker containers.
 - Deployment target is a Kubernetes cluster.
 - Deployment configuration will be managed using Helm charts, which will reside in the `charts` directory.

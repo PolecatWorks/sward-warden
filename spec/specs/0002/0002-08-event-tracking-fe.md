@@ -1,10 +1,10 @@
-# 0002-08 Event Tracking UI Specification
+# 0002-08 Event Tracking FE Specification
 
 ## Status
 Complete
 
 ## Overview
-This document outlines the UI requirements for recording agricultural events, based on Feature 8 of PRD 0002.
+This document outlines the FE requirements for recording agricultural events, based on Feature 8 of PRD 0002.
 
 ## Requirements
 

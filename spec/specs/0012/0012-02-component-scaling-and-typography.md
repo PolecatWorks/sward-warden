@@ -1,11 +1,11 @@
 # Spec 0012-02: Component Scaling and Typography
 
 ## 1. Description
-This specification covers the requirements for scaling individual UI components and adjusting typography to ensure readability and usability across different device form factors, as outlined in PRD 0012.
+This specification covers the requirements for scaling individual FE components and adjusting typography to ensure readability and usability across different device form factors, as outlined in PRD 0012.
 
 ## 2. Acceptance Criteria
 1. **Component Scaling**:
-   - UI components such as cards, list items, and modals must scale appropriately based on the viewport size.
+   - FE components such as cards, list items, and modals must scale appropriately based on the viewport size.
    - Modals/dialogs must take up the full screen or a large percentage of the screen on mobile, but should be constrained to a reasonable max-width (e.g., `max-w-md` or `max-w-lg`) on desktop.
 2. **Responsive Typography**:
    - Typography must be readable across all devices.
@@ -17,7 +17,7 @@ This specification covers the requirements for scaling individual UI components 
 
 ## 3. Implementation Steps
 1. Review and update global typography styles (e.g., in `styles.css` or Tailwind config) to use fluid typography or breakpoint-specific font size overrides.
-2. Update existing modal/dialog implementations in the Angular frontend to ensure they use responsive width classes.
+2. Update existing modal/dialog implementations in the Angular fe to ensure they use responsive width classes.
 3. Audit interactive elements (buttons, inputs) in core components to ensure minimum padding and height requirements are met on mobile breakpoints.
 
 ## 4. State: Complete

@@ -25,7 +25,7 @@ This document defines the requirements for the application's intelligent optimiz
   - **Sward/Organic Manures**: Standard (10m waterways, 20m lakes) or Increased (15m waterways, 30m lakes during high-risk periods).
 - **Preventative Blocking**: The system must prevent any application events from being recorded or planned within these zones.
 
-## UI Requirements
+## FE Requirements
 - **Integrated Map View**: Use a premium, high-contrast map interface (matching the FieldMetric design) for all spatial visualizations.
 - **Optimization Bento**: Suggested plans should be presented in a Bento-style dashboard with clear "Reasoning" cards (e.g., "High Nutrient Requirement", "Optimal Weather Window").
 - **Visual Warnings**: Use tonal, high-quality iconography to mark buffer zones and high-risk slopes directly on the map.

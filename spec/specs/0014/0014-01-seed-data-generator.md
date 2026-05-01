@@ -1,7 +1,7 @@
 # Specification 0014-01: Seed Data Generator
 
 ## Goal
-Implement a standalone Rust CLI tool in `sw-be-container/tools/seed_data` that populates the Sward Warden database with realistic, localised mock data via the backend API.
+Implement a standalone Rust CLI tool in `sw-be-container/tools/seed_data` that populates the Sward Warden database with realistic, localised mock data via the be API.
 
 ## State: Complete
 

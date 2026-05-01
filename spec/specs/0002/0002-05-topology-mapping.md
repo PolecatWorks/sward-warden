@@ -3,7 +3,7 @@
 **State**: Complete
 
 ## Scope
-This specification details the UI implementation for Topology & Field Mapping as derived from PRD 0002.
+This specification details the FE implementation for Topology & Field Mapping as derived from PRD 0002.
 
 ## Requirements
 - Visualize field topology, slopes, and vulnerable zones.

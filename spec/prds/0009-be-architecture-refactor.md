@@ -1,7 +1,7 @@
-# PRD 0009: Backend Architecture Refactor
+# PRD 0009: Be Architecture Refactor
 
 ## 1. Overview
-The current backend implementation in `sw-be-container` is a simple proof-of-concept utilizing in-memory state (`Arc<RwLock<Vec<T>>>`), basic error handling, and primitive configuration management. This document specifies a comprehensive refactoring of the backend to adopt enterprise-grade Rust patterns based on an established reference architecture.
+The current be implementation in `sw-be-container` is a simple proof-of-concept utilizing in-memory state (`Arc<RwLock<Vec<T>>>`), basic error handling, and primitive configuration management. This document specifies a comprehensive refactoring of the be to adopt enterprise-grade Rust patterns based on an established reference architecture.
 
 ## 2. Objectives
 - Improve application reliability, scalability, and maintainability.

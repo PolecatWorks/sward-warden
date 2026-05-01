@@ -15,7 +15,7 @@ RUN npm run build
 FROM nginx:alpine
 
 # Add OCI labels
-LABEL org.opencontainers.image.title="Slurry-pal UI"
+LABEL org.opencontainers.image.title="Slurry-pal FE"
 LABEL org.opencontainers.image.description="Slurry-pal User Interface (Angular)"
 LABEL org.opencontainers.image.authors="Ben Greene <BenJGreene@gmail.com>"
 LABEL org.opencontainers.image.source="https://github.com/PolecatWorks/Slurry-pal"

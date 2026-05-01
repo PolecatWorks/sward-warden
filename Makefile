@@ -1,4 +1,4 @@
-.PHONY: all build-frontend build-backend helm-package helm-deploy test \
+.PHONY: all build-fe build-be helm-package helm-deploy test \
         sw-fe-dev sw-fe-docker sw-fe-docker-run \
         sw-be-dev sw-be-docker sw-be-docker-run \
         db-local
@@ -26,13 +26,13 @@ sw-admin_INTERNAL_PORT := 80
 test:
 	cd sw-be-container && cargo test -- --test-threads=1
 
-all: build-frontend build-backend helm-package
+all: build-fe build-be helm-package
 
-build-frontend:
-	docker build -t sward-warden-frontend:latest sw-fe-container
+build-fe:
+	docker build -t sward-warden-fe:latest sw-fe-container
 
-build-backend:
-	docker build -t sward-warden-backend:latest sw-be-container
+build-be:
+	docker build -t sward-warden-be:latest sw-be-container
 
 helm-package:
 	helm package $(HELM_DIR) -d charts
@@ -40,7 +40,7 @@ helm-package:
 helm-deploy:
 	helm upgrade --install $(HELM_CHART) $(HELM_DIR)
 
-# --- Rust Backend Patterns ---
+# --- Rust Be Patterns ---
 
 # Run development server
 $(foreach app,$(RUST_APPS),$(app)-dev):%-dev:
@@ -58,7 +58,7 @@ $(foreach app,$(RUST_APPS),$(app)-test):%-test:
 	cd $*-container && \
 	DATABASE_URL="postgres://postgres:mysecretpassword@localhost:5432/swarddb" cargo test -- --test-threads=1
 
-# --- Node/Frontend Patterns ---
+# --- Node/Fe Patterns ---
 
 # Install dependencies (Node)
 $(foreach app,$(NODE_APPS),$(app)-container/node_modules):%-container/node_modules:%-container/package.json

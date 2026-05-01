@@ -1,8 +1,8 @@
-# UI Analysis and Enhancement Plan
+# FE Analysis and Enhancement Plan
 
 ## 1. Current State Assessment
 
-### High-Quality UI Elements
+### High-Quality FE Elements
 The following components have already been implemented with a premium, high-quality aesthetic using Tailwind CSS, custom HSL color palettes, and Google Fonts (Work Sans):
 - **HomeComponent (Profile)**: Features a premium hero section, Bento-style stats, and interactive farm cards.
 - **FarmsComponent**: Clean grid layout with cinematic imagery and clear operational stats.
@@ -79,8 +79,8 @@ For each missing section, the following pages and descriptions outline the expec
 ### The Problem
 The current application uses a flat routing structure where every component independently defines its own `TopAppBar` and `BottomNavBar`. This leads to:
 - **Code Duplication**: Navigation logic and styles are repeated across multiple files.
-- **Layout Jitter**: The UI re-renders the entire shell on every navigation, causing "flickering" of fixed elements like the bottom nav.
-- **Maintenance Difficulty**: Global UI changes require updating every component.
+- **Layout Jitter**: The FE re-renders the entire shell on every navigation, causing "flickering" of fixed elements like the bottom nav.
+- **Maintenance Difficulty**: Global FE changes require updating every component.
 
 ### The Solution: Main Layout Shell
 We should introduce a `MainLayoutComponent` that acts as a persistent shell for the application.
@@ -144,9 +144,9 @@ graph TD
     style Outlet fill:#e1f5fe,stroke:#01579b
 ```
 
-## 5. UI Design Recommendations
+## 5. FE Design Recommendations
 
-To achieve a "more elegant UI" across the entire app, we should:
+To achieve a "more elegant FE" across the entire app, we should:
 
 1. **Standardize Components**: Create reusable high-quality components for:
    - **BentoCards**: For dashboard stats and quick info.

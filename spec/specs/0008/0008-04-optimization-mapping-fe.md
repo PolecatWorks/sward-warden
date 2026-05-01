@@ -1,9 +1,9 @@
-# 0008-04 Optimization & Mapping UI Specification
+# 0008-04 Optimization & Mapping FE Specification
 
 **State**: Complete
 
 ## Scope
-This specification covers the comprehensive frontend implementation integrating optimization results, map visualizations, and weather timelines as per PRD 0008.
+This specification covers the comprehensive fe implementation integrating optimization results, map visualizations, and weather timelines as per PRD 0008.
 
 ## Requirements
 
@@ -23,13 +23,13 @@ This specification covers the comprehensive frontend implementation integrating 
   - Recommended Rate.
   - "Reasoning" tags/sub-cards (e.g., "Optimal Weather Window", "High N Requirement").
 
-### Weather Timeline and Safety UI
+### Weather Timeline and Safety FE
 - Develop a horizontal timeline component specifically showing the "Safe Spreading Window" based on the 48-hour forecast.
 - Use clear visual indicators (green/red blocks or icons) to denote safe vs. unsafe periods.
-- Implement strict UI-level prevention (disabling buttons, showing error modals) when the backend returns a Weather Safety Lock or Spatial Buffer violation.
+- Implement strict FE-level prevention (disabling buttons, showing error modals) when the be returns a Weather Safety Lock or Spatial Buffer violation.
 
 ## Technical Details
 - Implemented in `sw-fe-container` using Angular and Tailwind CSS.
 - Map components should be designed for performance, especially when rendering complex GeoJSON (buffer zones, topologies).
 - Ensure the Bento layout and Map view are fully responsive across mobile, tablet, and desktop (referencing PRD 0012 guidelines).
-- Integrate with backend endpoints defined in specs `0008-01`, `0008-02`, and `0008-03`.
+- Integrate with be endpoints defined in specs `0008-01`, `0008-02`, and `0008-03`.

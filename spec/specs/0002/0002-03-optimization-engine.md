@@ -3,7 +3,7 @@
 **State**: Complete
 
 ## Scope
-This specification details the UI implementation for the Optimization Engine as derived from PRD 0002.
+This specification details the FE implementation for the Optimization Engine as derived from PRD 0002.
 
 ## Requirements
 - Suggest optimal times and locations for sward application based on crop needs and nutrient content.

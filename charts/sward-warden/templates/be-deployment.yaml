@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "sward-warden.fullname" . }}-backend
+  name: {{ include "sward-warden.fullname" . }}-be
   labels:
-    app.kubernetes.io/name: backend
+    app.kubernetes.io/name: be
     app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
-  replicas: {{ .Values.backend.replicaCount }}
+  replicas: {{ .Values.be.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: backend
+      app.kubernetes.io/name: be
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: backend
+        app.kubernetes.io/name: be
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       {{- with .Values.imagePullSecrets }}
@@ -23,20 +23,20 @@ spec:
       {{- end }}
       initContainers:
         - name: migrate
-          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
-          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          image: "{{ .Values.be.image.repository }}:{{ .Values.be.image.tag }}"
+          imagePullPolicy: {{ .Values.be.image.pullPolicy }}
           command: ["/app/sw-be-container", "migrate"]
       containers:
-        - name: backend
-          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
-          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+        - name: be
+          image: "{{ .Values.be.image.repository }}:{{ .Values.be.image.tag }}"
+          imagePullPolicy: {{ .Values.be.image.pullPolicy }}
           command: ["/app/sw-be-container", "serve"]
           ports:
             - name: http
-              containerPort: {{ .Values.backend.service.appPort }}
+              containerPort: {{ .Values.be.service.appPort }}
               protocol: TCP
             - name: lifecycle
-              containerPort: {{ .Values.backend.service.lifecyclePort }}
+              containerPort: {{ .Values.be.service.lifecyclePort }}
               protocol: TCP
           livenessProbe:
             httpGet:

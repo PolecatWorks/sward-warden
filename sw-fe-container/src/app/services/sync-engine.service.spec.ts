@@ -269,7 +269,7 @@ describe('SyncEngineService', () => {
   // Pull Sync (Delta Fetch)
   // ──────────────────────────────────────────────────────────
 
-  it('should pull new farms from the backend', async () => {
+  it('should pull new farms from the be', async () => {
     const db = await firstValueFrom(rxdbService.db$);
 
     const pullPromise = service.pullSync();

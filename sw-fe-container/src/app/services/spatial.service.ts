@@ -7,7 +7,7 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class SpatialService {
-  private apiUrl = `${environment.apiUrl}/v0/spatial`; // Note: Backend needs endpoint for GeoJSON
+  private apiUrl = `${environment.apiUrl}/v0/spatial`; // Note: Be needs endpoint for GeoJSON
 
   constructor(private http: HttpClient) { }
 

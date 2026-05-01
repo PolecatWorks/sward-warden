@@ -23,7 +23,7 @@ This document specifies the requirements for generating reports and exporting da
 5. **Import/Export Reporting**
    - Generate export records of sward/manure movements to be submitted to NIEA annually (by 31 January, or 1 March for derogated farms).
 
-## UI Requirements
+## FE Requirements
 - **Report Preview**: Users must be able to preview reports in a high-fidelity, clean layout before exporting.
 - **Export Progress**: Provide clear, premium visual feedback during the data generation and download process.
 - **Compliance Status Dashboard**: A "Reporting Center" view should use the Bento grid pattern to show upcoming deadlines and the status of various mandatory reports.

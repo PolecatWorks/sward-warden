@@ -3,7 +3,7 @@
 **State**: Complete
 
 ## Scope
-This specification details the backend implementation for the core Optimization Engine as derived from PRD 0008.
+This specification details the be implementation for the core Optimization Engine as derived from PRD 0008.
 
 ## Requirements
 
@@ -24,8 +24,8 @@ This specification details the backend implementation for the core Optimization 
   - Current weather forecast window.
 
 ## Technical Details
-- Must be implemented in the Rust backend (`sw-be-container`).
+- Must be implemented in the Rust be (`sw-be-container`).
 - Create a new module (e.g., `src/optimization/`) to house calculation and ranking logic.
-- Expose REST API endpoints (e.g., `GET /v0/optimization/suggestions/{farm_id}`) to provide calculated plans and reasoning to the frontend.
+- Expose REST API endpoints (e.g., `GET /v0/optimization/suggestions/{farm_id}`) to provide calculated plans and reasoning to the fe.
 - Utilize existing PostgreSQL tables for soil data, crop data, and field geometry.
 - Define specific response structures for "Suggested Plans", including calculated rates and human-readable "Reasoning" strings.

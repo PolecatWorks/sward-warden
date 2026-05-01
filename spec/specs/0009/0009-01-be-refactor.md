@@ -1,7 +1,7 @@
-# Spec 0009-01: Backend Architecture Implementation
+# Spec 0009-01: Be Architecture Implementation
 
 ## 1. Description
-This specification covers the implementation of the backend architecture refactoring as defined in PRD 0009. It transitions `sw-be-container` from a simple MVP structure to a robust, production-ready foundation incorporating `figment` for configuration, `hams` for health checking, comprehensive error handling, and structured routing.
+This specification covers the implementation of the be architecture refactoring as defined in PRD 0009. It transitions `sw-be-container` from a simple MVP structure to a robust, production-ready foundation incorporating `figment` for configuration, `hams` for health checking, comprehensive error handling, and structured routing.
 
 ## 2. Acceptance Criteria
 1. **Dependency Updates**: `Cargo.toml` is updated with all dependencies specified in PRD 0009 (e.g., `figment`, `hams`, `axum-prometheus`, `tokio-util`, etc.).
@@ -16,7 +16,7 @@ This specification covers the implementation of the backend architecture refacto
    - Configured custom Tokio runtime.
    - Initialized `hams` background health check tasks on port 8079.
    - Bound main Axum application on configured port (e.g., 8080).
-8. **Tests Pass**: The refactored backend must compile successfully and all existing unit tests should be updated to pass.
+8. **Tests Pass**: The refactored be must compile successfully and all existing unit tests should be updated to pass.
 
 ## 3. Implementation Steps
 1. **Update Cargo.toml**: Add the dependencies defined in PRD 0009. Update the `[package]` edition if needed.
