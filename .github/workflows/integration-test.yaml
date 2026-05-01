@@ -52,10 +52,10 @@ jobs:
           fi
 
           if [[ "${{ steps.filter.outputs.frontend }}" == "true" ]]; then
-            echo "SW_FE_IMAGE=ghcr.io/${REPO_LOWER}-ui/dev" >> $GITHUB_ENV
+            echo "SW_FE_IMAGE=ghcr.io/${REPO_LOWER}-fe/dev" >> $GITHUB_ENV
             echo "SW_FE_TAG=pr-${PR_NUMBER}" >> $GITHUB_ENV
           else
-            echo "SW_FE_IMAGE=ghcr.io/${REPO_LOWER}-ui" >> $GITHUB_ENV
+            echo "SW_FE_IMAGE=ghcr.io/${REPO_LOWER}-fe" >> $GITHUB_ENV
             echo "SW_FE_TAG=main" >> $GITHUB_ENV
           fi
 
