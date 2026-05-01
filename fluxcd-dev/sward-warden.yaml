@@ -1,32 +1,32 @@
----
-apiVersion: helm.toolkit.fluxcd.io/v2
-kind: HelmRelease
-metadata:
-  name: mfe-sward-warden
-spec:
-  releaseName: mfe-sward-warden
-  chartRef:
-    kind: OCIRepository
-    name: mfe-shell
-    namespace: dev
-  interval: 50m
-  install:
-    remediation:
-      retries: 3
-  values:
-    image:
-      repository: ghcr.io/polecatworks/sward-warden-frontend
-      tag: latest
-      pullPolicy: Always # Dev ONLY
-    env:
-      - name: SERVE_ROOT
-        value: /mfe/sward-warden
-    config:
-      contents:
-        config.json: |
-          {
-            "apiUrl": "/sward-be/v0"
-          }
+# ---
+# apiVersion: helm.toolkit.fluxcd.io/v2
+# kind: HelmRelease
+# metadata:
+#   name: mfe-sward-warden
+# spec:
+#   releaseName: mfe-sward-warden
+#   chartRef:
+#     kind: OCIRepository
+#     name: mfe-shell
+#     namespace: dev
+#   interval: 50m
+#   install:
+#     remediation:
+#       retries: 3
+#   values:
+#     image:
+#       repository: ghcr.io/polecatworks/sward-warden-frontend
+#       tag: latest
+#       pullPolicy: Always # Dev ONLY
+#     env:
+#       - name: SERVE_ROOT
+#         value: /mfe/sward-warden
+#     config:
+#       contents:
+#         config.json: |
+#           {
+#             "apiUrl": "/sward-be/v0"
+#           }
 ---
 # If this is failing with 'DENIED', ensure the PAT in 'sw-gh-pat' has 'read:packages' scope.
 # For private GHCR repositories, the username must be the GitHub username.
