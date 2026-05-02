@@ -47,7 +47,7 @@ fn main() -> Result<(), AppError> {
 
     match &cli.command {
         Commands::Serve => {
-            let config = AppConfig::load()?;
+            let config = AppConfig::load(&cli.config_path, &cli.secrets_dir)?;
             let ct = CancellationToken::new();
             run_in_tokio(&config.runtime, service_cancellable(ct, config.clone()))?;
         }
@@ -55,7 +55,7 @@ fn main() -> Result<(), AppError> {
             println!("sw-be {}", VERSION);
         }
         Commands::Migrate => {
-            let config = AppConfig::load()?;
+            let config = AppConfig::load(&cli.config_path, &cli.secrets_dir)?;
             run_in_tokio(&config.runtime, async move {
                 let db_url: url::Url = config.database.url.clone().into();
                 let db_pool = sqlx::postgres::PgPoolOptions::new()
@@ -74,7 +74,7 @@ fn main() -> Result<(), AppError> {
             })?;
         }
         Commands::Seed { user_id } => {
-            let config = AppConfig::load()?;
+            let config = AppConfig::load(&cli.config_path, &cli.secrets_dir)?;
             run_in_tokio(&config.runtime, async move {
                 let db_url: url::Url = config.database.url.clone().into();
                 let db_pool = sqlx::postgres::PgPoolOptions::new()

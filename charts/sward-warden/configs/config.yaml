@@ -1,0 +1,16 @@
+webservice:
+  address: "http://0.0.0.0:8080"
+  forwarding_headers: []
+database:
+  url:
+    url: "postgres://localhost:5432/swarddb"
+  max_connections: 10
+hams:
+  name: "sw-be"
+  version: "0.1.0"
+  start_active: true
+  addr: "0.0.0.0:8079"
+startup_checks:
+  fails: 5
+  timeout: "5s"
+  enabled: true

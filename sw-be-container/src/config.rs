@@ -2,6 +2,7 @@ use figment::{
     Figment,
     providers::{Env, Format, Yaml},
 };
+use figment_file_provider_adapter::FileAdapter;
 use serde::Deserialize;
 use std::time::Duration;
 use url::Url;
@@ -67,13 +68,9 @@ pub struct StartupCheckConfig {
 }
 
 impl AppConfig {
-    pub fn load() -> Result<Self, Box<figment::Error>> {
-        let run_mode = std::env::var("RUN_MODE").unwrap_or_else(|_| "development".into());
-
+    pub fn load(config_path: &std::path::Path, secrets_dir: &std::path::Path) -> Result<Self, Box<figment::Error>> {
         Figment::new()
-            .merge(Yaml::file("config/default.yaml"))
-            .merge(Yaml::file(format!("config/{}.yaml", run_mode)))
-            .merge(Yaml::file("config/secrets.yaml"))
+            .merge(FileAdapter::wrap(Yaml::file(config_path)).relative_to_dir(secrets_dir))
             .merge(Env::prefixed("SP_BE__").split("__"))
             .extract()
             .map_err(Box::new)
@@ -93,7 +90,7 @@ mod tests {
             env::remove_var("SP_BE__DATABASE__URL__PASSWORD");
         }
 
-        let config_res = AppConfig::load();
+        let config_res = AppConfig::load(std::path::Path::new("config/default.yaml"), std::path::Path::new("config"));
         assert!(
             config_res.is_ok(),
             "Config should load even without credentials: {:?}",
@@ -112,7 +109,7 @@ mod tests {
             env::set_var("SP_BE__DATABASE__URL__PASSWORD", "envpass");
         }
 
-        let config = AppConfig::load().unwrap();
+        let config = AppConfig::load(std::path::Path::new("config/default.yaml"), std::path::Path::new("config")).unwrap();
 
         unsafe {
             env::remove_var("SP_BE__DATABASE__URL__USERNAME");

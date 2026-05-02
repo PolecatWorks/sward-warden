@@ -1,3 +1,4 @@
+{{- $configsha := tpl (include "sward-warden.be.config" .) . | sha256sum }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -13,6 +14,8 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
+      annotations:
+        checksum/config: {{ $configsha }}
       labels:
         app.kubernetes.io/name: be
         app.kubernetes.io/instance: {{ .Release.Name }}
@@ -25,12 +28,24 @@ spec:
         - name: migrate
           image: "{{ .Values.be.image.repository }}:{{ .Values.be.image.tag }}"
           imagePullPolicy: {{ .Values.be.image.pullPolicy }}
-          command: ["/app/sw-be-container", "migrate"]
+          command: ["/usr/local/bin/sw-be-container", "--config-path", "/etc/sw-be/config.yaml", "--secrets-dir", "/etc/sw-be/secrets", "migrate"]
+          volumeMounts:
+            - name: config
+              mountPath: /etc/sw-be/config.yaml
+              subPath: config.yaml
+            - name: secrets
+              mountPath: /etc/sw-be/secrets
       containers:
         - name: be
           image: "{{ .Values.be.image.repository }}:{{ .Values.be.image.tag }}"
           imagePullPolicy: {{ .Values.be.image.pullPolicy }}
-          command: ["/app/sw-be-container", "serve"]
+          command: ["/usr/local/bin/sw-be-container", "--config-path", "/etc/sw-be/config.yaml", "--secrets-dir", "/etc/sw-be/secrets", "serve"]
+          volumeMounts:
+            - name: config
+              mountPath: /etc/sw-be/config.yaml
+              subPath: config.yaml
+            - name: secrets
+              mountPath: /etc/sw-be/secrets
           ports:
             - name: http
               containerPort: {{ .Values.be.service.appPort }}
@@ -50,3 +65,11 @@ spec:
               port: lifecycle
             initialDelaySeconds: 5
             periodSeconds: 10
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "sward-warden.fullname" . }}-be
+        - name: secrets
+          secret:
+            secretName: {{ include "sward-warden.fullname" . }}-be-secrets
+            optional: true
