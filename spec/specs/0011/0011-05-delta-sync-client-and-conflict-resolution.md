@@ -1,7 +1,7 @@
 # Specification 0011-05: Delta Sync Client and Conflict Resolution
 
 ## Goal
-Implement the client-side pull-sync mechanism that fetches only changed records from the backend using the delta sync API (spec 0011-03), and define the conflict resolution strategy for records modified both locally and on the server.
+Implement the client-side pull-sync mechanism that fetches only changed records from the be using the delta sync API (spec 0011-03), and define the conflict resolution strategy for records modified both locally and on the server.
 
 ## State: Complete
 

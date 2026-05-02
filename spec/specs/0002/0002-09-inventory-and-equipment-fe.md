@@ -1,4 +1,4 @@
-# 0002-09 Inventory and Equipment UI Specification
+# 0002-09 Inventory and Equipment FE Specification
 
 ## Status
 Complete

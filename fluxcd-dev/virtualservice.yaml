@@ -23,4 +23,4 @@ spec:
             prefix: /sward-be/v0
       route:
         - destination:
-            host: sward-warden-sward-warden-backend
+            host: sward-warden-sward-warden-be

@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "sward-warden.fullname" . }}-frontend
+  name: {{ include "sward-warden.fullname" . }}-fe
   labels:
-    app.kubernetes.io/name: frontend
+    app.kubernetes.io/name: fe
     app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
-  replicas: {{ .Values.frontend.replicaCount }}
+  replicas: {{ .Values.fe.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: frontend
+      app.kubernetes.io/name: fe
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: frontend
+        app.kubernetes.io/name: fe
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       {{- with .Values.imagePullSecrets }}
@@ -22,9 +22,9 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - name: frontend
-          image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
-          imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+        - name: fe
+          image: "{{ .Values.fe.image.repository }}:{{ .Values.fe.image.tag }}"
+          imagePullPolicy: {{ .Values.fe.image.pullPolicy }}
           ports:
             - name: http
               containerPort: 80

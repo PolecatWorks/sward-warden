@@ -13,7 +13,7 @@ The Administration Console will focus on providing read and limited write capabi
 
 ### 3.1 Separate Interface
 - The admin console will not be bundled with the standard user application.
-- It will be deployed and accessed independently (e.g., via a dedicated sub-domain or a completely separate frontend container).
+- It will be deployed and accessed independently (e.g., via a dedicated sub-domain or a completely separate fe container).
 
 ### 3.2 Access Control and Permissions
 - The console will require distinct administrative or support-level permissions.

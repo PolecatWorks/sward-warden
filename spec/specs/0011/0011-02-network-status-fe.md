@@ -1,4 +1,4 @@
-# Specification 0011-02: Network Status and Sync UI
+# Specification 0011-02: Network Status and Sync FE
 
 ## Goal
 Implement network connectivity detection and a visual sync-state indicator so users always know whether the application is online, offline, or actively syncing.

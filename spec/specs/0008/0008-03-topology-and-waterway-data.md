@@ -3,7 +3,7 @@
 **State**: Complete
 
 ## Scope
-This specification defines the backend processing and data structures required for topology mapping and waterway protection buffer zones (PRD 0008).
+This specification defines the be processing and data structures required for topology mapping and waterway protection buffer zones (PRD 0008).
 
 ## Requirements
 
@@ -17,7 +17,7 @@ This specification defines the backend processing and data structures required f
 
 ### Preventative Blocking (Spatial)
 - During application event recording or planning, validate the application geometry against the calculated buffer zones.
-- Applications intersecting buffer zones must be rejected or truncated (depending on specific UI implementation, but the backend must enforce the strict boundary).
+- Applications intersecting buffer zones must be rejected or truncated (depending on specific FE implementation, but the be must enforce the strict boundary).
 
 ### Vulnerable Zone Identification
 - Process elevation/topology data (if available in the spatial DB) to identify slopes exceeding safe thresholds for application.

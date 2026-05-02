@@ -12,14 +12,14 @@ All actions taken within the Administration Console must be audited and logged f
 
 ## 3. Technical Details
 - **Database**: New table `audit_logs`.
-- **Backend Implementation**:
+- **Be Implementation**:
   - Interceptor or middleware to log requests to `/api/admin/*`.
   - Service to write logs to the database asynchronously.
-- **Frontend**:
+- **Fe**:
   - `AuditLogComponent`: Table view of recent administrative actions with filtering.
 
 ## 4. Tasks
 - [ ] Create `audit_logs` table in the database.
-- [ ] Implement backend logging mechanism for admin routes.
+- [ ] Implement be logging mechanism for admin routes.
 - [ ] Create `GET /api/admin/audit-logs` endpoint.
 - [ ] Build `AuditLogComponent` in the Admin Console.

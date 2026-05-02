@@ -4,9 +4,9 @@
 This document outlines the requirements for ensuring the application is fully responsive and provides an optimal user experience across mobile, tablet, and desktop devices. Currently, the application is heavily mobile-oriented and does not scale appropriately on wider screens.
 
 ## Objectives
-- Enhance the UI to utilize available screen real estate effectively on tablet and desktop devices.
+- Enhance the FE to utilize available screen real estate effectively on tablet and desktop devices.
 - Maintain a consistent and high-quality user experience across all device form factors.
-- Ensure all existing and future UI components adapt gracefully to different screen widths.
+- Ensure all existing and future FE components adapt gracefully to different screen widths.
 
 ## Requirements
 
@@ -19,7 +19,7 @@ This document outlines the requirements for ensuring the application is fully re
   - Navigation should adapt to desktop (e.g., potentially switching from a bottom nav to a sidebar or top nav, or adjusting its behavior).
 
 ### 2. Component Scaling
-- UI components (cards, lists, modals) should scale appropriately.
+- FE components (cards, lists, modals) should scale appropriately.
 - Typography should be readable across all devices, with adjusted font sizes and line heights for larger screens if necessary.
 - Ensure touch targets remain adequately sized for touch devices (mobile, tablet), while allowing for appropriate interaction patterns on mouse-driven devices (desktop).
 
@@ -29,4 +29,4 @@ This document outlines the requirements for ensuring the application is fully re
 - Test all major views (Dashboard, Farm Management, Event Tracking, Inventory) across mobile, tablet, and desktop viewports to verify responsive behavior.
 
 ## Dependencies
-- This PRD extends the general UI requirements outlined in [PRD 0002: UI Requirements](./0002-ui.md).
+- This PRD extends the general FE requirements outlined in [PRD 0002: FE Requirements](./0002-fe.md).

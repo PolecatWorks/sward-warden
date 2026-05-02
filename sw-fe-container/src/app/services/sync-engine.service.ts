@@ -20,7 +20,7 @@ const SYNC_INTERVAL_MS = 5 * 60 * 1000;
 /** Metadata key used to store the last successful sync checkpoint. */
 const CHECKPOINT_KEY = 'lastSyncCheckpoint';
 
-/** Response shape from the backend delta sync endpoint. */
+/** Response shape from the be delta sync endpoint. */
 interface SyncResponse {
   checkpoint: string;
   farms: any[];
@@ -37,8 +37,8 @@ interface SyncResponse {
 
 /**
  * Service responsible for bi-directional sync:
- * - Push: process the outbox queue (offline writes → backend)
- * - Pull: fetch delta changes from backend → local RxDB
+ * - Push: process the outbox queue (offline writes → be)
+ * - Pull: fetch delta changes from be → local RxDB
  *
  * Sync is triggered on:
  * - Application startup (if online)
@@ -77,7 +77,7 @@ export class SyncEngineService implements OnDestroy {
   /**
    * Perform a full sync cycle:
    * 1. Push: flush the outbox queue
-   * 2. Pull: fetch delta changes from the backend
+   * 2. Pull: fetch delta changes from the be
    */
   async fullSync(): Promise<void> {
     if (this.syncInProgress) return;
@@ -174,7 +174,7 @@ export class SyncEngineService implements OnDestroy {
   // Pull Sync (Delta Fetch)
   // ──────────────────────────────────────────────────────────
 
-  /** Fetch changed records from the backend and upsert into local RxDB. */
+  /** Fetch changed records from the be and upsert into local RxDB. */
   async pullSync(): Promise<void> {
     const db = await firstValueFrom(this.rxdbService.db$);
     const apiUrl = await firstValueFrom(this.farmService.apiUrl$);

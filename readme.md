@@ -11,20 +11,20 @@ Please read `agents.md` for information on our workflow and development patterns
 ## Prerequisites
 
 Before beginning development, ensure you have the following installed:
-* **Rust / Cargo**: For backend development (`sw-be-container`).
-* **Node.js / npm**: For frontend development (`sw-fe-container`).
+* **Rust / Cargo**: For be development (`sw-be-container`).
+* **Node.js / npm**: For fe development (`sw-fe-container`).
 * **Docker**: For building container images.
 * **Helm**: For Kubernetes deployment packaging.
 * **Make**: To run Makefile targets.
-* **PostgreSQL**: Backend database (can also be run locally via Docker).
+* **PostgreSQL**: Be database (can also be run locally via Docker).
 
 ## Development Setup & Running
 
-### Frontend Development (`sw-fe-container`)
+### Fe Development (`sw-fe-container`)
 
-The frontend is an Angular application.
+The fe is an Angular application.
 
-1. Navigate to the frontend directory:
+1. Navigate to the fe directory:
    ```bash
    cd sw-fe-container
    ```
@@ -36,20 +36,20 @@ The frontend is an Angular application.
    ```bash
    npm start
    ```
-4. **Testing**: To run frontend Angular tests headlessly, use:
+4. **Testing**: To run fe Angular tests headlessly, use:
    ```bash
    npm test -- --watch=false --browsers=ChromeHeadless
    ```
 
-### Backend Development (`sw-be-container`)
+### Be Development (`sw-be-container`)
 
-The backend is built in Rust using the Axum framework. It serves main HTTP traffic on port `8080` and exposes Kubernetes lifecycle checks (liveness, readiness, startup, shutdown) under `/hams/*` on port `8079`.
+The be is built in Rust using the Axum framework. It serves main HTTP traffic on port `8080` and exposes Kubernetes lifecycle checks (liveness, readiness, startup, shutdown) under `/hams/*` on port `8079`.
 
-1. Navigate to the backend directory:
+1. Navigate to the be directory:
    ```bash
    cd sw-be-container
    ```
-2. Run the backend server:
+2. Run the be server:
    ```bash
    cargo run -- serve
    ```
@@ -62,9 +62,9 @@ The backend is built in Rust using the Axum framework. It serves main HTTP traff
 
 The repository uses specific `Makefile` targets to coordinate builds and testing. All major development actions should be triggered via these targets:
 
-* `make test` - Runs backend tests safely (single-threaded).
-* `make build-frontend` - Builds the Docker image for the frontend.
-* `make build-backend` - Builds the Docker image for the backend.
+* `make test` - Runs be tests safely (single-threaded).
+* `make build-fe` - Builds the Docker image for the fe.
+* `make build-be` - Builds the Docker image for the be.
 * `make helm-package` - Packages the Helm chart into the `charts/` directory.
 * `make helm-deploy` - Upgrades or installs the packaged Helm chart.
-* `make all` - Builds frontend, backend, and packages the Helm chart.
+* `make all` - Builds fe, be, and packages the Helm chart.

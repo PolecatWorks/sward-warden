@@ -6,7 +6,7 @@
 This specification details the deployment and infrastructure mechanisms as per PRD 0001.
 
 ## Containerization
-- Both the frontend (`sw-fe-container/`) and backend (`sw-be-container/`) must be containerized.
+- Both the fe (`sw-fe-container/`) and be (`sw-be-container/`) must be containerized.
 - Dockerfiles to be created for both services to produce deployable Docker images.
 
 ## Kubernetes Integration
@@ -15,9 +15,9 @@ This specification details the deployment and infrastructure mechanisms as per P
 - **Helm Charts**: All deployment configuration and resource definitions will be managed using Helm.
 - **Location**: Helm charts will reside in the `charts/` directory.
 
-## Backend Deployment specifics
-- The backend Kubernetes Deployment should be configured to handle lifecycle events via HTTP on port 8079 (liveness, readiness probes).
-- The primary service will expose the backend application traffic on port 8080.
+## Be Deployment specifics
+- The be Kubernetes Deployment should be configured to handle lifecycle events via HTTP on port 8079 (liveness, readiness probes).
+- The primary service will expose the be application traffic on port 8080.
 - Migration processes should be structured using Init Containers or Helm Hooks via the application's CLI `migrate` subcommand.
 
 ## Expected Workflows

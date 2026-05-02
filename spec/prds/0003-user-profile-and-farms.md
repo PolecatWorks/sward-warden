@@ -27,7 +27,7 @@ This document defines the requirements for user profiles and the management of f
      - **Tilling**: Method used (e.g., ploughing, min-till).
      - **Soil Analysis**: pH, P-index, K-index, and Magnesium levels.
 
-## UI Requirements
+## FE Requirements
 - **User Profile**: Must be transitioned from the basic form to a premium "Hero-style" profile view as demonstrated in the prototype `HomeComponent`.
 - **Farm/Field Cards**: Must utilize high-quality imagery (where available) and Bento-style layouts for displaying operational stats.
-- **Timeline**: The field event tracking must use the standardized high-quality activity timeline identified in the UI review.
+- **Timeline**: The field event tracking must use the standardized high-quality activity timeline identified in the FE review.

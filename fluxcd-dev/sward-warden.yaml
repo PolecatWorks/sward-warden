@@ -15,7 +15,7 @@
 #       retries: 3
 #   values:
 #     image:
-#       repository: ghcr.io/polecatworks/sward-warden-frontend
+#       repository: ghcr.io/polecatworks/sward-warden-fe
 #       tag: latest
 #       pullPolicy: Always # Dev ONLY
 #     env:
@@ -66,12 +66,12 @@ spec:
   values:
     imagePullSecrets:
       - name: ghcr-docker-auth
-    backend:
+    be:
       image:
         repository: ghcr.io/polecatworks/sward-warden-be
         tag: main
         pullPolicy: Always
-    frontend:
+    fe:
       image:
         repository: ghcr.io/polecatworks/sward-warden-fe
         tag: main

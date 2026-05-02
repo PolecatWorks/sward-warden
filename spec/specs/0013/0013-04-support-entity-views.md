@@ -13,19 +13,19 @@ Support staff need to drill down into a user's data to troubleshoot issues. This
 - Read-only interface to prevent accidental data modification.
 
 ## 3. Technical Details
-- **Frontend Components**:
+- **Fe Components**:
   - `AdminFarmListComponent`
   - `AdminFieldListComponent`
   - `AdminEventListComponent`
   - `AdminRecordViewComponent`
-- **Backend API**:
+- **Be API**:
   - `GET /api/admin/users/:id/farms`
   - `GET /api/admin/farms/:id/fields`
   - `GET /api/admin/fields/:id/events`
   - `GET /api/admin/farms/:id/records`
 
 ## 4. Tasks
-- [ ] Implement backend support endpoints for Farms, Fields, Events, and Records.
+- [ ] Implement be support endpoints for Farms, Fields, Events, and Records.
 - [ ] Create corresponding list and detail components in `sw-admin-container`.
 - [ ] Implement breadcrumb navigation or hierarchical tree view for easy drilling.
 - [ ] Ensure all fields are marked as read-only in this context.

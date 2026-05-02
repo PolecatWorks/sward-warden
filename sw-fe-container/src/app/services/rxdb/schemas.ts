@@ -1,7 +1,7 @@
 /**
  * RxDB collection schemas for the sward-warden local-first database.
  *
- * Each schema mirrors the backend PostgreSQL model, with additional
+ * Each schema mirrors the be PostgreSQL model, with additional
  * fields for offline sync tracking (syncStatus, updatedAt).
  */
 import { RxJsonSchema } from 'rxdb';

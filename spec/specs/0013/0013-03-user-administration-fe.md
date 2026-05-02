@@ -1,9 +1,9 @@
-# Spec 0013-03: User Administration UI
+# Spec 0013-03: User Administration FE
 
 ## Status: Complete
 
 ## 1. Overview
-Support staff and admins need to view and search for users to provide assistance. This spec details the UI for managing users in the Admin Console.
+Support staff and admins need to view and search for users to provide assistance. This spec details the FE for managing users in the Admin Console.
 
 ## 2. Requirements
 - User listing page with pagination.
@@ -12,11 +12,11 @@ Support staff and admins need to view and search for users to provide assistance
 - Visual indicator for user roles.
 
 ## 3. Technical Details
-- **Frontend Components**:
+- **Fe Components**:
   - `UserListComponent`: Table showing ID, Name, Email, Role, Created Date.
   - `UserSearchComponent`: Input field with debounce for searching.
   - `UserDetailsComponent`: Detailed view of a selected user.
-- **Backend API**:
+- **Be API**:
   - `GET /api/admin/users`: Paginated list of users.
   - `GET /api/admin/users/:id`: Single user details with farm summaries.
 

@@ -16,7 +16,7 @@ export interface WeatherData {
   providedIn: 'root'
 })
 export class WeatherService {
-  private apiUrl = `${environment.apiUrl}/v0/weather`; // Note: Backend needs an endpoint to serve forecast
+  private apiUrl = `${environment.apiUrl}/v0/weather`; // Note: Be needs an endpoint to serve forecast
 
   constructor(private http: HttpClient) { }
 

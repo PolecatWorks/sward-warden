@@ -6,8 +6,8 @@ This document outlines the offline support requirements for the sward management
 ## Core Patterns
 
 ### A. The "Local-First" Data Flow
-The app should never wait for the network to update the UI.
-- **Write:** User saves data → Write to local storage (RxDB) → UI updates immediately.
+The app should never wait for the network to update the FE.
+- **Write:** User saves data → Write to local storage (RxDB) → FE updates immediately.
 - **Sync:** A background service detects a connection → Reads "pending" records from RxDB local storage → Pushes to Postgres.
 - **Resolve:** Server responds → Local storage marks the record as "synced."
 
@@ -30,5 +30,5 @@ When the same record is edited offline and on the server, a conflict resolution 
 - **Version Headers:** Use ETags or a `version_id`. If versions don't match, the server rejects the push and sends current data back to the mobile device for the user to resolve.
 
 ## User Interface
-- Monitor network status and provide an indicator on the UI. The application will use an `isOnline$` observable stream (combining window `online` and `offline` events) to display the current connectivity state to the user.
+- Monitor network status and provide an indicator on the FE. The application will use an `isOnline$` observable stream (combining window `online` and `offline` events) to display the current connectivity state to the user.
 - Display a status icon on the screen indicating the current sync state: "offline", "syncing", or "synced".

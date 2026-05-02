@@ -1,4 +1,4 @@
-# 0002-10 Reporting and Export UI Specification
+# 0002-10 Reporting and Export FE Specification
 
 ## Status
 Complete

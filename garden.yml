@@ -32,11 +32,11 @@ include:
   - charts/sward-warden/**/*
 spec:
   values:
-    frontend:
+    fe:
       image:
-        repository: ${local.env.SW_FE_IMAGE || "sward-warden-frontend"}
+        repository: ${local.env.SW_FE_IMAGE || "sward-warden-fe"}
         tag: ${local.env.SW_FE_TAG || "latest"}
-    backend:
+    be:
       image:
-        repository: ${local.env.SW_BE_IMAGE || "sward-warden-backend"}
+        repository: ${local.env.SW_BE_IMAGE || "sward-warden-be"}
         tag: ${local.env.SW_BE_TAG || "latest"}

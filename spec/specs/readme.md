@@ -4,8 +4,8 @@ This directory contains Technical Specifications derived from the PRDs.
 
 | Specification | Status |
 | :--- | :--- |
-| [0001-01 Frontend Specification](./0001/0001-01-frontend.md) | Complete |
-| [0001-02 Backend Specification](./0001/0001-02-backend.md) | Complete |
+| [0001-01 Fe Specification](./0001/0001-01-fe.md) | Complete |
+| [0001-02 Be Specification](./0001/0001-02-be.md) | Complete |
 | [0001-03 Deployment Specification](./0001/0001-03-deployment.md) | Complete |
 | [0002-02 Dashboard Specification](./0002/0002-01-dashboard.md) | Complete |
 | [0002-03 Compliance Tracking Specification](./0002/0002-02-compliance-tracking.md) | Complete |
@@ -13,10 +13,10 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0002-05 Weather Integration Specification](./0002/0002-04-weather-integration.md) | Complete |
 | [0002-06 Topology and Field Mapping Specification](./0002/0002-05-topology-mapping.md) | Complete |
 | [0002-07 Waterway Protection Specification](./0002/0002-06-waterway-protection.md) | Complete |
-| [0002-07 User Profile and Farm Management UI Specification](./0002/0002-07-user-profile-and-farm-management-ui.md) | Complete |
-| [0002-08 Event Tracking UI Specification](./0002/0002-08-event-tracking-ui.md) | Complete |
-| [0002-09 Inventory and Equipment UI Specification](./0002/0002-09-inventory-and-equipment-ui.md) | Complete |
-| [0002-10 Reporting and Export UI Specification](./0002/0002-10-reporting-and-export-ui.md) | Complete |
+| [0002-07 User Profile and Farm Management FE Specification](./0002/0002-07-user-profile-and-farm-management-fe.md) | Complete |
+| [0002-08 Event Tracking FE Specification](./0002/0002-08-event-tracking-fe.md) | Complete |
+| [0002-09 Inventory and Equipment FE Specification](./0002/0002-09-inventory-and-equipment-fe.md) | Complete |
+| [0002-10 Reporting and Export FE Specification](./0002/0002-10-reporting-and-export-fe.md) | Complete |
 | [0003-02 User Profile Management Specification](./0003/0003-01-user-profile-management.md) | Complete |
 | [0003-03 Farm Management Specification](./0003/0003-02-farm-management.md) | Complete |
 | [0003-04 Field Management Specification](./0003/0003-03-field-management.md) | Complete |
@@ -44,12 +44,12 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0008-01 Optimization Engine Core Specification](./0008/0008-01-optimization-engine-core.md) | Complete |
 | [0008-02 Weather Integration Data Specification](./0008/0008-02-weather-integration-data.md) | Complete |
 | [0008-03 Topology and Waterway Data Specification](./0008/0008-03-topology-and-waterway-data.md) | Complete |
-| [0008-04 Optimization & Mapping UI Specification](./0008/0008-04-optimization-mapping-ui.md) | Complete |
-| [Spec 0009-01: Backend Architecture Implementation](./0009/0009-01-backend-refactor.md) | Complete |
+| [0008-04 Optimization & Mapping FE Specification](./0008/0008-04-optimization-mapping-fe.md) | Complete |
+| [Spec 0009-01: Be Architecture Implementation](./0009/0009-01-be-refactor.md) | Complete |
 | [Specification 0010-01: Database Implementation](./0010/0010-01-database-implementation.md) | Complete |
 | [Specification 0011-01: RxDB Local Database Setup](./0011/0011-01-rxdb-local-database.md) | Complete |
-| [Specification 0011-02: Network Status and Sync UI](./0011/0011-02-network-status-ui.md) | Complete |
-| [Specification 0011-03: Backend Delta Sync API](./0011/0011-03-backend-delta-sync-api.md) | Complete |
+| [Specification 0011-02: Network Status and Sync FE](./0011/0011-02-network-status-fe.md) | Complete |
+| [Specification 0011-03: Be Delta Sync API](./0011/0011-03-be-delta-sync-api.md) | Complete |
 | [Specification 0011-04: Outbox Pattern and Push Sync](./0011/0011-04-outbox-pattern-push-sync.md) | Complete |
 | [Specification 0011-05: Delta Sync Client and Conflict Resolution](./0011/0011-05-delta-sync-client-and-conflict-resolution.md) | Complete |
 | [Spec 0012-01: Adaptive Layouts](./0012/0012-01-adaptive-layouts.md) | Complete |
@@ -57,8 +57,8 @@ This directory contains Technical Specifications derived from the PRDs.
 | [Spec 0012-03: Responsive Design Implementation Guidelines](./0012/0012-03-implementation-guidelines.md) | Complete |
 | [Specification 0014-01: Seed Data Generator](./0014/0014-01-seed-data-generator.md) | Complete |
 | [Spec 0013-01: Admin Console Application Setup](./0013/0013-01-admin-console-app-setup.md) | Complete |
-| [Spec 0013-02: Backend RBAC Implementation](./0013/0013-02-admin-rbac-implementation.md) | Complete |
-| [Spec 0013-03: User Administration UI](./0013/0013-03-user-administration-ui.md) | Complete |
+| [Spec 0013-02: Be RBAC Implementation](./0013/0013-02-admin-rbac-implementation.md) | Complete |
+| [Spec 0013-03: User Administration FE](./0013/0013-03-user-administration-fe.md) | Complete |
 | [Spec 0013-04: Support Entity Explorer](./0013/0013-04-support-entity-views.md) | Complete |
 | [Spec 0013-05: Administrative Audit Logging](./0013/0013-05-admin-audit-logging.md) | Complete |
 
@@ -68,12 +68,12 @@ The following "Open" specifications will be implemented in the order listed belo
 
 | Order | Specification | Primary Dependency |
 | :--- | :--- | :--- |
-| 1 | [0009-01 Backend Architecture Refactor](./0009/0009-01-backend-refactor.md) | Complete (Foundation) |
+| 1 | [0009-01 Be Architecture Refactor](./0009/0009-01-be-refactor.md) | Complete (Foundation) |
 | 2 | [0004-07 Spreading Equipment Exemptions](./0004/0004-07-spreading-equipment-exemptions.md) | Complete |
 | 3 | [0008-02 Weather Integration Data](./0008/0008-02-weather-integration-data.md) | Complete |
 | 4 | [0008-03 Topology and Waterway Data](./0008/0008-03-topology-and-waterway-data.md) | Complete |
 | 5 | [0008-01 Optimization Engine Core](./0008/0008-01-optimization-engine-core.md) | Complete |
-| 6 | [0008-04 Optimization & Mapping UI](./0008/0008-04-optimization-mapping-ui.md) | Complete |
+| 6 | [0008-04 Optimization & Mapping FE](./0008/0008-04-optimization-mapping-fe.md) | Complete |
 
 ## PostGIS Requirement
 

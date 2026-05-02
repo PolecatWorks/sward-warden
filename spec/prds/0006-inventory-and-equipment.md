@@ -22,7 +22,7 @@ This document outlines the requirements for tracking inventory and equipment on 
    - Document written contractual agreements for manure movement onto or off the farm.
    - Track origin, destination, volume, and contract length for compliance reporting.
 
-## UI Requirements
+## FE Requirements
 - **Storage Visualization**: Sward storage levels should be visualized using high-quality progress bars or circular gauges that match the premium dashboard aesthetic.
-- **Equipment Inventory**: Use the premium card-based UI to display equipment details, highlighting LESSE compatibility and active statuses.
+- **Equipment Inventory**: Use the premium card-based FE to display equipment details, highlighting LESSE compatibility and active statuses.
 - **Digital Shelf**: The pesticide inventory should be presented as a "digital shelf" with clear categorization and easy access to MAPP details.

@@ -3,7 +3,7 @@
 **State**: Complete
 
 ## Scope
-This specification covers the backend implementation for weather data handling and safety locks as defined in PRD 0008.
+This specification covers the be implementation for weather data handling and safety locks as defined in PRD 0008.
 
 ## Requirements
 
@@ -12,7 +12,7 @@ This specification covers the backend implementation for weather data handling a
 - Data should include precipitation probability, precipitation amount, temperature, and wind speed at appropriate intervals (e.g., hourly).
 
 ### Safety Lock Logic
-- Implement backend validation logic that intercepts requests to schedule or log sward applications.
+- Implement be validation logic that intercepts requests to schedule or log sward applications.
 - **Blocking Conditions:**
   - Forecast of heavy rain (e.g., > x mm/hr or > y% probability) within the next 48 hours.
   - Current conditions indicating snow, frost, or waterlogged soil (based on proxy indicators or recent heavy rainfall data).
@@ -23,4 +23,4 @@ This specification covers the backend implementation for weather data handling a
 - Create a `src/weather/` module.
 - For static data, utilize local files or seed a specific database table, ensuring it can be easily replaced by live API calls in the future.
 - Update relevant application creation endpoints (e.g., in `src/handlers/applications.rs`) to call the weather validation service before processing the request.
-- Define a structured API response format for weather timelines to be consumed by the frontend.
+- Define a structured API response format for weather timelines to be consumed by the fe.
