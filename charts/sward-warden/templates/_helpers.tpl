@@ -22,3 +22,10 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 {{- end }}
 {{- end }}
+
+{{- define "sward-warden.be.config" -}}
+{{- $baseconfig := fromYaml (.Files.Get "configs/config.yaml") }}
+{{- $newconfig := default dict .Values.be.configs }}
+{{- $postmerge := mergeOverwrite $baseconfig $newconfig }}
+{{- toYaml $postmerge }}
+{{- end -}}

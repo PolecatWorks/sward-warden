@@ -3,6 +3,12 @@ use clap::{Parser, Subcommand};
 #[derive(Parser, Debug, PartialEq)]
 #[command(name = "sw-be", about = "Sward management be", version)]
 pub struct Cli {
+    #[arg(short, long)]
+    pub config_path: std::path::PathBuf,
+
+    #[arg(short, long)]
+    pub secrets_dir: std::path::PathBuf,
+
     #[command(subcommand)]
     pub command: Commands,
 }
@@ -29,19 +35,19 @@ mod tests {
 
     #[test]
     fn test_cli_serve() {
-        let cli = Cli::try_parse_from(&["sw-be", "serve"]).unwrap();
+        let cli = Cli::try_parse_from(&["sw-be", "--config-path", "cfg.yaml", "--secrets-dir", "sec", "serve"]).unwrap();
         assert_eq!(cli.command, Commands::Serve);
     }
 
     #[test]
     fn test_cli_version() {
-        let cli = Cli::try_parse_from(&["sw-be", "version"]).unwrap();
+        let cli = Cli::try_parse_from(&["sw-be", "--config-path", "cfg.yaml", "--secrets-dir", "sec", "version"]).unwrap();
         assert_eq!(cli.command, Commands::Version);
     }
 
     #[test]
     fn test_cli_migrate() {
-        let cli = Cli::try_parse_from(&["sw-be", "migrate"]).unwrap();
+        let cli = Cli::try_parse_from(&["sw-be", "--config-path", "cfg.yaml", "--secrets-dir", "sec", "migrate"]).unwrap();
         assert_eq!(cli.command, Commands::Migrate);
     }
 
