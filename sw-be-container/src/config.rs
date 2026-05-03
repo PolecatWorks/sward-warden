@@ -39,6 +39,14 @@ pub struct AppConfig {
     #[serde(default)]
     pub runtime: ThreadRuntime,
     pub startup_checks: StartupCheckConfig,
+    #[serde(default)]
+    pub debugging: DebuggingConfig,
+}
+
+#[derive(Deserialize, Debug, Clone, Default)]
+pub struct DebuggingConfig {
+    #[serde(with = "humantime_serde", default)]
+    pub fail_debug_delay: Option<Duration>,
 }
 
 #[derive(Deserialize, Debug, Clone)]

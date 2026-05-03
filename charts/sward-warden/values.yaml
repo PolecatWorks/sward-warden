@@ -16,6 +16,9 @@ fe:
 
 be:
   replicaCount: 1
+  env: []
+  initContainer:
+    env: []
   image:
     repository: sward-warden-be
     pullPolicy: IfNotPresent

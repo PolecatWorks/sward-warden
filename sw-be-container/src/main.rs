@@ -48,15 +48,23 @@ fn main() -> Result<(), AppError> {
     match &cli.command {
         Commands::Serve => {
             let config = AppConfig::load(&cli.config_path, &cli.secrets_dir)?;
+            let delay = config.debugging.fail_debug_delay.clone();
             let ct = CancellationToken::new();
-            run_in_tokio(&config.runtime, service_cancellable(ct, config.clone()))?;
+            if let Err(e) = run_in_tokio(&config.runtime, service_cancellable(ct, config.clone())) {
+                if let Some(d) = delay {
+                    tracing::error!("Serve failed: {}. Sleeping for {:?} before exiting...", e, d);
+                    std::thread::sleep(d);
+                }
+                return Err(e);
+            }
         }
         Commands::Version => {
             println!("sw-be {}", VERSION);
         }
         Commands::Migrate => {
             let config = AppConfig::load(&cli.config_path, &cli.secrets_dir)?;
-            run_in_tokio(&config.runtime, async move {
+            let delay = config.debugging.fail_debug_delay.clone();
+            if let Err(e) = run_in_tokio(&config.runtime, async move {
                 let db_url: url::Url = config.database.url.clone().into();
                 let db_pool = sqlx::postgres::PgPoolOptions::new()
                     .max_connections(1)
@@ -71,11 +79,18 @@ fn main() -> Result<(), AppError> {
 
                 println!("Migrations completed successfully.");
                 Ok(())
-            })?;
+            }) {
+                if let Some(d) = delay {
+                    tracing::error!("Migrate failed: {}. Sleeping for {:?} before exiting...", e, d);
+                    std::thread::sleep(d);
+                }
+                return Err(e);
+            }
         }
         Commands::Seed { user_id } => {
             let config = AppConfig::load(&cli.config_path, &cli.secrets_dir)?;
-            run_in_tokio(&config.runtime, async move {
+            let delay = config.debugging.fail_debug_delay.clone();
+            if let Err(e) = run_in_tokio(&config.runtime, async move {
                 let db_url: url::Url = config.database.url.clone().into();
                 let db_pool = sqlx::postgres::PgPoolOptions::new()
                     .max_connections(1)
@@ -83,7 +98,13 @@ fn main() -> Result<(), AppError> {
                     .await
                     .map_err(|e| AppError::Message(format!("Failed to connect to database: {e}")))?;
                 seed::seed_database(&db_pool, *user_id).await
-            })?;
+            }) {
+                if let Some(d) = delay {
+                    tracing::error!("Seed failed: {}. Sleeping for {:?} before exiting...", e, d);
+                    std::thread::sleep(d);
+                }
+                return Err(e);
+            }
         }
     }
 

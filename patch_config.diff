@@ -1,0 +1,29 @@
+<<<<<<< SEARCH
+#[derive(Deserialize, Clone)]
+pub struct AppConfig {
+    pub database: DatabaseConfig,
+    pub webservice: WebServiceConfig,
+    pub hams: HamsConfig,
+    #[serde(default)]
+    pub runtime: ThreadRuntime,
+    pub startup_checks: StartupCheckConfig,
+}
+=======
+#[derive(Deserialize, Clone)]
+pub struct AppConfig {
+    pub database: DatabaseConfig,
+    pub webservice: WebServiceConfig,
+    pub hams: HamsConfig,
+    #[serde(default)]
+    pub runtime: ThreadRuntime,
+    pub startup_checks: StartupCheckConfig,
+    #[serde(default)]
+    pub debugging: DebuggingConfig,
+}
+
+#[derive(Deserialize, Debug, Clone, Default)]
+pub struct DebuggingConfig {
+    #[serde(with = "humantime_serde", default)]
+    pub fail_debug_delay: Option<Duration>,
+}
+>>>>>>> REPLACE
