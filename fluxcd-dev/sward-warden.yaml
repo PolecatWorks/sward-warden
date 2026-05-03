@@ -67,6 +67,10 @@ spec:
     imagePullSecrets:
       - name: ghcr-docker-auth
     be:
+      initContainer:
+        env:
+          - name: SP_BE__DEBUGGING__FAIL_DEBUG_DELAY
+            value: "60s"
       image:
         repository: ghcr.io/polecatworks/sward-warden-be
         tag: main

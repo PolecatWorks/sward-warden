@@ -15,6 +15,7 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: read
   packages: read
   id-token: write
 
@@ -52,10 +53,10 @@ jobs:
           fi
 
           if [[ "${{ steps.filter.outputs.frontend }}" == "true" ]]; then
-            echo "SW_FE_IMAGE=ghcr.io/${REPO_LOWER}-ui/dev" >> $GITHUB_ENV
+            echo "SW_FE_IMAGE=ghcr.io/${REPO_LOWER}-fe/dev" >> $GITHUB_ENV
             echo "SW_FE_TAG=pr-${PR_NUMBER}" >> $GITHUB_ENV
           else
-            echo "SW_FE_IMAGE=ghcr.io/${REPO_LOWER}-ui" >> $GITHUB_ENV
+            echo "SW_FE_IMAGE=ghcr.io/${REPO_LOWER}-fe" >> $GITHUB_ENV
             echo "SW_FE_TAG=main" >> $GITHUB_ENV
           fi
 
@@ -82,8 +83,10 @@ jobs:
           GH_VERSION=$(curl -s https://api.github.com/repos/cli/cli/releases/latest | jq -r .tag_name | sed 's/v//')
           curl -sSL "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz" -o gh.tar.gz
           tar xzf gh.tar.gz
-          # Move it to a folder in your PATH (like /usr/local/bin) or just add it to GITHUB_PATH
-          sudo mv gh_${GH_VERSION}_linux_amd64/bin/gh /usr/local/bin/
+          # Add it to GITHUB_PATH so subsequent steps can use it
+          echo "$(pwd)/gh_${GH_VERSION}_linux_amd64/bin" >> $GITHUB_PATH
+          # Also move to /usr/local/bin for good measure
+          sudo mv gh_${GH_VERSION}_linux_amd64/bin/gh /usr/local/bin/ || true
           gh --version
 
       # THIS IS BROKEN
@@ -92,8 +95,13 @@ jobs:
 
       - name: Set up Helm
         uses: azure/setup-helm@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           version: 'latest'
+
+      - name: Configure Helm Token
+        run: echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
 
       - name: Login to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io -u ${{ github.actor }} --password-stdin
