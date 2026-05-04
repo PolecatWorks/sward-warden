@@ -27,3 +27,5 @@ be:
     type: ClusterIP
     appPort: 8080
     lifecyclePort: 8079
+  volumeMounts: []
+  volumes: []

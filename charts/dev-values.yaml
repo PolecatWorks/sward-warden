@@ -1,0 +1,42 @@
+---
+imagePullSecrets:
+  - name: ghcr-docker-auth
+database:
+  url: postgresql://cnpg-db0-cluster-rw.dbs:5432/sward_warden
+be:
+  initContainer:
+    env:
+      - name: SP_BE__DEBUGGING__FAIL_DEBUG_DELAY
+        value: "60s"
+  image:
+    repository: ghcr.io/polecatworks/sward-warden-be
+    tag: main
+    pullPolicy: Always
+  volumes:
+    - name: config
+      configMap:
+        name: "{{ include \"sward-warden.fullname\" . }}-be"
+    - name: secrets
+      projected:
+        sources:
+          - secret:
+              name: db0-sward-warden-user
+              items:
+                - key: username
+                  path: persistence/db/connection/username
+                - key: password
+                  path: persistence/db/connection/password
+  volumeMounts:
+    - name: config
+      mountPath: /etc/sw-be/config.yaml
+      subPath: config.yaml
+    - name: secrets
+      mountPath: /etc/sw-be/secrets
+fe:
+  image:
+    repository: ghcr.io/polecatworks/sward-warden-fe
+    tag: main
+    pullPolicy: Always
+  configs:
+    database:
+      url: postgresql://cnpg-db0-cluster-rw.dbs:5432/sward_warden

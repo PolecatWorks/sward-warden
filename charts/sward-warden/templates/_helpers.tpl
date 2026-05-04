@@ -29,3 +29,21 @@ If release name contains chart name it will be used as a full name.
 {{- $postmerge := mergeOverwrite $baseconfig $newconfig }}
 {{- toYaml $postmerge }}
 {{- end -}}
+
+
+
+{{- define "sward-warden.be.volumes" -}}
+{{- tpl (toYaml .Values.be.volumes) . }}
+{{- end -}}
+
+{{- define "sward-warden.be.volumeMounts" -}}
+{{- tpl (toYaml .Values.be.volumeMounts) . }}
+{{- end -}}
+
+{{- define "sward-warden.be.env" -}}
+{{- tpl (toYaml .Values.be.env) . }}
+{{- end -}}
+
+{{- define "sward-warden.be.initContainer.env" -}}
+{{- tpl (toYaml .Values.be.initContainer.env) . }}
+{{- end -}}
