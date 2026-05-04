@@ -33,27 +33,14 @@ spec:
           env:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          volumeMounts:
-            - name: config
-              mountPath: /etc/sw-be/config.yaml
-              subPath: config.yaml
-            - name: secrets
-              mountPath: /etc/sw-be/secrets
+          volumeMounts: {{- include "sward-warden.be.volumeMounts" . | nindent 12 }}
       containers:
         - name: be
           image: "{{ .Values.be.image.repository }}:{{ .Values.be.image.tag }}"
           imagePullPolicy: {{ .Values.be.image.pullPolicy }}
           command: ["/usr/local/bin/sw-be-container", "--config-path", "/etc/sw-be/config.yaml", "--secrets-dir", "/etc/sw-be/secrets", "serve"]
-          {{- with .Values.be.env }}
           env:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          volumeMounts:
-            - name: config
-              mountPath: /etc/sw-be/config.yaml
-              subPath: config.yaml
-            - name: secrets
-              mountPath: /etc/sw-be/secrets
+            {{- include "sward-warden.be.env" . | nindent 12 }}
           ports:
             - name: http
               containerPort: {{ .Values.be.service.appPort }}
@@ -73,11 +60,6 @@ spec:
               port: lifecycle
             initialDelaySeconds: 5
             periodSeconds: 10
+          volumeMounts: {{- include "sward-warden.be.volumeMounts" . | nindent 12 }}
       volumes:
-        - name: config
-          configMap:
-            name: {{ include "sward-warden.fullname" . }}-be
-        - name: secrets
-          secret:
-            secretName: {{ include "sward-warden.fullname" . }}-be-secrets
-            optional: true
+        {{- include "sward-warden.be.volumes" . | nindent 8 }}

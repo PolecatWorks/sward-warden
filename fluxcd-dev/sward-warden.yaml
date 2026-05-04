@@ -66,6 +66,8 @@ spec:
   values:
     imagePullSecrets:
       - name: ghcr-docker-auth
+    database:
+      url: postgresql://cnpg-db0-cluster-rw.dbs:5432/sward_warden
     be:
       initContainer:
         env:
@@ -84,6 +86,9 @@ spec:
         database:
           url: postgresql://cnpg-db0-cluster-rw.dbs:5432/sward_warden
     volumes:
+      - name: config
+        configMap:
+          name: {{ include "sward-warden.fullname" . }}-be
       - name: secrets
         projected:
           sources:
@@ -94,3 +99,9 @@ spec:
                     path: persistence/db/connection/username
                   - key: password
                     path: persistence/db/connection/password
+    volumeMounts:
+      - name: config
+        mountPath: /etc/sw-be/config.yaml
+        subPath: config.yaml
+      - name: secrets
+        mountPath: /etc/sw-be/secrets
