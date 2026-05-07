@@ -31,7 +31,7 @@ impl From<UrlWithUsernamePassword> for Url {
     }
 }
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct AppConfig {
     pub database: DatabaseConfig,
     pub webservice: WebServiceConfig,

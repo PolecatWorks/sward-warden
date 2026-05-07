@@ -48,6 +48,7 @@ fn main() -> Result<(), AppError> {
     match &cli.command {
         Commands::Serve => {
             let config = AppConfig::load(&cli.config_path, &cli.secrets_dir)?;
+            println!("Config: {:#?}", config);
             let delay = config.debugging.fail_debug_delay.clone();
             let ct = CancellationToken::new();
             if let Err(e) = run_in_tokio(&config.runtime, service_cancellable(ct, config.clone())) {
@@ -63,6 +64,7 @@ fn main() -> Result<(), AppError> {
         }
         Commands::Migrate => {
             let config = AppConfig::load(&cli.config_path, &cli.secrets_dir)?;
+            println!("Config: {:#?}", config);
             let delay = config.debugging.fail_debug_delay.clone();
             if let Err(e) = run_in_tokio(&config.runtime, async move {
                 let db_url: url::Url = config.database.url.clone().into();
@@ -89,6 +91,7 @@ fn main() -> Result<(), AppError> {
         }
         Commands::Seed { user_id } => {
             let config = AppConfig::load(&cli.config_path, &cli.secrets_dir)?;
+            println!("Config: {:#?}", config);
             let delay = config.debugging.fail_debug_delay.clone();
             if let Err(e) = run_in_tokio(&config.runtime, async move {
                 let db_url: url::Url = config.database.url.clone().into();
