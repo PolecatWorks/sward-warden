@@ -77,7 +77,8 @@ spec:
         pullPolicy: Always
       configs:
         database:
-          url: postgresql://cnpg-db0-cluster-rw.dbs:5432/sward_warden
+          url:
+            url: postgresql://cnpg-db0-cluster-rw.dbs:5432/sward_warden
       volumes:
         - name: config
           configMap:
@@ -105,4 +106,5 @@ spec:
         pullPolicy: Always
       configs:
         database:
-          url: postgresql://cnpg-db0-cluster-rw.dbs:5432/sward_warden
+          url:
+            url: postgresql://cnpg-db0-cluster-rw.dbs:5432/sward_warden
