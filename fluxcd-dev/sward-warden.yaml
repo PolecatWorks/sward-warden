@@ -66,8 +66,6 @@ spec:
   values:
     imagePullSecrets:
       - name: ghcr-docker-auth
-    database:
-      url: postgresql://cnpg-db0-cluster-rw.dbs:5432/sward_warden
     be:
       initContainer:
         env:
@@ -77,6 +75,8 @@ spec:
         repository: ghcr.io/polecatworks/sward-warden-be
         tag: main
         pullPolicy: Always
+      database:
+        url: postgresql://cnpg-db0-cluster-rw.dbs:5432/sward_warden
       volumes:
         - name: config
           configMap:

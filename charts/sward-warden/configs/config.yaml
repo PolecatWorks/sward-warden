@@ -2,8 +2,7 @@ webservice:
   address: "http://0.0.0.0:8080"
   forwarding_headers: []
 database:
-  url:
-    url: "postgres://localhost:5432/swarddb"
+  url: "postgres://localhost:5432/swarddb"
   max_connections: 10
 hams:
   name: "sw-be"
