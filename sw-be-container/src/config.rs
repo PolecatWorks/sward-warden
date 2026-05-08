@@ -3,7 +3,7 @@ use figment::{
     providers::{Env, Format, Yaml},
 };
 use figment_file_provider_adapter::FileAdapter;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::time::Duration;
 use url::Url;
 
@@ -11,7 +11,7 @@ use ::hams::hams::config::HamsConfig;
 
 use crate::tokio_tools::ThreadRuntime;
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct UrlWithUsernamePassword {
     pub url: Url,
     pub username: Option<String>,
@@ -31,10 +31,11 @@ impl From<UrlWithUsernamePassword> for Url {
     }
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct AppConfig {
     pub database: DatabaseConfig,
     pub webservice: WebServiceConfig,
+    #[serde(serialize_with = "serialize_hams")]
     pub hams: HamsConfig,
     #[serde(default)]
     pub runtime: ThreadRuntime,
@@ -43,13 +44,20 @@ pub struct AppConfig {
     pub debugging: DebuggingConfig,
 }
 
-#[derive(Deserialize, Debug, Clone, Default)]
+fn serialize_hams<S>(hams: &HamsConfig, s: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    s.serialize_str(&format!("{:?}", hams))
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone, Default)]
 pub struct DebuggingConfig {
     #[serde(with = "humantime_serde", default)]
     pub fail_debug_delay: Option<Duration>,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct DatabaseConfig {
     pub url: UrlWithUsernamePassword,
     #[serde(default = "default_max_connections")]
@@ -60,14 +68,14 @@ fn default_max_connections() -> u32 {
     10
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct WebServiceConfig {
     pub address: Url,
     #[serde(default)]
     pub forwarding_headers: Vec<String>,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct StartupCheckConfig {
     pub fails: u32,
     #[serde(with = "humantime_serde")]

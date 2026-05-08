@@ -7,11 +7,11 @@ use crate::error::AppError;
 use futures::Future;
 use tracing::{error, info};
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use tokio::runtime::{self, Runtime};
 use tokio_util::sync::CancellationToken;
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct ThreadRuntime {
     pub threads: usize,
     pub stack_size: usize,

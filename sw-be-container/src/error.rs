@@ -87,7 +87,9 @@ impl axum::response::IntoResponse for AppError {
                 reqwest::StatusCode::INTERNAL_SERVER_ERROR,
                 "Hams Error".to_string(),
             ),
-            AppError::Serde(_error) => (reqwest::StatusCode::BAD_REQUEST, "Serde Error".to_string()),
+            AppError::Serde(_error) => {
+                (reqwest::StatusCode::BAD_REQUEST, "Serde Error".to_string())
+            }
             AppError::Io(_error) => (
                 reqwest::StatusCode::INTERNAL_SERVER_ERROR,
                 "IO Error".to_string(),
