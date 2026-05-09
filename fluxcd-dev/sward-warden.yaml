@@ -79,8 +79,8 @@ spec:
         database:
           url:
             url: postgresql://cnpg-db0-cluster-rw.dbs:5432/sward_warden
-            username_FILE: persistence/db/connection/username
-            password_FILE: persistence/db/connection/password
+            username_file: persistence/db/connection/username
+            password_file: persistence/db/connection/password
       volumes:
         - name: config
           configMap:

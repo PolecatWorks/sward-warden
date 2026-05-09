@@ -85,8 +85,11 @@ pub struct StartupCheckConfig {
 
 impl AppConfig {
     pub fn load(config_path: &std::path::Path, secrets_dir: &std::path::Path) -> Result<Self, Box<figment::Error>> {
+        let adapter = FileAdapter::wrap(Yaml::file(config_path))
+            .relative_to_dir(secrets_dir);
+
         Figment::new()
-            .merge(FileAdapter::wrap(Yaml::file(config_path)).relative_to_dir(secrets_dir))
+            .merge(adapter)
             .merge(Env::prefixed("SP_BE__").split("__"))
             .extract()
             .map_err(Box::new)
@@ -134,5 +137,48 @@ mod tests {
 
         assert_eq!(config.database.url.username.as_deref(), Some("envuser"));
         assert_eq!(config.database.url.password.as_deref(), Some("envpass"));
+    }
+
+    #[test]
+    fn test_config_load_with_file_secrets() {
+        use std::fs;
+        use std::io::Write;
+
+        let test_dir = std::path::Path::new("test_secrets_dir_final");
+        if test_dir.exists() {
+            fs::remove_dir_all(test_dir).unwrap();
+        }
+        fs::create_dir_all(test_dir).unwrap();
+        let test_dir = fs::canonicalize(test_dir).unwrap();
+
+        fs::write(test_dir.join("db_user"), "fileuser").unwrap();
+        fs::write(test_dir.join("db_pass"), "filepass").unwrap();
+
+        let test_config_path = test_dir.join("config.yaml");
+        let mut file = fs::File::create(&test_config_path).unwrap();
+        writeln!(file, "database:").unwrap();
+        writeln!(file, "  url:").unwrap();
+        writeln!(file, "    url: postgres://localhost:5432/db").unwrap();
+        writeln!(file, "    username_file: db_user").unwrap();
+        writeln!(file, "    password_file: db_pass").unwrap();
+        writeln!(file, "webservice:").unwrap();
+        writeln!(file, "  address: http://0.0.0.0:8080").unwrap();
+        writeln!(file, "hams:").unwrap();
+        writeln!(file, "  name: test").unwrap();
+        writeln!(file, "  version: 0.1.0").unwrap();
+        writeln!(file, "  start_active: true").unwrap();
+        writeln!(file, "  addr: 0.0.0.0:8079").unwrap();
+        writeln!(file, "startup_checks:").unwrap();
+        writeln!(file, "  fails: 1").unwrap();
+        writeln!(file, "  timeout: 1s").unwrap();
+        writeln!(file, "  enabled: false").unwrap();
+
+        let config = AppConfig::load(&test_config_path, &test_dir).unwrap();
+
+        assert_eq!(config.database.url.username.as_deref(), Some("fileuser"));
+        assert_eq!(config.database.url.password.as_deref(), Some("filepass"));
+
+        // Cleanup
+        fs::remove_dir_all(test_dir).unwrap();
     }
 }
