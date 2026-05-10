@@ -16,7 +16,25 @@ fe:
 
 be:
   replicaCount: 1
+  containerPort: 8080
   env: []
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: http-lifecycle
+    initialDelaySeconds: 15
+    periodSeconds: 20
+  readinessProbe:
+    httpGet:
+      path: /ready
+      port: http-lifecycle
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  lifecycle: {}
+    # preStop:
+    #   httpGet:
+    #     port: http-lifecycle
+    #     path: "/hams/stop"
   initContainer:
     env: []
   image:
@@ -25,7 +43,6 @@ be:
     tag: "latest"
   service:
     type: ClusterIP
-    appPort: 8080
-    lifecyclePort: 8079
+    port: 80
   volumeMounts: []
   volumes: []

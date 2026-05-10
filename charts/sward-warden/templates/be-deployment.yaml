@@ -42,24 +42,18 @@ spec:
           env:
             {{- include "sward-warden.be.env" . | nindent 12 }}
           ports:
-            - name: http
-              containerPort: {{ .Values.be.service.appPort }}
+            - name: http-web
+              containerPort: {{ .Values.be.containerPort }}
               protocol: TCP
-            - name: lifecycle
+            - name: http-lifecycle
               containerPort: {{ .Values.be.service.lifecyclePort }}
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: lifecycle
-            initialDelaySeconds: 15
-            periodSeconds: 20
+          lifecycle:
+            {{- toYaml .Values.be.lifecycle | nindent 12 }}
           readinessProbe:
-            httpGet:
-              path: /ready
-              port: lifecycle
-            initialDelaySeconds: 5
-            periodSeconds: 10
+            {{- toYaml .Values.be.readinessProbe | nindent 12 }}
+          livenessProbe:
+            {{- toYaml .Values.be.livenessProbe | nindent 12 }}
           volumeMounts: {{- include "sward-warden.be.volumeMounts" . | nindent 12 }}
       volumes:
         {{- include "sward-warden.be.volumes" . | nindent 8 }}

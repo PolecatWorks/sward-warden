@@ -8,14 +8,14 @@ metadata:
 spec:
   type: {{ .Values.be.service.type }}
   ports:
-    - port: {{ .Values.be.service.appPort }}
-      targetPort: http
+    - port: {{ .Values.be.service.port }}
+      targetPort: http-web
       protocol: TCP
-      name: http
-    - port: {{ .Values.be.service.lifecyclePort }}
-      targetPort: lifecycle
+      name: http-web
+    - name: http-envoy-prom
+      port: 15020
       protocol: TCP
-      name: lifecycle
+      targetPort: 15020
   selector:
     app.kubernetes.io/name: be
     app.kubernetes.io/instance: {{ .Release.Name }}
