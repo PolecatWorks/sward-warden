@@ -122,6 +122,12 @@ jobs:
           kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
           # Create a mock secret for sw-be (required by Helm chart)
           kubectl create secret generic sw-be -n $NAMESPACE --from-literal=database_password=mock --dry-run=client -o yaml | kubectl apply -f -
+          # Create docker-registry secret for pulling private images
+          kubectl create secret docker-registry ghcr-secret -n $NAMESPACE \
+            --docker-server=ghcr.io \
+            --docker-username=${{ github.actor }} \
+            --docker-password=${{ secrets.GITHUB_TOKEN }} \
+            --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Run Integration Tests with Garden
         uses: garden-io/garden-action@v2

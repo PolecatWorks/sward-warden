@@ -32,6 +32,8 @@ include:
   - charts/sward-warden/**/*
 spec:
   values:
+    imagePullSecrets:
+      - name: ghcr-secret
     fe:
       image:
         repository: ${local.env.SW_FE_IMAGE || "sward-warden-fe"}
