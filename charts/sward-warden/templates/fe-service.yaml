@@ -3,8 +3,7 @@ kind: Service
 metadata:
   name: {{ include "sward-warden.fullname" . }}-fe
   labels:
-    app.kubernetes.io/name: fe
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "sward-warden.fe.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.fe.service.type }}
   ports:
@@ -13,5 +12,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app.kubernetes.io/name: fe
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "sward-warden.fe.selectorLabels" . | nindent 4 }}

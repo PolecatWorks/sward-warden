@@ -4,22 +4,46 @@ kind: Deployment
 metadata:
   name: {{ include "sward-warden.fullname" . }}-be
   labels:
-    app.kubernetes.io/name: be
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "sward-warden.be.labels" . | nindent 4 }}
 spec:
+  {{- if not .Values.be.autoscaling.enabled }}
   replicas: {{ .Values.be.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: be
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "sward-warden.be.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       annotations:
         checksum/config: {{ $configsha }}
+      {{- with .Values.be.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
-        app.kubernetes.io/name: be
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- include "sward-warden.be.selectorLabels" . | nindent 8 }}
+      {{- with .Values.be.podLabels }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     spec:
+      {{- if .Values.be.serviceAccount.create }}
+      serviceAccountName: {{ include "sward-warden.be.serviceAccountName" . }}
+      {{- end }}
+      {{- with .Values.be.securityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.be.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.be.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.be.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
