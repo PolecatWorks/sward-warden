@@ -1,0 +1,17 @@
+{{- if .Values.be.devsecops.RequestAuthentication.jwtRules }}
+---
+apiVersion: "security.istio.io/v1beta1"
+kind: RequestAuthentication
+metadata:
+  name: {{ include "sward-warden.fullname" . }}-be
+  labels:
+    {{- include "sward-warden.be.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "sward-warden.be.selectorLabels" . | nindent 6 }}
+  #   peers:
+  #   - mtls: {}
+  jwtRules:
+  {{-  tpl (toYaml .Values.be.devsecops.RequestAuthentication.jwtRules) . | nindent 4 }}
+{{- end }}

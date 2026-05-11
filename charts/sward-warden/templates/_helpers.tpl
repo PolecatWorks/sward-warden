@@ -47,3 +47,70 @@ If release name contains chart name it will be used as a full name.
 {{- define "sward-warden.be.initContainer.env" -}}
 {{- tpl (toYaml .Values.be.initContainer.env) . }}
 {{- end -}}
+
+{{/*
+Create chart name and version as used by the chart label.
+*/}}
+{{- define "sward-warden.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Selector labels for be
+*/}}
+{{- define "sward-warden.be.selectorLabels" -}}
+app.kubernetes.io/name: be
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Selector labels for fe
+*/}}
+{{- define "sward-warden.fe.selectorLabels" -}}
+app.kubernetes.io/name: fe
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Common labels for be
+*/}}
+{{- define "sward-warden.be.labels" -}}
+helm.sh/chart: {{ include "sward-warden.chart" . }}
+{{ include "sward-warden.be.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- if .Values.be.labels }}
+{{ toYaml .Values.be.labels }}
+{{- end }}
+{{- end }}
+
+{{/*
+Common labels for fe
+*/}}
+{{- define "sward-warden.fe.labels" -}}
+helm.sh/chart: {{ include "sward-warden.chart" . }}
+{{ include "sward-warden.fe.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- if .Values.fe.labels }}
+{{ toYaml .Values.fe.labels }}
+{{- end }}
+{{- end }}
+
+{{/*
+Create the name of the service account to use for be
+*/}}
+{{- define "sward-warden.be.serviceAccountName" -}}
+{{- default (printf "%s-be" (include "sward-warden.fullname" .)) .Values.be.serviceAccount.name }}
+{{- end }}
+
+{{/*
+Create the name of the service account to use for fe
+*/}}
+{{- define "sward-warden.fe.serviceAccountName" -}}
+{{- default (printf "%s-fe" (include "sward-warden.fullname" .)) .Values.fe.serviceAccount.name }}
+{{- end }}

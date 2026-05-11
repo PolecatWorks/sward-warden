@@ -1,0 +1,32 @@
+{{- if .Values.be.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "sward-warden.fullname" . }}-be
+  labels:
+    {{- include "sward-warden.be.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "sward-warden.fullname" . }}-be
+  minReplicas: {{ .Values.be.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.be.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.be.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.be.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.be.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.be.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}
