@@ -105,20 +105,12 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Create the name of the service account to use for be
 */}}
 {{- define "sward-warden.be.serviceAccountName" -}}
-{{- if .Values.be.serviceAccount.create }}
 {{- default (printf "%s-be" (include "sward-warden.fullname" .)) .Values.be.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.be.serviceAccount.name }}
-{{- end }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use for fe
 */}}
 {{- define "sward-warden.fe.serviceAccountName" -}}
-{{- if .Values.fe.serviceAccount.create }}
 {{- default (printf "%s-fe" (include "sward-warden.fullname" .)) .Values.fe.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.fe.serviceAccount.name }}
-{{- end }}
 {{- end }}

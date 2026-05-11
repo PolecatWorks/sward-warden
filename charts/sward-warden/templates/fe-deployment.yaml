@@ -23,9 +23,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
     spec:
-      {{- if .Values.fe.serviceAccount.create }}
       serviceAccountName: {{ include "sward-warden.fe.serviceAccountName" . }}
-      {{- end }}
       {{- with .Values.fe.securityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}

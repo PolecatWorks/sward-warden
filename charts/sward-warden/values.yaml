@@ -16,7 +16,6 @@ fe:
   affinity: {}
   tolerations: []
   serviceAccount:
-    create: true
     annotations: {}
     name: ''
   autoscaling:
@@ -66,7 +65,6 @@ be:
   affinity: {}
   tolerations: []
   serviceAccount:
-    create: true
     annotations: {}
     name: ''
   autoscaling:
