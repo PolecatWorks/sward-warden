@@ -17,19 +17,24 @@ fe:
 be:
   replicaCount: 1
   containerPort: 8080
+  lifecyclePort: 8079
   env: []
   livenessProbe:
     httpGet:
-      path: /health
+      path: /hams/alive
       port: http-lifecycle
     initialDelaySeconds: 15
     periodSeconds: 20
+    timeoutSeconds: 1
+    failureThreshold: 3
   readinessProbe:
     httpGet:
-      path: /ready
+      path: /hams/ready
       port: http-lifecycle
     initialDelaySeconds: 5
     periodSeconds: 10
+    timeoutSeconds: 1
+    failureThreshold: 3
   lifecycle: {}
     # preStop:
     #   httpGet:

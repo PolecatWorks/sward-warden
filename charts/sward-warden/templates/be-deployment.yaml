@@ -46,7 +46,7 @@ spec:
               containerPort: {{ .Values.be.containerPort }}
               protocol: TCP
             - name: http-lifecycle
-              containerPort: {{ .Values.be.service.lifecyclePort }}
+              containerPort: {{ .Values.be.lifecyclePort }}
               protocol: TCP
           lifecycle:
             {{- toYaml .Values.be.lifecycle | nindent 12 }}

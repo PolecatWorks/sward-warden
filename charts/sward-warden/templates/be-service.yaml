@@ -8,10 +8,10 @@ metadata:
 spec:
   type: {{ .Values.be.service.type }}
   ports:
-    - port: {{ .Values.be.service.port }}
+    - name: http-web
+      port: {{ .Values.be.service.port }}
       targetPort: http-web
       protocol: TCP
-      name: http-web
     - name: http-envoy-prom
       port: 15020
       protocol: TCP
