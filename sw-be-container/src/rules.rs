@@ -155,7 +155,6 @@ pub fn validate_organic_manure_application(
                     "Low Emission Slurry Spreading Equipment (LESSE) is required. If LESSE cannot be used, a valid exemption reason must be provided.".to_string(),
                 );
             }
-        }
     }
 
     ValidationResult::Valid
