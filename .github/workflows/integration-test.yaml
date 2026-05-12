@@ -117,7 +117,7 @@ jobs:
 
       - name: Create Mock Secrets
         run: |
-          NAMESPACE="slurry-manager-pr-${{ env.PR_NUMBER }}"
+          NAMESPACE="sward-warden-pr-${{ env.PR_NUMBER }}"
           # Ensure namespace exists
           kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
           # Create a mock secret for sw-be (required by Helm chart)
@@ -144,7 +144,7 @@ jobs:
       - name: Extract Test Results
         if: always()
         run: |
-          NAMESPACE="slurry-manager-pr-${{ env.PR_NUMBER }}"
+          NAMESPACE="sward-warden-pr-${{ env.PR_NUMBER }}"
           mkdir -p ./robot-results
           kubectl cp $NAMESPACE/robot-test-runner:/tmp/reports ./robot-results || echo "Failed to copy test results"
 
