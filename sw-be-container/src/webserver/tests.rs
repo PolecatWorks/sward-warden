@@ -35,6 +35,11 @@ fn get_test_state() -> AppState {
         webservice: crate::config::WebServiceConfig {
             address: Url::parse("http://0.0.0.0:8080").unwrap(),
             forwarding_headers: vec![],
+            cors: crate::config::CorsConfig {
+                allow_origins: vec![],
+                allow_methods: vec![],
+                allow_headers: vec![],
+            },
         },
         hams: ::hams::hams::config::HamsConfig::default(),
         runtime: ThreadRuntime {
@@ -177,4 +182,72 @@ async fn test_sync_route_with_since_param() {
 
     assert_ne!(response.status(), StatusCode::NOT_FOUND);
     assert_ne!(response.status(), StatusCode::BAD_REQUEST);
+}
+
+#[tokio::test]
+async fn test_cors_headers_present() {
+    use tower_http::cors::CorsLayer;
+    let mut state = get_test_state();
+    state.config.webservice.cors.allow_origins = vec!["http://localhost:4200".to_string()];
+    state.config.webservice.cors.allow_methods = vec!["GET".to_string(), "POST".to_string()];
+    state.config.webservice.cors.allow_headers = vec!["content-type".to_string()];
+
+    let origins: Vec<axum::http::HeaderValue> = state
+        .config
+        .webservice
+        .cors
+        .allow_origins
+        .iter()
+        .map(|o| o.parse().unwrap())
+        .collect();
+    let methods: Vec<axum::http::Method> = state
+        .config
+        .webservice
+        .cors
+        .allow_methods
+        .iter()
+        .map(|m| m.parse().unwrap())
+        .collect();
+    let headers: Vec<axum::http::header::HeaderName> = state
+        .config
+        .webservice
+        .cors
+        .allow_headers
+        .iter()
+        .map(|h| h.parse().unwrap())
+        .collect();
+
+    let cors_layer = CorsLayer::new()
+        .allow_origin(origins)
+        .allow_methods(methods)
+        .allow_headers(headers);
+    let app = crate::webserver::app_router(state.clone()).layer(cors_layer);
+
+    // Test preflight OPTIONS request
+    let response = app
+        .oneshot(
+            Request::builder()
+                .method("OPTIONS")
+                .uri("/v0/hello")
+                .header("Origin", "http://localhost:4200")
+                .header("Access-Control-Request-Method", "GET")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::OK);
+    let headers = response.headers();
+    assert_eq!(
+        headers.get("access-control-allow-origin").unwrap(),
+        "http://localhost:4200"
+    );
+    let methods = headers
+        .get("access-control-allow-methods")
+        .unwrap()
+        .to_str()
+        .unwrap();
+    assert!(methods.contains("GET"));
+    assert!(methods.contains("POST"));
 }
