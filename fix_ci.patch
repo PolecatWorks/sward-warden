@@ -1,0 +1,18 @@
+--- .github/workflows/integration-test.yaml
++++ .github/workflows/integration-test.yaml
+@@ -107,13 +107,16 @@
+           command: test --env pr
+
+       - name: Extract Test Results
+         if: always()
+         run: |
+-          NAMESPACE="sward-warden-pr-${{ env.PR_NUMBER }}"
++          NAMESPACE="slurry-manager-pr-${{ env.PR_NUMBER }}"
+           mkdir -p ./robot-results
+-          kubectl cp $NAMESPACE/robot-test-runner:/tmp/reports ./robot-results || echo "Failed to copy test results"
++          kubectl cp $NAMESPACE/robot-test-runner:/tmp/reports ./robot-results || echo "Warning: Failed to copy test results directly"
++          # Workaround if container is stopped/deleted: copy using a temporary pod or wait
+
+       - name: Upload Test Results
+         uses: actions/upload-artifact@v4
+         if: always()
