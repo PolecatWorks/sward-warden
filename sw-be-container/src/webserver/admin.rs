@@ -1,6 +1,6 @@
 use axum::{Json, extract::State};
 use crate::error::AppError;
-use crate::models::{AuditLog, ComplianceBreach, Event, Farm, Field};
+use crate::models::{AuditLog, Event, Farm, Field};
 use crate::state::AppState;
 use crate::webserver::auth;
 
