@@ -76,6 +76,8 @@ spec:
         tag: main
         pullPolicy: Always
       configs:
+        webservice:
+          address: http://0.0.0.0:8080/sward
         database:
           url:
             url: postgresql://cnpg-db0-cluster-rw.dbs:5432/sward_warden
