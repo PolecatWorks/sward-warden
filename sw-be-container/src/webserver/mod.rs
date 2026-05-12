@@ -93,8 +93,16 @@ pub fn app_router(state: AppState) -> Router {
 
 pub async fn start_app_api(state: AppState, ct: CancellationToken) -> Result<(), AppError> {
     let metric_layer = PrometheusMetricLayer::new();
-    let app = app_router(state.clone())
-        .layer(
+
+    let prefix = state.config.webservice.address.path().trim_end_matches('/');
+
+    let app = if prefix.is_empty() {
+        app_router(state.clone())
+    } else {
+        Router::new().nest(prefix, app_router(state.clone()))
+    };
+
+    let app = app.layer(
             TraceLayer::new_for_http()
                 .on_request(DefaultOnRequest::new().level(Level::DEBUG))
                 .on_response(DefaultOnResponse::new().level(Level::DEBUG))

@@ -2,7 +2,7 @@
 mod tests {
     use crate::models::{Event, Farm, OrganicManureApplication, Field};
     use crate::rules::{validate_organic_manure_application, ValidationResult};
-    use chrono::Utc;
+
 
     fn get_test_farm() -> Farm {
         Farm {
