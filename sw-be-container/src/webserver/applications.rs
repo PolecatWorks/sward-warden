@@ -50,7 +50,7 @@ pub async fn create_fertiliser_application(
     if let Some(ref wkt) = app.geometry_wkt {
         crate::spatial::SpatialService::validate_application_area(
             &state.db_pool,
-            field.id.unwrap(),
+            field.id.ok_or_else(|| AppError::Message("Field ID is missing".to_string()))?,
             wkt,
             false,
         )
@@ -116,7 +116,7 @@ pub async fn create_organic_manure_application(
     if let Some(ref wkt) = app.geometry_wkt {
         crate::spatial::SpatialService::validate_application_area(
             &state.db_pool,
-            field.id.unwrap(),
+            field.id.ok_or_else(|| AppError::Message("Field ID is missing".to_string()))?,
             wkt,
             true,
         )

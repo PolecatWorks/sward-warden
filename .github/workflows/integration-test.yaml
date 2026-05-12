@@ -32,25 +32,34 @@ jobs:
         if: always()
         run: |
           # Fetch the latest GH version using github api, with auth to prevent rate limits
-          GH_VERSION=$(curl -sL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/cli/cli/releases/latest | jq -r .tag_name | sed 's/v//')
+          GH_VERSION=$(curl -sL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/cli/cli/releases/latest | jq -r .tag_name | sed 's/v//' || echo "")
           if [ -z "$GH_VERSION" ] || [ "$GH_VERSION" == "null" ]; then
             echo "Failed to get GH_VERSION, falling back to a known version"
             GH_VERSION="2.49.2"
           fi
 
-          # Retry download up to 3 times
-          for i in 1 2 3; do
-            curl -sSL -f "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz" -o gh.tar.gz && break || sleep 5
+          # Retry download up to 5 times
+          for i in 1 2 3 4 5; do
+            if curl -sSL -f "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz" -o gh.tar.gz; then
+              break
+            else
+              echo "Download failed, retrying in 10s..."
+              sleep 10
+            fi
           done
 
-          tar xzf gh.tar.gz
-          # Add it to GITHUB_PATH so subsequent steps can use it
-          echo "$(pwd)/gh_${GH_VERSION}_linux_amd64/bin" >> $GITHUB_PATH
-          # Also move to a directory already in PATH just in case
-          mkdir -p $HOME/.local/bin
-          mv gh_${GH_VERSION}_linux_amd64/bin/gh $HOME/.local/bin/ || true
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-          $HOME/.local/bin/gh --version
+          if [ ! -f gh.tar.gz ]; then
+            echo "Failed to download gh cli after retries!"
+          else
+            tar xzf gh.tar.gz
+            # Add it to GITHUB_PATH so subsequent steps can use it
+            echo "$(pwd)/gh_${GH_VERSION}_linux_amd64/bin" >> $GITHUB_PATH
+            # Also move to a directory already in PATH just in case
+            mkdir -p $HOME/.local/bin
+            mv gh_${GH_VERSION}_linux_amd64/bin/gh $HOME/.local/bin/ || true
+            echo "$HOME/.local/bin" >> $GITHUB_PATH
+            $HOME/.local/bin/gh --version
+          fi
 
       - uses: dorny/paths-filter@v3.0.2
         id: filter

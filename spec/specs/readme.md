@@ -86,3 +86,4 @@ Specifications under PRD 0008 (Spatial Optimization) require the PostGIS extensi
     ```sql
     CREATE EXTENSION postgis;
     ```
+| [0015-01 Security CORS Fix](./0015/0015-01-security-cors.md) | Complete |

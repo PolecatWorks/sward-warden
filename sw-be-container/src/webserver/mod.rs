@@ -19,7 +19,7 @@ use axum::{
 use axum_prometheus::PrometheusMetricLayer;
 use tokio_util::sync::CancellationToken;
 use tower_http::{
-    cors::{Any, CorsLayer},
+    cors::CorsLayer,
     trace::{DefaultOnFailure, DefaultOnRequest, DefaultOnResponse, TraceLayer},
 };
 use tracing::{Level, info};
@@ -113,6 +113,47 @@ pub fn app_router(state: AppState) -> Router {
 }
 
 pub async fn start_app_api(state: AppState, ct: CancellationToken) -> Result<(), AppError> {
+    let mut cors_layer = CorsLayer::new();
+
+    let origins: Vec<axum::http::HeaderValue> = state
+        .config
+        .webservice
+        .cors
+        .allow_origins
+        .iter()
+        .map(|o| {
+            o.parse()
+                .map_err(|e| AppError::Message(format!("Invalid CORS origin in config: {e}")))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    cors_layer = cors_layer.allow_origin(origins);
+
+    let methods: Vec<axum::http::Method> = state
+        .config
+        .webservice
+        .cors
+        .allow_methods
+        .iter()
+        .map(|m| {
+            m.parse()
+                .map_err(|e| AppError::Message(format!("Invalid CORS method in config: {e}")))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    cors_layer = cors_layer.allow_methods(methods);
+
+    let headers: Vec<axum::http::header::HeaderName> = state
+        .config
+        .webservice
+        .cors
+        .allow_headers
+        .iter()
+        .map(|h| {
+            h.parse()
+                .map_err(|e| AppError::Message(format!("Invalid CORS header in config: {e}")))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    cors_layer = cors_layer.allow_headers(headers);
+
     let metric_layer = PrometheusMetricLayer::new();
     let app = app_router(state.clone())
         .layer(
@@ -121,12 +162,7 @@ pub async fn start_app_api(state: AppState, ct: CancellationToken) -> Result<(),
                 .on_response(DefaultOnResponse::new().level(Level::DEBUG))
                 .on_failure(DefaultOnFailure::new().level(Level::ERROR)),
         )
-        .layer(
-            CorsLayer::new()
-                .allow_origin(Any)
-                .allow_methods(Any)
-                .allow_headers(Any),
-        )
+        .layer(cors_layer)
         .layer(metric_layer);
 
     let host = state
