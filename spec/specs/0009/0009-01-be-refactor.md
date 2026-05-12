@@ -29,9 +29,3 @@ This specification covers the implementation of the be architecture refactoring 
 
 ## 4. State
 Complete
-
-### Webserver Routing Prefix Setup
-
-* The webserver configuration (which dictates the host and port via a URL) now also uses the path portion of that URL to wrap all backend routes.
-* Using `axum::Router::nest`, any path component provided in the `webservice.address` config value acts as a path prefix for the application's central router (`app_router`).
-* For example, a configuration value like `http://0.0.0.0:8080/api` will automatically wrap all backend endpoints under the `/api` prefix, seamlessly aligning the backend's route hierarchy with external ingress or path-based proxy deployments.
