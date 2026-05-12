@@ -20,8 +20,8 @@ impl WeatherService {
         for entry in forecast {
             // Check if this forecast entry is within 48 hours of the application date
             let diff = entry.timestamp.signed_duration_since(date).num_hours();
-            if (0..=48).contains(&diff)
-                && (entry.precipitation_amount_mm > 10.0 || entry.precipitation_probability > 75.0) {
+            if diff >= 0 && diff <= 48 {
+                if entry.precipitation_amount_mm > 10.0 || entry.precipitation_probability > 75.0 {
                     return Err(AppError::BadRequest(format!(
                         "Application blocked: Heavy rain forecast ({:.1}mm, {:.0}%) at {}",
                         entry.precipitation_amount_mm,
@@ -29,6 +29,7 @@ impl WeatherService {
                         entry.timestamp.format("%Y-%m-%d %H:%M")
                     )));
                 }
+            }
         }
 
         Ok(())

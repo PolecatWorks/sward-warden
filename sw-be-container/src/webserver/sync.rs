@@ -16,7 +16,7 @@ pub async fn delta_sync(
 ) -> Result<Json<SyncResponse>, AppError> {
     let since: DateTime<Utc> = params
         .since
-        .unwrap_or_else(|| DateTime::from_timestamp(0, 0).unwrap());
+        .unwrap_or_else(|| DateTime::from_timestamp(0, 0).unwrap_or_default());
 
     let farms = sqlx::query_as::<_, Farm>(
         "SELECT id, user_id, name, location, has_derogation, updated_at, is_deleted FROM farms WHERE user_id = 1 AND updated_at > $1"

@@ -48,7 +48,11 @@ fn main() -> Result<(), AppError> {
     match &cli.command {
         Commands::Serve => {
             let config = AppConfig::load(&cli.config_path, &cli.secrets_dir)?;
-            println!("Config:\n{}", serde_yaml::to_string(&config).expect("Failed to serialize config"));
+            println!(
+                "Config:\n{}",
+                serde_yaml::to_string(&config)
+                    .map_err(|e| AppError::Message(format!("Failed to serialize config: {e}")))?
+            );
             let delay = config.debugging.fail_debug_delay;
             let ct = CancellationToken::new();
             if let Err(e) = run_in_tokio(&config.runtime, service_cancellable(ct, config.clone())) {
@@ -68,7 +72,11 @@ fn main() -> Result<(), AppError> {
         }
         Commands::Migrate => {
             let config = AppConfig::load(&cli.config_path, &cli.secrets_dir)?;
-            println!("Config:\n{}", serde_yaml::to_string(&config).expect("Failed to serialize config"));
+            println!(
+                "Config:\n{}",
+                serde_yaml::to_string(&config)
+                    .map_err(|e| AppError::Message(format!("Failed to serialize config: {e}")))?
+            );
             let delay = config.debugging.fail_debug_delay;
             if let Err(e) = run_in_tokio(&config.runtime, async move {
                 let db_url: url::Url = config.database.url.clone().into();
@@ -101,7 +109,11 @@ fn main() -> Result<(), AppError> {
         }
         Commands::Seed { user_id } => {
             let config = AppConfig::load(&cli.config_path, &cli.secrets_dir)?;
-            println!("Config:\n{}", serde_yaml::to_string(&config).expect("Failed to serialize config"));
+            println!(
+                "Config:\n{}",
+                serde_yaml::to_string(&config)
+                    .map_err(|e| AppError::Message(format!("Failed to serialize config: {e}")))?
+            );
             let delay = config.debugging.fail_debug_delay;
             if let Err(e) = run_in_tokio(&config.runtime, async move {
                 let db_url: url::Url = config.database.url.clone().into();
@@ -178,7 +190,8 @@ async fn service_cancellable(ct: CancellationToken, config: AppConfig) -> Result
         &state as *const _ as *const c_void,
     )?;
 
-    hams.start().unwrap();
+    hams.start()
+        .map_err(|e| AppError::Message(format!("Failed to start hams: {e}")))?;
 
     let server_future = start_app_api(state.clone(), ct.clone());
 

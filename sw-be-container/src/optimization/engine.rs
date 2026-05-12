@@ -25,18 +25,19 @@ impl OptimizationEngine {
             let mut recommended_rate = 30.0;
             let mut reasoning = "Standard maintenance rate.".to_string();
 
-            if let Some(ref land_use) = field.land_use
-                && land_use.to_lowercase().contains("grass") {
+            if let Some(ref land_use) = field.land_use {
+                if land_use.to_lowercase().contains("grass") {
                     score += 0.2;
                     recommended_rate = 40.0;
                     reasoning = "High uptake potential for grass crop.".to_string();
                 }
+            }
 
             // Simplified: ignore soil test date for now as it's not in the Field model
             score += 0.1;
 
             suggestions.push(OptimizationSuggestion {
-                field_id: field.id.unwrap(),
+                field_id: field.id.ok_or_else(|| AppError::Message("Field ID is missing".to_string()))?,
                 field_name: field.name,
                 recommended_rate,
                 unit: "m3/ha".to_string(),
@@ -47,7 +48,7 @@ impl OptimizationEngine {
         }
 
         // Sort suggestions by score descending
-        suggestions.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap());
+        suggestions.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
 
         Ok(OptimizationPlan {
             farm_id,

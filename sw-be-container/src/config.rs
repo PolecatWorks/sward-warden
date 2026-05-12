@@ -22,10 +22,10 @@ impl From<UrlWithUsernamePassword> for Url {
     fn from(value: UrlWithUsernamePassword) -> Self {
         let mut return_url = value.url;
         if let Some(password) = value.password {
-            return_url.set_password(Some(&password)).unwrap();
+            let _ = return_url.set_password(Some(&password));
         }
         if let Some(username) = value.username {
-            return_url.set_username(&username).unwrap();
+            let _ = return_url.set_username(&username);
         }
         return_url
     }
@@ -69,10 +69,18 @@ fn default_max_connections() -> u32 {
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct CorsConfig {
+    pub allow_origins: Vec<String>,
+    pub allow_methods: Vec<String>,
+    pub allow_headers: Vec<String>,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct WebServiceConfig {
     pub address: Url,
     #[serde(default)]
     pub forwarding_headers: Vec<String>,
+    pub cors: CorsConfig,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -172,6 +180,10 @@ mod tests {
         writeln!(file, "    password_file: db_pass").unwrap();
         writeln!(file, "webservice:").unwrap();
         writeln!(file, "  address: http://0.0.0.0:8080").unwrap();
+        writeln!(file, "  cors:").unwrap();
+        writeln!(file, "    allow_origins: []").unwrap();
+        writeln!(file, "    allow_methods: ['GET', 'POST']").unwrap();
+        writeln!(file, "    allow_headers: ['content-type']").unwrap();
         writeln!(file, "hams:").unwrap();
         writeln!(file, "  name: test").unwrap();
         writeln!(file, "  version: 0.1.0").unwrap();

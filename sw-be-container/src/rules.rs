@@ -12,7 +12,7 @@ pub fn validate_fertiliser_application(
     field: &Field,
 ) -> ValidationResult {
     let date = NaiveDate::parse_from_str(&event.date, "%Y-%m-%d")
-        .unwrap_or_else(|_| NaiveDate::from_ymd_opt(2000, 1, 1).unwrap());
+        .unwrap_or_else(|_| NaiveDate::from_ymd_opt(2000, 1, 1).unwrap_or(NaiveDate::MIN));
     let month = date.month();
     let day = date.day();
 
@@ -149,13 +149,13 @@ pub fn validate_organic_manure_application(
         let requires_lesse = date.year() >= 2026 || m_type.contains("pig");
 
         if requires_lesse && !app.is_lesse_applied.unwrap_or(false)
-            && (app.lesse_exemption_reason.is_none()
-                || app.lesse_exemption_reason.as_ref().unwrap().is_empty())
+            && app.lesse_exemption_reason.as_ref().map_or(true, |r| r.is_empty())
             {
                 return ValidationResult::Invalid(
                     "Low Emission Slurry Spreading Equipment (LESSE) is required. If LESSE cannot be used, a valid exemption reason must be provided.".to_string(),
                 );
             }
+        }
     }
 
     ValidationResult::Valid
