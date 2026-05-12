@@ -1,8 +1,8 @@
-use axum::{Json, extract::State};
 use crate::error::AppError;
 use crate::models::{AuditLog, Event, Farm, Field};
 use crate::state::AppState;
 use crate::webserver::auth;
+use axum::{Json, extract::State};
 
 pub async fn admin_health(_: auth::SupportOnly) -> Result<Json<serde_json::Value>, AppError> {
     Ok(Json(serde_json::json!({ "status": "ok", "admin": true })))

@@ -33,7 +33,6 @@ pub async fn seed_database(pool: &PgPool, user_id: i64) -> Result<(), AppError> 
         .await
         .map_err(|e| AppError::Message(format!("Failed to insert farm: {e}")))?;
 
-
         for j in 1..=5 {
             let field_name = format!("Field {}-{}", i, j);
             let area = 2.5 + (j as f64) * 1.2;
@@ -44,7 +43,6 @@ pub async fn seed_database(pool: &PgPool, user_id: i64) -> Result<(), AppError> 
             .fetch_one(pool)
             .await
             .map_err(|e| AppError::Message(format!("Failed to insert field: {e}")))?;
-
 
             for k in 1..=10 {
                 let event_type = if k % 3 == 0 { "planned" } else { "completed" };

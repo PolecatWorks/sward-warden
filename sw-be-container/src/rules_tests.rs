@@ -3,7 +3,6 @@ mod tests {
     use crate::models::{Event, Farm, OrganicManureApplication, Field};
     use crate::rules::{validate_organic_manure_application, ValidationResult};
 
-
     fn get_test_farm() -> Farm {
         Farm {
             id: Some(1),
@@ -141,7 +140,9 @@ mod tests {
         let result = validate_organic_manure_application(&event, &app, &field, &farm, &[]);
         match result {
             ValidationResult::Invalid(reason) => assert!(reason.contains("LESSE) is required")),
-            _ => panic!("Expected validation failure for cattle slurry in 2026 without LESSE/exemption"),
+            _ => panic!(
+                "Expected validation failure for cattle slurry in 2026 without LESSE/exemption"
+            ),
         }
     }
 }

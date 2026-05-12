@@ -1,16 +1,16 @@
-pub mod auth;
-pub mod users;
-pub mod farms;
-pub mod fields;
-pub mod events;
-pub mod sync;
-pub mod compliance;
-pub mod movements;
 pub mod admin;
 pub mod applications;
+pub mod auth;
+pub mod compliance;
+pub mod events;
+pub mod farms;
+pub mod fields;
+pub mod movements;
 pub mod optimization;
-pub mod weather;
 pub mod spatial;
+pub mod sync;
+pub mod users;
+pub mod weather;
 
 use axum::{
     Json, Router,
@@ -42,17 +42,28 @@ pub fn app_router(state: AppState) -> Router {
         .route("/v0/users", get(users::list_users).post(users::create_user))
         .route("/v0/farms", get(farms::list_farms).post(farms::create_farm))
         .route("/v0/farms/{id}", delete(farms::delete_farm))
-        .route("/v0/farms/{farm_id}/soil-analyses", get(events::list_soil_analyses))
-        .route("/v0/fields", get(fields::list_fields).post(fields::create_field))
+        .route(
+            "/v0/farms/{farm_id}/soil-analyses",
+            get(events::list_soil_analyses),
+        )
+        .route(
+            "/v0/fields",
+            get(fields::list_fields).post(fields::create_field),
+        )
         .route("/v0/fields/{id}", delete(fields::delete_field))
-        .route("/v0/events", get(events::list_events).post(events::create_event))
+        .route(
+            "/v0/events",
+            get(events::list_events).post(events::create_event),
+        )
         .route(
             "/v0/fertiliser-applications",
-            get(applications::list_fertiliser_applications).post(applications::create_fertiliser_application),
+            get(applications::list_fertiliser_applications)
+                .post(applications::create_fertiliser_application),
         )
         .route(
             "/v0/organic-manure-applications",
-            get(applications::list_organic_manure_applications).post(applications::create_organic_manure_application),
+            get(applications::list_organic_manure_applications)
+                .post(applications::create_organic_manure_application),
         )
         .route(
             "/v0/compliance-breaches",
@@ -62,15 +73,24 @@ pub fn app_router(state: AppState) -> Router {
             "/v0/sward-movements",
             get(movements::list_sward_movements).post(movements::create_sward_movement),
         )
-        .route("/v0/optimization/suggestions/{farm_id}", get(optimization::get_farm_suggestions))
+        .route(
+            "/v0/optimization/suggestions/{farm_id}",
+            get(optimization::get_farm_suggestions),
+        )
         .route("/v0/weather/forecast", get(weather::get_forecast))
-        .route("/v0/spatial/waterway-buffers", get(spatial::get_waterway_buffers))
+        .route(
+            "/v0/spatial/waterway-buffers",
+            get(spatial::get_waterway_buffers),
+        )
         .route("/v0/sync/delta", get(sync::delta_sync))
         .route(
             "/v0/soil_analyses",
             get(events::list_soil_analyses).post(events::create_soil_analysis),
         )
-        .route("/v0/soil_analyses/{id}", delete(events::delete_soil_analysis))
+        .route(
+            "/v0/soil_analyses/{id}",
+            delete(events::delete_soil_analysis),
+        )
         .route(
             "/v0/fertilisation_plans",
             get(events::list_fertilisation_plans).post(events::create_fertilisation_plan),
@@ -85,7 +105,8 @@ pub fn app_router(state: AppState) -> Router {
         )
         .route(
             "/v0/fertiliser_applications",
-            get(applications::list_fertiliser_applications).post(applications::create_fertiliser_application),
+            get(applications::list_fertiliser_applications)
+                .post(applications::create_fertiliser_application),
         )
         .route("/v0/sync", get(sync::delta_sync))
         .with_state(state)

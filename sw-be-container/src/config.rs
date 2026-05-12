@@ -84,9 +84,11 @@ pub struct StartupCheckConfig {
 }
 
 impl AppConfig {
-    pub fn load(config_path: &std::path::Path, secrets_dir: &std::path::Path) -> Result<Self, Box<figment::Error>> {
-        let adapter = FileAdapter::wrap(Yaml::file(config_path))
-            .relative_to_dir(secrets_dir);
+    pub fn load(
+        config_path: &std::path::Path,
+        secrets_dir: &std::path::Path,
+    ) -> Result<Self, Box<figment::Error>> {
+        let adapter = FileAdapter::wrap(Yaml::file(config_path)).relative_to_dir(secrets_dir);
 
         Figment::new()
             .merge(adapter)
@@ -109,7 +111,10 @@ mod tests {
             env::remove_var("SP_BE__DATABASE__URL__PASSWORD");
         }
 
-        let config_res = AppConfig::load(std::path::Path::new("config/default.yaml"), std::path::Path::new("config"));
+        let config_res = AppConfig::load(
+            std::path::Path::new("config/default.yaml"),
+            std::path::Path::new("config"),
+        );
         assert!(
             config_res.is_ok(),
             "Config should load even without credentials: {:?}",
@@ -128,7 +133,11 @@ mod tests {
             env::set_var("SP_BE__DATABASE__URL__PASSWORD", "envpass");
         }
 
-        let config = AppConfig::load(std::path::Path::new("config/default.yaml"), std::path::Path::new("config")).unwrap();
+        let config = AppConfig::load(
+            std::path::Path::new("config/default.yaml"),
+            std::path::Path::new("config"),
+        )
+        .unwrap();
 
         unsafe {
             env::remove_var("SP_BE__DATABASE__URL__USERNAME");
