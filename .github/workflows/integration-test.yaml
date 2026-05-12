@@ -26,7 +26,7 @@ jobs:
   integration:
     runs-on: polecatworks-runner
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v4
 
       - name: Install GitHub CLI
         if: always()
