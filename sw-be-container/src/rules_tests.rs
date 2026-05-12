@@ -1,8 +1,7 @@
 #[cfg(test)]
 mod tests {
-    use crate::models::{Event, Farm, Field, OrganicManureApplication};
-    use crate::rules::{ValidationResult, validate_organic_manure_application};
-    use chrono::Utc;
+    use crate::models::{Event, Farm, OrganicManureApplication, Field};
+    use crate::rules::{validate_organic_manure_application, ValidationResult};
 
     fn get_test_farm() -> Farm {
         Farm {
