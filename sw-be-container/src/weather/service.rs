@@ -1,5 +1,5 @@
-use crate::weather::data::{WeatherData, get_static_forecast};
 use crate::error::AppError;
+use crate::weather::data::{WeatherData, get_static_forecast};
 use chrono::{DateTime, Utc};
 
 pub struct WeatherService;
@@ -10,7 +10,11 @@ impl WeatherService {
         Ok(get_static_forecast())
     }
 
-    pub async fn validate_application_safety(lat: f64, lon: f64, date: DateTime<Utc>) -> Result<(), AppError> {
+    pub async fn validate_application_safety(
+        lat: f64,
+        lon: f64,
+        date: DateTime<Utc>,
+    ) -> Result<(), AppError> {
         let forecast = Self::get_forecast(lat, lon).await?;
 
         for entry in forecast {

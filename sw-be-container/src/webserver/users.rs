@@ -1,7 +1,7 @@
-use axum::{Json, extract::State};
 use crate::error::AppError;
 use crate::models::User;
 use crate::state::AppState;
+use axum::{Json, extract::State};
 
 pub async fn list_users(State(state): State<AppState>) -> Result<Json<Vec<User>>, AppError> {
     let users = sqlx::query_as::<_, User>("SELECT id, name, email, role FROM users")

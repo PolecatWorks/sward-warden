@@ -7,7 +7,7 @@ pub struct OptimizationSuggestion {
     pub recommended_rate: f64,
     pub unit: String,
     pub nutrient_met: String, // e.g., "Nitrogen"
-    pub score: f64, // 0.0 to 1.0 ranking
+    pub score: f64,           // 0.0 to 1.0 ranking
     pub reasoning: String,
 }
 

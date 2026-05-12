@@ -1,11 +1,11 @@
+use crate::error::AppError;
+use crate::spatial::SpatialService;
+use crate::state::AppState;
 use axum::{
-    extract::{Query, State},
     Json,
+    extract::{Query, State},
 };
 use serde::Deserialize;
-use crate::error::AppError;
-use crate::state::AppState;
-use crate::spatial::SpatialService;
 
 #[derive(Deserialize)]
 pub struct BufferParams {
@@ -16,7 +16,9 @@ pub async fn get_waterway_buffers(
     State(state): State<AppState>,
     Query(params): Query<BufferParams>,
 ) -> Result<Json<serde_json::Value>, AppError> {
-    let geojson_str = SpatialService::get_buffer_geometries_geojson(&state.db_pool, params.distance).await?;
-    let geojson: serde_json::Value = serde_json::from_str(&geojson_str).unwrap_or(serde_json::json!({}));
+    let geojson_str =
+        SpatialService::get_buffer_geometries_geojson(&state.db_pool, params.distance).await?;
+    let geojson: serde_json::Value =
+        serde_json::from_str(&geojson_str).unwrap_or(serde_json::json!({}));
     Ok(Json(geojson))
 }

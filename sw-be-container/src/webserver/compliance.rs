@@ -1,7 +1,7 @@
-use axum::{Json, extract::State};
 use crate::error::AppError;
 use crate::models::ComplianceBreach;
 use crate::state::AppState;
+use axum::{Json, extract::State};
 
 pub async fn list_compliance_breaches(
     State(state): State<AppState>,

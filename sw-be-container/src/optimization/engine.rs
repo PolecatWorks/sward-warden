@@ -1,17 +1,22 @@
-use crate::optimization::models::{OptimizationSuggestion, OptimizationPlan};
-use crate::models::{Field, Farm};
 use crate::error::AppError;
+use crate::models::{Farm, Field};
+use crate::optimization::models::{OptimizationPlan, OptimizationSuggestion};
 use sqlx::PgPool;
 
 pub struct OptimizationEngine;
 
 impl OptimizationEngine {
-    pub async fn get_suggestions(pool: &PgPool, farm_id: i64) -> Result<OptimizationPlan, AppError> {
+    pub async fn get_suggestions(
+        pool: &PgPool,
+        farm_id: i64,
+    ) -> Result<OptimizationPlan, AppError> {
         // 1. Fetch all fields for the farm
-        let fields = sqlx::query_as::<_, Field>("SELECT * FROM fields WHERE farm_id = $1 AND is_deleted = FALSE")
-            .bind(farm_id)
-            .fetch_all(pool)
-            .await?;
+        let fields = sqlx::query_as::<_, Field>(
+            "SELECT * FROM fields WHERE farm_id = $1 AND is_deleted = FALSE",
+        )
+        .bind(farm_id)
+        .fetch_all(pool)
+        .await?;
 
         let mut suggestions = Vec::new();
 

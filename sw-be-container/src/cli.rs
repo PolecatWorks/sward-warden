@@ -35,19 +35,43 @@ mod tests {
 
     #[test]
     fn test_cli_serve() {
-        let cli = Cli::try_parse_from(&["sw-be", "--config-path", "cfg.yaml", "--secrets-dir", "sec", "serve"]).unwrap();
+        let cli = Cli::try_parse_from(&[
+            "sw-be",
+            "--config-path",
+            "cfg.yaml",
+            "--secrets-dir",
+            "sec",
+            "serve",
+        ])
+        .unwrap();
         assert_eq!(cli.command, Commands::Serve);
     }
 
     #[test]
     fn test_cli_version() {
-        let cli = Cli::try_parse_from(&["sw-be", "--config-path", "cfg.yaml", "--secrets-dir", "sec", "version"]).unwrap();
+        let cli = Cli::try_parse_from(&[
+            "sw-be",
+            "--config-path",
+            "cfg.yaml",
+            "--secrets-dir",
+            "sec",
+            "version",
+        ])
+        .unwrap();
         assert_eq!(cli.command, Commands::Version);
     }
 
     #[test]
     fn test_cli_migrate() {
-        let cli = Cli::try_parse_from(&["sw-be", "--config-path", "cfg.yaml", "--secrets-dir", "sec", "migrate"]).unwrap();
+        let cli = Cli::try_parse_from(&[
+            "sw-be",
+            "--config-path",
+            "cfg.yaml",
+            "--secrets-dir",
+            "sec",
+            "migrate",
+        ])
+        .unwrap();
         assert_eq!(cli.command, Commands::Migrate);
     }
 

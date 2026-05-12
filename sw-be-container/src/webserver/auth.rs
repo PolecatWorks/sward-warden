@@ -1,8 +1,5 @@
-use axum::{
-    extract::FromRequestParts,
-    http::request::Parts,
-};
 use crate::error::AppError;
+use axum::{extract::FromRequestParts, http::request::Parts};
 
 pub struct AdminOnly;
 
@@ -45,7 +42,9 @@ where
         if role_str == "admin" || role_str == "support" {
             Ok(SupportOnly)
         } else {
-            Err(AppError::Forbidden("Support or Admin role required".to_string()))
+            Err(AppError::Forbidden(
+                "Support or Admin role required".to_string(),
+            ))
         }
     }
 }

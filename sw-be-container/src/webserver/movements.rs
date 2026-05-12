@@ -1,7 +1,7 @@
-use axum::{Json, extract::State};
 use crate::error::AppError;
 use crate::models::SwardMovement;
 use crate::state::AppState;
+use axum::{Json, extract::State};
 
 pub async fn list_sward_movements(
     State(state): State<AppState>,

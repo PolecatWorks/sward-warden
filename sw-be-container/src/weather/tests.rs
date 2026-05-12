@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use super::super::WeatherService;
-    use chrono::{Utc, Duration};
+    use chrono::{Duration, Utc};
 
     #[tokio::test]
     async fn test_weather_validation_blocks_heavy_rain() {

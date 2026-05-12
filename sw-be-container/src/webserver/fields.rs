@@ -1,8 +1,11 @@
-use axum::{Json, extract::{Path, State}};
-use reqwest::StatusCode;
 use crate::error::AppError;
 use crate::models::Field;
 use crate::state::AppState;
+use axum::{
+    Json,
+    extract::{Path, State},
+};
+use reqwest::StatusCode;
 
 pub async fn list_fields(State(state): State<AppState>) -> Result<Json<Vec<Field>>, AppError> {
     let fields = sqlx::query_as::<_, Field>(
