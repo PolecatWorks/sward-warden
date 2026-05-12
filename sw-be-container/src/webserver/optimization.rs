@@ -1,10 +1,10 @@
-use axum::{
-    extract::{Path, State},
-    Json,
-};
 use crate::error::AppError;
-use crate::state::AppState;
 use crate::optimization::{OptimizationEngine, OptimizationPlan};
+use crate::state::AppState;
+use axum::{
+    Json,
+    extract::{Path, State},
+};
 
 pub async fn get_farm_suggestions(
     State(state): State<AppState>,

@@ -1,8 +1,11 @@
-use axum::{Json, extract::{Path, State}};
-use reqwest::StatusCode;
 use crate::error::AppError;
 use crate::models::Farm;
 use crate::state::AppState;
+use axum::{
+    Json,
+    extract::{Path, State},
+};
+use reqwest::StatusCode;
 
 pub async fn list_farms(State(state): State<AppState>) -> Result<Json<Vec<Farm>>, AppError> {
     if let Some(cached_farms) = &*state.farms_cache.read().await {

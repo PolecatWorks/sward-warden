@@ -1,11 +1,11 @@
-use axum::{
-    extract::{Query, State},
-    Json,
-};
-use serde::Deserialize;
 use crate::error::AppError;
 use crate::state::AppState;
-use crate::weather::{WeatherService, WeatherData};
+use crate::weather::{WeatherData, WeatherService};
+use axum::{
+    Json,
+    extract::{Query, State},
+};
+use serde::Deserialize;
 
 #[derive(Deserialize)]
 pub struct ForecastParams {

@@ -67,7 +67,10 @@ where
     )))
 }
 
-pub async fn run_startup_checks(config: &AppConfig, db_pool: &sqlx::PgPool) -> Result<(), AppError> {
+pub async fn run_startup_checks(
+    config: &AppConfig,
+    db_pool: &sqlx::PgPool,
+) -> Result<(), AppError> {
     let _checks_config = &config.startup_checks;
     let mut futures = Vec::new();
 

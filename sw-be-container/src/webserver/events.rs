@@ -1,9 +1,9 @@
-use axum::{Json, extract::State};
 use crate::error::AppError;
-use crate::models::{Event, FarmRecord, SoilAnalysis, FertilisationPlan};
+use crate::models::{Event, FarmRecord, FertilisationPlan, SoilAnalysis};
 use crate::state::AppState;
-use reqwest::StatusCode;
 use axum::extract::Path;
+use axum::{Json, extract::State};
+use reqwest::StatusCode;
 
 pub async fn list_events(State(state): State<AppState>) -> Result<Json<Vec<Event>>, AppError> {
     let events = sqlx::query_as::<_, Event>(

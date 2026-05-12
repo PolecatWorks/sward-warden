@@ -1,8 +1,10 @@
-use axum::{Json, extract::State};
 use crate::error::AppError;
-use crate::models::{Event, Field, Farm, FertiliserApplication, OrganicManureApplication};
-use crate::rules::{ValidationResult, validate_fertiliser_application, validate_organic_manure_application};
+use crate::models::{Event, Farm, FertiliserApplication, Field, OrganicManureApplication};
+use crate::rules::{
+    ValidationResult, validate_fertiliser_application, validate_organic_manure_application,
+};
 use crate::state::AppState;
+use axum::{Json, extract::State};
 
 pub async fn list_fertiliser_applications(
     State(state): State<AppState>,
@@ -36,16 +38,23 @@ pub async fn create_fertiliser_application(
     }
 
     // Weather Validation
-    let application_date = chrono::DateTime::parse_from_rfc3339(&format!("{}T12:00:00Z", event.date))
-        .map(|dt| dt.with_timezone(&chrono::Utc))
-        .unwrap_or_else(|_| chrono::Utc::now());
+    let application_date =
+        chrono::DateTime::parse_from_rfc3339(&format!("{}T12:00:00Z", event.date))
+            .map(|dt| dt.with_timezone(&chrono::Utc))
+            .unwrap_or_else(|_| chrono::Utc::now());
 
     // In a real app, we'd parse lat/lon from farm.location or separate fields
     crate::weather::WeatherService::validate_application_safety(0.0, 0.0, application_date).await?;
 
     // Spatial Validation
     if let Some(ref wkt) = app.geometry_wkt {
-        crate::spatial::SpatialService::validate_application_area(&state.db_pool, field.id.unwrap(), wkt, false).await?;
+        crate::spatial::SpatialService::validate_application_area(
+            &state.db_pool,
+            field.id.unwrap(),
+            wkt,
+            false,
+        )
+        .await?;
     }
 
     let new_app = sqlx::query_as::<_, FertiliserApplication>(
@@ -95,16 +104,23 @@ pub async fn create_organic_manure_application(
         .await?;
 
     // Weather Validation
-    let application_date = chrono::DateTime::parse_from_rfc3339(&format!("{}T12:00:00Z", event.date))
-        .map(|dt| dt.with_timezone(&chrono::Utc))
-        .unwrap_or_else(|_| chrono::Utc::now());
+    let application_date =
+        chrono::DateTime::parse_from_rfc3339(&format!("{}T12:00:00Z", event.date))
+            .map(|dt| dt.with_timezone(&chrono::Utc))
+            .unwrap_or_else(|_| chrono::Utc::now());
 
     // In a real app, we'd parse lat/lon from farm.location or separate fields
     crate::weather::WeatherService::validate_application_safety(0.0, 0.0, application_date).await?;
 
     // Spatial Validation
     if let Some(ref wkt) = app.geometry_wkt {
-        crate::spatial::SpatialService::validate_application_area(&state.db_pool, field.id.unwrap(), wkt, true).await?;
+        crate::spatial::SpatialService::validate_application_area(
+            &state.db_pool,
+            field.id.unwrap(),
+            wkt,
+            true,
+        )
+        .await?;
     }
 
     // Fetch previous apps for 3-week gap rule

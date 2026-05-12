@@ -1,8 +1,14 @@
-use axum::{Json, extract::{Query, State}};
-use chrono::{DateTime, Utc};
 use crate::error::AppError;
-use crate::models::{SyncQuery, SyncResponse, Farm, Field, Event, FarmRecord, SoilAnalysis, FertilisationPlan, FertiliserApplication, OrganicManureApplication, ComplianceBreach, SwardMovement};
+use crate::models::{
+    ComplianceBreach, Event, Farm, FarmRecord, FertilisationPlan, FertiliserApplication, Field,
+    OrganicManureApplication, SoilAnalysis, SwardMovement, SyncQuery, SyncResponse,
+};
 use crate::state::AppState;
+use axum::{
+    Json,
+    extract::{Query, State},
+};
+use chrono::{DateTime, Utc};
 
 pub async fn delta_sync(
     State(state): State<AppState>,

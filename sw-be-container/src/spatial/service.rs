@@ -1,5 +1,5 @@
-use sqlx::PgPool;
 use crate::error::AppError;
+use sqlx::PgPool;
 
 pub struct SpatialService;
 
@@ -12,7 +12,7 @@ impl SpatialService {
     ) -> Result<(), AppError> {
         // 1. Check if application is within field boundary
         let is_within_field = sqlx::query_scalar::<_, bool>(
-            "SELECT ST_Within(ST_GeomFromText($1, 4326), geom) FROM fields WHERE id = $2"
+            "SELECT ST_Within(ST_GeomFromText($1, 4326), geom) FROM fields WHERE id = $2",
         )
         .bind(application_geom_wkt)
         .bind(field_id)
@@ -21,7 +21,9 @@ impl SpatialService {
         .unwrap_or(false);
 
         if !is_within_field {
-            return Err(AppError::BadRequest("Application area is outside the field boundary.".to_string()));
+            return Err(AppError::BadRequest(
+                "Application area is outside the field boundary.".to_string(),
+            ));
         }
 
         // 2. Check for waterway buffer intersections
@@ -33,7 +35,7 @@ impl SpatialService {
              WHERE ST_Intersects(
                 ST_GeomFromText($1, 4326),
                 ST_Buffer(geom::geography, $2)::geometry
-             ) AND is_deleted = FALSE"
+             ) AND is_deleted = FALSE",
         )
         .bind(application_geom_wkt)
         .bind(buffer_distance)
@@ -50,7 +52,10 @@ impl SpatialService {
         Ok(())
     }
 
-    pub async fn get_buffer_geometries_geojson(pool: &PgPool, distance_meters: f64) -> Result<String, AppError> {
+    pub async fn get_buffer_geometries_geojson(
+        pool: &PgPool,
+        distance_meters: f64,
+    ) -> Result<String, AppError> {
         let geojson = sqlx::query_scalar::<_, String>(
             "SELECT ST_AsGeoJSON(ST_Union(ST_Buffer(geom::geography, $1)::geometry)) FROM waterways WHERE is_deleted = FALSE"
         )
