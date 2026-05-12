@@ -22,10 +22,10 @@ impl From<UrlWithUsernamePassword> for Url {
     fn from(value: UrlWithUsernamePassword) -> Self {
         let mut return_url = value.url;
         if let Some(password) = value.password {
-            return_url.set_password(Some(&password)).unwrap();
+            let _ = return_url.set_password(Some(&password));
         }
         if let Some(username) = value.username {
-            return_url.set_username(&username).unwrap();
+            let _ = return_url.set_username(&username);
         }
         return_url
     }

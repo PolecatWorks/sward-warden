@@ -16,11 +16,9 @@ pub extern "C" fn prometheus_response(ptr: *const c_void) -> *mut c_char {
 
     let metric_families = registry.gather();
 
-    encoder.encode(&metric_families, &mut buffer).unwrap();
-
-    let prometheus = String::from_utf8(buffer).unwrap();
-
-    let c_str_prometheus = std::ffi::CString::new(prometheus).unwrap();
+    let _ = encoder.encode(&metric_families, &mut buffer);
+    let prometheus = String::from_utf8(buffer).unwrap_or_default();
+    let c_str_prometheus = std::ffi::CString::new(prometheus).unwrap_or_else(|_| unsafe { CString::from_vec_unchecked(vec![]) });
 
     c_str_prometheus.into_raw()
 }
@@ -33,9 +31,8 @@ pub extern "C" fn prometheus_response_mystate(ptr: *const c_void) -> *mut c_char
     let axum_string = state.prometheus_handle.render();
     let buffer = axum_string.into_bytes();
 
-    let prometheus = String::from_utf8(buffer).unwrap();
-
-    let c_str_prometheus = std::ffi::CString::new(prometheus).unwrap();
+    let prometheus = String::from_utf8(buffer).unwrap_or_default();
+    let c_str_prometheus = std::ffi::CString::new(prometheus).unwrap_or_else(|_| unsafe { CString::from_vec_unchecked(vec![]) });
 
     c_str_prometheus.into_raw()
 }

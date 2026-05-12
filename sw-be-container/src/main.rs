@@ -50,7 +50,8 @@ fn main() -> Result<(), AppError> {
             let config = AppConfig::load(&cli.config_path, &cli.secrets_dir)?;
             println!(
                 "Config:\n{}",
-                serde_yaml::to_string(&config).expect("Failed to serialize config")
+                serde_yaml::to_string(&config)
+                    .map_err(|e| AppError::Message(format!("Failed to serialize config: {e}")))?
             );
             let delay = config.debugging.fail_debug_delay;
             let ct = CancellationToken::new();
@@ -73,7 +74,8 @@ fn main() -> Result<(), AppError> {
             let config = AppConfig::load(&cli.config_path, &cli.secrets_dir)?;
             println!(
                 "Config:\n{}",
-                serde_yaml::to_string(&config).expect("Failed to serialize config")
+                serde_yaml::to_string(&config)
+                    .map_err(|e| AppError::Message(format!("Failed to serialize config: {e}")))?
             );
             let delay = config.debugging.fail_debug_delay;
             if let Err(e) = run_in_tokio(&config.runtime, async move {
@@ -109,7 +111,8 @@ fn main() -> Result<(), AppError> {
             let config = AppConfig::load(&cli.config_path, &cli.secrets_dir)?;
             println!(
                 "Config:\n{}",
-                serde_yaml::to_string(&config).expect("Failed to serialize config")
+                serde_yaml::to_string(&config)
+                    .map_err(|e| AppError::Message(format!("Failed to serialize config: {e}")))?
             );
             let delay = config.debugging.fail_debug_delay;
             if let Err(e) = run_in_tokio(&config.runtime, async move {
@@ -187,7 +190,8 @@ async fn service_cancellable(ct: CancellationToken, config: AppConfig) -> Result
         &state as *const _ as *const c_void,
     )?;
 
-    hams.start().unwrap();
+    hams.start()
+        .map_err(|e| AppError::Message(format!("Failed to start hams: {e}")))?;
 
     let server_future = start_app_api(state.clone(), ct.clone());
 

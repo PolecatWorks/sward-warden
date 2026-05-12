@@ -37,7 +37,7 @@ impl OptimizationEngine {
             score += 0.1;
 
             suggestions.push(OptimizationSuggestion {
-                field_id: field.id.unwrap(),
+                field_id: field.id.ok_or_else(|| AppError::Message("Field ID is missing".to_string()))?,
                 field_name: field.name,
                 recommended_rate,
                 unit: "m3/ha".to_string(),
@@ -48,7 +48,7 @@ impl OptimizationEngine {
         }
 
         // Sort suggestions by score descending
-        suggestions.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap());
+        suggestions.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
 
         Ok(OptimizationPlan {
             farm_id,

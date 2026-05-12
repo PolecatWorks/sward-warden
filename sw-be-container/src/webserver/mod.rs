@@ -121,8 +121,11 @@ pub async fn start_app_api(state: AppState, ct: CancellationToken) -> Result<(),
         .cors
         .allow_origins
         .iter()
-        .map(|o| o.parse().expect("Invalid CORS origin in config"))
-        .collect();
+        .map(|o| {
+            o.parse()
+                .map_err(|e| AppError::Message(format!("Invalid CORS origin in config: {e}")))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
     cors_layer = cors_layer.allow_origin(origins);
 
     let methods: Vec<axum::http::Method> = state
@@ -131,8 +134,11 @@ pub async fn start_app_api(state: AppState, ct: CancellationToken) -> Result<(),
         .cors
         .allow_methods
         .iter()
-        .map(|m| m.parse().expect("Invalid CORS method in config"))
-        .collect();
+        .map(|m| {
+            m.parse()
+                .map_err(|e| AppError::Message(format!("Invalid CORS method in config: {e}")))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
     cors_layer = cors_layer.allow_methods(methods);
 
     let headers: Vec<axum::http::header::HeaderName> = state
@@ -141,8 +147,11 @@ pub async fn start_app_api(state: AppState, ct: CancellationToken) -> Result<(),
         .cors
         .allow_headers
         .iter()
-        .map(|h| h.parse().expect("Invalid CORS header in config"))
-        .collect();
+        .map(|h| {
+            h.parse()
+                .map_err(|e| AppError::Message(format!("Invalid CORS header in config: {e}")))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
     cors_layer = cors_layer.allow_headers(headers);
 
     let metric_layer = PrometheusMetricLayer::new();
