@@ -20,7 +20,7 @@ spec:
     - name: sward-warden-be
       match:
         - uri:
-            prefix: /sward-be/v0
+            prefix: /sward
       route:
         - destination:
             host: sward-warden-be
