@@ -138,6 +138,8 @@ spec:
       repository: ghcr.io/polecatworks/sward-warden-fe
       tag: main
       pullPolicy: Always
+    imagePullSecrets:
+      - name: ghcr-docker-auth
     env:
       - name: SERVE_ROOT
         value: /mfe/sward-warden
