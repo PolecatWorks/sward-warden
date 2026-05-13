@@ -108,7 +108,42 @@ spec:
         repository: ghcr.io/polecatworks/sward-warden-fe
         tag: main
         pullPolicy: Always
-      configs:
-        database:
-          url:
-            url: postgresql://cnpg-db0-cluster-rw.dbs:5432/sward_warden
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: mfe-shell
+spec:
+  interval: 10m
+  url: oci://ghcr.io/polecatworks/mfe-shell/helm/nginx-view
+  ref:
+    semver: ">= 0.1.x-0"
+    semverFilter: .*-main
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mfe-sward-warden
+spec:
+  releaseName: mfe-sward-warden
+  chartRef:
+    kind: OCIRepository
+    name: mfe-shell
+  interval: 50m
+  install:
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: ghcr.io/polecatworks/sward-warden-fe
+      tag: main
+      pullPolicy: Always
+    env:
+      - name: SERVE_ROOT
+        value: /mfe/sward-warden
+    config:
+      contents:
+        config.json: |
+          {
+            "apiUrl": "/sward"
+          }
