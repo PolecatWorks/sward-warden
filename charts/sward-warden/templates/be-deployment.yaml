@@ -1,4 +1,5 @@
-{{- $configsha := tpl (include "sward-warden.be.config" .) . | sha256sum }}
+{{- $configsha := substr 0 8 ((include "sward-warden.be.config" . ) | sha256sum) }}
+{{- $volumesha := substr 0 8 ((include "sward-warden.be.volumes" . ) | sha256sum) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,6 +17,7 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ $configsha }}
+        checksum/volumes: {{ $volumesha }}
       {{- with .Values.be.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

@@ -25,9 +25,9 @@ If release name contains chart name it will be used as a full name.
 
 {{- define "sward-warden.be.config" -}}
 {{- $baseconfig := fromYaml (.Files.Get "configs/config.yaml") }}
-{{- $newconfig := default dict .Values.be.configs }}
+{{- $newconfig := default dict .Values.be.config }}
 {{- $postmerge := mergeOverwrite $baseconfig $newconfig }}
-{{- toYaml $postmerge }}
+{{- tpl (toYaml $postmerge) . }}
 {{- end -}}
 
 
