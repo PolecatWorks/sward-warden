@@ -75,7 +75,7 @@ spec:
         repository: ghcr.io/polecatworks/sward-warden-be
         tag: main
         pullPolicy: Always
-      configs:
+      config:
         webservice:
           address: http://0.0.0.0:8080/sward
         database:
