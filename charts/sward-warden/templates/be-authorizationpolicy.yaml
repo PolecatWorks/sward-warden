@@ -1,16 +1,16 @@
-{{- if .Values.be.devsecops.AuthorizationPolicy.rules }}
+{{- if .Values.devsecops.AuthorizationPolicy.rules }}
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
-  name: {{ include "sward-warden.fullname" . }}-be
+  name: {{ include "sward-warden.fullname" . }}
   labels:
-    {{- include "sward-warden.be.labels" . | nindent 4 }}
+    {{- include "sward-warden.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      {{- include "sward-warden.be.selectorLabels" . | nindent 6 }}
+      {{- include "sward-warden.selectorLabels" . | nindent 6 }}
   action: ALLOW
   rules:
-  {{-  tpl (toYaml .Values.be.devsecops.AuthorizationPolicy.rules) . | nindent 4 }}
+  {{-  tpl (toYaml .Values.devsecops.AuthorizationPolicy.rules) . | nindent 4 }}
 {{- end }}

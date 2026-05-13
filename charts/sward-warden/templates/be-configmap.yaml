@@ -7,4 +7,4 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
 data:
   config.yaml: |
-    {{- include "sward-warden.be.config" . | nindent 4 }}
+    {{- include "sward-warden.config" . | nindent 4 }}

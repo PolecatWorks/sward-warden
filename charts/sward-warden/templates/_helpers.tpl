@@ -23,29 +23,29 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 {{- end }}
 
-{{- define "sward-warden.be.config" -}}
+{{- define "sward-warden.config" -}}
 {{- $baseconfig := fromYaml (.Files.Get "configs/config.yaml") }}
-{{- $newconfig := default dict .Values.be.config }}
+{{- $newconfig := default dict .Values.config }}
 {{- $postmerge := mergeOverwrite $baseconfig $newconfig }}
 {{- tpl (toYaml $postmerge) . }}
 {{- end -}}
 
 
 
-{{- define "sward-warden.be.volumes" -}}
-{{- tpl (toYaml .Values.be.volumes) . }}
+{{- define "sward-warden.volumes" -}}
+{{- tpl (toYaml .Values.volumes) . }}
 {{- end -}}
 
-{{- define "sward-warden.be.volumeMounts" -}}
-{{- tpl (toYaml .Values.be.volumeMounts) . }}
+{{- define "sward-warden.volumeMounts" -}}
+{{- tpl (toYaml .Values.volumeMounts) . }}
 {{- end -}}
 
-{{- define "sward-warden.be.env" -}}
-{{- tpl (toYaml .Values.be.env) . }}
+{{- define "sward-warden.env" -}}
+{{- tpl (toYaml .Values.env) . }}
 {{- end -}}
 
-{{- define "sward-warden.be.initContainer.env" -}}
-{{- tpl (toYaml .Values.be.initContainer.env) . }}
+{{- define "sward-warden.initContainer.env" -}}
+{{- tpl (toYaml .Values.initContainer.env) . }}
 {{- end -}}
 
 {{/*
@@ -58,7 +58,7 @@ Create chart name and version as used by the chart label.
 {{/*
 Selector labels for be
 */}}
-{{- define "sward-warden.be.selectorLabels" -}}
+{{- define "sward-warden.selectorLabels" -}}
 app.kubernetes.io/name: be
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
@@ -74,15 +74,15 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{/*
 Common labels for be
 */}}
-{{- define "sward-warden.be.labels" -}}
+{{- define "sward-warden.labels" -}}
 helm.sh/chart: {{ include "sward-warden.chart" . }}
-{{ include "sward-warden.be.selectorLabels" . }}
+{{ include "sward-warden.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- if .Values.be.labels }}
-{{ toYaml .Values.be.labels }}
+{{- if .Values.labels }}
+{{ toYaml .Values.labels }}
 {{- end }}
 {{- end }}
 
@@ -104,8 +104,8 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Create the name of the service account to use for be
 */}}
-{{- define "sward-warden.be.serviceAccountName" -}}
-{{- default (printf "%s-be" (include "sward-warden.fullname" .)) .Values.be.serviceAccount.name }}
+{{- define "sward-warden.serviceAccountName" -}}
+{{- default (printf "%s-be" (include "sward-warden.fullname" .)) .Values.serviceAccount.name }}
 {{- end }}
 
 {{/*

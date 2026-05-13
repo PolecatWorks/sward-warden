@@ -66,48 +66,42 @@ spec:
   values:
     imagePullSecrets:
       - name: ghcr-docker-auth
-    be:
-      initContainer:
-        env:
-          - name: SP_BE__DEBUGGING__FAIL_DEBUG_DELAY
-            value: "60s"
-      image:
-        repository: ghcr.io/polecatworks/sward-warden-be
-        tag: main
-        pullPolicy: Always
-      config:
-        webservice:
-          address: http://0.0.0.0:8080/sward
-        database:
-          url:
-            url: postgresql://cnpg-db0-cluster-rw.dbs:5432/sward_warden
-            username_file: persistence/db/connection/username
-            password_file: persistence/db/connection/password
-      volumes:
-        - name: config
-          configMap:
-            name: "{{ include \"sward-warden.fullname\" . }}-be"
-        - name: secrets
-          projected:
-            sources:
-              - secret:
-                  name: db0-sward-warden-user
-                  items:
-                    - key: username
-                      path: persistence/db/connection/username
-                    - key: password
-                      path: persistence/db/connection/password
-      volumeMounts:
-        - name: config
-          mountPath: /etc/sw-be/config.yaml
-          subPath: config.yaml
-        - name: secrets
-          mountPath: /etc/sw-be/secrets
-    fe:
-      image:
-        repository: ghcr.io/polecatworks/sward-warden-fe
-        tag: main
-        pullPolicy: Always
+    initContainer:
+      env:
+        - name: SP_BE__DEBUGGING__FAIL_DEBUG_DELAY
+          value: "60s"
+    image:
+      repository: ghcr.io/polecatworks/sward-warden-be
+      tag: main
+      pullPolicy: Always
+    config:
+      webservice:
+        address: http://0.0.0.0:8080/sward
+      database:
+        url:
+          url: postgresql://cnpg-db0-cluster-rw.dbs:5432/sward_warden
+          username_file: persistence/db/connection/username
+          password_file: persistence/db/connection/password
+    volumes:
+      - name: config
+        configMap:
+          name: "{{ include \"sward-warden.fullname\" . }}-be"
+      - name: secrets
+        projected:
+          sources:
+            - secret:
+                name: db0-sward-warden-user
+                items:
+                  - key: username
+                    path: persistence/db/connection/username
+                  - key: password
+                    path: persistence/db/connection/password
+    volumeMounts:
+      - name: config
+        mountPath: /etc/sw-be/config.yaml
+        subPath: config.yaml
+      - name: secrets
+        mountPath: /etc/sw-be/secrets
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository

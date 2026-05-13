@@ -1,46 +1,46 @@
-{{- $configsha := substr 0 8 ((include "sward-warden.be.config" . ) | sha256sum) }}
-{{- $volumesha := substr 0 8 ((include "sward-warden.be.volumes" . ) | sha256sum) }}
+{{- $configsha := substr 0 8 ((include "sward-warden.config" . ) | sha256sum) }}
+{{- $volumesha := substr 0 8 ((include "sward-warden.volumes" . ) | sha256sum) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "sward-warden.fullname" . }}-be
   labels:
-    {{- include "sward-warden.be.labels" . | nindent 4 }}
+    {{- include "sward-warden.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.be.autoscaling.enabled }}
-  replicas: {{ .Values.be.replicaCount }}
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "sward-warden.be.selectorLabels" . | nindent 6 }}
+      {{- include "sward-warden.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       annotations:
         checksum/config: {{ $configsha }}
         checksum/volumes: {{ $volumesha }}
-      {{- with .Values.be.podAnnotations }}
+      {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "sward-warden.be.selectorLabels" . | nindent 8 }}
-      {{- with .Values.be.podLabels }}
+        {{- include "sward-warden.selectorLabels" . | nindent 8 }}
+      {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
     spec:
-      serviceAccountName: {{ include "sward-warden.be.serviceAccountName" . }}
-      {{- with .Values.be.securityContext }}
+      serviceAccountName: {{ include "sward-warden.serviceAccountName" . }}
+      {{- with .Values.securityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.be.nodeSelector }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.be.affinity }}
+      {{- with .Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.be.tolerations }}
+      {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -50,34 +50,34 @@ spec:
       {{- end }}
       initContainers:
         - name: migrate
-          image: "{{ .Values.be.image.repository }}:{{ .Values.be.image.tag }}"
-          imagePullPolicy: {{ .Values.be.image.pullPolicy }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/usr/local/bin/sw-be-container", "--config-path", "/etc/sw-be/config.yaml", "--secrets-dir", "/etc/sw-be/secrets", "migrate"]
-          {{- with .Values.be.initContainer.env }}
+          {{- with .Values.initContainer.env }}
           env:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          volumeMounts: {{- include "sward-warden.be.volumeMounts" . | nindent 12 }}
+          volumeMounts: {{- include "sward-warden.volumeMounts" . | nindent 12 }}
       containers:
         - name: be
-          image: "{{ .Values.be.image.repository }}:{{ .Values.be.image.tag }}"
-          imagePullPolicy: {{ .Values.be.image.pullPolicy }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/usr/local/bin/sw-be-container", "--config-path", "/etc/sw-be/config.yaml", "--secrets-dir", "/etc/sw-be/secrets", "serve"]
           env:
-            {{- include "sward-warden.be.env" . | nindent 12 }}
+            {{- include "sward-warden.env" . | nindent 12 }}
           ports:
             - name: http-web
-              containerPort: {{ .Values.be.containerPort }}
+              containerPort: {{ .Values.containerPort }}
               protocol: TCP
             - name: http-lifecycle
-              containerPort: {{ .Values.be.lifecyclePort }}
+              containerPort: {{ .Values.lifecyclePort }}
               protocol: TCP
           lifecycle:
-            {{- toYaml .Values.be.lifecycle | nindent 12 }}
+            {{- toYaml .Values.lifecycle | nindent 12 }}
           readinessProbe:
-            {{- toYaml .Values.be.readinessProbe | nindent 12 }}
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
           livenessProbe:
-            {{- toYaml .Values.be.livenessProbe | nindent 12 }}
-          volumeMounts: {{- include "sward-warden.be.volumeMounts" . | nindent 12 }}
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          volumeMounts: {{- include "sward-warden.volumeMounts" . | nindent 12 }}
       volumes:
-        {{- include "sward-warden.be.volumes" . | nindent 8 }}
+        {{- include "sward-warden.volumes" . | nindent 8 }}

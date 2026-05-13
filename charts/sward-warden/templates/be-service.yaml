@@ -3,12 +3,12 @@ kind: Service
 metadata:
   name: {{ include "sward-warden.fullname" . }}-be
   labels:
-    {{- include "sward-warden.be.labels" . | nindent 4 }}
+    {{- include "sward-warden.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.be.service.type }}
+  type: {{ .Values.service.type }}
   ports:
     - name: http-web
-      port: {{ .Values.be.service.port }}
+      port: {{ .Values.service.port }}
       targetPort: http-web
       protocol: TCP
     - name: http-envoy-prom
@@ -16,4 +16,4 @@ spec:
       protocol: TCP
       targetPort: 15020
   selector:
-    {{- include "sward-warden.be.selectorLabels" . | nindent 4 }}
+    {{- include "sward-warden.selectorLabels" . | nindent 4 }}
