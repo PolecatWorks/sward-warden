@@ -17,6 +17,13 @@ spec:
       route:
         - destination:
             host: mfe-sward-warden-nginx-view
+    - name: mfe-shell
+      match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: mfe-shell-nginx-view
     - name: sward-warden-be
       match:
         - uri:

@@ -37,18 +37,6 @@
 #   --docker-username=<USERNAME> \
 #   --docker-password='<YOUR_WORKING_PAT>'
 
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: OCIRepository
-metadata:
-  name: sward-warden
-spec:
-  interval: 10m
-  url: oci://ghcr.io/polecatworks/sward-warden/helm/sward-warden
-  secretRef:
-    name: ghcr-docker-auth
-  ref:
-    semver: ">= 0.1.x-0"
-    semverFilter: .*-main-*
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -85,7 +73,7 @@ spec:
     volumes:
       - name: config
         configMap:
-          name: "{{ include \"sward-warden.fullname\" . }}-be"
+          name: '{{ include "sward-warden.fullname" . }}-be'
       - name: secrets
         projected:
           sources:
