@@ -13,9 +13,9 @@ spec:
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: mfe-sward-warden
+  name: sward-warden-fe
 spec:
-  releaseName: mfe-sward-warden
+  releaseName: sward-warden-fe
   chartRef:
     kind: OCIRepository
     name: mfe-shell
