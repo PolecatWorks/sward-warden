@@ -28,7 +28,7 @@ spec:
   values:
     image:
       repository: ghcr.io/polecatworks/mfe-shell-mfe-shell
-      tag: sha-45e887836c8f4a706f9a63fb8ecb935fd0cc64ec
+      tag: main
       pullPolicy: Always # Dev ONLY
     imagePullSecrets:
       - name: ghcr-docker-auth
