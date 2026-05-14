@@ -34,6 +34,38 @@ spec:
       - name: SERVE_ROOT
         value: /
     config:
+      configs:
+        default.conf.template: |
+          map $http_origin $cors_origin {
+            default "";
+            "~^http://localhost(:\d+)?$" "$http_origin";
+          }
+
+          server {
+            listen 8080;
+            server_name localhost;
+            root /usr/share/nginx/html;
+
+            # 1. Health Checks (High Priority)
+            location /alive { return 200; access_log off; }
+            location /ready { return 200; access_log off; }
+
+            # 2. MFE Shell logic. Serve index.html if we hit a 404
+            location / {
+                alias /usr/share/nginx/html/;
+                index  index.html index.htm;
+                try_files $uri $uri/ /index.html;
+            }
+            error_page  404              /index.html;
+
+            # 3. General Static Files
+            location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|json)$ {
+                expires 1y;
+                add_header Cache-Control "public, no-transform";
+                add_header 'Access-Control-Allow-Origin' $cors_origin;
+                # Note: If a file is in /mfe1/, it was already handled by the ^~ block above
+            }
+          }
       contents:
         config.json: |
           {
