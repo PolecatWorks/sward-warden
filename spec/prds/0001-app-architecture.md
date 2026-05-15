@@ -9,6 +9,7 @@ This document defines the overarching application architecture for the sward man
 - **Design System:** Transition from generic Angular Material to a custom premium aesthetic using Tailwind CSS, Google Fonts (Work Sans), and curated HSL color palettes. Angular Material remains supported for low-level primitive components.
 - **Location:** Code to be placed in `sw-fe-container` directory.
 - **Deployment:** Packaged as a Docker container.
+- **Runtime Configuration:** The fe must support dynamic configuration loading at startup. It should fetch a configuration JSON from the `assets` directory (e.g., `/assets/contents/app-config.json`) before bootstrapping. This allows the application to be configured at deployment time (e.g., via Kubernetes ConfigMaps mounted as volumes) without requiring a rebuild of the Docker image.
 
 ## Development Workflow
 - All development actions will be triggered by `Makefile` targets.
