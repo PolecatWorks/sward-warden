@@ -54,6 +54,13 @@ The current be implementation in `sw-be-container` is a simple proof-of-concept 
 - Remove monolithic implementations and focus on distinct, focused handlers.
 - Each handler should rely strictly on `AppState` and proper `AppError` return types.
 
+### 3.8. HaMS Lifecycle and Service Initialization
+- **Synchronous Setup**: `HaMS` service initialization and starting must occur synchronously within `main()` before the `tokio` async runtime is initialized. This ensures the monitoring system is active during the entire application lifecycle.
+- **Unified Shutdown Handling**: The application must link the `HaMS` shutdown signal (triggered by SIGTERM/SIGINT) to the internal `CancellationToken`. This is achieved by registering a shutdown callback with `HaMS` that calls `ct.cancel()`.
+- **Non-Blocking Probes**: Initial health probes (e.g., database connectivity status) must be registered during the synchronous setup phase to avoid the risk of blocking `tokio` runtime threads during registration.
+- **Initialization Error Handling**: The entire service startup flow, including configuration loading and `HaMS` setup, should be wrapped in a centralized error handler. This handler must apply a configurable `fail_debug_delay` (if provided in the configuration) before the process exits, allowing for container inspection and log retrieval in Kubernetes environments.
+- **Graceful Cleanup**: Upon application shutdown (after the async runtime exits), `HaMS` should be explicitly deregistered from Prometheus and stopped to ensure a clean release of system resources.
+
 ## 4. Dependencies to Add/Update
 The `sw-be-container/Cargo.toml` should be updated to align with the reference project's dependencies:
 
@@ -62,14 +69,15 @@ The `sw-be-container/Cargo.toml` should be updated to align with the reference p
 axum = { version ="^0.8", features = ["macros"] }
 url = { version = "^2.5", features = ["serde"] }
 log = "^0.4"
-clap = { version = "^4.5", features = ["derive", "string", "env"] }
+clap = { version = "^4.6", features = ["derive", "string", "env"] }
 dotenv = "^0.15"
 env_logger = "^0.11"
 figment = { version = "^0.10", features = ["yaml", "env"] }
 figment_file_provider_adapter = "~0.1"
 serde = { version = "^1.0.228", features = ["derive"] }
 serde_json = "^1.0"
-tokio = { version = "^1.49", features = ["full"] }
+serde_yaml = "0.9"
+tokio = { version = "^1.52", features = ["full"] }
 
 # Telemetry
 opentelemetry = "^0.31"
@@ -84,17 +92,15 @@ axum-prometheus = "^0.10"
 # Utils & Middleware
 thiserror = "^2.0"
 reqwest = { version = "^0.13", default-features = false, features = ["json"] }
-tower-http = { version = "^0.6", features = ["trace"] }
+tower-http = { version = "^0.6", features = ["trace", "cors"] }
 tokio-util = "^0.7"
-serde_with = "^3.12"
+serde_with = "^3.16"
 humantime-serde = "^1.1"
 chrono = { version = "^0.4", features = ["serde"] }
-dashmap = "^6.0"
+futures = "~0.3"
 
-# Custom / Health
+dashmap = "^6.0"
 hams = { git = "https://github.com/PolecatWorks/hams.git" }
 ffi-log2 = { git = "https://github.com/PolecatWorks/hams.git" }
-
-# Database
-sqlx = { version = "0.8", features = ["postgres", "runtime-tokio-rustls"] }
+sqlx = { version = "0.8", features = ["postgres", "runtime-tokio-rustls", "chrono"] }
 ```
