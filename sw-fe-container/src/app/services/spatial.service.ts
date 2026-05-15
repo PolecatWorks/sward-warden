@@ -3,13 +3,21 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+import { APP_CONFIG, AppConfig } from '../app-config';
+import { Inject } from '@angular/core';
+
 @Injectable({
   providedIn: 'root'
 })
 export class SpatialService {
-  private apiUrl = `${environment.apiUrl}/v0/spatial`; // Note: Be needs endpoint for GeoJSON
+  constructor(
+    private http: HttpClient,
+    @Inject(APP_CONFIG) private config: AppConfig
+  ) { }
 
-  constructor(private http: HttpClient) { }
+  private get apiUrl() {
+    return `${this.config.apiPath}/v0/spatial`;
+  }
 
   getWaterwayBuffers(distance: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/waterway-buffers?distance=${distance}`);

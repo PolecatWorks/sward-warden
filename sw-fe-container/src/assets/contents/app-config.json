@@ -1,0 +1,8 @@
+{
+  "apiPath": "/swarm",
+  "logLevel": "INFO",
+  "otel": {
+    "collectorUrl": "http://localhost:4318",
+    "logLevel": "info"
+  }
+}

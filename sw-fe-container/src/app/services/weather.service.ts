@@ -12,13 +12,21 @@ export interface WeatherData {
   condition: string;
 }
 
+import { APP_CONFIG, AppConfig } from '../app-config';
+import { Inject } from '@angular/core';
+
 @Injectable({
   providedIn: 'root'
 })
 export class WeatherService {
-  private apiUrl = `${environment.apiUrl}/v0/weather`; // Note: Be needs an endpoint to serve forecast
+  constructor(
+    private http: HttpClient,
+    @Inject(APP_CONFIG) private config: AppConfig
+  ) { }
 
-  constructor(private http: HttpClient) { }
+  private get apiUrl() {
+    return `${this.config.apiPath}/v0/weather`;
+  }
 
   getForecast(lat: number, lon: number): Observable<WeatherData[]> {
     return this.http.get<WeatherData[]>(`${this.apiUrl}/forecast?lat=${lat}&lon=${lon}`);
