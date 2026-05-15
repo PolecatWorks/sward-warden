@@ -20,6 +20,9 @@ import {
   OrganicManureApplicationDocType, ComplianceBreachDocType, SwardMovementDocType,
 } from './rxdb/schemas';
 import { RxDocument } from 'rxdb';
+import { APP_CONFIG, AppConfig } from '../app-config';
+import { Inject } from '@angular/core';
+import { of } from 'rxjs';
 
 /** Generates a short unique ID for local-first record creation. */
 function generateLocalId(): string {
@@ -37,12 +40,9 @@ export class FarmManagementService {
     private http: HttpClient,
     private authService: AuthService,
     private rxdbService: RxdbService,
+    @Inject(APP_CONFIG) private config: AppConfig
   ) {
-    const configPath = 'assets/contents/config.json';
-    this.apiUrl$ = this.http.get<{ apiUrl: string }>(configPath).pipe(
-      map(config => config.apiUrl),
-      shareReplay(1)
-    );
+    this.apiUrl$ = of(this.config.apiPath).pipe(shareReplay(1));
   }
 
   getHeaders(): HttpHeaders {

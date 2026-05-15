@@ -18,13 +18,21 @@ export interface OptimizationPlan {
   suggestions: OptimizationSuggestion[];
 }
 
+import { APP_CONFIG, AppConfig } from '../app-config';
+import { Inject } from '@angular/core';
+
 @Injectable({
   providedIn: 'root'
 })
 export class OptimizationService {
-  private apiUrl = `${environment.apiUrl}/v0/optimization`;
+  constructor(
+    private http: HttpClient,
+    @Inject(APP_CONFIG) private config: AppConfig
+  ) { }
 
-  constructor(private http: HttpClient) { }
+  private get apiUrl() {
+    return `${this.config.apiPath}/v0/optimization`;
+  }
 
   getSuggestions(farmId: number): Observable<OptimizationPlan> {
     return this.http.get<OptimizationPlan>(`${this.apiUrl}/suggestions/${farmId}`);

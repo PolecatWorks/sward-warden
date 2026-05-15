@@ -78,6 +78,10 @@ export interface VisualizationsResponse {
   visualizations: Visualization[];
 }
 
+import { APP_CONFIG, AppConfig } from '../app-config';
+import { Inject } from '@angular/core';
+import { of } from 'rxjs';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -87,14 +91,10 @@ export class ChatService {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
-    private logger: LoggerService
+    private logger: LoggerService,
+    @Inject(APP_CONFIG) private config: AppConfig
   ) {
-    const basePath = new URL('./', import.meta.url).href;
-    const configPath = basePath.endsWith('/') ? `${basePath}assets/contents/config.json` : `${basePath}/assets/contents/config.json`;
-    this.apiUrl$ = this.http.get<{ apiUrl: string }>(configPath).pipe(
-      map(config => config.apiUrl),
-      shareReplay(1)
-    );
+    this.apiUrl$ = of(this.config.apiPath).pipe(shareReplay(1));
   }
 
   private getHeaders(): HttpHeaders {
