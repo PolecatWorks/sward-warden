@@ -67,7 +67,7 @@ spec:
             }
           }
       contents:
-        config.json: |
+        app-config.json: |
           {
             "apiUrl": "/sward"
           }

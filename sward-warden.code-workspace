@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../../home-k8s"
+		},
+		{
+			"path": "../hams"
 		}
 	],
 	"settings": {}
