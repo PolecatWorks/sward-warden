@@ -47,15 +47,56 @@ fn main() -> Result<(), AppError> {
 
     match &cli.command {
         Commands::Serve => {
-            let config = AppConfig::load(&cli.config_path, &cli.secrets_dir)?;
-            println!(
-                "Config:\n{}",
-                serde_yaml::to_string(&config)
-                    .map_err(|e| AppError::Message(format!("Failed to serialize config: {e}")))?
-            );
-            let delay = config.debugging.fail_debug_delay;
-            let ct = CancellationToken::new();
-            if let Err(e) = run_in_tokio(&config.runtime, service_cancellable(ct, config.clone())) {
+            let mut delay = None;
+
+            let result = (|| -> Result<(), AppError> {
+                let config = AppConfig::load(&cli.config_path, &cli.secrets_dir)?;
+                delay = config.debugging.fail_debug_delay;
+
+                println!(
+                    "Config:\n{}",
+                    serde_yaml::to_string(&config).map_err(|e| AppError::Message(format!(
+                        "Failed to serialize config: {e}"
+                    )))?
+                );
+
+                let ct = CancellationToken::new();
+
+                // HaMS setup before async runtime
+                let mut hams_config = config.hams.clone();
+                hams_config.name = NAME.to_owned();
+                hams_config.version = VERSION.to_owned();
+
+                let mut hams = Hams::new(hams_config);
+
+                // HaMS Probes - setup before async to avoid blocking runtime
+                let db_probe = ProbeManual::new("db-connected", true);
+                hams.ready_insert(
+                    Box::new(FFIProbe::from(db_probe.clone())) as Box<dyn AsyncHealthProbe>
+                );
+
+                hams.start()
+                    .map_err(|e| AppError::Message(format!("Failed to start HaMS: {e}")))?;
+
+                let res = run_in_tokio(
+                    &config.runtime,
+                    service_cancellable(ct, config.clone(), &mut hams),
+                );
+
+                hams.deregister_prometheus().map_err(|e| {
+                    AppError::Message(format!("Failed to deregister prometheus: {e}"))
+                })?;
+
+                hams.stop().map_err(|e| {
+                    AppError::Message(format!(
+                        "Failed to stop HaMS: {e}, it may already be stopped"
+                    ))
+                })?;
+
+                res
+            })();
+
+            if let Err(e) = result {
                 if let Some(d) = delay {
                     tracing::error!(
                         "Serve failed: {}. Sleeping for {:?} before exiting...",
@@ -138,7 +179,11 @@ fn main() -> Result<(), AppError> {
     Ok(())
 }
 
-async fn service_cancellable(ct: CancellationToken, config: AppConfig) -> Result<(), AppError> {
+async fn service_cancellable(
+    ct: CancellationToken,
+    config: AppConfig,
+    hams: &mut Hams,
+) -> Result<(), AppError> {
     info!("Starting service {} v{}", NAME, VERSION);
 
     // Setup Prometheus Recorder
@@ -164,43 +209,27 @@ async fn service_cancellable(ct: CancellationToken, config: AppConfig) -> Result
         startup_tools::run_startup_checks(&config, &db_pool).await?;
     }
 
-    let mut hams_config = config.hams.clone();
-    hams_config.name = NAME.to_owned();
-    hams_config.version = VERSION.to_owned();
+    // HaMS Probes
+    let db_probe = ProbeManual::new("db-connected", true);
+    hams.ready_insert(Box::new(FFIProbe::from(db_probe.clone())) as Box<dyn AsyncHealthProbe>);
 
-    struct SendHams(Hams);
-    unsafe impl Send for SendHams {}
-
-    let hams_wrapper = tokio::task::spawn_blocking(move || {
-        let mut hams = Hams::new(hams_config);
-
-        let db_probe = ProbeManual::new("db-connected", true); // placeholder
-        hams.ready_insert(Box::new(FFIProbe::from(db_probe.clone())) as Box<dyn AsyncHealthProbe>);
-
-        Ok::<_, AppError>(SendHams(hams))
-    })
-    .await
-    .map_err(|e| AppError::Message(format!("Tokio join error: {}", e)))??;
-
-    let mut hams = hams_wrapper.0;
-
+    // HaMS Prometheus Registration
     hams.register_prometheus(
         prometheus_response_mystate,
         prometheus_response_free,
         &state as *const _ as *const c_void,
     )?;
 
-    hams.start()
-        .map_err(|e| AppError::Message(format!("Failed to start hams: {e}")))?;
+    // Link HaMS shutdown to application cancellation token
+    let ct_clone = ct.clone();
+    hams.register_shutdown_closure(move || {
+        info!("HaMS shutdown callback triggered, cancelling application token");
+        ct_clone.cancel();
+    })?;
 
     let server_future = start_app_api(state.clone(), ct.clone());
 
     server_future.await?;
-
-    hams.stop()?;
-    hams.deregister_prometheus()?;
-
-    ct.cancel();
 
     Ok(())
 }
