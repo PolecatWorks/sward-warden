@@ -1,8 +1,7 @@
 #[cfg(test)]
 mod tests {
+    use crate::data::rules::{ValidationResult, validate_organic_manure_application};
     use crate::models::{Event, Farm, Field, OrganicManureApplication};
-    use crate::rules::{ValidationResult, validate_organic_manure_application};
-
 
     fn get_test_farm() -> Farm {
         Farm {

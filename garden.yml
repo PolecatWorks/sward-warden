@@ -6,6 +6,11 @@ variables:
   pr-number: ${local.env.PR_NUMBER || "local"}
   kube-context: "${local.env.GARDEN_KUBECONTEXT || (local.env.CI == 'true' ? 'local' : 'kubernetes-admin@kubernetes')}"
   current-namespace: ${environment.defaultNamespace || "default"}
+  sw-be-image: ${local.env.SW_BE_IMAGE || "ghcr.io/polecatworks/sward-warden-be"}
+  sw-be-tag: ${local.env.SW_BE_TAG || "main"}
+  sw-be-pull-policy: ${local.env.SW_BE_PULL_POLICY || "Always"}
+  sw-fe-image: ${local.env.SW_FE_IMAGE || "ghcr.io/polecatworks/sward-warden-fe"}
+  sw-fe-tag: ${local.env.SW_FE_TAG || "main"}
 
 providers:
   - name: kubernetes
@@ -22,23 +27,129 @@ environments:
     defaultNamespace: sward-warden-pr-${var.pr-number}
 
 ---
+---
+kind: Deploy
+type: container
+name: postgres-test
+description: "Ephemeral database for integration tests"
+spec:
+  image: mirror.gcr.io/postgis/postgis:16-3.4-alpine
+  env:
+    POSTGRES_DB: sward_warden
+    POSTGRES_USER: mock-user
+    POSTGRES_PASSWORD: mock-password
+  ports:
+    - name: postgres
+      containerPort: 5432
+      servicePort: 5432
+---
 kind: Deploy
 type: helm
 name: sward-warden
 description: "Deploy the sward manager"
+dependencies:
+  - deploy.postgres-test
 source:
   path: charts/sward-warden
 include:
-  - charts/sward-warden/**/*
+  - "**/*"
 spec:
   values:
     imagePullSecrets:
       - name: ghcr-secret
-    fe:
-      image:
-        repository: ${local.env.SW_FE_IMAGE || "sward-warden-fe"}
-        tag: ${local.env.SW_FE_TAG || "latest"}
-    be:
-      image:
-        repository: ${local.env.SW_BE_IMAGE || "sward-warden-be"}
-        tag: ${local.env.SW_BE_TAG || "latest"}
+    image:
+      repository: ${var.sw-be-image}
+      tag: ${var.sw-be-tag}
+      pullPolicy: ${var.sw-be-pull-policy}
+    config:
+      webservice:
+        address: http://0.0.0.0:8080/sward
+        cors:
+          allow_origins: []
+          allow_methods: ["GET", "POST", "OPTIONS"]
+          allow_headers: ["Content-Type", "Authorization"]
+      database:
+        url:
+          url: postgresql://postgres-test:5432/sward_warden
+          username_file: persistence/db/connection/username
+          password_file: persistence/db/connection/password
+    initContainer:
+      env:
+        - name: SP_BE__DEBUGGING__FAIL_DEBUG_DELAY
+          value: "60s"
+    volumes:
+      - name: config
+        configMap:
+          name: sward-warden-be
+      - name: secrets
+        projected:
+          sources:
+            - secret:
+                name: sw-be
+                items:
+                  - key: database_username
+                    path: persistence/db/connection/username
+                  - key: database_password
+                    path: persistence/db/connection/password
+    volumeMounts:
+      - name: config
+        mountPath: /etc/sw-be/config.yaml
+        subPath: config.yaml
+      - name: secrets
+        mountPath: /etc/sw-be/secrets
+---
+kind: Deploy
+type: helm
+name: sward-warden-fe
+description: "Deploy the sward frontend"
+source:
+  path: ../Mfe-shell/charts/nginx-view
+spec:
+  values:
+    image:
+      repository: ${var.sw-fe-image}
+      tag: ${var.sw-fe-tag}
+      pullPolicy: Always
+    imagePullSecrets:
+      - name: ghcr-secret
+    env:
+      - name: SERVE_ROOT
+        value: /
+    config:
+      configs:
+        default.conf.template: |
+          map $http_origin $cors_origin {
+            default "";
+            "~^http://localhost(:\d+)?$" "$http_origin";
+          }
+
+          server {
+            listen 8080;
+            server_name localhost;
+            root /usr/share/nginx/html;
+
+            # 1. Health Checks (High Priority)
+            location /alive { return 200; access_log off; }
+            location /ready { return 200; access_log off; }
+
+            # 2. MFE Shell logic. Serve index.html if we hit a 404
+            location / {
+                alias /usr/share/nginx/html/;
+                index  index.html index.htm;
+                try_files $uri $uri/ /index.html;
+            }
+            error_page  404              /index.html;
+
+            # 3. General Static Files
+            location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|json)$ {
+                expires 1y;
+                add_header Cache-Control "public, no-transform";
+                add_header 'Access-Control-Allow-Origin' $cors_origin;
+                # Note: If a file is in /mfe1/, it was already handled by the ^~ block above
+            }
+          }
+      contents:
+        app-config.json: |
+          {
+            "apiUrl": "/sward"
+          }

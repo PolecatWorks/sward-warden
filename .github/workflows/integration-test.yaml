@@ -23,13 +23,63 @@ permissions:
   id-token: write
 
 jobs:
+  check-paths:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+      spec: ${{ steps.filter.outputs.spec }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3.0.2
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'sw-be-container/**'
+              - '.github/workflows/sw-be-docker-publish.yml'
+            frontend:
+              - 'sw-fe-container/**'
+              - '.github/workflows/sw-fe-docker-publish.yml'
+            spec:
+              - 'spec/**'
+
   integration:
+    needs: check-paths
     runs-on: polecatworks-runner
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prepare Image Variables
+        run: |
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          PR_NUMBER="${{ github.event.pull_request.number || github.event.inputs.pr_number || 'local' }}"
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+
+          if [[ "${{ needs.check-paths.outputs.backend }}" == "true" ]]; then
+            BACKEND_SHA=$(git log -1 --format=%H -- sw-be-container/ .github/workflows/sw-be-docker-publish.yml)
+            echo "SW_BE_IMAGE=ghcr.io/${REPO_LOWER}-be/dev" >> $GITHUB_ENV
+            echo "SW_BE_TAG=sha-$BACKEND_SHA" >> $GITHUB_ENV
+          else
+            echo "SW_BE_IMAGE=ghcr.io/${REPO_LOWER}-be" >> $GITHUB_ENV
+            echo "SW_BE_TAG=main" >> $GITHUB_ENV
+          fi
+
+          if [[ "${{ needs.check-paths.outputs.frontend }}" == "true" ]]; then
+            FRONTEND_SHA=$(git log -1 --format=%H -- sw-fe-container/ .github/workflows/sw-fe-docker-publish.yml)
+            echo "SW_FE_IMAGE=ghcr.io/${REPO_LOWER}-fe/dev" >> $GITHUB_ENV
+            echo "SW_FE_TAG=sha-$FRONTEND_SHA" >> $GITHUB_ENV
+          else
+            echo "SW_FE_IMAGE=ghcr.io/${REPO_LOWER}-fe" >> $GITHUB_ENV
+            echo "SW_FE_TAG=main" >> $GITHUB_ENV
+          fi
 
       - name: Install GitHub CLI
-        if: always()
         run: |
           # Fetch the latest GH version using github api, with auth to prevent rate limits
           GH_VERSION=$(curl -sL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/cli/cli/releases/latest | jq -r .tag_name | sed 's/v//' || echo "")
@@ -61,40 +111,32 @@ jobs:
             $HOME/.local/bin/gh --version
           fi
 
-      - uses: dorny/paths-filter@v3.0.2
-        id: filter
-        with:
-          filters: |
-            backend:
-              - 'sw-be-container/**'
-              - '.github/workflows/sw-be-docker-publish.yml'
-            frontend:
-              - 'sw-fe-container/**'
-              - '.github/workflows/sw-fe-docker-publish.yml'
-            spec:
-              - 'spec/**'
-
-      - name: Prepare Image Variables
+      - name: Install Garden
         run: |
-          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          PR_NUMBER="${{ github.event.pull_request.number || github.event.inputs.pr_number || 'local' }}"
-          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
-
-          if [[ "${{ steps.filter.outputs.backend }}" == "true" ]]; then
-            echo "SW_BE_IMAGE=ghcr.io/${REPO_LOWER}-be/dev" >> $GITHUB_ENV
-            echo "SW_BE_TAG=pr-${PR_NUMBER}" >> $GITHUB_ENV
-          else
-            echo "SW_BE_IMAGE=ghcr.io/${REPO_LOWER}-be" >> $GITHUB_ENV
-            echo "SW_BE_TAG=main" >> $GITHUB_ENV
+          GARDEN_VERSION="0.13.35"
+          # Try to get latest version but fall back if API is unreachable
+          LATEST_VERSION=$(curl -sL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/garden-io/garden/releases/latest | jq -r .tag_name | sed 's/v//' || echo "")
+          if [ -n "$LATEST_VERSION" ] && [ "$LATEST_VERSION" != "null" ]; then
+            GARDEN_VERSION=$LATEST_VERSION
           fi
+          echo "Using Garden version $GARDEN_VERSION"
 
-          if [[ "${{ steps.filter.outputs.frontend }}" == "true" ]]; then
-            echo "SW_FE_IMAGE=ghcr.io/${REPO_LOWER}-fe/dev" >> $GITHUB_ENV
-            echo "SW_FE_TAG=pr-${PR_NUMBER}" >> $GITHUB_ENV
-          else
-            echo "SW_FE_IMAGE=ghcr.io/${REPO_LOWER}-fe" >> $GITHUB_ENV
-            echo "SW_FE_TAG=main" >> $GITHUB_ENV
+          for i in 1 2 3 4 5; do
+            if curl -sSL -f "https://github.com/garden-io/garden/releases/download/${GARDEN_VERSION}/garden-${GARDEN_VERSION}-linux-amd64.tar.gz" -o garden.tar.gz; then
+              break
+            else
+              echo "Download failed, retrying in 10s..."
+              sleep 10
+            fi
+          done
+
+          if [ ! -f garden.tar.gz ]; then
+            echo "Failed to download Garden after retries!"
+            exit 1
           fi
+          tar xzf garden.tar.gz
+          echo "$(pwd)/linux-amd64" >> $GITHUB_PATH
+          ./linux-amd64/garden version
 
       - name: Set up kubectl
         uses: azure/setup-kubectl@v4
@@ -121,19 +163,24 @@ jobs:
         with:
           version: 'latest'
 
-      - name: Configure Helm Token
-        run: echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
+      - name: Clone Sibling Repos
+        run: |
+          git clone https://${{ secrets.GH_PAT }}@github.com/PolecatWorks/Mfe-shell.git ../Mfe-shell
 
-      - name: Login to GitHub Container Registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Configure Helm and Docker
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io -u ${{ github.actor }} --password-stdin
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Create Mock Secrets
         run: |
           NAMESPACE="sward-warden-pr-${{ env.PR_NUMBER }}"
+          # Wipe the namespace clean to prevent stale/broken StatefulSets from blocking the run
+          kubectl delete namespace $NAMESPACE --ignore-not-found
           # Ensure namespace exists
           kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
           # Create a mock secret for sw-be (required by Helm chart)
-          kubectl create secret generic sw-be -n $NAMESPACE --from-literal=database_password=mock --dry-run=client -o yaml | kubectl apply -f -
+          kubectl create secret generic sw-be -n $NAMESPACE --from-literal=database_username=mock-user --from-literal=database_password=mock-password --dry-run=client -o yaml | kubectl apply -f -
           # Create docker-registry secret for pulling private images
           kubectl create secret docker-registry ghcr-secret -n $NAMESPACE \
             --docker-server=ghcr.io \
@@ -141,17 +188,24 @@ jobs:
             --docker-password=${{ secrets.GITHUB_TOKEN }} \
             --dry-run=client -o yaml | kubectl apply -f -
 
+      - name: Debug Environment Variables
+        run: |
+          echo "SW_BE_IMAGE: $SW_BE_IMAGE"
+          echo "SW_BE_TAG: $SW_BE_TAG"
+          echo "SW_FE_IMAGE: $SW_FE_IMAGE"
+          echo "SW_FE_TAG: $SW_FE_TAG"
+          echo "PR_NUMBER: $PR_NUMBER"
+
       - name: Run Integration Tests with Garden
-        uses: garden-io/garden-action@v2
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
           GARDEN_KUBECONTEXT: local
-          SW_BE_IMAGE: ${{ env.SW_BE_IMAGE }}
-          SW_BE_TAG: ${{ env.SW_BE_TAG }}
-          SW_FE_IMAGE: ${{ env.SW_FE_IMAGE }}
-          SW_FE_TAG: ${{ env.SW_FE_TAG }}
-        with:
-          command: test --env pr
+        run: |
+          garden test --env pr \
+            --var sw-be-image="$SW_BE_IMAGE" \
+            --var sw-be-tag="$SW_BE_TAG" \
+            --var sw-fe-image="$SW_FE_IMAGE" \
+            --var sw-fe-tag="$SW_FE_TAG"
 
       - name: Extract Test Results
         if: always()
@@ -169,10 +223,13 @@ jobs:
           retention-days: 3
 
       - name: Teardown Garden Environment
-        uses: garden-io/garden-action@v2
         if: always()
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
           GARDEN_KUBECONTEXT: local
-        with:
-          command: delete environment --env pr --force
+        run: |
+          garden delete environment --env pr --force \
+            --var sw-be-image="$SW_BE_IMAGE" \
+            --var sw-be-tag="$SW_BE_TAG" \
+            --var sw-fe-image="$SW_FE_IMAGE" \
+            --var sw-fe-tag="$SW_FE_TAG"

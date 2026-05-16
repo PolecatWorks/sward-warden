@@ -1,8 +1,8 @@
-use crate::error::AppError;
-use crate::models::{Event, Farm, FertiliserApplication, Field, OrganicManureApplication};
-use crate::rules::{
+use crate::data::rules::{
     ValidationResult, validate_fertiliser_application, validate_organic_manure_application,
 };
+use crate::error::AppError;
+use crate::models::{Event, Farm, FertiliserApplication, Field, OrganicManureApplication};
 use crate::state::AppState;
 use axum::{Json, extract::State};
 
@@ -50,7 +50,9 @@ pub async fn create_fertiliser_application(
     if let Some(ref wkt) = app.geometry_wkt {
         crate::spatial::SpatialService::validate_application_area(
             &state.db_pool,
-            field.id.ok_or_else(|| AppError::Message("Field ID is missing".to_string()))?,
+            field
+                .id
+                .ok_or_else(|| AppError::Message("Field ID is missing".to_string()))?,
             wkt,
             false,
         )
@@ -116,7 +118,9 @@ pub async fn create_organic_manure_application(
     if let Some(ref wkt) = app.geometry_wkt {
         crate::spatial::SpatialService::validate_application_area(
             &state.db_pool,
-            field.id.ok_or_else(|| AppError::Message("Field ID is missing".to_string()))?,
+            field
+                .id
+                .ok_or_else(|| AppError::Message("Field ID is missing".to_string()))?,
             wkt,
             true,
         )
