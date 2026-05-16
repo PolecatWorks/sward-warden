@@ -83,13 +83,15 @@ fn main() -> Result<(), AppError> {
                     service_cancellable(ct, config.clone(), &mut hams),
                 );
 
-                if let Err(e) = hams.deregister_prometheus() {
-                    tracing::error!("Failed to deregister prometheus: {e}");
-                }
+                hams.deregister_prometheus().map_err(|e| {
+                    AppError::Message(format!("Failed to deregister prometheus: {e}"))
+                })?;
 
-                if let Err(e) = hams.stop() {
-                    tracing::info!("Failed to stop HaMS, it may already be stopped: {e}");
-                }
+                hams.stop().map_err(|e| {
+                    AppError::Message(format!(
+                        "Failed to stop HaMS: {e}, it may already be stopped"
+                    ))
+                })?;
 
                 res
             })();
@@ -206,6 +208,10 @@ async fn service_cancellable(
     if config.startup_checks.enabled {
         startup_tools::run_startup_checks(&config, &db_pool).await?;
     }
+
+    // HaMS Probes
+    let db_probe = ProbeManual::new("db-connected", true);
+    hams.ready_insert(Box::new(FFIProbe::from(db_probe.clone())) as Box<dyn AsyncHealthProbe>);
 
     // HaMS Prometheus Registration
     hams.register_prometheus(

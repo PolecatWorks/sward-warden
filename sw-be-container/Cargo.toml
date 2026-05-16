@@ -36,8 +36,8 @@ chrono = { version = "^0.4", features = ["serde"] }
 futures = "~0.3"
 
 dashmap = "^6.0"
-hams = { path = "../../hams/hams" }
-ffi-log2 = { path = "../../hams/ffi-log2" }
+hams = { git = "https://github.com/PolecatWorks/hams.git" }
+ffi-log2 = { git = "https://github.com/PolecatWorks/hams.git" }
 sqlx = { version = "0.8", features = ["postgres", "runtime-tokio-rustls", "chrono"] }
 
 [dev-dependencies]
