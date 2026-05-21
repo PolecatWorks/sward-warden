@@ -2,7 +2,7 @@
 Library    Browser
 
 *** Variables ***
-${BASE_URL}    http://sward-warden-fe:8080
+${BASE_URL}    http://sward-warden-fe-nginx-view
 
 *** Test Cases ***
 Navigate Through App

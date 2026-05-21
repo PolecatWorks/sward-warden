@@ -148,13 +148,17 @@ pub fn validate_organic_manure_application(
         // Pig slurry must always be applied by LESSE
         let requires_lesse = date.year() >= 2026 || m_type.contains("pig");
 
-        if requires_lesse && !app.is_lesse_applied.unwrap_or(false)
-            && app.lesse_exemption_reason.as_ref().map_or(true, |r| r.is_empty())
-            {
-                return ValidationResult::Invalid(
+        if requires_lesse
+            && !app.is_lesse_applied.unwrap_or(false)
+            && app
+                .lesse_exemption_reason
+                .as_ref()
+                .map_or(true, |r| r.is_empty())
+        {
+            return ValidationResult::Invalid(
                     "Low Emission Slurry Spreading Equipment (LESSE) is required. If LESSE cannot be used, a valid exemption reason must be provided.".to_string(),
                 );
-            }
+        }
     }
 
     ValidationResult::Valid

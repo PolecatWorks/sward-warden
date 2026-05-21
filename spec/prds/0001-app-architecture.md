@@ -34,8 +34,10 @@ This document defines the overarching application architecture for the sward man
     - `version`: Display the application version.
     - `migrate`: Run schema migrations against the PostgreSQL database.
 - **Networking:**
-  - The application will serve HTTP traffic on port 8080.
+  - The application container will serve HTTP traffic on port 8080.
   - Liveness, readiness, startup, shutdown lifecycle, and health events will be served via HTTP on port 8079.
+  - The primary Kubernetes Service exposes the backend application traffic on port 80 (mapping to container port 8080).
+  - The lifecycle port (8079) is not exposed on the Kubernetes Service; lifecycle and health checks can be performed directly on the pod IP.
 
 ## Deployment Requirements
 - Both fe and be applications will be built as Docker containers.

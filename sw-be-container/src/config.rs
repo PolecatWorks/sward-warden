@@ -187,8 +187,7 @@ mod tests {
         writeln!(file, "hams:").unwrap();
         writeln!(file, "  name: test").unwrap();
         writeln!(file, "  version: 0.1.0").unwrap();
-        writeln!(file, "  start_active: true").unwrap();
-        writeln!(file, "  addr: 0.0.0.0:8079").unwrap();
+        writeln!(file, "  address: 0.0.0.0:8079").unwrap();
         writeln!(file, "startup_checks:").unwrap();
         writeln!(file, "  fails: 1").unwrap();
         writeln!(file, "  timeout: 1s").unwrap();
