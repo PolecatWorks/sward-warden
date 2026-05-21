@@ -5,11 +5,9 @@ name: sward-warden
 variables:
   pr-number: ${local.env.PR_NUMBER || "local"}
   kube-context: "${local.env.GARDEN_KUBECONTEXT || (local.env.CI == 'true' ? 'local' : 'kubernetes-admin@kubernetes')}"
-  current-namespace: ${environment.defaultNamespace || "default"}
-  sw-be-image: ${local.env.SW_BE_IMAGE || "ghcr.io/polecatworks/sward-warden-be"}
+  sw-be-image: ghcr.io/polecatworks/sward-warden-be
   sw-be-tag: ${local.env.SW_BE_TAG || "main"}
-  sw-be-pull-policy: ${local.env.SW_BE_PULL_POLICY || "Always"}
-  sw-fe-image: ${local.env.SW_FE_IMAGE || "ghcr.io/polecatworks/sward-warden-fe"}
+  sw-fe-image: ghcr.io/polecatworks/sward-warden-fe
   sw-fe-tag: ${local.env.SW_FE_TAG || "main"}
 
 providers:
@@ -27,21 +25,60 @@ environments:
     defaultNamespace: sward-warden-pr-${var.pr-number}
 
 ---
----
 kind: Deploy
-type: container
+type: kubernetes
 name: postgres-test
 description: "Ephemeral database for integration tests"
 spec:
-  image: mirror.gcr.io/postgis/postgis:16-3.4-alpine
-  env:
-    POSTGRES_DB: sward_warden
-    POSTGRES_USER: mock-user
-    POSTGRES_PASSWORD: mock-password
-  ports:
-    - name: postgres
-      containerPort: 5432
-      servicePort: 5432
+  manifests:
+    - apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: postgres-test
+      spec:
+        replicas: 1
+        selector:
+          matchLabels:
+            app: postgres-test
+        template:
+          metadata:
+            labels:
+              app: postgres-test
+          spec:
+            nodeSelector:
+              kubernetes.io/arch: amd64
+            containers:
+              - name: postgres-test
+                image: mirror.gcr.io/postgis/postgis:16-3.4-alpine
+                env:
+                  - name: POSTGRES_DB
+                    value: sward_warden
+                  - name: POSTGRES_USER
+                    value: mock-user
+                  - name: POSTGRES_PASSWORD
+                    value: mock-password
+                ports:
+                  - containerPort: 5432
+                    name: postgres
+    - apiVersion: v1
+      kind: Service
+      metadata:
+        name: postgres-test
+      spec:
+        ports:
+          - port: 5432
+            targetPort: 5432
+            name: postgres
+        selector:
+          app: postgres-test
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: sw-be
+      type: Opaque
+      stringData:
+        database_username: mock-user
+        database_password: mock-password
 ---
 kind: Deploy
 type: helm
@@ -49,6 +86,8 @@ name: sward-warden
 description: "Deploy the sward manager"
 dependencies:
   - deploy.postgres-test
+  - deploy.ghcr-external-secret
+  - build.get-be-sha
 source:
   path: charts/sward-warden
 include:
@@ -58,9 +97,9 @@ spec:
     imagePullSecrets:
       - name: ghcr-secret
     image:
-      repository: ${var.sw-be-image}
-      tag: ${var.sw-be-tag}
-      pullPolicy: ${var.sw-be-pull-policy}
+      repository: ${local.env.SW_BE_IMAGE || actions.build.get-be-sha.outputs.image}
+      tag: ${local.env.SW_BE_TAG || actions.build.get-be-sha.outputs.tag}
+      pullPolicy: Always
     config:
       webservice:
         address: http://0.0.0.0:8080/sward
@@ -102,9 +141,14 @@ kind: Deploy
 type: helm
 name: sward-warden-fe
 description: "Deploy the sward frontend"
-source:
-  path: ../Mfe-shell/charts/nginx-view
+dependencies:
+  - deploy.ghcr-external-secret
 spec:
+  chart:
+    # Pass the OCI URL here instead of source.path
+    name: oci://ghcr.io/polecatworks/mfe-shell/helm/nginx-view
+    # Note: OCI charts generally require a specific version to be pulled
+    version: "0.1.0-main-20260210211011-05bbdec" # <-- Replace with your actual chart version
   values:
     image:
       repository: ${var.sw-fe-image}
@@ -153,3 +197,81 @@ spec:
           {
             "apiUrl": "/sward"
           }
+---
+kind: Deploy
+type: kubernetes
+name: ghcr-external-secret
+description: "Pulls GHCR auth from dev namespace using ExternalSecrets"
+spec:
+  manifests:
+    # 1. The token we injected via environment variable
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: remote-cluster-token-secret
+      type: Opaque
+      stringData:
+        token: ${local.env.GHCR_READER_TOKEN || local.env.GHCR_TOKEN || ""}
+
+    # 2. The SecretStore using the token
+    - apiVersion: external-secrets.io/v1
+      kind: SecretStore
+      metadata:
+        name: remote-k8s-store
+      spec:
+        provider:
+          kubernetes:
+            server:
+              url: "https://kubernetes.default.svc"
+              caProvider:
+                type: ConfigMap
+                name: kube-root-ca.crt
+                key: ca.crt
+            remoteNamespace: sward-warden-dev
+            auth:
+              token:
+                bearerToken:
+                  name: remote-cluster-token-secret
+                  key: token
+
+    # 3. The ExternalSecret that creates the dockerconfigjson
+    - apiVersion: external-secrets.io/v1
+      kind: ExternalSecret
+      metadata:
+        name: pull-ghcr-docker-auth
+      spec:
+        refreshInterval: "5m"
+        secretStoreRef:
+          name: remote-k8s-store
+          kind: SecretStore
+        target:
+          name: ghcr-secret # This matches the imagePullSecrets name in sward-warden Helm chart
+          creationPolicy: Owner
+          template:
+            type: kubernetes.io/dockerconfigjson
+        data:
+          - secretKey: .dockerconfigjson
+            remoteRef:
+              key: ghcr-docker-auth
+              property: .dockerconfigjson
+---
+kind: Build
+type: exec
+name: get-be-sha
+description: "Get git commit SHA and image repo for backend files"
+buildAtSource: true
+spec:
+  command:
+    - "/bin/bash"
+    - "-c"
+    - |
+      BACKEND_SHA=$(git log -1 --format=%H -- sw-be-container/ .github/workflows/sw-be-docker-publish.yml)
+      MAIN_SHA=$(git log -1 --format=%H origin/main -- sw-be-container/ .github/workflows/sw-be-docker-publish.yml 2>/dev/null || echo "")
+      if [ "$BACKEND_SHA" = "$MAIN_SHA" ] || [ -z "$MAIN_SHA" ]; then
+        IMAGE="ghcr.io/polecatworks/sward-warden-be"
+        TAG="main"
+      else
+        IMAGE="ghcr.io/polecatworks/sward-warden-be/dev"
+        TAG="sha-$BACKEND_SHA"
+      fi
+      echo "{\"image\": \"$IMAGE\", \"tag\": \"$TAG\"}" > "$GARDEN_ACTION_JSON_OUTPUTS_PATH"

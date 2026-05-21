@@ -200,6 +200,7 @@ jobs:
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
           GARDEN_KUBECONTEXT: local
+          GHCR_READER_TOKEN: ${{ secrets.GHCR_READER_TOKEN }}
         run: |
           garden test --env pr \
             --var sw-be-image="$SW_BE_IMAGE" \

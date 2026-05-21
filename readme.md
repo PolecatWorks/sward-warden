@@ -68,3 +68,12 @@ The repository uses specific `Makefile` targets to coordinate builds and testing
 * `make helm-package` - Packages the Helm chart into the `charts/` directory.
 * `make helm-deploy` - Upgrades or installs the packaged Helm chart.
 * `make all` - Builds fe, be, and packages the Helm chart.
+
+# Garden
+
+do this before running garden
+
+
+   ```bash
+   export GHCR_READER_TOKEN=$(kubectl get secret ghcr-secret-reader-token -n sward-warden-dev -o jsonpath="{.data.token}" | base64 --decode)
+   ```

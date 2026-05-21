@@ -3,6 +3,7 @@ type: kubernetes
 name: robot-test-runner
 dependencies:
   - deploy.sward-warden
+  - deploy.sward-warden-fe
 spec:
   manifests:
     - apiVersion: v1
@@ -13,7 +14,7 @@ spec:
         containers:
           - name: robot
             image: marketsquare/robotframework-browser:latest
-            command: ["/bin/bash", "-c", "pip install robotframework-requests && sleep infinity"]
+            command: ["/bin/bash", "-c", "sleep infinity"]
             securityContext:
               runAsUser: 1001
 
@@ -24,4 +25,4 @@ name: integration-all
 dependencies:
   - deploy.robot-test-runner
 spec:
-  command: ["/bin/bash", "-c", "GARDEN_NAMESPACE=${var.current-namespace} ./run-tests.sh"]
+  command: ["/bin/bash", "-c", "GARDEN_NAMESPACE=${environment.namespace} ./run-tests.sh"]
