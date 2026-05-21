@@ -63,7 +63,7 @@ pub async fn service_cancellable(
 
     // HaMS Probes
     let db_probe = ProbeManual::new("db-connected", true);
-    hams.ready_insert(Box::new(FFIProbe::from(db_probe.clone())) as Box<dyn AsyncHealthProbe>);
+    hams.ready_insert_async(Box::new(FFIProbe::from(db_probe.clone())) as Box<dyn AsyncHealthProbe>).await;
 
     // HaMS Prometheus Registration
     hams.register_prometheus(
