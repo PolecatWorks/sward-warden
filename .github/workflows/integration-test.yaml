@@ -234,3 +234,8 @@ jobs:
             --var sw-be-tag="$SW_BE_TAG" \
             --var sw-fe-image="$SW_FE_IMAGE" \
             --var sw-fe-tag="$SW_FE_TAG"
+
+          # Delete the manually created namespace to completely decommission the environment
+          NAMESPACE="sward-warden-pr-${{ env.PR_NUMBER }}"
+          echo "Decommissioning namespace: $NAMESPACE"
+          kubectl delete namespace $NAMESPACE --ignore-not-found
