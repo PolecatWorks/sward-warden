@@ -1,8 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { of } from 'rxjs';
 
 import { AnnualFertilisationAccountsComponent } from './annual-fertilisation-accounts.component';
+import { FarmManagementService } from '../services/farm-management.service';
 
 describe('AnnualFertilisationAccountsComponent', () => {
   let component: AnnualFertilisationAccountsComponent;
@@ -10,7 +12,17 @@ describe('AnnualFertilisationAccountsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
+      providers: [
+        { provide: ActivatedRoute, useValue: {} },
+        provideRouter([]),
+        {
+          provide: FarmManagementService,
+          useValue: {
+            getFarmRecords: () => of([]),
+            getFertiliserApplications: () => of([])
+          }
+        }
+      ],
       imports: [AnnualFertilisationAccountsComponent, HttpClientTestingModule]
     })
     .compileComponents();

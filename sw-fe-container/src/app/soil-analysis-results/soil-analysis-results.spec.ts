@@ -1,7 +1,9 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 
 import { SoilAnalysisResults } from './soil-analysis-results';
+import { FarmManagementService } from '../services/farm-management.service';
 
 describe('SoilAnalysisResults', () => {
   let component: SoilAnalysisResults;
@@ -9,7 +11,16 @@ describe('SoilAnalysisResults', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SoilAnalysisResults, HttpClientTestingModule]
+      imports: [SoilAnalysisResults, HttpClientTestingModule],
+      providers: [
+        {
+          provide: FarmManagementService,
+          useValue: {
+            getFields: () => of([]),
+            getSoilAnalyses: () => of([])
+          }
+        }
+      ]
     })
     .compileComponents();
 
