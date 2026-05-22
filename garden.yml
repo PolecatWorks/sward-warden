@@ -93,6 +93,8 @@ source:
 include:
   - "**/*"
 spec:
+  timeout: 900
+  waitForUnhealthyResources: true
   values:
     imagePullSecrets:
       - name: ghcr-secret
@@ -145,6 +147,8 @@ dependencies:
   - deploy.ghcr-external-secret
   - build.get-fe-sha
 spec:
+  timeout: 900
+  waitForUnhealthyResources: true
   chart:
     # Pass the OCI URL here instead of source.path
     name: oci://ghcr.io/polecatworks/mfe-shell/helm/nginx-view
