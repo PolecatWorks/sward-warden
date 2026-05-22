@@ -5,6 +5,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { SwardMovementsComponent } from './sward-movements.component';
+import { FarmManagementService } from '../../services/farm-management.service';
 
 describe('SwardMovementsComponent', () => {
   let component: SwardMovementsComponent;
@@ -20,6 +21,13 @@ describe('SwardMovementsComponent', () => {
             params: of({ id: '1' }),
             snapshot: { paramMap: { get: () => '1' } },
             paramMap: of({ get: () => '1' })
+          }
+        },
+        {
+          provide: FarmManagementService,
+          useValue: {
+            getSwardMovementsForFarm: () => of([]),
+            addSwardMovement: () => of({})
           }
         },
         provideHttpClient(),

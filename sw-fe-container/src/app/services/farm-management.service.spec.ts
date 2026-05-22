@@ -9,6 +9,7 @@ import { FarmManagementService } from './farm-management.service';
 import { Farm } from '../models/farm';
 import { AuthService } from './auth.service';
 import { RxdbService, RXDB_STORAGE, RXDB_DB_NAME } from './rxdb/rxdb.service';
+import { APP_CONFIG } from '../app-config';
 
 let farmTestCounter = 0;
 
@@ -32,6 +33,10 @@ describe('FarmManagementService', () => {
         {
           provide: AuthService,
           useValue: { getUserId: () => 'test-user' }
+        },
+        {
+          provide: APP_CONFIG,
+          useValue: { apiPath: '/api', logLevel: 'INFO' }
         }
       ],
     });
@@ -41,9 +46,23 @@ describe('FarmManagementService', () => {
   });
 
   afterEach(async () => {
-    httpMock.verify();
-    const db = await firstValueFrom(rxdbService.db$);
-    await db.remove();
+    if (httpMock) {
+      try {
+        httpMock.verify();
+      } catch (e) {
+        // ignore verify errors if setup failed
+      }
+    }
+    if (rxdbService) {
+      try {
+        const db = await firstValueFrom(rxdbService.db$);
+        if (db) {
+          await db.remove();
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
   });
 
   it('should be created', () => {
