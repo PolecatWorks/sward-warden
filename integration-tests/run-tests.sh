@@ -28,14 +28,19 @@ kubectl exec $POD_NAME -n $NS -- mkdir -p /tmp/robot-tests /tmp/reports
 kubectl cp ./tests $POD_NAME:/tmp/robot-tests -n $NS
 
 # Execute tests
+TEST_EXIT_CODE=0
 kubectl exec $POD_NAME -n $NS -- /bin/bash -c "
   export HOME=/home/pwuser
   cd /tmp
   # Try to find robot in common paths if not in PATH
   export PATH=\$PATH:/home/pwuser/.local/bin:/home/pwuser/.venv/bin
 
-  if ! robot --variable BE_POD_IP:$BE_POD_IP --loglevel DEBUG -d /tmp/reports /tmp/robot-tests; then
-    echo 'Tests failed'
-    exit 1
-  fi
-"
+  robot --variable BE_POD_IP:$BE_POD_IP --loglevel DEBUG -d /tmp/reports /tmp/robot-tests
+" || TEST_EXIT_CODE=$?
+
+# Pull reports back
+echo "Pulling reports back from the robot runner..."
+rm -rf ./reports
+kubectl cp $NS/$POD_NAME:/tmp/reports ./reports || echo "Failed to copy reports"
+
+exit $TEST_EXIT_CODE

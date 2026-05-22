@@ -143,6 +143,7 @@ name: sward-warden-fe
 description: "Deploy the sward frontend"
 dependencies:
   - deploy.ghcr-external-secret
+  - build.get-fe-sha
 spec:
   chart:
     # Pass the OCI URL here instead of source.path
@@ -151,8 +152,8 @@ spec:
     version: "0.1.0-main-20260210211011-05bbdec" # <-- Replace with your actual chart version
   values:
     image:
-      repository: ${var.sw-fe-image}
-      tag: ${var.sw-fe-tag}
+      repository: ${local.env.SW_FE_IMAGE || actions.build.get-fe-sha.outputs.image}
+      tag: ${local.env.SW_FE_TAG || actions.build.get-fe-sha.outputs.tag}
       pullPolicy: Always
     imagePullSecrets:
       - name: ghcr-secret
@@ -273,5 +274,26 @@ spec:
       else
         IMAGE="ghcr.io/polecatworks/sward-warden-be/dev"
         TAG="sha-$BACKEND_SHA"
+      fi
+      echo "{\"image\": \"$IMAGE\", \"tag\": \"$TAG\"}" > "$GARDEN_ACTION_JSON_OUTPUTS_PATH"
+---
+kind: Build
+type: exec
+name: get-fe-sha
+description: "Get git commit SHA and image repo for frontend files"
+buildAtSource: true
+spec:
+  command:
+    - "/bin/bash"
+    - "-c"
+    - |
+      FRONTEND_SHA=$(git log -1 --format=%H -- sw-fe-container/ .github/workflows/sw-fe-docker-publish.yml)
+      MAIN_SHA=$(git log -1 --format=%H origin/main -- sw-fe-container/ .github/workflows/sw-fe-docker-publish.yml 2>/dev/null || echo "")
+      if [ "$FRONTEND_SHA" = "$MAIN_SHA" ] || [ -z "$MAIN_SHA" ]; then
+        IMAGE="ghcr.io/polecatworks/sward-warden-fe"
+        TAG="main"
+      else
+        IMAGE="ghcr.io/polecatworks/sward-warden-fe/dev"
+        TAG="sha-$FRONTEND_SHA"
       fi
       echo "{\"image\": \"$IMAGE\", \"tag\": \"$TAG\"}" > "$GARDEN_ACTION_JSON_OUTPUTS_PATH"
