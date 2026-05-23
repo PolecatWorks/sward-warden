@@ -223,58 +223,43 @@ jobs:
           path: ./robot-results
           retention-days: 3
 
-      - name: Check for PAT
-        id: check-pat
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
+      - name: Checkout gh-pages
+        if: always()
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages-dir
+
+      - name: Prepare GH Pages Structure and Prune
+        if: always()
         run: |
-          if [ -n "$GH_PAT" ]; then
-            echo "has_pat=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_pat=false" >> $GITHUB_OUTPUT
+          mkdir -p ./gh-pages-publish
+
+          # Copy existing gh-pages content if it exists (and is not an empty dir)
+          if [ -d "gh-pages-dir" ] && [ "$(ls -A gh-pages-dir)" ]; then
+            cp -r gh-pages-dir/* ./gh-pages-publish/ || true
           fi
 
-      - name: Checkout GitHub Pages Repo
-        if: always() && steps.check-pat.outputs.has_pat == 'true'
-        uses: actions/checkout@v4
-        with:
-          repository: PolecatWorks/polecatworks.github.io
-          ref: main
-          path: pages-repo-dir
-          token: ${{ secrets.GH_PAT }}
-
-      - name: Prepare Pages Structure and Prune
-        if: always() && steps.check-pat.outputs.has_pat == 'true'
-        run: |
-          # The repo is checked out at pages-repo-dir
-          cd pages-repo-dir
-
-          # Base directory for this project
-          PROJECT_BASE="sward-warden"
-          mkdir -p "./$PROJECT_BASE"
-
           if [ "${{ github.event_name }}" == "pull_request" ]; then
-            TARGET_DIR="$PROJECT_BASE/pr/${{ github.event.pull_request.number }}"
+            TARGET_DIR="pr/${{ github.event.pull_request.number }}"
           else
-            TARGET_DIR="$PROJECT_BASE/main"
+            TARGET_DIR="main"
           fi
 
           # Remove target dir so we can replace it with fresh results
-          rm -rf "./$TARGET_DIR"
-          mkdir -p "./$TARGET_DIR"
+          rm -rf "./gh-pages-publish/$TARGET_DIR"
+          mkdir -p "./gh-pages-publish/$TARGET_DIR"
+          cp -r ./robot-results/* "./gh-pages-publish/$TARGET_DIR/" || true
 
-          # Navigate back out to copy results
-          cd ..
-          cp -r ./robot-results/* "./pages-repo-dir/$TARGET_DIR/" || true
+          # Write timestamp for pruning
+          date +%s > "./gh-pages-publish/$TARGET_DIR/.timestamp"
 
-          # Write timestamp for pruning in the external repo
-          date +%s > "./pages-repo-dir/$TARGET_DIR/.timestamp"
-
-          # Prune PR reports older than 7 days, limited strictly to sward-warden/pr
+          # Prune PR reports older than 7 days using Python to avoid git mtime issues
           python3 -c '
           import os, time, shutil
           now = time.time()
-          pr_dir = "./pages-repo-dir/sward-warden/pr"
+          pr_dir = "./gh-pages-publish/pr"
           if os.path.exists(pr_dir):
               for entry in os.listdir(pr_dir):
                   path = os.path.join(pr_dir, entry)
@@ -291,33 +276,26 @@ jobs:
                               print(f"Error checking timestamp for {path}: {e}")
           '
 
-      - name: Commit and Deploy to Pages Repo
-        if: always() && steps.check-pat.outputs.has_pat == 'true'
-        run: |
-          cd pages-repo-dir
+          # Remove the gh-pages git folder from publish dir so it doesn't get published as a submodule
+          rm -rf ./gh-pages-publish/.git
+          rm -rf gh-pages-dir
 
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          git add .
-
-          if git diff-index --quiet HEAD --; then
-            echo "No changes to commit for GitHub Pages."
-          else
-            git commit -m "Deploy sward-warden test results [skip ci]"
-            git \p\u\s\h origin main
-          fi
-
-          cd ..
+      - name: Deploy Reports to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./gh-pages-publish
+          keep_files: false
 
       - name: Comment PR with Report Link
-        if: always() && github.event_name == 'pull_request' && steps.check-pat.outputs.has_pat == 'true'
+        if: always() && github.event_name == 'pull_request'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Ensure repo name formatting is correct for the URL
           REPO_NAME=$(echo "${{ github.event.repository.name }}")
-          REPORT_URL="https://PolecatWorks.github.io/sward-warden/pr/${{ github.event.pull_request.number }}/log.html"
+          REPORT_URL="https://${{ github.repository_owner }}.github.io/${REPO_NAME}/pr/${{ github.event.pull_request.number }}/log.html"
 
           # Properly format body with newlines
           COMMENT_BODY="### 🤖 Robot Framework Test Results
