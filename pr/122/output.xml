@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<robot generator="Robot 7.4.2 (Python 3.14.5 on linux)" generated="2026-05-23T15:17:13.080040" rpa="false" schemaversion="5">
+<robot generator="Robot 7.4.2 (Python 3.14.5 on linux)" generated="2026-05-23T17:11:33.648157" rpa="false" schemaversion="5">
 <suite id="s1" name="Robot-Tests" source="/tmp/robot-tests">
 <suite id="s1-s1" name="Tests" source="/tmp/robot-tests/tests">
 <suite id="s1-s1-s1" name="Test Be" source="/tmp/robot-tests/tests/test_be.robot">
@@ -8,136 +8,136 @@
 <arg>'${BE_POD_IP}' == '${EMPTY}'</arg>
 <arg>BE_POD_IP is empty</arg>
 <doc>Skips the rest of the current test if the ``condition`` is True.</doc>
-<status status="PASS" start="2026-05-23T15:17:13.193662" elapsed="0.001338"/>
+<status status="PASS" start="2026-05-23T17:11:33.760948" elapsed="0.001043"/>
 </kw>
 <kw name="GET" owner="RequestsLibrary">
-<msg time="2026-05-23T15:17:13.196573" level="DEBUG">Starting new HTTP connection (1): 10.244.1.87:8079</msg>
-<msg time="2026-05-23T15:17:13.198059" level="DEBUG">http://10.244.1.87:8079 "GET /hams/alive HTTP/1.1" 200 29</msg>
-<msg time="2026-05-23T15:17:13.198341" level="INFO">GET Request : url=http://10.244.1.87:8079/hams/alive 
+<msg time="2026-05-23T17:11:33.763540" level="DEBUG">Starting new HTTP connection (1): 10.244.1.102:8079</msg>
+<msg time="2026-05-23T17:11:33.765199" level="DEBUG">http://10.244.1.102:8079 "GET /hams/alive HTTP/1.1" 200 29</msg>
+<msg time="2026-05-23T17:11:33.765548" level="INFO">GET Request : url=http://10.244.1.102:8079/hams/alive 
  path_url=/hams/alive 
  headers={'User-Agent': 'python-requests/2.34.2', 'Accept-Encoding': 'gzip, deflate, zstd', 'Accept': '*/*', 'Connection': 'keep-alive'} 
  body=None 
  </msg>
-<msg time="2026-05-23T15:17:13.198439" level="INFO">GET Response : url=http://10.244.1.87:8079/hams/alive 
+<msg time="2026-05-23T17:11:33.765669" level="INFO">GET Response : url=http://10.244.1.102:8079/hams/alive 
  status=200, reason=OK 
- headers={'content-type': 'application/json', 'content-length': '29', 'date': 'Sat, 23 May 2026 15:17:13 GMT'} 
+ headers={'content-type': 'application/json', 'content-length': '29', 'date': 'Sat, 23 May 2026 17:11:33 GMT'} 
  body={"name":"alive","valid":true} 
  </msg>
-<msg time="2026-05-23T15:17:13.198562" level="INFO">${response} = &lt;Response [200]&gt;</msg>
+<msg time="2026-05-23T17:11:33.765825" level="INFO">${response} = &lt;Response [200]&gt;</msg>
 <var>${response}</var>
 <arg>http://${BE_POD_IP}:8079/hams/alive</arg>
 <arg>expected_status=200</arg>
 <doc>Sends a GET request.</doc>
-<status status="PASS" start="2026-05-23T15:17:13.195209" elapsed="0.003382"/>
+<status status="PASS" start="2026-05-23T17:11:33.762162" elapsed="0.003701"/>
 </kw>
 <kw name="Log" owner="BuiltIn">
-<msg time="2026-05-23T15:17:13.199275" level="INFO">Health Response: {"name":"alive","valid":true}</msg>
+<msg time="2026-05-23T17:11:33.766833" level="INFO">Health Response: {"name":"alive","valid":true}</msg>
 <arg>Health Response: ${response.content}</arg>
 <doc>Logs the given message with the given level.</doc>
-<status status="PASS" start="2026-05-23T15:17:13.198727" elapsed="0.000596"/>
+<status status="PASS" start="2026-05-23T17:11:33.766032" elapsed="0.000861"/>
 </kw>
 <doc>Test to verify the be health endpoint is responding directly on the pod IP.</doc>
-<status status="PASS" start="2026-05-23T15:17:13.192811" elapsed="0.006649"/>
+<status status="PASS" start="2026-05-23T17:11:33.759538" elapsed="0.007514"/>
 </test>
 <test id="s1-s1-s1-t2" name="Be API Hello Check" line="15">
 <kw name="GET" owner="RequestsLibrary">
-<msg time="2026-05-23T15:17:13.201388" level="DEBUG">Starting new HTTP connection (1): sward-warden-be:80</msg>
-<msg time="2026-05-23T15:17:13.205557" level="DEBUG">http://sward-warden-be:80 "GET /v0/hello HTTP/1.1" 200 19</msg>
-<msg time="2026-05-23T15:17:13.206075" level="INFO">GET Request : url=http://sward-warden-be/v0/hello 
+<msg time="2026-05-23T17:11:33.769021" level="DEBUG">Starting new HTTP connection (1): sward-warden-be:80</msg>
+<msg time="2026-05-23T17:11:33.772763" level="DEBUG">http://sward-warden-be:80 "GET /v0/hello HTTP/1.1" 200 19</msg>
+<msg time="2026-05-23T17:11:33.773086" level="INFO">GET Request : url=http://sward-warden-be/v0/hello 
  path_url=/v0/hello 
  headers={'User-Agent': 'python-requests/2.34.2', 'Accept-Encoding': 'gzip, deflate, zstd', 'Accept': '*/*', 'Connection': 'keep-alive'} 
  body=None 
  </msg>
-<msg time="2026-05-23T15:17:13.206160" level="INFO">GET Response : url=http://sward-warden-be/v0/hello 
+<msg time="2026-05-23T17:11:33.773156" level="INFO">GET Response : url=http://sward-warden-be/v0/hello 
  status=200, reason=OK 
- headers={'content-type': 'application/json', 'vary': 'origin, access-control-request-method, access-control-request-headers', 'content-length': '19', 'date': 'Sat, 23 May 2026 15:17:13 GMT'} 
+ headers={'content-type': 'application/json', 'vary': 'origin, access-control-request-method, access-control-request-headers', 'content-length': '19', 'date': 'Sat, 23 May 2026 17:11:33 GMT'} 
  body={"message":"hello"} 
  </msg>
-<msg time="2026-05-23T15:17:13.206314" level="INFO">${response} = &lt;Response [200]&gt;</msg>
+<msg time="2026-05-23T17:11:33.773304" level="INFO">${response} = &lt;Response [200]&gt;</msg>
 <var>${response}</var>
 <arg>${BASE_URL}/v0/hello</arg>
 <arg>expected_status=200</arg>
 <doc>Sends a GET request.</doc>
-<status status="PASS" start="2026-05-23T15:17:13.200141" elapsed="0.006215"/>
+<status status="PASS" start="2026-05-23T17:11:33.767802" elapsed="0.005542"/>
 </kw>
 <kw name="Log" owner="BuiltIn">
-<msg time="2026-05-23T15:17:13.207292" level="INFO">API Response: {"message":"hello"}</msg>
+<msg time="2026-05-23T17:11:33.774111" level="INFO">API Response: {"message":"hello"}</msg>
 <arg>API Response: ${response.content}</arg>
 <doc>Logs the given message with the given level.</doc>
-<status status="PASS" start="2026-05-23T15:17:13.206515" elapsed="0.000880"/>
+<status status="PASS" start="2026-05-23T17:11:33.773503" elapsed="0.000657"/>
 </kw>
 <kw name="Should Be Equal As Strings" owner="BuiltIn">
-<msg time="2026-05-23T15:17:13.208040" level="DEBUG">Argument types are:
+<msg time="2026-05-23T17:11:33.774747" level="DEBUG">Argument types are:
 &lt;class 'str'&gt;
 &lt;class 'str'&gt;</msg>
 <arg>${response.json()['message']}</arg>
 <arg>hello</arg>
 <doc>Fails if objects are unequal after converting them to strings.</doc>
-<status status="PASS" start="2026-05-23T15:17:13.207501" elapsed="0.000611"/>
+<status status="PASS" start="2026-05-23T17:11:33.774272" elapsed="0.000541"/>
 </kw>
 <doc>Test to verify the be API hello endpoint via the Service (default port 80).</doc>
-<status status="PASS" start="2026-05-23T15:17:13.199706" elapsed="0.008519"/>
+<status status="PASS" start="2026-05-23T17:11:33.767331" elapsed="0.007592"/>
 </test>
 <test id="s1-s1-s1-t3" name="Be API Hello Check via Pod" line="21">
 <kw name="Skip If" owner="BuiltIn">
 <arg>'${BE_POD_IP}' == '${EMPTY}'</arg>
 <arg>BE_POD_IP is empty</arg>
 <doc>Skips the rest of the current test if the ``condition`` is True.</doc>
-<status status="PASS" start="2026-05-23T15:17:13.208931" elapsed="0.001176"/>
+<status status="PASS" start="2026-05-23T17:11:33.775886" elapsed="0.001157"/>
 </kw>
 <kw name="GET" owner="RequestsLibrary">
-<msg time="2026-05-23T15:17:13.211370" level="DEBUG">Starting new HTTP connection (1): 10.244.1.87:8080</msg>
-<msg time="2026-05-23T15:17:13.212800" level="DEBUG">http://10.244.1.87:8080 "GET /v0/hello HTTP/1.1" 200 19</msg>
-<msg time="2026-05-23T15:17:13.213050" level="INFO">GET Request : url=http://10.244.1.87:8080/v0/hello 
+<msg time="2026-05-23T17:11:33.778098" level="DEBUG">Starting new HTTP connection (1): 10.244.1.102:8080</msg>
+<msg time="2026-05-23T17:11:33.779720" level="DEBUG">http://10.244.1.102:8080 "GET /v0/hello HTTP/1.1" 200 19</msg>
+<msg time="2026-05-23T17:11:33.779929" level="INFO">GET Request : url=http://10.244.1.102:8080/v0/hello 
  path_url=/v0/hello 
  headers={'User-Agent': 'python-requests/2.34.2', 'Accept-Encoding': 'gzip, deflate, zstd', 'Accept': '*/*', 'Connection': 'keep-alive'} 
  body=None 
  </msg>
-<msg time="2026-05-23T15:17:13.213111" level="INFO">GET Response : url=http://10.244.1.87:8080/v0/hello 
+<msg time="2026-05-23T17:11:33.779977" level="INFO">GET Response : url=http://10.244.1.102:8080/v0/hello 
  status=200, reason=OK 
- headers={'content-type': 'application/json', 'vary': 'origin, access-control-request-method, access-control-request-headers', 'content-length': '19', 'date': 'Sat, 23 May 2026 15:17:13 GMT'} 
+ headers={'content-type': 'application/json', 'vary': 'origin, access-control-request-method, access-control-request-headers', 'content-length': '19', 'date': 'Sat, 23 May 2026 17:11:33 GMT'} 
  body={"message":"hello"} 
  </msg>
-<msg time="2026-05-23T15:17:13.213245" level="INFO">${response} = &lt;Response [200]&gt;</msg>
+<msg time="2026-05-23T17:11:33.780078" level="INFO">${response} = &lt;Response [200]&gt;</msg>
 <var>${response}</var>
 <arg>http://${BE_POD_IP}:8080/v0/hello</arg>
 <arg>expected_status=200</arg>
 <doc>Sends a GET request.</doc>
-<status status="PASS" start="2026-05-23T15:17:13.210318" elapsed="0.002960"/>
+<status status="PASS" start="2026-05-23T17:11:33.777213" elapsed="0.002889"/>
 </kw>
 <kw name="Log" owner="BuiltIn">
-<msg time="2026-05-23T15:17:13.213963" level="INFO">API Response: {"message":"hello"}</msg>
+<msg time="2026-05-23T17:11:33.780717" level="INFO">API Response: {"message":"hello"}</msg>
 <arg>API Response: ${response.content}</arg>
 <doc>Logs the given message with the given level.</doc>
-<status status="PASS" start="2026-05-23T15:17:13.213434" elapsed="0.000574"/>
+<status status="PASS" start="2026-05-23T17:11:33.780217" elapsed="0.000544"/>
 </kw>
 <kw name="Should Be Equal As Strings" owner="BuiltIn">
-<msg time="2026-05-23T15:17:13.214556" level="DEBUG">Argument types are:
+<msg time="2026-05-23T17:11:33.781300" level="DEBUG">Argument types are:
 &lt;class 'str'&gt;
 &lt;class 'str'&gt;</msg>
 <arg>${response.json()['message']}</arg>
 <arg>hello</arg>
 <doc>Fails if objects are unequal after converting them to strings.</doc>
-<status status="PASS" start="2026-05-23T15:17:13.214099" elapsed="0.000515"/>
+<status status="PASS" start="2026-05-23T17:11:33.780853" elapsed="0.000504"/>
 </kw>
 <doc>Test to verify the be API hello endpoint directly on the pod IP (port 8080).</doc>
-<status status="PASS" start="2026-05-23T15:17:13.208490" elapsed="0.006220"/>
+<status status="PASS" start="2026-05-23T17:11:33.775193" elapsed="0.006260"/>
 </test>
-<status status="PASS" start="2026-05-23T15:17:13.120014" elapsed="0.095166"/>
+<status status="PASS" start="2026-05-23T17:11:33.684637" elapsed="0.097218"/>
 </suite>
 <suite id="s1-s1-s2" name="Test Fe" source="/tmp/robot-tests/tests/test_fe.robot">
 <test id="s1-s1-s2-t1" name="Fe Index Check" line="8">
 <kw name="GET" owner="RequestsLibrary">
-<msg time="2026-05-23T15:17:13.220959" level="DEBUG">Starting new HTTP connection (1): sward-warden-fe-nginx-view:80</msg>
-<msg time="2026-05-23T15:17:13.224409" level="DEBUG">http://sward-warden-fe-nginx-view:80 "GET /index.html HTTP/1.1" 200 21466</msg>
-<msg time="2026-05-23T15:17:13.224754" level="INFO">GET Request : url=http://sward-warden-fe-nginx-view/index.html 
+<msg time="2026-05-23T17:11:33.787650" level="DEBUG">Starting new HTTP connection (1): sward-warden-fe-nginx-view:80</msg>
+<msg time="2026-05-23T17:11:33.790628" level="DEBUG">http://sward-warden-fe-nginx-view:80 "GET /index.html HTTP/1.1" 200 21466</msg>
+<msg time="2026-05-23T17:11:33.791038" level="INFO">GET Request : url=http://sward-warden-fe-nginx-view/index.html 
  path_url=/index.html 
  headers={'User-Agent': 'python-requests/2.34.2', 'Accept-Encoding': 'gzip, deflate, zstd', 'Accept': '*/*', 'Connection': 'keep-alive'} 
  body=None 
  </msg>
-<msg time="2026-05-23T15:17:13.224849" level="INFO">GET Response : url=http://sward-warden-fe-nginx-view/index.html 
+<msg time="2026-05-23T17:11:33.791152" level="INFO">GET Response : url=http://sward-warden-fe-nginx-view/index.html 
  status=200, reason=OK 
- headers={'Server': 'nginx/1.31.0', 'Date': 'Sat, 23 May 2026 15:17:13 GMT', 'Content-Type': 'text/html', 'Content-Length': '21466', 'Last-Modified': 'Fri, 22 May 2026 07:52:41 GMT', 'Connection': 'keep-alive', 'ETag': '"6a100b49-53da"', 'Accept-Ranges': 'bytes'} 
+ headers={'Server': 'nginx/1.31.0', 'Date': 'Sat, 23 May 2026 17:11:33 GMT', 'Content-Type': 'text/html', 'Content-Length': '21466', 'Last-Modified': 'Fri, 22 May 2026 07:52:41 GMT', 'Connection': 'keep-alive', 'ETag': '"6a100b49-53da"', 'Accept-Ranges': 'bytes'} 
  body=&lt;!doctype html&gt;
 &lt;html lang="en" class="light" data-critters-container&gt;
 &lt;head&gt;&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;
@@ -160,15 +160,15 @@
 &lt;/html&gt;
  
  </msg>
-<msg time="2026-05-23T15:17:13.225760" level="INFO">${response} = &lt;Response [200]&gt;</msg>
+<msg time="2026-05-23T17:11:33.792214" level="INFO">${response} = &lt;Response [200]&gt;</msg>
 <var>${response}</var>
 <arg>${BASE_URL}/index.html</arg>
 <arg>expected_status=200</arg>
 <doc>Sends a GET request.</doc>
-<status status="PASS" start="2026-05-23T15:17:13.218851" elapsed="0.006946"/>
+<status status="PASS" start="2026-05-23T17:11:33.785365" elapsed="0.006904"/>
 </kw>
 <kw name="Log" owner="BuiltIn">
-<msg time="2026-05-23T15:17:13.226760" level="INFO">Response was: &lt;!doctype html&gt;
+<msg time="2026-05-23T17:11:33.793296" level="INFO">Response was: &lt;!doctype html&gt;
 &lt;html lang="en" class="light" data-critters-container&gt;
 &lt;head&gt;&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;
   &lt;meta charset="utf-8"&gt;
@@ -191,83 +191,83 @@
 </msg>
 <arg>Response was: ${response.content}</arg>
 <doc>Logs the given message with the given level.</doc>
-<status status="PASS" start="2026-05-23T15:17:13.225978" elapsed="0.001502"/>
+<status status="PASS" start="2026-05-23T17:11:33.792445" elapsed="0.001581"/>
 </kw>
 <kw name="Should Contain" owner="BuiltIn">
 <arg>${response.content.decode('utf-8')}</arg>
 <arg>&lt;app-root&gt;&lt;/app-root&gt;</arg>
 <doc>Fails if ``container`` does not contain ``item`` one or more times.</doc>
-<status status="PASS" start="2026-05-23T15:17:13.227588" elapsed="0.000661"/>
+<status status="PASS" start="2026-05-23T17:11:33.794169" elapsed="0.000971"/>
 </kw>
 <doc>Test to verify the fe is serving the index.html page.</doc>
-<status status="PASS" start="2026-05-23T15:17:13.218240" elapsed="0.010119"/>
+<status status="PASS" start="2026-05-23T17:11:33.784881" elapsed="0.010432"/>
 </test>
-<status status="PASS" start="2026-05-23T15:17:13.216027" elapsed="0.012625"/>
+<status status="PASS" start="2026-05-23T17:11:33.782445" elapsed="0.013253"/>
 </suite>
 <suite id="s1-s1-s3" name="Test Navigation" source="/tmp/robot-tests/tests/test_navigation.robot">
 <test id="s1-s1-s3-t1" name="Navigate Through App" line="8">
 <kw name="New Browser" owner="Browser">
-<msg time="2026-05-23T15:17:13.370227" level="INFO">{"browser": "chromium", "headless": true, "chromiumSandbox": false, "devtools": false, "handleSIGHUP": true, "handleSIGINT": true, "handleSIGTERM": true, "slowMo": 0.0, "timeout": 30000.0, "tracesDir": "/tmp/reports/browser/traces/temp/94f1a53c-8a21-4bbc-9baa-91209eea8952"}</msg>
-<msg time="2026-05-23T15:17:13.376133" level="INFO">Starting Browser process /home/pwuser/.venv/lib/python3.14/site-packages/Browser/wrapper/index.js using at 127.0.0.1:45931</msg>
-<msg time="2026-05-23T15:17:13.376794" level="DEBUG">Waiting for Playwright server at 127.0.0.1:45931 to start...</msg>
-<msg time="2026-05-23T15:17:13.402877" level="DEBUG">&lt;_InactiveRpcError of RPC that terminated with:
+<msg time="2026-05-23T17:11:33.941816" level="INFO">{"browser": "chromium", "headless": true, "chromiumSandbox": false, "devtools": false, "handleSIGHUP": true, "handleSIGINT": true, "handleSIGTERM": true, "slowMo": 0.0, "timeout": 30000.0, "tracesDir": "/tmp/reports/browser/traces/temp/0bba12e2-e9e8-4933-b193-689395db8d5a"}</msg>
+<msg time="2026-05-23T17:11:33.949110" level="INFO">Starting Browser process /home/pwuser/.venv/lib/python3.14/site-packages/Browser/wrapper/index.js using at 127.0.0.1:36037</msg>
+<msg time="2026-05-23T17:11:33.949687" level="DEBUG">Waiting for Playwright server at 127.0.0.1:36037 to start...</msg>
+<msg time="2026-05-23T17:11:33.974311" level="DEBUG">&lt;_InactiveRpcError of RPC that terminated with:
 	status = StatusCode.UNAVAILABLE
-	details = "failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:45931: Failed to connect to remote host: Connection refused"
-	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:45931: Failed to connect to remote host: Connection refused", grpc_status:14}"
+	details = "failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:36037: Failed to connect to remote host: Connection refused"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_status:14, grpc_message:"failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:36037: Failed to connect to remote host: Connection refused"}"
 &gt;</msg>
-<msg time="2026-05-23T15:17:13.503179" level="DEBUG">Waiting for Playwright server at 127.0.0.1:45931 to start...</msg>
-<msg time="2026-05-23T15:17:13.504855" level="DEBUG">&lt;_InactiveRpcError of RPC that terminated with:
+<msg time="2026-05-23T17:11:34.074623" level="DEBUG">Waiting for Playwright server at 127.0.0.1:36037 to start...</msg>
+<msg time="2026-05-23T17:11:34.076254" level="DEBUG">&lt;_InactiveRpcError of RPC that terminated with:
 	status = StatusCode.UNAVAILABLE
-	details = "failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:45931: Failed to connect to remote host: Connection refused"
-	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:45931: Failed to connect to remote host: Connection refused", grpc_status:14}"
+	details = "failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:36037: Failed to connect to remote host: Connection refused"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_status:14, grpc_message:"failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:36037: Failed to connect to remote host: Connection refused"}"
 &gt;</msg>
-<msg time="2026-05-23T15:17:13.605144" level="DEBUG">Waiting for Playwright server at 127.0.0.1:45931 to start...</msg>
-<msg time="2026-05-23T15:17:13.606415" level="DEBUG">&lt;_InactiveRpcError of RPC that terminated with:
+<msg time="2026-05-23T17:11:34.176537" level="DEBUG">Waiting for Playwright server at 127.0.0.1:36037 to start...</msg>
+<msg time="2026-05-23T17:11:34.177800" level="DEBUG">&lt;_InactiveRpcError of RPC that terminated with:
 	status = StatusCode.UNAVAILABLE
-	details = "failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:45931: Failed to connect to remote host: Connection refused"
-	debug_error_string = "UNKNOWN:Error received from peer  {grpc_status:14, grpc_message:"failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:45931: Failed to connect to remote host: Connection refused"}"
+	details = "failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:36037: Failed to connect to remote host: Connection refused"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:36037: Failed to connect to remote host: Connection refused", grpc_status:14}"
 &gt;</msg>
-<msg time="2026-05-23T15:17:13.706700" level="DEBUG">Waiting for Playwright server at 127.0.0.1:45931 to start...</msg>
-<msg time="2026-05-23T15:17:13.708380" level="DEBUG">&lt;_InactiveRpcError of RPC that terminated with:
+<msg time="2026-05-23T17:11:34.278052" level="DEBUG">Waiting for Playwright server at 127.0.0.1:36037 to start...</msg>
+<msg time="2026-05-23T17:11:34.279332" level="DEBUG">&lt;_InactiveRpcError of RPC that terminated with:
 	status = StatusCode.UNAVAILABLE
-	details = "failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:45931: Failed to connect to remote host: Connection refused"
-	debug_error_string = "UNKNOWN:Error received from peer  {grpc_status:14, grpc_message:"failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:45931: Failed to connect to remote host: Connection refused"}"
+	details = "failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:36037: Failed to connect to remote host: Connection refused"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_status:14, grpc_message:"failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:36037: Failed to connect to remote host: Connection refused"}"
 &gt;</msg>
-<msg time="2026-05-23T15:17:13.808676" level="DEBUG">Waiting for Playwright server at 127.0.0.1:45931 to start...</msg>
-<msg time="2026-05-23T15:17:13.810325" level="DEBUG">&lt;_InactiveRpcError of RPC that terminated with:
+<msg time="2026-05-23T17:11:34.379629" level="DEBUG">Waiting for Playwright server at 127.0.0.1:36037 to start...</msg>
+<msg time="2026-05-23T17:11:34.380935" level="DEBUG">&lt;_InactiveRpcError of RPC that terminated with:
 	status = StatusCode.UNAVAILABLE
-	details = "failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:45931: Failed to connect to remote host: Connection refused"
-	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:45931: Failed to connect to remote host: Connection refused", grpc_status:14}"
+	details = "failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:36037: Failed to connect to remote host: Connection refused"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:36037: Failed to connect to remote host: Connection refused", grpc_status:14}"
 &gt;</msg>
-<msg time="2026-05-23T15:17:13.910630" level="DEBUG">Waiting for Playwright server at 127.0.0.1:45931 to start...</msg>
-<msg time="2026-05-23T15:17:13.911933" level="DEBUG">&lt;_InactiveRpcError of RPC that terminated with:
+<msg time="2026-05-23T17:11:34.481248" level="DEBUG">Waiting for Playwright server at 127.0.0.1:36037 to start...</msg>
+<msg time="2026-05-23T17:11:34.482799" level="DEBUG">&lt;_InactiveRpcError of RPC that terminated with:
 	status = StatusCode.UNAVAILABLE
-	details = "failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:45931: Failed to connect to remote host: Connection refused"
-	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:45931: Failed to connect to remote host: Connection refused", grpc_status:14}"
+	details = "failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:36037: Failed to connect to remote host: Connection refused"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"failed to connect to all addresses; last error: UNKNOWN: ipv4:127.0.0.1:36037: Failed to connect to remote host: Connection refused", grpc_status:14}"
 &gt;</msg>
-<msg time="2026-05-23T15:17:14.012286" level="DEBUG">Waiting for Playwright server at 127.0.0.1:45931 to start...</msg>
-<msg time="2026-05-23T15:17:14.192982" level="INFO">Successfully created browser with options: {"browser":"chromium","headless":true,"chromiumSandbox":false,"devtools":false,"handleSIGHUP":true,"handleSIGINT":true,"handleSIGTERM":true,"slowMo":0,"timeout":30000,"tracesDir":"/tmp/reports/browser/traces/temp/94f1a53c-8a21-4bbc-9baa-91209eea8952"}</msg>
+<msg time="2026-05-23T17:11:34.583116" level="DEBUG">Waiting for Playwright server at 127.0.0.1:36037 to start...</msg>
+<msg time="2026-05-23T17:11:34.755779" level="INFO">Successfully created browser with options: {"browser":"chromium","headless":true,"chromiumSandbox":false,"devtools":false,"handleSIGHUP":true,"handleSIGINT":true,"handleSIGTERM":true,"slowMo":0,"timeout":30000,"tracesDir":"/tmp/reports/browser/traces/temp/0bba12e2-e9e8-4933-b193-689395db8d5a"}</msg>
 <arg>chromium</arg>
 <arg>headless=True</arg>
 <tag>BrowserControl</tag>
 <tag>Setter</tag>
 <doc>Create a new playwright Browser with specified options.</doc>
-<status status="PASS" start="2026-05-23T15:17:13.369283" elapsed="0.823850"/>
+<status status="PASS" start="2026-05-23T17:11:33.940732" elapsed="0.815284"/>
 </kw>
 <kw name="New Page" owner="Browser">
-<msg time="2026-05-23T15:17:14.552739" level="INFO">Successfully initialized new page object and opened url: http://sward-warden-fe-nginx-view/dashboard</msg>
-<msg time="2026-05-23T15:17:14.552811" level="INFO">No context was open. New context was automatically opened when this page is created.</msg>
-<msg time="2026-05-23T15:17:14.552858" level="DEBUG">Video is not enabled.</msg>
+<msg time="2026-05-23T17:11:35.107048" level="INFO">Successfully initialized new page object and opened url: http://sward-warden-fe-nginx-view/dashboard</msg>
+<msg time="2026-05-23T17:11:35.107140" level="INFO">No context was open. New context was automatically opened when this page is created.</msg>
+<msg time="2026-05-23T17:11:35.107205" level="DEBUG">Video is not enabled.</msg>
 <arg>${BASE_URL}/dashboard</arg>
 <tag>BrowserControl</tag>
 <tag>Setter</tag>
 <doc>Open a new Page.</doc>
-<status status="PASS" start="2026-05-23T15:17:14.193313" elapsed="0.359652"/>
+<status status="PASS" start="2026-05-23T17:11:34.756304" elapsed="0.351064"/>
 </kw>
 <kw name="Get Url" owner="Browser">
-<msg time="2026-05-23T15:17:14.556716" level="DEBUG">http://sward-warden-fe-nginx-view/dashboard</msg>
-<msg time="2026-05-23T15:17:14.556805" level="DEBUG">Assertion polling statistics:
-First element asserted in: 0.0026230812072753906 seconds
+<msg time="2026-05-23T17:11:35.110449" level="DEBUG">http://sward-warden-fe-nginx-view/dashboard</msg>
+<msg time="2026-05-23T17:11:35.110535" level="DEBUG">Assertion polling statistics:
+First element asserted in: 0.0023844242095947266 seconds
 Total tries: 1
 Elapsed time in retries 0.0 seconds</msg>
 <arg>==</arg>
@@ -276,20 +276,20 @@ Elapsed time in retries 0.0 seconds</msg>
 <tag>Getter</tag>
 <tag>PageContent</tag>
 <doc>Returns the current URL.</doc>
-<status status="PASS" start="2026-05-23T15:17:14.553261" elapsed="0.003608"/>
+<status status="PASS" start="2026-05-23T17:11:35.107546" elapsed="0.003052"/>
 </kw>
 <kw name="Go To" owner="Browser">
-<msg time="2026-05-23T15:17:14.659223" level="INFO">Successfully opened URL http://sward-warden-fe-nginx-view/farms</msg>
+<msg time="2026-05-23T17:11:35.218246" level="INFO">Successfully opened URL http://sward-warden-fe-nginx-view/farms</msg>
 <arg>${BASE_URL}/farms</arg>
 <tag>BrowserControl</tag>
 <tag>Setter</tag>
 <doc>Navigates to the given ``url``.</doc>
-<status status="PASS" start="2026-05-23T15:17:14.557029" elapsed="0.102410"/>
+<status status="PASS" start="2026-05-23T17:11:35.110761" elapsed="0.107664"/>
 </kw>
 <kw name="Get Url" owner="Browser">
-<msg time="2026-05-23T15:17:14.661954" level="DEBUG">http://sward-warden-fe-nginx-view/farms</msg>
-<msg time="2026-05-23T15:17:14.662036" level="DEBUG">Assertion polling statistics:
-First element asserted in: 0.0018143653869628906 seconds
+<msg time="2026-05-23T17:11:35.221133" level="DEBUG">http://sward-warden-fe-nginx-view/farms</msg>
+<msg time="2026-05-23T17:11:35.221256" level="DEBUG">Assertion polling statistics:
+First element asserted in: 0.0019085407257080078 seconds
 Total tries: 1
 Elapsed time in retries 0.0 seconds</msg>
 <arg>==</arg>
@@ -298,20 +298,20 @@ Elapsed time in retries 0.0 seconds</msg>
 <tag>Getter</tag>
 <tag>PageContent</tag>
 <doc>Returns the current URL.</doc>
-<status status="PASS" start="2026-05-23T15:17:14.659643" elapsed="0.002455"/>
+<status status="PASS" start="2026-05-23T17:11:35.218627" elapsed="0.002722"/>
 </kw>
 <kw name="Go To" owner="Browser">
-<msg time="2026-05-23T15:17:14.729045" level="INFO">Successfully opened URL http://sward-warden-fe-nginx-view/farms/1/fields</msg>
+<msg time="2026-05-23T17:11:35.288176" level="INFO">Successfully opened URL http://sward-warden-fe-nginx-view/farms/1/fields</msg>
 <arg>${BASE_URL}/farms/1/fields</arg>
 <tag>BrowserControl</tag>
 <tag>Setter</tag>
 <doc>Navigates to the given ``url``.</doc>
-<status status="PASS" start="2026-05-23T15:17:14.662256" elapsed="0.067081"/>
+<status status="PASS" start="2026-05-23T17:11:35.221581" elapsed="0.066857"/>
 </kw>
 <kw name="Get Url" owner="Browser">
-<msg time="2026-05-23T15:17:14.732499" level="DEBUG">http://sward-warden-fe-nginx-view/farms/1/fields</msg>
-<msg time="2026-05-23T15:17:14.732611" level="DEBUG">Assertion polling statistics:
-First element asserted in: 0.002110004425048828 seconds
+<msg time="2026-05-23T17:11:35.292889" level="DEBUG">http://sward-warden-fe-nginx-view/farms/1/fields</msg>
+<msg time="2026-05-23T17:11:35.293001" level="DEBUG">Assertion polling statistics:
+First element asserted in: 0.00289154052734375 seconds
 Total tries: 1
 Elapsed time in retries 0.0 seconds</msg>
 <arg>==</arg>
@@ -320,20 +320,20 @@ Elapsed time in retries 0.0 seconds</msg>
 <tag>Getter</tag>
 <tag>PageContent</tag>
 <doc>Returns the current URL.</doc>
-<status status="PASS" start="2026-05-23T15:17:14.729599" elapsed="0.003106"/>
+<status status="PASS" start="2026-05-23T17:11:35.288814" elapsed="0.004279"/>
 </kw>
 <kw name="Go To" owner="Browser">
-<msg time="2026-05-23T15:17:14.799125" level="INFO">Successfully opened URL http://sward-warden-fe-nginx-view/profile</msg>
+<msg time="2026-05-23T17:11:35.371938" level="INFO">Successfully opened URL http://sward-warden-fe-nginx-view/profile</msg>
 <arg>${BASE_URL}/profile</arg>
 <tag>BrowserControl</tag>
 <tag>Setter</tag>
 <doc>Navigates to the given ``url``.</doc>
-<status status="PASS" start="2026-05-23T15:17:14.732936" elapsed="0.066557"/>
+<status status="PASS" start="2026-05-23T17:11:35.293336" elapsed="0.078828"/>
 </kw>
 <kw name="Get Url" owner="Browser">
-<msg time="2026-05-23T15:17:14.802609" level="DEBUG">http://sward-warden-fe-nginx-view/profile</msg>
-<msg time="2026-05-23T15:17:14.802694" level="DEBUG">Assertion polling statistics:
-First element asserted in: 0.0020041465759277344 seconds
+<msg time="2026-05-23T17:11:35.375735" level="DEBUG">http://sward-warden-fe-nginx-view/profile</msg>
+<msg time="2026-05-23T17:11:35.375821" level="DEBUG">Assertion polling statistics:
+First element asserted in: 0.002716064453125 seconds
 Total tries: 1
 Elapsed time in retries 0.0 seconds</msg>
 <arg>==</arg>
@@ -342,19 +342,19 @@ Elapsed time in retries 0.0 seconds</msg>
 <tag>Getter</tag>
 <tag>PageContent</tag>
 <doc>Returns the current URL.</doc>
-<status status="PASS" start="2026-05-23T15:17:14.799763" elapsed="0.002995"/>
+<status status="PASS" start="2026-05-23T17:11:35.372391" elapsed="0.003492"/>
 </kw>
-<msg time="2026-05-23T15:17:14.893385" level="INFO">Switching context to context=5d943e31-02e5-4fdd-9b2b-df0d79d8e2df in CURRENT</msg>
-<msg time="2026-05-23T15:17:14.900397" level="INFO">Successfully changed active context: context=5d943e31-02e5-4fdd-9b2b-df0d79d8e2df</msg>
-<msg time="2026-05-23T15:17:14.924887" level="INFO">Successfully closed Context</msg>
+<msg time="2026-05-23T17:11:35.481783" level="INFO">Switching context to context=89fdf59d-05ec-4478-9395-63b60fc7f06b in CURRENT</msg>
+<msg time="2026-05-23T17:11:35.488449" level="INFO">Successfully changed active context: context=89fdf59d-05ec-4478-9395-63b60fc7f06b</msg>
+<msg time="2026-05-23T17:11:35.514280" level="INFO">Successfully closed Context</msg>
 <doc>Test to navigate through dashboard, farm, field and profile.</doc>
-<status status="PASS" start="2026-05-23T15:17:13.368406" elapsed="1.434504"/>
+<status status="PASS" start="2026-05-23T17:11:33.939702" elapsed="1.436339"/>
 </test>
-<status status="PASS" start="2026-05-23T15:17:13.229099" elapsed="1.696416"/>
+<status status="PASS" start="2026-05-23T17:11:33.796511" elapsed="1.718312"/>
 </suite>
-<status status="PASS" start="2026-05-23T15:17:13.118765" elapsed="1.813366"/>
+<status status="PASS" start="2026-05-23T17:11:33.683365" elapsed="1.837994"/>
 </suite>
-<status status="PASS" start="2026-05-23T15:17:13.081028" elapsed="1.852041"/>
+<status status="PASS" start="2026-05-23T17:11:33.649033" elapsed="1.873452"/>
 </suite>
 <statistics>
 <total>
