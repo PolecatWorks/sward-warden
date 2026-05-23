@@ -223,8 +223,19 @@ jobs:
           path: ./robot-results
           retention-days: 3
 
+      - name: Check for PAT
+        id: check-pat
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          if [ -n "$GH_PAT" ]; then
+            echo "has_pat=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_pat=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Checkout GitHub Pages Repo
-        if: always()
+        if: always() && steps.check-pat.outputs.has_pat == 'true'
         uses: actions/checkout@v4
         with:
           repository: PolecatWorks/polecatworks.github.io
@@ -233,7 +244,7 @@ jobs:
           token: ${{ secrets.GH_PAT }}
 
       - name: Prepare Pages Structure and Prune
-        if: always()
+        if: always() && steps.check-pat.outputs.has_pat == 'true'
         run: |
           # The repo is checked out at pages-repo-dir
           cd pages-repo-dir
@@ -281,7 +292,7 @@ jobs:
           '
 
       - name: Commit and Deploy to Pages Repo
-        if: always()
+        if: always() && steps.check-pat.outputs.has_pat == 'true'
         run: |
           cd pages-repo-dir
 
@@ -300,13 +311,13 @@ jobs:
           cd ..
 
       - name: Comment PR with Report Link
-        if: always() && github.event_name == 'pull_request'
+        if: always() && github.event_name == 'pull_request' && steps.check-pat.outputs.has_pat == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Ensure repo name formatting is correct for the URL
           REPO_NAME=$(echo "${{ github.event.repository.name }}")
-          REPORT_URL="https://${{ github.repository_owner }}.github.io/${REPO_NAME}/pr/${{ github.event.pull_request.number }}/log.html"
+          REPORT_URL="https://PolecatWorks.github.io/sward-warden/pr/${{ github.event.pull_request.number }}/log.html"
 
           # Properly format body with newlines
           COMMENT_BODY="### 🤖 Robot Framework Test Results
