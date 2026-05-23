@@ -223,43 +223,47 @@ jobs:
           path: ./robot-results
           retention-days: 3
 
-      - name: Checkout gh-pages
+      - name: Checkout GitHub Pages Repo
         if: always()
         uses: actions/checkout@v4
-        continue-on-error: true
         with:
-          ref: gh-pages
-          path: gh-pages-dir
+          repository: PolecatWorks/polecatworks.github.io
+          ref: main
+          path: pages-repo-dir
+          token: ${{ secrets.GH_PAT }}
 
-      - name: Prepare GH Pages Structure and Prune
+      - name: Prepare Pages Structure and Prune
         if: always()
         run: |
-          mkdir -p ./gh-pages-publish
+          # The repo is checked out at pages-repo-dir
+          cd pages-repo-dir
 
-          # Copy existing gh-pages content if it exists (and is not an empty dir)
-          if [ -d "gh-pages-dir" ] && [ "$(ls -A gh-pages-dir)" ]; then
-            cp -r gh-pages-dir/* ./gh-pages-publish/ || true
-          fi
+          # Base directory for this project
+          PROJECT_BASE="sward-warden"
+          mkdir -p "./$PROJECT_BASE"
 
           if [ "${{ github.event_name }}" == "pull_request" ]; then
-            TARGET_DIR="pr/${{ github.event.pull_request.number }}"
+            TARGET_DIR="$PROJECT_BASE/pr/${{ github.event.pull_request.number }}"
           else
-            TARGET_DIR="main"
+            TARGET_DIR="$PROJECT_BASE/main"
           fi
 
           # Remove target dir so we can replace it with fresh results
-          rm -rf "./gh-pages-publish/$TARGET_DIR"
-          mkdir -p "./gh-pages-publish/$TARGET_DIR"
-          cp -r ./robot-results/* "./gh-pages-publish/$TARGET_DIR/" || true
+          rm -rf "./$TARGET_DIR"
+          mkdir -p "./$TARGET_DIR"
 
-          # Write timestamp for pruning
-          date +%s > "./gh-pages-publish/$TARGET_DIR/.timestamp"
+          # Navigate back out to copy results
+          cd ..
+          cp -r ./robot-results/* "./pages-repo-dir/$TARGET_DIR/" || true
 
-          # Prune PR reports older than 7 days using Python to avoid git mtime issues
+          # Write timestamp for pruning in the external repo
+          date +%s > "./pages-repo-dir/$TARGET_DIR/.timestamp"
+
+          # Prune PR reports older than 7 days, limited strictly to sward-warden/pr
           python3 -c '
           import os, time, shutil
           now = time.time()
-          pr_dir = "./gh-pages-publish/pr"
+          pr_dir = "./pages-repo-dir/sward-warden/pr"
           if os.path.exists(pr_dir):
               for entry in os.listdir(pr_dir):
                   path = os.path.join(pr_dir, entry)
@@ -276,17 +280,24 @@ jobs:
                               print(f"Error checking timestamp for {path}: {e}")
           '
 
-          # Remove the gh-pages git folder from publish dir so it doesn't get published as a submodule
-          rm -rf ./gh-pages-publish/.git
-          rm -rf gh-pages-dir
-
-      - name: Deploy Reports to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Commit and Deploy to Pages Repo
         if: always()
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./gh-pages-publish
-          keep_files: false
+        run: |
+          cd pages-repo-dir
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add .
+
+          if git diff-index --quiet HEAD --; then
+            echo "No changes to commit for GitHub Pages."
+          else
+            git commit -m "Deploy sward-warden test results [skip ci]"
+            git \p\u\s\h origin main
+          fi
+
+          cd ..
 
       - name: Comment PR with Report Link
         if: always() && github.event_name == 'pull_request'
