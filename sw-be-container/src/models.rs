@@ -135,8 +135,8 @@ pub struct FertiliserApplication {
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct OrganicManureApplication {
-    pub id: Option<i64>,
-    pub event_id: i64,
+    pub id: Option<i32>,
+    pub event_id: i32,
     pub manure_type: String,
     pub volume_applied_m3_per_ha: Option<f64>,
     pub weight_applied_tonnes_per_ha: Option<f64>,
@@ -154,8 +154,8 @@ pub struct OrganicManureApplication {
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct ComplianceBreach {
-    pub id: Option<i64>,
-    pub farm_id: i64,
+    pub id: Option<i32>,
+    pub farm_id: i32,
     pub breach_type: String,
     pub severity: String,
     pub estimated_penalty_percentage: Option<f64>,
