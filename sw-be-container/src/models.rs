@@ -127,6 +127,7 @@ pub struct FertiliserApplication {
     pub is_protected_urea: Option<bool>,
     pub buffer_zone_confirmed: Option<bool>,
     pub evidence_of_control: Option<String>,
+    #[sqlx(default)]
     pub geometry_wkt: Option<String>,
     pub updated_at: Option<DateTime<Utc>>,
     pub is_deleted: Option<bool>,
@@ -145,6 +146,7 @@ pub struct OrganicManureApplication {
     pub buffer_zone_distance_meters: Option<i32>,
     pub equipment_used: Option<String>,
     pub lesse_exemption_reason: Option<String>,
+    #[sqlx(default)]
     pub geometry_wkt: Option<String>,
     pub updated_at: Option<DateTime<Utc>>,
     pub is_deleted: Option<bool>,

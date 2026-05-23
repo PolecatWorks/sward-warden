@@ -30,13 +30,14 @@ Users BREAD Operations
     [Documentation]    Test BREAD operations for Users. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
     # 1. Add (Create) User
-    &{user_data}=    Create Dictionary    id=${0}    name=Test User    email=test@example.com    role=user
+    ${random_str}=    Evaluate    str(random.randint(1000, 9999))    modules=random
+    &{user_data}=    Create Dictionary    id=${0}    name=Test User    email=test_${random_str}@example.com    role=user
     ${create_response}=    POST    ${BASE_URL}/v0/users    json=${user_data}    expected_status=200
     Log    Create User Response: ${create_response.content}
     ${user_id}=    Convert To String    ${create_response.json()['id']}
     Should Not Be Empty    ${user_id}
     Should Be Equal As Strings    ${create_response.json()['name']}    Test User
-    Should Be Equal As Strings    ${create_response.json()['email']}    test@example.com
+    Should Be Equal As Strings    ${create_response.json()['email']}    test_${random_str}@example.com
 
     # 2. Browse (List) Users
     ${list_response}=    GET    ${BASE_URL}/v0/users    expected_status=200
