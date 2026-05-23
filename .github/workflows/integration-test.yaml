@@ -302,7 +302,7 @@ jobs:
 
           The integration test run has finished. You can view the full HTML report (including images and videos) here:
 
-          🔗 **[View Test Report](${REPORT_URL})**
+          🔗 **<a href="${REPORT_URL}" target="_blank">View Test Report</a>**
 
           _Note: This report will be retained for 7 days._"
 
