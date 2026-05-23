@@ -25,7 +25,7 @@ Be API Hello Check via Pod
     Log    API Response: ${response.content}
     Should Be Equal As Strings    ${response.json()['message']}    hello
 
-*** Test Cases - Users ***
+# *** Test Cases - Users ***
 Users BREAD Operations
     [Documentation]    Test BREAD operations for Users. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
@@ -49,7 +49,7 @@ Users BREAD Operations
     # 4. Edit: PUT/PATCH /v0/users/${user_id} is missing.
     # 5. Delete: DELETE /v0/users/${user_id} is missing.
 
-*** Test Cases - Farms ***
+# *** Test Cases - Farms ***
 Farms BREAD Operations
     [Documentation]    Test BREAD operations for Farms. Note: Read (by ID) and Edit are not implemented in the backend.
 
@@ -76,7 +76,7 @@ Farms BREAD Operations
     ${delete_response}=    DELETE    ${BASE_URL}/v0/farms/${farm_id}    expected_status=204
     Log    Delete Farm Response Code: ${delete_response.status_code}
 
-*** Test Cases - Fields ***
+# *** Test Cases - Fields ***
 Fields BREAD Operations
     [Documentation]    Test BREAD operations for Fields. Note: Read (by ID) and Edit are not implemented in the backend.
 
@@ -108,7 +108,7 @@ Fields BREAD Operations
     ${delete_response}=    DELETE    ${BASE_URL}/v0/fields/${field_id}    expected_status=204
     Log    Delete Field Response Code: ${delete_response.status_code}
 
-*** Test Cases - Events ***
+# *** Test Cases - Events ***
 Events BREAD Operations
     [Documentation]    Test BREAD operations for Events. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
@@ -140,7 +140,7 @@ Events BREAD Operations
     # 4. Edit: PUT/PATCH /v0/events/${event_id} is missing.
     # 5. Delete: DELETE /v0/events/${event_id} is missing.
 
-*** Test Cases - Soil Analyses ***
+# *** Test Cases - Soil Analyses ***
 Soil Analyses BREAD Operations
     [Documentation]    Test BREAD operations for Soil Analyses. Note: Read (by ID) and Edit are not implemented in the backend.
 
@@ -174,7 +174,7 @@ Soil Analyses BREAD Operations
     ${delete_response}=    DELETE    ${BASE_URL}/v0/soil_analyses/${soil_id}    expected_status=204
     Log    Delete Soil Analysis Response Code: ${delete_response.status_code}
 
-*** Test Cases - Fertilisation Plans ***
+# *** Test Cases - Fertilisation Plans ***
 Fertilisation Plans BREAD Operations
     [Documentation]    Test BREAD operations for Fertilisation Plans. Note: Read (by ID) and Edit are not implemented in the backend.
 
@@ -208,7 +208,7 @@ Fertilisation Plans BREAD Operations
     ${delete_response}=    DELETE    ${BASE_URL}/v0/fertilisation_plans/${plan_id}    expected_status=204
     Log    Delete Fertilisation Plan Response Code: ${delete_response.status_code}
 
-*** Test Cases - Farm Records ***
+# *** Test Cases - Farm Records ***
 Farm Records BREAD Operations
     [Documentation]    Test BREAD operations for Farm Records. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
@@ -235,7 +235,7 @@ Farm Records BREAD Operations
     # 4. Edit: PUT/PATCH /v0/farm_records/${record_id} is missing.
     # 5. Delete: DELETE /v0/farm_records/${record_id} is missing.
 
-*** Test Cases - Fertiliser Applications ***
+# *** Test Cases - Fertiliser Applications ***
 Fertiliser Applications BREAD Operations
     [Documentation]    Test BREAD operations for Fertiliser Applications. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
@@ -270,7 +270,7 @@ Fertiliser Applications BREAD Operations
     # 4. Edit: PUT/PATCH /v0/fertiliser_applications/${app_id} is missing.
     # 5. Delete: DELETE /v0/fertiliser_applications/${app_id} is missing.
 
-*** Test Cases - Organic Manure Applications ***
+# *** Test Cases - Organic Manure Applications ***
 Organic Manure Applications BREAD Operations
     [Documentation]    Test BREAD operations for Organic Manure Applications. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
@@ -305,7 +305,7 @@ Organic Manure Applications BREAD Operations
     # 4. Edit: PUT/PATCH /v0/organic_manure_applications/${app_id} is missing.
     # 5. Delete: DELETE /v0/organic_manure_applications/${app_id} is missing.
 
-*** Test Cases - Compliance Breaches ***
+# *** Test Cases - Compliance Breaches ***
 Compliance Breaches BREAD Operations
     [Documentation]    Test BREAD operations for Compliance Breaches. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
@@ -332,7 +332,7 @@ Compliance Breaches BREAD Operations
     # 4. Edit: PUT/PATCH /v0/compliance-breaches/${breach_id} is missing.
     # 5. Delete: DELETE /v0/compliance-breaches/${breach_id} is missing.
 
-*** Test Cases - Sward Movements ***
+# *** Test Cases - Sward Movements ***
 Sward Movements BREAD Operations
     [Documentation]    Test BREAD operations for Sward Movements. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
@@ -359,7 +359,7 @@ Sward Movements BREAD Operations
     # 4. Edit: PUT/PATCH /v0/sward-movements/${movement_id} is missing.
     # 5. Delete: DELETE /v0/sward-movements/${movement_id} is missing.
 
-*** Test Cases - Admin ***
+# *** Test Cases - Admin ***
 Admin Endpoints Check
     [Documentation]    Test Admin operations.
 
