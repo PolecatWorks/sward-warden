@@ -17,8 +17,8 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: read
-  pull-requests: read
+  contents: write
+  pull-requests: write
   packages: read
   id-token: write
 
@@ -222,6 +222,98 @@ jobs:
           name: robot-test-results
           path: ./robot-results
           retention-days: 3
+
+      - name: Checkout gh-pages
+        if: always()
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages-dir
+          continue-on-error: true
+
+      - name: Prepare GH Pages Structure and Prune
+        if: always()
+        run: |
+          mkdir -p ./gh-pages-publish
+
+          # Copy existing gh-pages content if it exists (and is not an empty dir)
+          if [ -d "gh-pages-dir" ] && [ "$(ls -A gh-pages-dir)" ]; then
+            cp -r gh-pages-dir/* ./gh-pages-publish/ || true
+          fi
+
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            TARGET_DIR="pr/${{ github.event.pull_request.number }}"
+          else
+            TARGET_DIR="main"
+          fi
+
+          # Remove target dir so we can replace it with fresh results
+          rm -rf "./gh-pages-publish/$TARGET_DIR"
+          mkdir -p "./gh-pages-publish/$TARGET_DIR"
+          cp -r ./robot-results/* "./gh-pages-publish/$TARGET_DIR/" || true
+
+          # Write timestamp for pruning
+          date +%s > "./gh-pages-publish/$TARGET_DIR/.timestamp"
+
+          # Prune PR reports older than 7 days using Python to avoid git mtime issues
+          python3 -c '
+          import os, time, shutil
+          now = time.time()
+          pr_dir = "./gh-pages-publish/pr"
+          if os.path.exists(pr_dir):
+              for entry in os.listdir(pr_dir):
+                  path = os.path.join(pr_dir, entry)
+                  if os.path.isdir(path):
+                      ts_file = os.path.join(path, ".timestamp")
+                      if os.path.exists(ts_file):
+                          try:
+                              with open(ts_file, "r") as f:
+                                  ts = float(f.read().strip())
+                                  if now - ts > 7 * 24 * 3600:
+                                      print(f"Pruning old PR report: {path}")
+                                      shutil.rmtree(path)
+                          except Exception as e:
+                              print(f"Error checking timestamp for {path}: {e}")
+          '
+
+          # Remove the gh-pages git folder from publish dir so it doesn't get published as a submodule
+          rm -rf ./gh-pages-publish/.git
+          rm -rf gh-pages-dir
+
+      - name: Deploy Reports to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./gh-pages-publish
+          keep_files: false
+
+      - name: Comment PR with Report Link
+        if: always() && github.event_name == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Ensure repo name formatting is correct for the URL
+          REPO_NAME=$(echo "${{ github.event.repository.name }}")
+          REPORT_URL="https://${{ github.repository_owner }}.github.io/${REPO_NAME}/pr/${{ github.event.pull_request.number }}/log.html"
+
+          # Properly format body with newlines
+          COMMENT_BODY="### 🤖 Robot Framework Test Results
+
+          The integration test run has finished. You can view the full HTML report (including images and videos) here:
+
+          🔗 **[View Test Report](${REPORT_URL})**
+
+          _Note: This report will be retained for 7 days._"
+
+          # Use gh cli to check for existing comments to avoid spamming the PR
+          EXISTING_COMMENT=$(gh pr view ${{ github.event.pull_request.number }} --json comments --jq ".comments[] | select(.body | contains(\"${REPORT_URL}\")) | .id" | head -n 1)
+
+          if [ -z "$EXISTING_COMMENT" ]; then
+            gh pr comment ${{ github.event.pull_request.number }} --body "$COMMENT_BODY"
+          else
+            echo "Already commented with the report link."
+          fi
 
       - name: Teardown Garden Environment
         if: always()
