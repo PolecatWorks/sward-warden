@@ -1,36 +1,36 @@
-{"level":"info","time":"2026-05-23T15:03:23.752Z","seq":1,"component":"browser-library","msg":"Listening on 127.0.0.1:46201"}
-{"level":"info","time":"2026-05-23T15:03:23.835Z","seq":2,"component":"browser-library","event_kind":"grpc","action":"newBrowser","status":"started"}
-{"level":"info","time":"2026-05-23T15:03:23.992Z","seq":3,"component":"browser-library","msg":"Adding browser to stack: chromium, version: 148.0.7778.96"}
-{"level":"info","time":"2026-05-23T15:03:23.992Z","seq":4,"component":"browser-library","msg":"Adding 0 contexts to browser"}
-{"level":"info","time":"2026-05-23T15:03:23.992Z","seq":5,"component":"browser-library","event_kind":"grpc","action":"newBrowser","status":"succeeded"}
-{"level":"info","time":"2026-05-23T15:03:23.996Z","seq":6,"component":"browser-library","event_kind":"grpc","action":"newPage","status":"started"}
-{"level":"info","time":"2026-05-23T15:03:23.996Z","seq":7,"component":"browser-library","msg":"currentBrowser: {\"_contextStack\":[],\"browser\":{\"_type\":\"Browser\",\"_guid\":\"browser@5f5a21eea06ed8e89f10f95a7f31896b\"},\"name\":\"chromium\",\"id\":\"browser=592b8e11-dc7e-4297-afc6-940bc6ad5167\",\"headless\":true}"}
-{"level":"info","time":"2026-05-23T15:03:24.004Z","seq":8,"component":"browser-library","msg":"Setting default timeout for context context=5c1ffc06-882f-4dce-b0dd-e89e575f7fe5 to 10000"}
-{"level":"info","time":"2026-05-23T15:03:24.004Z","seq":9,"component":"browser-library","msg":"Changed active context: context=5c1ffc06-882f-4dce-b0dd-e89e575f7fe5"}
-{"level":"info","time":"2026-05-23T15:03:24.046Z","seq":10,"component":"browser-library","msg":"Video path: undefined"}
-{"level":"info","time":"2026-05-23T15:03:24.046Z","seq":11,"component":"browser-library","msg":"Changed active page"}
-{"level":"info","time":"2026-05-23T15:03:24.341Z","seq":12,"component":"browser-library","event_kind":"grpc","action":"newPage","status":"succeeded"}
-{"level":"info","time":"2026-05-23T15:03:24.348Z","seq":13,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"started"}
-{"level":"info","time":"2026-05-23T15:03:24.451Z","seq":14,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"succeeded"}
-{"level":"info","time":"2026-05-23T15:03:24.456Z","seq":15,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"started"}
-{"level":"info","time":"2026-05-23T15:03:24.521Z","seq":16,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"succeeded"}
-{"level":"info","time":"2026-05-23T15:03:24.528Z","seq":17,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"started"}
-{"level":"info","time":"2026-05-23T15:03:24.589Z","seq":18,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"succeeded"}
-{"level":"info","time":"2026-05-23T15:03:24.601Z","seq":19,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
-{"level":"info","time":"2026-05-23T15:03:24.698Z","seq":20,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
-{"level":"info","time":"2026-05-23T15:03:24.700Z","seq":21,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
-{"level":"info","time":"2026-05-23T15:03:24.701Z","seq":22,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
-{"level":"info","time":"2026-05-23T15:03:24.705Z","seq":23,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
-{"level":"info","time":"2026-05-23T15:03:24.705Z","seq":24,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
-{"level":"info","time":"2026-05-23T15:03:24.709Z","seq":25,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
-{"level":"info","time":"2026-05-23T15:03:24.709Z","seq":26,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
-{"level":"info","time":"2026-05-23T15:03:24.711Z","seq":27,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","msg":"Changed active context: context=5c1ffc06-882f-4dce-b0dd-e89e575f7fe5"}
-{"level":"info","time":"2026-05-23T15:03:24.712Z","seq":28,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","msg":"Changing current active page: page=9efc8190-8210-47eb-9813-4804d6bfc40f"}
-{"level":"info","time":"2026-05-23T15:03:24.712Z","seq":29,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","msg":"Changed active page"}
-{"level":"info","time":"2026-05-23T15:03:24.716Z","seq":30,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"closeContext","status":"started"}
-{"level":"info","time":"2026-05-23T15:03:24.731Z","seq":31,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","msg":"Removed page=4bd4d605-694d-4bd6-a5ff-41bdc6fcb2c5 from context=5c1ffc06-882f-4dce-b0dd-e89e575f7fe5 page stack"}
-{"level":"info","time":"2026-05-23T15:03:24.731Z","seq":32,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"closeContext","status":"succeeded"}
-{"level":"info","time":"2026-05-23T15:03:24.740Z","seq":33,"component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
-{"level":"info","time":"2026-05-23T15:03:24.741Z","seq":34,"component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
-{"level":"info","time":"2026-05-23T15:03:24.767Z","seq":35,"component":"browser-library","event_kind":"grpc","action":"closeAllBrowsers","status":"started"}
-{"level":"info","time":"2026-05-23T15:03:24.790Z","seq":36,"component":"browser-library","event_kind":"grpc","action":"closeAllBrowsers","status":"succeeded"}
+{"level":"info","time":"2026-05-23T15:17:13.929Z","seq":1,"component":"browser-library","msg":"Listening on 127.0.0.1:45931"}
+{"level":"info","time":"2026-05-23T15:17:14.026Z","seq":2,"component":"browser-library","event_kind":"grpc","action":"newBrowser","status":"started"}
+{"level":"info","time":"2026-05-23T15:17:14.188Z","seq":3,"component":"browser-library","msg":"Adding browser to stack: chromium, version: 148.0.7778.96"}
+{"level":"info","time":"2026-05-23T15:17:14.191Z","seq":4,"component":"browser-library","msg":"Adding 0 contexts to browser"}
+{"level":"info","time":"2026-05-23T15:17:14.192Z","seq":5,"component":"browser-library","event_kind":"grpc","action":"newBrowser","status":"succeeded"}
+{"level":"info","time":"2026-05-23T15:17:14.195Z","seq":6,"component":"browser-library","event_kind":"grpc","action":"newPage","status":"started"}
+{"level":"info","time":"2026-05-23T15:17:14.195Z","seq":7,"component":"browser-library","msg":"currentBrowser: {\"_contextStack\":[],\"browser\":{\"_type\":\"Browser\",\"_guid\":\"browser@05523abab1c13f115fb92ade6ef13aad\"},\"name\":\"chromium\",\"id\":\"browser=ceeae4fe-863a-4eea-a44e-6701728246de\",\"headless\":true}"}
+{"level":"info","time":"2026-05-23T15:17:14.202Z","seq":8,"component":"browser-library","msg":"Setting default timeout for context context=5d943e31-02e5-4fdd-9b2b-df0d79d8e2df to 10000"}
+{"level":"info","time":"2026-05-23T15:17:14.202Z","seq":9,"component":"browser-library","msg":"Changed active context: context=5d943e31-02e5-4fdd-9b2b-df0d79d8e2df"}
+{"level":"info","time":"2026-05-23T15:17:14.243Z","seq":10,"component":"browser-library","msg":"Video path: undefined"}
+{"level":"info","time":"2026-05-23T15:17:14.243Z","seq":11,"component":"browser-library","msg":"Changed active page"}
+{"level":"info","time":"2026-05-23T15:17:14.550Z","seq":12,"component":"browser-library","event_kind":"grpc","action":"newPage","status":"succeeded"}
+{"level":"info","time":"2026-05-23T15:17:14.559Z","seq":13,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"started"}
+{"level":"info","time":"2026-05-23T15:17:14.658Z","seq":14,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"succeeded"}
+{"level":"info","time":"2026-05-23T15:17:14.663Z","seq":15,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"started"}
+{"level":"info","time":"2026-05-23T15:17:14.728Z","seq":16,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"succeeded"}
+{"level":"info","time":"2026-05-23T15:17:14.735Z","seq":17,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"started"}
+{"level":"info","time":"2026-05-23T15:17:14.797Z","seq":18,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"succeeded"}
+{"level":"info","time":"2026-05-23T15:17:14.809Z","seq":19,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
+{"level":"info","time":"2026-05-23T15:17:14.887Z","seq":20,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
+{"level":"info","time":"2026-05-23T15:17:14.890Z","seq":21,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
+{"level":"info","time":"2026-05-23T15:17:14.890Z","seq":22,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
+{"level":"info","time":"2026-05-23T15:17:14.891Z","seq":23,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
+{"level":"info","time":"2026-05-23T15:17:14.892Z","seq":24,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
+{"level":"info","time":"2026-05-23T15:17:14.894Z","seq":25,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
+{"level":"info","time":"2026-05-23T15:17:14.894Z","seq":26,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
+{"level":"info","time":"2026-05-23T15:17:14.897Z","seq":27,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","msg":"Changed active context: context=5d943e31-02e5-4fdd-9b2b-df0d79d8e2df"}
+{"level":"info","time":"2026-05-23T15:17:14.897Z","seq":28,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","msg":"Changing current active page: page=67e48baa-cee5-43d7-9719-c56ba1945a2e"}
+{"level":"info","time":"2026-05-23T15:17:14.897Z","seq":29,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","msg":"Changed active page"}
+{"level":"info","time":"2026-05-23T15:17:14.901Z","seq":30,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"closeContext","status":"started"}
+{"level":"info","time":"2026-05-23T15:17:14.906Z","seq":31,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","msg":"Removed page=7e362102-29ac-4095-bde2-f154e20ce1f4 from context=5d943e31-02e5-4fdd-9b2b-df0d79d8e2df page stack"}
+{"level":"info","time":"2026-05-23T15:17:14.923Z","seq":32,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"closeContext","status":"succeeded"}
+{"level":"info","time":"2026-05-23T15:17:14.930Z","seq":33,"component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
+{"level":"info","time":"2026-05-23T15:17:14.930Z","seq":34,"component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
+{"level":"info","time":"2026-05-23T15:17:14.959Z","seq":35,"component":"browser-library","event_kind":"grpc","action":"closeAllBrowsers","status":"started"}
+{"level":"info","time":"2026-05-23T15:17:14.983Z","seq":36,"component":"browser-library","event_kind":"grpc","action":"closeAllBrowsers","status":"succeeded"}
