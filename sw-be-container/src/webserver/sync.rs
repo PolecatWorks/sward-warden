@@ -75,7 +75,7 @@ pub async fn delta_sync(
     .await?;
 
     let compliance_breaches = sqlx::query_as::<_, ComplianceBreach>(
-        "SELECT cb.id, cb.farm_id, cb.breach_type, cb.severity, cb.estimated_penalty_percentage, cb.mandatory_training_required, cb.breach_date, cb.notes, cb.is_repeat, cb.updated_at, cb.is_deleted FROM compliance_breaches cb JOIN farms fa ON cb.farm_id = fa.id WHERE fa.user_id = 1 AND cb.updated_at > $1"
+        "SELECT cb.id, cb.farm_id, cb.breach_type, cb.severity, cb.estimated_penalty_percentage, cb.mandatory_training_required, cb.breach_date::TEXT, cb.notes, cb.is_repeat, cb.updated_at, cb.is_deleted FROM compliance_breaches cb JOIN farms fa ON cb.farm_id = fa.id WHERE fa.user_id = 1 AND cb.updated_at > $1"
     )
     .bind(since)
     .fetch_all(&state.db_pool)

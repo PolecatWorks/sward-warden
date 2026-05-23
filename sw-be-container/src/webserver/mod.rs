@@ -66,6 +66,11 @@ pub fn app_router(state: AppState) -> Router {
                 .post(applications::create_organic_manure_application),
         )
         .route(
+            "/v0/organic_manure_applications",
+            get(applications::list_organic_manure_applications)
+                .post(applications::create_organic_manure_application),
+        )
+        .route(
             "/v0/compliance-breaches",
             get(compliance::list_compliance_breaches).post(compliance::create_compliance_breach),
         )

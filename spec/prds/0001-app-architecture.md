@@ -43,3 +43,9 @@ This document defines the overarching application architecture for the sward man
 - Both fe and be applications will be built as Docker containers.
 - Deployment target is a Kubernetes cluster.
 - Deployment configuration will be managed using Helm charts, which will reside in the `charts` directory.
+
+## Testing Requirements
+- **Integration Tests:** The application will use Robot Framework for integration testing.
+  - Integration tests must verify the behavior of all backend API endpoints.
+  - The test suite must provide comprehensive coverage of "BREAD" operations (Browse, Read, Edit, Add, Delete) for all domain resources (Users, Farms, Fields, Events, Farm Records, Applications, Compliance Breaches, Sward Movements).
+  - Where a specific backend route (such as Edit, Read by ID, or Delete) is missing, tests must include explicit comments documenting the missing functionality.

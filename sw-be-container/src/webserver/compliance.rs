@@ -7,7 +7,7 @@ pub async fn list_compliance_breaches(
     State(state): State<AppState>,
 ) -> Result<Json<Vec<ComplianceBreach>>, AppError> {
     let breaches = sqlx::query_as::<_, ComplianceBreach>(
-        "SELECT id, farm_id, breach_type, severity, estimated_penalty_percentage, mandatory_training_required, breach_date, notes, is_repeat, updated_at, is_deleted FROM compliance_breaches WHERE is_deleted = FALSE"
+        "SELECT id, farm_id, breach_type, severity, estimated_penalty_percentage, mandatory_training_required, breach_date::TEXT, notes, is_repeat, updated_at, is_deleted FROM compliance_breaches WHERE is_deleted = FALSE"
     )
     .fetch_all(&state.db_pool)
     .await;
@@ -19,7 +19,7 @@ pub async fn create_compliance_breach(
     Json(breach): Json<ComplianceBreach>,
 ) -> Result<Json<ComplianceBreach>, AppError> {
     let new_breach = sqlx::query_as::<_, ComplianceBreach>(
-        "INSERT INTO compliance_breaches (farm_id, breach_type, severity, estimated_penalty_percentage, mandatory_training_required, breach_date, notes, is_repeat) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id, farm_id, breach_type, severity, estimated_penalty_percentage, mandatory_training_required, breach_date, notes, is_repeat, updated_at, is_deleted"
+        "INSERT INTO compliance_breaches (farm_id, breach_type, severity, estimated_penalty_percentage, mandatory_training_required, breach_date, notes, is_repeat) VALUES ($1, $2, $3, $4, $5, $6::DATE, $7, $8) RETURNING id, farm_id, breach_type, severity, estimated_penalty_percentage, mandatory_training_required, breach_date::TEXT, notes, is_repeat, updated_at, is_deleted"
     )
     .bind(breach.farm_id)
     .bind(&breach.breach_type)

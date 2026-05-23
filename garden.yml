@@ -9,6 +9,7 @@ variables:
   sw-be-tag: ${local.env.SW_BE_TAG || "main"}
   sw-fe-image: ghcr.io/polecatworks/sward-warden-fe
   sw-fe-tag: ${local.env.SW_FE_TAG || "main"}
+  dns-host: sw-${local.env.USER || "local"}.dev.k8s
 
 providers:
   - name: kubernetes
@@ -21,8 +22,12 @@ providers:
 environments:
   - name: local
     defaultNamespace: sward-warden-${local.env.USER}
+    variables:
+      dns-host: sw-${local.env.USER}.dev.k8s
   - name: pr
     defaultNamespace: sward-warden-pr-${var.pr-number}
+    variables:
+      dns-host: sw-pr-${var.pr-number}.dev.k8s
 
 ---
 kind: Deploy
@@ -259,6 +264,41 @@ spec:
             remoteRef:
               key: ghcr-docker-auth
               property: .dockerconfigjson
+---
+kind: Deploy
+type: kubernetes
+name: virtual-service
+description: "VirtualService for routing ingress traffic to frontend and backend services"
+dependencies:
+  - deploy.sward-warden
+  - deploy.sward-warden-fe
+spec:
+  manifests:
+    - apiVersion: networking.istio.io/v1beta1
+      kind: VirtualService
+      metadata:
+        name: sward-warden
+      spec:
+        hosts:
+          - ${var.dns-host}
+        gateways:
+          - istio-ingress/k8s-gateway
+          - mesh
+        http:
+          - name: sward-warden-fe
+            match:
+              - uri:
+                  prefix: /
+            route:
+              - destination:
+                  host: sward-warden-fe-nginx-view
+          - name: sward-warden-be
+            match:
+              - uri:
+                  prefix: /sward
+            route:
+              - destination:
+                  host: sward-warden-be
 ---
 kind: Build
 type: exec

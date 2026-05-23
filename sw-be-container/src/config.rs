@@ -100,7 +100,7 @@ impl AppConfig {
 
         Figment::new()
             .merge(adapter)
-            .merge(Env::prefixed("SP_BE__").split("__"))
+            .merge(Env::prefixed("SP_BE__").split("__").lowercase(true))
             .extract()
             .map_err(Box::new)
     }
