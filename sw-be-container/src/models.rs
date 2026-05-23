@@ -4,6 +4,7 @@ use sqlx::FromRow;
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, sqlx::Type)]
 #[sqlx(type_name = "user_role", rename_all = "lowercase")]
+#[serde(rename_all = "lowercase")]
 pub enum Role {
     User,
     Support,

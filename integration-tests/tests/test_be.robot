@@ -362,28 +362,29 @@ Sward Movements BREAD Operations
 # *** Test Cases - Admin ***
 Admin Endpoints Check
     [Documentation]    Test Admin operations.
+    &{admin_headers}=    Create Dictionary    X-User-Role=admin
 
     # Health
-    ${health_response}=    GET    ${BASE_URL}/v0/admin/health    expected_status=200
+    ${health_response}=    GET    ${BASE_URL}/v0/admin/health    headers=${admin_headers}    expected_status=200
     Log    Admin Health Response: ${health_response.content}
     Should Be Equal As Strings    ${health_response.json()['status']}    ok
 
     # Farms
-    ${farms_response}=    GET    ${BASE_URL}/v0/admin/farms    expected_status=200
+    ${farms_response}=    GET    ${BASE_URL}/v0/admin/farms    headers=${admin_headers}    expected_status=200
     Log    Admin Farms Response: ${farms_response.content}
     Should Not Be Empty    ${farms_response.json()}
 
     # Fields
-    ${fields_response}=    GET    ${BASE_URL}/v0/admin/fields    expected_status=200
+    ${fields_response}=    GET    ${BASE_URL}/v0/admin/fields    headers=${admin_headers}    expected_status=200
     Log    Admin Fields Response: ${fields_response.content}
     Should Not Be Empty    ${fields_response.json()}
 
     # Events
-    ${events_response}=    GET    ${BASE_URL}/v0/admin/events    expected_status=200
+    ${events_response}=    GET    ${BASE_URL}/v0/admin/events    headers=${admin_headers}    expected_status=200
     Log    Admin Events Response: ${events_response.content}
     Should Not Be Empty    ${events_response.json()}
 
     # Audit Logs
-    ${logs_response}=    GET    ${BASE_URL}/v0/admin/audit-logs    expected_status=200
+    ${logs_response}=    GET    ${BASE_URL}/v0/admin/audit-logs    headers=${admin_headers}    expected_status=200
     Log    Admin Audit Logs Response: ${logs_response.content}
     Should Not Be Empty    ${logs_response.json()}
