@@ -30,7 +30,7 @@ Users BREAD Operations
     [Documentation]    Test BREAD operations for Users. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
     # 1. Add (Create) User
-    &{user_data}=    Create Dictionary    id=0    name=Test User    email=test@example.com    role=user
+    &{user_data}=    Create Dictionary    id=${0}    name=Test User    email=test@example.com    role=user
     ${create_response}=    POST    ${BASE_URL}/v0/users    json=${user_data}    expected_status=200
     Log    Create User Response: ${create_response.content}
     ${user_id}=    Convert To String    ${create_response.json()['id']}
@@ -54,7 +54,7 @@ Farms BREAD Operations
     [Documentation]    Test BREAD operations for Farms. Note: Read (by ID) and Edit are not implemented in the backend.
 
     # 1. Add (Create) Farm
-    &{farm_data}=    Create Dictionary    id=0    name=Test Farm    location=123 Test Lane    has_derogation=${True}
+    &{farm_data}=    Create Dictionary    id=${0}    name=Test Farm    location=123 Test Lane    has_derogation=${True}
     ${create_response}=    POST    ${BASE_URL}/v0/farms    json=${farm_data}    expected_status=200
     Log    Create Farm Response: ${create_response.content}
     ${farm_id}=    Convert To String    ${create_response.json()['id']}
@@ -81,13 +81,13 @@ Fields BREAD Operations
     [Documentation]    Test BREAD operations for Fields. Note: Read (by ID) and Edit are not implemented in the backend.
 
     # Prerequisite: Need a farm ID to create a field
-    &{farm_data}=    Create Dictionary    id=0    name=Field Test Farm    location=123 Test Lane    has_derogation=${True}
+    &{farm_data}=    Create Dictionary    id=${0}    name=Field Test Farm    location=123 Test Lane    has_derogation=${True}
     ${farm_response}=    POST    ${BASE_URL}/v0/farms    json=${farm_data}    expected_status=200
     ${farm_id}=    Convert To String    ${farm_response.json()['id']}
 
     # 1. Add (Create) Field
     ${farm_id_int}=    Convert To Integer    ${farm_id}
-    &{field_data}=    Create Dictionary    id=0    farm_id=${farm_id_int}    name=Test Field    area_hectares=10.5    land_use=Grassland
+    &{field_data}=    Create Dictionary    id=${0}    farm_id=${farm_id_int}    name=Test Field    area_hectares=${10.5}    land_use=Grassland
     ${create_response}=    POST    ${BASE_URL}/v0/fields    json=${field_data}    expected_status=200
     Log    Create Field Response: ${create_response.content}
     ${field_id}=    Convert To String    ${create_response.json()['id']}
@@ -113,16 +113,16 @@ Events BREAD Operations
     [Documentation]    Test BREAD operations for Events. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
     # Prerequisite: Need a farm and field ID to create an event
-    &{farm_data}=    Create Dictionary    id=0    name=Event Test Farm    location=123 Test Lane    has_derogation=${True}
+    &{farm_data}=    Create Dictionary    id=${0}    name=Event Test Farm    location=123 Test Lane    has_derogation=${True}
     ${farm_response}=    POST    ${BASE_URL}/v0/farms    json=${farm_data}    expected_status=200
     ${farm_id_int}=    Convert To Integer    ${farm_response.json()['id']}
 
-    &{field_data}=    Create Dictionary    id=0    farm_id=${farm_id_int}    name=Event Test Field    area_hectares=10.5    land_use=Grassland
+    &{field_data}=    Create Dictionary    id=${0}    farm_id=${farm_id_int}    name=Event Test Field    area_hectares=${10.5}    land_use=Grassland
     ${field_response}=    POST    ${BASE_URL}/v0/fields    json=${field_data}    expected_status=200
     ${field_id_int}=    Convert To Integer    ${field_response.json()['id']}
 
     # 1. Add (Create) Event
-    &{event_data}=    Create Dictionary    id=0    field_id=${field_id_int}    event_type=slurry_application    description=Test Event    date=2024-05-23
+    &{event_data}=    Create Dictionary    id=${0}    field_id=${field_id_int}    event_type=slurry_application    description=Test Event    date=2024-05-23
     ${create_response}=    POST    ${BASE_URL}/v0/events    json=${event_data}    expected_status=200
     Log    Create Event Response: ${create_response.content}
     ${event_id}=    Convert To String    ${create_response.json()['id']}
@@ -145,16 +145,16 @@ Soil Analyses BREAD Operations
     [Documentation]    Test BREAD operations for Soil Analyses. Note: Read (by ID) and Edit are not implemented in the backend.
 
     # Prerequisite: Need a farm and field ID
-    &{farm_data}=    Create Dictionary    id=0    name=Soil Test Farm    location=123 Test Lane    has_derogation=${True}
+    &{farm_data}=    Create Dictionary    id=${0}    name=Soil Test Farm    location=123 Test Lane    has_derogation=${True}
     ${farm_response}=    POST    ${BASE_URL}/v0/farms    json=${farm_data}    expected_status=200
     ${farm_id_int}=    Convert To Integer    ${farm_response.json()['id']}
 
-    &{field_data}=    Create Dictionary    id=0    farm_id=${farm_id_int}    name=Soil Test Field    area_hectares=10.5    land_use=Grassland
+    &{field_data}=    Create Dictionary    id=${0}    farm_id=${farm_id_int}    name=Soil Test Field    area_hectares=${10.5}    land_use=Grassland
     ${field_response}=    POST    ${BASE_URL}/v0/fields    json=${field_data}    expected_status=200
     ${field_id_int}=    Convert To Integer    ${field_response.json()['id']}
 
     # 1. Add (Create) Soil Analysis
-    &{soil_data}=    Create Dictionary    id=0    field_id=${field_id_int}    sample_date=2024-05-23    ph_level=6.5    phosphorus_index=2    potassium_index=2    magnesium_index=2
+    &{soil_data}=    Create Dictionary    id=${0}    field_id=${field_id_int}    sample_date=2024-05-23    ph_level=${6.5}    phosphorus_index=${2}    potassium_index=${2}    magnesium_index=${2}
     ${create_response}=    POST    ${BASE_URL}/v0/soil_analyses    json=${soil_data}    expected_status=200
     Log    Create Soil Analysis Response: ${create_response.content}
     ${soil_id}=    Convert To String    ${create_response.json()['id']}
@@ -179,16 +179,16 @@ Fertilisation Plans BREAD Operations
     [Documentation]    Test BREAD operations for Fertilisation Plans. Note: Read (by ID) and Edit are not implemented in the backend.
 
     # Prerequisite: Need a farm and field ID
-    &{farm_data}=    Create Dictionary    id=0    name=Fert Plan Test Farm    location=123 Test Lane    has_derogation=${True}
+    &{farm_data}=    Create Dictionary    id=${0}    name=Fert Plan Test Farm    location=123 Test Lane    has_derogation=${True}
     ${farm_response}=    POST    ${BASE_URL}/v0/farms    json=${farm_data}    expected_status=200
     ${farm_id_int}=    Convert To Integer    ${farm_response.json()['id']}
 
-    &{field_data}=    Create Dictionary    id=0    farm_id=${farm_id_int}    name=Fert Plan Test Field    area_hectares=10.5    land_use=Grassland
+    &{field_data}=    Create Dictionary    id=${0}    farm_id=${farm_id_int}    name=Fert Plan Test Field    area_hectares=${10.5}    land_use=Grassland
     ${field_response}=    POST    ${BASE_URL}/v0/fields    json=${field_data}    expected_status=200
     ${field_id_int}=    Convert To Integer    ${field_response.json()['id']}
 
     # 1. Add (Create) Fertilisation Plan
-    &{plan_data}=    Create Dictionary    id=0    field_id=${field_id_int}    crop_type=Grass    target_yield=10.0    nitrogen_requirement=100.0    phosphorus_requirement=50.0    potassium_requirement=50.0    application_date=2024-05-23
+    &{plan_data}=    Create Dictionary    id=${0}    field_id=${field_id_int}    crop_type=Grass    target_yield=${10.0}    nitrogen_requirement=${100.0}    phosphorus_requirement=${50.0}    potassium_requirement=${50.0}    application_date=2024-05-23
     ${create_response}=    POST    ${BASE_URL}/v0/fertilisation_plans    json=${plan_data}    expected_status=200
     Log    Create Fertilisation Plan Response: ${create_response.content}
     ${plan_id}=    Convert To String    ${create_response.json()['id']}
@@ -213,12 +213,12 @@ Farm Records BREAD Operations
     [Documentation]    Test BREAD operations for Farm Records. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
     # Prerequisite: Need a farm ID
-    &{farm_data}=    Create Dictionary    id=0    name=Record Test Farm    location=123 Test Lane    has_derogation=${True}
+    &{farm_data}=    Create Dictionary    id=${0}    name=Record Test Farm    location=123 Test Lane    has_derogation=${True}
     ${farm_response}=    POST    ${BASE_URL}/v0/farms    json=${farm_data}    expected_status=200
     ${farm_id_int}=    Convert To Integer    ${farm_response.json()['id']}
 
     # 1. Add (Create) Farm Record
-    &{record_data}=    Create Dictionary    id=0    farm_id=${farm_id_int}    agricultural_area=100.0    manure_storage_capacity=500.0    year=2024    has_derogation=${True}
+    &{record_data}=    Create Dictionary    id=${0}    farm_id=${farm_id_int}    agricultural_area=${100.0}    manure_storage_capacity=${500.0}    year=${2024}    has_derogation=${True}
     ${create_response}=    POST    ${BASE_URL}/v0/farm_records    json=${record_data}    expected_status=200
     Log    Create Farm Record Response: ${create_response.content}
     ${record_id}=    Convert To String    ${create_response.json()['id']}
@@ -240,20 +240,20 @@ Fertiliser Applications BREAD Operations
     [Documentation]    Test BREAD operations for Fertiliser Applications. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
     # Prerequisite: Need a farm, field, and event ID
-    &{farm_data}=    Create Dictionary    id=0    name=Fert App Test Farm    location=123 Test Lane    has_derogation=${True}
+    &{farm_data}=    Create Dictionary    id=${0}    name=Fert App Test Farm    location=123 Test Lane    has_derogation=${True}
     ${farm_response}=    POST    ${BASE_URL}/v0/farms    json=${farm_data}    expected_status=200
     ${farm_id_int}=    Convert To Integer    ${farm_response.json()['id']}
 
-    &{field_data}=    Create Dictionary    id=0    farm_id=${farm_id_int}    name=Fert App Test Field    area_hectares=10.5    land_use=Grassland
+    &{field_data}=    Create Dictionary    id=${0}    farm_id=${farm_id_int}    name=Fert App Test Field    area_hectares=${10.5}    land_use=Grassland
     ${field_response}=    POST    ${BASE_URL}/v0/fields    json=${field_data}    expected_status=200
     ${field_id_int}=    Convert To Integer    ${field_response.json()['id']}
 
-    &{event_data}=    Create Dictionary    id=0    field_id=${field_id_int}    event_type=fertiliser_application    description=Test Event    date=2024-05-23
+    &{event_data}=    Create Dictionary    id=${0}    field_id=${field_id_int}    event_type=fertiliser_application    description=Test Event    date=2024-05-23
     ${event_response}=    POST    ${BASE_URL}/v0/events    json=${event_data}    expected_status=200
     ${event_id_int}=    Convert To Integer    ${event_response.json()['id']}
 
     # 1. Add (Create) Fertiliser Application
-    &{app_data}=    Create Dictionary    id=0    event_id=${event_id_int}    fertiliser_type=Urea    amount_applied=100.0    nitrogen_content=46.0    is_protected_urea=${True}    buffer_zone_confirmed=${True}    evidence_of_control=Notes
+    &{app_data}=    Create Dictionary    id=${0}    event_id=${event_id_int}    fertiliser_type=Urea    amount_applied=${100.0}    nitrogen_content=${46.0}    is_protected_urea=${True}    buffer_zone_confirmed=${True}    evidence_of_control=Notes
     ${create_response}=    POST    ${BASE_URL}/v0/fertiliser_applications    json=${app_data}    expected_status=200
     Log    Create Fertiliser Application Response: ${create_response.content}
     ${app_id}=    Convert To String    ${create_response.json()['id']}
@@ -275,20 +275,20 @@ Organic Manure Applications BREAD Operations
     [Documentation]    Test BREAD operations for Organic Manure Applications. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
     # Prerequisite: Need a farm, field, and event ID
-    &{farm_data}=    Create Dictionary    id=0    name=Organic App Test Farm    location=123 Test Lane    has_derogation=${True}
+    &{farm_data}=    Create Dictionary    id=${0}    name=Organic App Test Farm    location=123 Test Lane    has_derogation=${True}
     ${farm_response}=    POST    ${BASE_URL}/v0/farms    json=${farm_data}    expected_status=200
     ${farm_id_int}=    Convert To Integer    ${farm_response.json()['id']}
 
-    &{field_data}=    Create Dictionary    id=0    farm_id=${farm_id_int}    name=Organic App Test Field    area_hectares=10.5    land_use=Grassland
+    &{field_data}=    Create Dictionary    id=${0}    farm_id=${farm_id_int}    name=Organic App Test Field    area_hectares=${10.5}    land_use=Grassland
     ${field_response}=    POST    ${BASE_URL}/v0/fields    json=${field_data}    expected_status=200
     ${field_id_int}=    Convert To Integer    ${field_response.json()['id']}
 
-    &{event_data}=    Create Dictionary    id=0    field_id=${field_id_int}    event_type=slurry_application    description=Test Event    date=2024-05-23
+    &{event_data}=    Create Dictionary    id=${0}    field_id=${field_id_int}    event_type=slurry_application    description=Test Event    date=2024-05-23
     ${event_response}=    POST    ${BASE_URL}/v0/events    json=${event_data}    expected_status=200
     ${event_id_int}=    Convert To Integer    ${event_response.json()['id']}
 
     # 1. Add (Create) Organic Manure Application
-    &{app_data}=    Create Dictionary    id=0    event_id=${event_id_int}    manure_type=Cattle Slurry    volume_applied_m3_per_ha=10.0    is_lesse_applied=${True}    weather_conditions_confirmed=${True}    buffer_zone_distance_meters=10
+    &{app_data}=    Create Dictionary    id=${0}    event_id=${event_id_int}    manure_type=Cattle Slurry    volume_applied_m3_per_ha=${10.0}    is_lesse_applied=${True}    weather_conditions_confirmed=${True}    buffer_zone_distance_meters=${10}
     ${create_response}=    POST    ${BASE_URL}/v0/organic_manure_applications    json=${app_data}    expected_status=200
     Log    Create Organic Manure Application Response: ${create_response.content}
     ${app_id}=    Convert To String    ${create_response.json()['id']}
@@ -310,12 +310,12 @@ Compliance Breaches BREAD Operations
     [Documentation]    Test BREAD operations for Compliance Breaches. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
     # Prerequisite: Need a farm ID
-    &{farm_data}=    Create Dictionary    id=0    name=Compliance Test Farm    location=123 Test Lane    has_derogation=${True}
+    &{farm_data}=    Create Dictionary    id=${0}    name=Compliance Test Farm    location=123 Test Lane    has_derogation=${True}
     ${farm_response}=    POST    ${BASE_URL}/v0/farms    json=${farm_data}    expected_status=200
     ${farm_id_int}=    Convert To Integer    ${farm_response.json()['id']}
 
     # 1. Add (Create) Compliance Breach
-    &{breach_data}=    Create Dictionary    id=0    farm_id=${farm_id_int}    breach_type=Buffer Zone Violation    severity=High    breach_date=2024-05-23
+    &{breach_data}=    Create Dictionary    id=${0}    farm_id=${farm_id_int}    breach_type=Buffer Zone Violation    severity=High    breach_date=2024-05-23
     ${create_response}=    POST    ${BASE_URL}/v0/compliance-breaches    json=${breach_data}    expected_status=200
     Log    Create Compliance Breach Response: ${create_response.content}
     ${breach_id}=    Convert To String    ${create_response.json()['id']}
@@ -337,12 +337,12 @@ Sward Movements BREAD Operations
     [Documentation]    Test BREAD operations for Sward Movements. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
     # Prerequisite: Need a farm ID
-    &{farm_data}=    Create Dictionary    id=0    name=Movement Test Farm    location=123 Test Lane    has_derogation=${True}
+    &{farm_data}=    Create Dictionary    id=${0}    name=Movement Test Farm    location=123 Test Lane    has_derogation=${True}
     ${farm_response}=    POST    ${BASE_URL}/v0/farms    json=${farm_data}    expected_status=200
     ${farm_id_int}=    Convert To Integer    ${farm_response.json()['id']}
 
     # 1. Add (Create) Sward Movement
-    &{movement_data}=    Create Dictionary    id=0    farm_id=${farm_id_int}    movement_type=import    quantity_m3=100.0    date=2024-05-23    manure_type=Cattle Slurry
+    &{movement_data}=    Create Dictionary    id=${0}    farm_id=${farm_id_int}    movement_type=import    quantity_m3=${100.0}    date=2024-05-23    manure_type=Cattle Slurry
     ${create_response}=    POST    ${BASE_URL}/v0/sward-movements    json=${movement_data}    expected_status=200
     Log    Create Sward Movement Response: ${create_response.content}
     ${movement_id}=    Convert To String    ${create_response.json()['id']}
