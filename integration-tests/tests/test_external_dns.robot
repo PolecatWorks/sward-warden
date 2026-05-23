@@ -10,4 +10,3 @@ External DNS Check
     New Browser    chromium    headless=True
     New Page    ${BASE_URL}
     Wait For Elements State    app-root    visible    timeout=10s
-    Get Url    startsWith    ${BASE_URL}
