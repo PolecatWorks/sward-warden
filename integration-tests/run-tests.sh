@@ -6,6 +6,15 @@ NS="${GARDEN_NAMESPACE:-sward-warden-pr-${PR_NUMBER:-local}}"
 
 echo "Using namespace: $NS"
 
+if [ -n "$PR_NUMBER" ]; then
+  DNS_HOST="sw-pr-${PR_NUMBER}.dev.k8s"
+else
+  DNS_HOST="sw-${USER:-local}.dev.k8s"
+fi
+
+EXTERNAL_DNS_URL="http://${DNS_HOST}"
+echo "External DNS URL: $EXTERNAL_DNS_URL"
+
 POD_NAME="robot-test-runner"
 
 # Ensure kubectl is in the path
@@ -35,7 +44,7 @@ kubectl exec $POD_NAME -n $NS -- /bin/bash -c "
   # Try to find robot in common paths if not in PATH
   export PATH=\$PATH:/home/pwuser/.local/bin:/home/pwuser/.venv/bin
 
-  robot --variable BE_POD_IP:$BE_POD_IP --loglevel DEBUG -d /tmp/reports /tmp/robot-tests
+  robot --variable BE_POD_IP:$BE_POD_IP --variable EXTERNAL_DNS_URL:$EXTERNAL_DNS_URL --loglevel DEBUG -d /tmp/reports /tmp/robot-tests
 " || TEST_EXIT_CODE=$?
 
 # Pull reports back
