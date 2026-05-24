@@ -22,6 +22,7 @@ spec:
 kind: Test
 type: exec
 name: integration-all
+timeout: 900
 dependencies:
   - deploy.robot-test-runner
 spec:

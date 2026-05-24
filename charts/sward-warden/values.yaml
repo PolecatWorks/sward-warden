@@ -9,7 +9,7 @@ livenessProbe:
     port: http-lifecycle
   initialDelaySeconds: 15
   periodSeconds: 20
-  timeoutSeconds: 1
+  timeoutSeconds: 5
   failureThreshold: 3
 readinessProbe:
   httpGet:
@@ -17,7 +17,7 @@ readinessProbe:
     port: http-lifecycle
   initialDelaySeconds: 5
   periodSeconds: 10
-  timeoutSeconds: 1
+  timeoutSeconds: 5
   failureThreshold: 3
 lifecycle: {}
 initContainer:

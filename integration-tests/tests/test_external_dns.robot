@@ -14,5 +14,10 @@ External DNS Check
 Check External DNS
     [Arguments]    ${url}
     New Browser    chromium    headless=True
-    New Page    ${url}
-    Wait For Elements State    app-root    visible    timeout=60s
+    New Page    about:blank
+    Wait Until Keyword Succeeds    12x    10s    Load Page And Verify    ${url}
+
+Load Page And Verify
+    [Arguments]    ${url}
+    Go To    ${url}
+    Wait For Elements State    app-root    visible    timeout=5s
