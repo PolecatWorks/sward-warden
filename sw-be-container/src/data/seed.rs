@@ -1,6 +1,6 @@
 use crate::error::AppError;
 use chrono::Utc;
-use sqlx::PgPool;
+use sqlx::{PgPool, QueryBuilder};
 use tracing::info;
 
 pub async fn seed_database(pool: &PgPool, user_id: i64) -> Result<(), AppError> {
@@ -44,17 +44,38 @@ pub async fn seed_database(pool: &PgPool, user_id: i64) -> Result<(), AppError> 
             .await
             .map_err(|e| AppError::Message(format!("Failed to insert field: {e}")))?;
 
+            let mut events_to_insert = Vec::new();
+
             for k in 1..=10 {
                 let event_type = if k % 3 == 0 { "planned" } else { "completed" };
                 let description = format!("Slurry application #{} - {}m3 applied", k, k * 50);
                 let date = format!("2024-05-{:02}", k + 10);
 
-                sqlx::query(
-                    "INSERT INTO events (field_id, event_type, description, date, updated_at) VALUES ($1, $2, $3, $4, $5)"
-                ).bind(field_id).bind(event_type).bind(description).bind(date).bind(Utc::now())
-                .execute(pool)
-                .await
-                .map_err(|e| AppError::Message(format!("Failed to insert event: {e}")))?;
+                events_to_insert.push((
+                    field_id,
+                    event_type.to_string(),
+                    description,
+                    date,
+                    Utc::now()
+                ));
+            }
+
+            if !events_to_insert.is_empty() {
+                let mut query_builder = QueryBuilder::new(
+                    "INSERT INTO events (field_id, event_type, description, date, updated_at) "
+                );
+
+                query_builder.push_values(events_to_insert, |mut b, event| {
+                    b.push_bind(event.0)
+                     .push_bind(event.1)
+                     .push_bind(event.2)
+                     .push_bind(event.3)
+                     .push_bind(event.4);
+                });
+
+                let query = query_builder.build();
+
+                query.execute(pool).await.map_err(|e| AppError::Message(format!("Failed to insert events: {e}")))?;
             }
         }
     }
