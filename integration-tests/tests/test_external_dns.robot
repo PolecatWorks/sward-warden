@@ -8,11 +8,7 @@ ${EXTERNAL_DNS_URL}    http://sward.k8s
 External DNS Check
     [Documentation]    Test to verify the application loads via the external DNS defined in the virtual service.
     ...                NOTE: Expecting potential resolution failures until gateway DNS is fully configured.
-    TRY
-        Check External DNS    ${EXTERNAL_DNS_URL}
-    EXCEPT
-        Skip    External DNS check failed, skipping as DNS resolution might not be configured yet.
-    END
+    Check External DNS    ${EXTERNAL_DNS_URL}
 
 *** Keywords ***
 Check External DNS
