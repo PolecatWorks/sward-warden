@@ -21,7 +21,7 @@ POD_NAME="robot-test-runner"
 export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
 # Wait for the pod to be ready
-kubectl wait --for=condition=Ready pod/$POD_NAME -n $NS --timeout=120s
+kubectl wait --for=condition=Ready pod/$POD_NAME -n $NS --timeout=300s
 
 # Install required library synchronously
 echo "Installing robotframework-requests..."
