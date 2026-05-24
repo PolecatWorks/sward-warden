@@ -1,0 +1,36 @@
+{"level":"info","time":"2026-05-24T08:13:57.057Z","seq":1,"component":"browser-library","msg":"Listening on 127.0.0.1:50813"}
+{"level":"info","time":"2026-05-24T08:13:57.076Z","seq":2,"component":"browser-library","event_kind":"grpc","action":"newBrowser","status":"started"}
+{"level":"info","time":"2026-05-24T08:13:57.249Z","seq":3,"component":"browser-library","msg":"Adding browser to stack: chromium, version: 148.0.7778.96"}
+{"level":"info","time":"2026-05-24T08:13:57.250Z","seq":4,"component":"browser-library","msg":"Adding 0 contexts to browser"}
+{"level":"info","time":"2026-05-24T08:13:57.250Z","seq":5,"component":"browser-library","event_kind":"grpc","action":"newBrowser","status":"succeeded"}
+{"level":"info","time":"2026-05-24T08:13:57.253Z","seq":6,"component":"browser-library","event_kind":"grpc","action":"newPage","status":"started"}
+{"level":"info","time":"2026-05-24T08:13:57.254Z","seq":7,"component":"browser-library","msg":"currentBrowser: {\"_contextStack\":[],\"browser\":{\"_type\":\"Browser\",\"_guid\":\"browser@0566f5995fe8ef757db56247b709da48\"},\"name\":\"chromium\",\"id\":\"browser=fbefb63f-e69d-41d0-9c12-49b2b5af39e6\",\"headless\":true}"}
+{"level":"info","time":"2026-05-24T08:13:57.263Z","seq":8,"component":"browser-library","msg":"Setting default timeout for context context=bee478fa-c58f-425b-a271-558aa3836c74 to 10000"}
+{"level":"info","time":"2026-05-24T08:13:57.263Z","seq":9,"component":"browser-library","msg":"Changed active context: context=bee478fa-c58f-425b-a271-558aa3836c74"}
+{"level":"info","time":"2026-05-24T08:13:57.306Z","seq":10,"component":"browser-library","msg":"Video path: undefined"}
+{"level":"info","time":"2026-05-24T08:13:57.306Z","seq":11,"component":"browser-library","msg":"Changed active page"}
+{"level":"info","time":"2026-05-24T08:13:57.723Z","seq":12,"component":"browser-library","event_kind":"grpc","action":"newPage","status":"succeeded"}
+{"level":"info","time":"2026-05-24T08:13:57.731Z","seq":13,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"started"}
+{"level":"info","time":"2026-05-24T08:13:57.842Z","seq":14,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"succeeded"}
+{"level":"info","time":"2026-05-24T08:13:57.848Z","seq":15,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"started"}
+{"level":"info","time":"2026-05-24T08:13:57.910Z","seq":16,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"succeeded"}
+{"level":"info","time":"2026-05-24T08:13:57.917Z","seq":17,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"started"}
+{"level":"info","time":"2026-05-24T08:13:57.977Z","seq":18,"component":"browser-library","event_kind":"grpc","action":"goTo","status":"succeeded"}
+{"level":"info","time":"2026-05-24T08:13:57.989Z","seq":19,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
+{"level":"info","time":"2026-05-24T08:13:58.070Z","seq":20,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
+{"level":"info","time":"2026-05-24T08:13:58.074Z","seq":21,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
+{"level":"info","time":"2026-05-24T08:13:58.074Z","seq":22,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
+{"level":"info","time":"2026-05-24T08:13:58.077Z","seq":23,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
+{"level":"info","time":"2026-05-24T08:13:58.077Z","seq":24,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
+{"level":"info","time":"2026-05-24T08:13:58.080Z","seq":25,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
+{"level":"info","time":"2026-05-24T08:13:58.081Z","seq":26,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
+{"level":"info","time":"2026-05-24T08:13:58.084Z","seq":27,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","msg":"Changed active context: context=bee478fa-c58f-425b-a271-558aa3836c74"}
+{"level":"info","time":"2026-05-24T08:13:58.084Z","seq":28,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","msg":"Changing current active page: page=dcc41395-7d25-47c4-a350-4f7670c1cb22"}
+{"level":"info","time":"2026-05-24T08:13:58.084Z","seq":29,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","msg":"Changed active page"}
+{"level":"info","time":"2026-05-24T08:13:58.088Z","seq":30,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"closeContext","status":"started"}
+{"level":"info","time":"2026-05-24T08:13:58.094Z","seq":31,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","msg":"Removed page=79d45744-5d4f-431c-9e40-99286f4f3dca from context=bee478fa-c58f-425b-a271-558aa3836c74 page stack"}
+{"level":"info","time":"2026-05-24T08:13:58.096Z","seq":32,"suite_id":"s1-s1-s3","suite_name":"Robot-Tests.Tests.Test Navigation","component":"browser-library","event_kind":"grpc","action":"closeContext","status":"succeeded"}
+{"level":"info","time":"2026-05-24T08:13:58.105Z","seq":33,"component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"started"}
+{"level":"info","time":"2026-05-24T08:13:58.105Z","seq":34,"component":"browser-library","event_kind":"grpc","action":"getBrowserCatalog","status":"succeeded"}
+{"level":"info","time":"2026-05-24T08:13:58.158Z","seq":35,"component":"browser-library","event_kind":"grpc","action":"closeAllBrowsers","status":"started"}
+{"level":"info","time":"2026-05-24T08:13:58.183Z","seq":36,"component":"browser-library","event_kind":"grpc","action":"closeAllBrowsers","status":"succeeded"}
