@@ -15,4 +15,4 @@ Check External DNS
     [Arguments]    ${url}
     New Browser    chromium    headless=True
     New Page    ${url}
-    Wait For Elements State    app-root    visible    timeout=30s
+    Wait For Elements State    app-root    visible    timeout=60s

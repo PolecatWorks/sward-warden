@@ -89,6 +89,7 @@ kind: Deploy
 type: helm
 name: sward-warden
 description: "Deploy the sward manager"
+timeout: 900
 dependencies:
   - deploy.postgres-test
   - deploy.ghcr-external-secret
@@ -148,6 +149,7 @@ kind: Deploy
 type: helm
 name: sward-warden-fe
 description: "Deploy the sward frontend"
+timeout: 900
 dependencies:
   - deploy.ghcr-external-secret
   - build.get-fe-sha
