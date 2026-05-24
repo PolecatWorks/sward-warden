@@ -4,6 +4,7 @@ name: robot-test-runner
 dependencies:
   - deploy.sward-warden
   - deploy.sward-warden-fe
+  - deploy.virtual-service
 spec:
   manifests:
     - apiVersion: v1
