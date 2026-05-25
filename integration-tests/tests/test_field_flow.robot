@@ -22,8 +22,8 @@ Field Creation and Deletion Flow
     Click    button:has-text("Save Field")
 
     # 3. View the created field in UI
-    Wait For Elements State    text=E2E Test Field    visible
-    Wait For Elements State    text=15.5    visible
+    Wait For Elements State    "E2E Test Field"    visible
+    Wait For Elements State    "15.5"    visible
 
     # Wait for sync
     Sleep    2s
@@ -47,7 +47,7 @@ Field Creation and Deletion Flow
     Click    button[aria-label="Delete E2E Test Field"]
 
     # 6. Confirm deleted in UI
-    Wait For Elements State    text=E2E Test Field    hidden
+    Wait For Elements State    "E2E Test Field"    hidden
     Get Text    .text-center.p-8.bg-surface-container-lowest    contains    No fields found for this farm.
 
     # Wait for sync
