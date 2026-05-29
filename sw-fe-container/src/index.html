@@ -12,6 +12,43 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#1976d2">
+  <script>
+    window.onerror = function(message, source, lineno, colno, error) {
+      var div = document.createElement('div');
+      div.id = 'diagnostic-error';
+      div.style.position = 'fixed';
+      div.style.top = '0';
+      div.style.left = '0';
+      div.style.width = '100%';
+      div.style.backgroundColor = 'red';
+      div.style.color = 'white';
+      div.style.zIndex = '99999';
+      div.style.padding = '10px';
+      div.style.fontSize = '12px';
+      div.style.fontFamily = 'monospace';
+      div.style.whiteSpace = 'pre-wrap';
+      div.innerText = 'UNCAUGHT ERROR: ' + message + '\n' + (error ? error.stack : '');
+      document.body.appendChild(div);
+    };
+    window.onunhandledrejection = function(event) {
+      var div = document.createElement('div');
+      div.id = 'diagnostic-rejection';
+      div.style.position = 'fixed';
+      div.style.top = '50px';
+      div.style.left = '0';
+      div.style.width = '100%';
+      div.style.backgroundColor = 'darkred';
+      div.style.color = 'white';
+      div.style.zIndex = '99999';
+      div.style.padding = '10px';
+      div.style.fontSize = '12px';
+      div.style.fontFamily = 'monospace';
+      div.style.whiteSpace = 'pre-wrap';
+      var reason = event.reason;
+      div.innerText = 'UNHANDLED REJECTION: ' + (reason ? (reason.message || reason) : 'unknown') + '\n' + (reason && reason.stack ? reason.stack : '');
+      document.body.appendChild(div);
+    };
+  </script>
 </head>
 <body class="bg-surface font-body text-on-surface min-h-screen flex flex-col pb-32">
   <app-root></app-root>

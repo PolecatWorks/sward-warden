@@ -207,7 +207,8 @@ spec:
       contents:
         app-config.json: |
           {
-            "apiUrl": "/sward"
+            "apiPath": "/sward",
+            "logLevel": "INFO"
           }
 ---
 kind: Deploy
@@ -287,13 +288,6 @@ spec:
           - istio-ingress/k8s-gateway
           - mesh
         http:
-          - name: sward-warden-fe
-            match:
-              - uri:
-                  prefix: /
-            route:
-              - destination:
-                  host: sward-warden-fe-nginx-view
           - name: sward-warden-be
             match:
               - uri:
@@ -301,6 +295,13 @@ spec:
             route:
               - destination:
                   host: sward-warden-be
+          - name: sward-warden-fe
+            match:
+              - uri:
+                  prefix: /
+            route:
+              - destination:
+                  host: sward-warden-fe-nginx-view
 ---
 kind: Build
 type: exec

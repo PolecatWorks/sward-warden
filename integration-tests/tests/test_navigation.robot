@@ -2,7 +2,8 @@
 Library    Browser
 
 *** Variables ***
-${BASE_URL}    http://sward-warden-fe-nginx-view
+${EXTERNAL_DNS_URL}    http://sw-bengreene.dev.k8s
+${BASE_URL}            ${EXTERNAL_DNS_URL}
 
 *** Test Cases ***
 Navigate Through App
