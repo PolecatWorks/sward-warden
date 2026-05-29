@@ -56,26 +56,29 @@ pub async fn seed_database(pool: &PgPool, user_id: i64) -> Result<(), AppError> 
                     event_type.to_string(),
                     description,
                     date,
-                    Utc::now()
+                    Utc::now(),
                 ));
             }
 
             if !events_to_insert.is_empty() {
                 let mut query_builder = QueryBuilder::new(
-                    "INSERT INTO events (field_id, event_type, description, date, updated_at) "
+                    "INSERT INTO events (field_id, event_type, description, date, updated_at) ",
                 );
 
                 query_builder.push_values(events_to_insert, |mut b, event| {
                     b.push_bind(event.0)
-                     .push_bind(event.1)
-                     .push_bind(event.2)
-                     .push_bind(event.3)
-                     .push_bind(event.4);
+                        .push_bind(event.1)
+                        .push_bind(event.2)
+                        .push_bind(event.3)
+                        .push_bind(event.4);
                 });
 
                 let query = query_builder.build();
 
-                query.execute(pool).await.map_err(|e| AppError::Message(format!("Failed to insert events: {e}")))?;
+                query
+                    .execute(pool)
+                    .await
+                    .map_err(|e| AppError::Message(format!("Failed to insert events: {e}")))?;
             }
         }
     }
