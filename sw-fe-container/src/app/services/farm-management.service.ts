@@ -154,7 +154,7 @@ export class FarmManagementService {
   addFarm(farm: Farm): Observable<Farm> {
     return this.insertEntity<FarmDocType, Farm>(
       'farms',
-      { serverId: farm.id, user_id: farm.user_id, name: farm.name, location: farm.location, has_derogation: farm.has_derogation },
+      { serverId: typeof farm.id === 'number' ? farm.id : undefined, user_id: farm.user_id, name: farm.name, location: farm.location, has_derogation: farm.has_derogation },
       { name: farm.name, location: farm.location, has_derogation: farm.has_derogation },
       (doc) => this.farmDocToModel(doc)
     );
@@ -181,7 +181,7 @@ export class FarmManagementService {
   addField(field: Field): Observable<Field> {
     return this.insertEntity<FieldDocType, Field>(
       'fields',
-      { serverId: field.id, farm_id: field.farm_id, name: field.name, area_hectares: field.area_hectares, land_use: field.land_use },
+      { serverId: typeof field.id === 'number' ? field.id : undefined, farm_id: field.farm_id, name: field.name, area_hectares: field.area_hectares, land_use: field.land_use },
       { farm_id: field.farm_id, name: field.name, area_hectares: field.area_hectares, land_use: field.land_use },
       (doc) => this.fieldDocToModel(doc)
     );
@@ -199,7 +199,7 @@ export class FarmManagementService {
   addEvent(event: Event): Observable<Event> {
     return this.insertEntity<EventDocType, Event>(
       'events',
-      { serverId: event.id, field_id: event.field_id, event_type: event.event_type, description: event.description, date: event.date },
+      { serverId: typeof event.id === 'number' ? event.id : undefined, field_id: event.field_id, event_type: event.event_type, description: event.description, date: event.date },
       { field_id: event.field_id, event_type: event.event_type, description: event.description, date: event.date },
       (doc) => this.eventDocToModel(doc)
     );
@@ -237,7 +237,7 @@ export class FarmManagementService {
   addSoilAnalysis(analysis: SoilAnalysis): Observable<SoilAnalysis> {
     return this.insertEntity<SoilAnalysisDocType, SoilAnalysis>(
       'soil_analyses',
-      { serverId: analysis.id, field_id: analysis.field_id, sample_date: analysis.sample_date, ph_level: analysis.ph_level, phosphorus_index: analysis.phosphorus_index, potassium_index: analysis.potassium_index, magnesium_index: analysis.magnesium_index },
+      { serverId: typeof analysis.id === 'number' ? analysis.id : undefined, field_id: analysis.field_id, sample_date: analysis.sample_date, ph_level: analysis.ph_level, phosphorus_index: analysis.phosphorus_index, potassium_index: analysis.potassium_index, magnesium_index: analysis.magnesium_index },
       { field_id: analysis.field_id, sample_date: analysis.sample_date, ph_level: analysis.ph_level, phosphorus_index: analysis.phosphorus_index, potassium_index: analysis.potassium_index, magnesium_index: analysis.magnesium_index },
       (doc) => this.soilAnalysisDocToModel(doc)
     );
@@ -255,7 +255,7 @@ export class FarmManagementService {
   addFertilisationPlan(plan: FertilisationPlan): Observable<FertilisationPlan> {
     return this.insertEntity<FertilisationPlanDocType, FertilisationPlan>(
       'fertilisation_plans',
-      { serverId: plan.id, field_id: plan.field_id, crop_type: plan.crop_type, target_yield: plan.target_yield, nitrogen_requirement: plan.nitrogen_requirement, phosphorus_requirement: plan.phosphorus_requirement, potassium_requirement: plan.potassium_requirement, application_date: plan.application_date },
+      { serverId: typeof plan.id === 'number' ? plan.id : undefined, field_id: plan.field_id, crop_type: plan.crop_type, target_yield: plan.target_yield, nitrogen_requirement: plan.nitrogen_requirement, phosphorus_requirement: plan.phosphorus_requirement, potassium_requirement: plan.potassium_requirement, application_date: plan.application_date },
       { field_id: plan.field_id, crop_type: plan.crop_type, target_yield: plan.target_yield, nitrogen_requirement: plan.nitrogen_requirement, phosphorus_requirement: plan.phosphorus_requirement, potassium_requirement: plan.potassium_requirement, application_date: plan.application_date },
       (doc) => this.fertilisationPlanDocToModel(doc)
     );
@@ -274,7 +274,7 @@ export class FarmManagementService {
   addFarmRecord(record: FarmRecord): Observable<FarmRecord> {
     return this.insertEntity<FarmRecordDocType, FarmRecord>(
       'farm_records',
-      { serverId: record.id, farm_id: record.farm_id, agricultural_area: record.agricultural_area, manure_storage_capacity: record.manure_storage_capacity, year: record.year, has_derogation: record.has_derogation },
+      { serverId: typeof record.id === 'number' ? record.id : undefined, farm_id: record.farm_id, agricultural_area: record.agricultural_area, manure_storage_capacity: record.manure_storage_capacity, year: record.year, has_derogation: record.has_derogation },
       { farm_id: record.farm_id, agricultural_area: record.agricultural_area, manure_storage_capacity: record.manure_storage_capacity, year: record.year, has_derogation: record.has_derogation },
       (doc) => this.farmRecordDocToModel(doc)
     );
@@ -463,7 +463,7 @@ export class FarmManagementService {
     return this.insertEntity<ComplianceBreachDocType, ComplianceBreach>(
       'compliance_breaches',
       {
-        serverId: breach.id, farm_id: breach.farm_id, breach_type: breach.breach_type,
+        serverId: typeof breach.id === 'number' ? breach.id : undefined, farm_id: breach.farm_id, breach_type: breach.breach_type,
         severity: breach.severity, estimated_penalty_percentage: breach.estimated_penalty_percentage,
         mandatory_training_required: breach.mandatory_training_required, breach_date: breach.breach_date,
         notes: breach.notes, is_repeat: breach.is_repeat
@@ -482,7 +482,7 @@ export class FarmManagementService {
     return this.insertEntity<OrganicManureApplicationDocType, OrganicManureApplication>(
       'organic_manure_applications',
       {
-        serverId: app.id, event_id: app.event_id, manure_type: app.manure_type,
+        serverId: typeof app.id === 'number' ? app.id : undefined, event_id: app.event_id, manure_type: app.manure_type,
         volume_applied_m3_per_ha: app.volume_applied_m3_per_ha, weight_applied_tonnes_per_ha: app.weight_applied_tonnes_per_ha,
         nitrogen_content_kg_per_unit: app.nitrogen_content_kg_per_unit, is_lesse_applied: app.is_lesse_applied,
         weather_conditions_confirmed: app.weather_conditions_confirmed, buffer_zone_distance_meters: app.buffer_zone_distance_meters,
@@ -535,7 +535,7 @@ export class FarmManagementService {
     return this.insertEntity<SwardMovementDocType, SwardMovement>(
       'sward_movements',
       {
-        serverId: movement.id as any, farm_id: movement.farm_id as any, movement_type: movement.movement_type,
+        serverId: typeof movement.id === 'number' ? movement.id : undefined, farm_id: movement.farm_id as any, movement_type: movement.movement_type,
         quantity_m3: movement.quantity_m3, date: movement.date, manure_type: movement.manure_type,
         consignee_name: movement.consignee_name, consignee_address: movement.consignee_address,
         consignor_name: movement.consignor_name, consignor_address: movement.consignor_address,
