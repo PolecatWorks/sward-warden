@@ -12,8 +12,11 @@ Field Creation and Deletion Flow
     New Browser    chromium    headless=True
     New Page    ${BASE_URL_FE}/farms/1/fields
 
+    # Wait for sync
+    Sleep    2s
+
     # 1. Check there are no fields created
-    Get Text    .text-center.p-8.bg-surface-container-lowest    contains    No fields found for this farm.
+    Get Element Count    h2.text-lg.font-bold.text-on-surface    ==    0
 
     # 2. Create a field using UI
     Click    button:has-text("Add Field")
@@ -22,6 +25,7 @@ Field Creation and Deletion Flow
     Click    button:has-text("Save Field")
 
     # 3. View the created field in UI
+    Get Element Count    h2.text-lg.font-bold.text-on-surface    ==    1
     Get Text    h2.text-lg.font-bold.text-on-surface    contains    E2E Test Field
     Get Text    p.text-xl.font-black.text-on-surface    contains    15.5
 
@@ -47,7 +51,7 @@ Field Creation and Deletion Flow
     Click    button[aria-label="Delete E2E Test Field"]
 
     # 6. Confirm deleted in UI
-    Wait For Elements State    "E2E Test Field"    hidden
+    Get Element Count    h2.text-lg.font-bold.text-on-surface    ==    0
     Get Text    .text-center.p-8.bg-surface-container-lowest    contains    No fields found for this farm.
 
     # Wait for sync
