@@ -19,10 +19,10 @@ Field Creation and Deletion Flow
     Get Element Count    h2.text-lg.font-bold.text-on-surface    ==    0
 
     # 2. Create a field using UI
-    Click    button:has-text("Add Field")    button=left    force=${True}
+    Click With Options    button:has-text("Add Field")    button=left    force=${True}
     Fill Text    \#newFieldName    E2E Test Field
     Fill Text    \#newFieldArea    15.5
-    Click    button:has-text("Save Field")    button=left    force=${True}
+    Click With Options    button:has-text("Save Field")    button=left    force=${True}
 
     # 3. View the created field in UI
     Get Element Count    h2.text-lg.font-bold.text-on-surface    ==    1
@@ -48,7 +48,7 @@ Field Creation and Deletion Flow
     Should Be True    ${found_field}    Field not found in API response
 
     # 5. Delete field using UI
-    Click    button[aria-label="Delete E2E Test Field"]    button=left    force=${True}
+    Click With Options    button[aria-label="Delete E2E Test Field"]    button=left    force=${True}
 
     # 6. Confirm deleted in UI
     Get Element Count    h2.text-lg.font-bold.text-on-surface    ==    0
