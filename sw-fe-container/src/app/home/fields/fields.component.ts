@@ -47,7 +47,6 @@ export class FieldsComponent implements OnInit {
   addField(): void {
     if (this.newFieldName && this.newFieldArea !== null) {
       const newField: Field = {
-        id: Date.now().toString(),
         farm_id: this.farmId,
         name: this.newFieldName,
         area_hectares: this.newFieldArea
