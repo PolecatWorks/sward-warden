@@ -16,7 +16,7 @@ export class FieldsComponent implements OnInit {
   fields: Field[] = [];
   farmId: number | string = 0;
   newFieldName: string = '';
-  newFieldArea: number | null = null;
+  newFieldArea: string = '';
   showAddForm: boolean = false;
 
   get totalArea(): number {
@@ -45,17 +45,19 @@ export class FieldsComponent implements OnInit {
   }
 
   addField(): void {
-    if (this.newFieldName && this.newFieldArea !== null) {
+    if (this.newFieldName && this.newFieldArea) {
+      const area = parseFloat(this.newFieldArea);
+      if (isNaN(area)) return;
       const newField: Field = {
         farm_id: this.farmId,
         name: this.newFieldName,
-        area_hectares: this.newFieldArea
+        area_hectares: area
       };
 
       this.farmService.addField(newField).subscribe(() => {
         this.loadFields();
         this.newFieldName = '';
-        this.newFieldArea = null;
+        this.newFieldArea = '';
         this.showAddForm = false;
       });
     }

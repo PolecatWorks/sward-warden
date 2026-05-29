@@ -63,11 +63,11 @@
             </div>
             <div class="flex flex-col gap-1">
                 <label for="newFieldArea" class="text-sm font-medium text-on-surface-variant">Area (Hectares)</label>
-                <input id="newFieldArea" type="number" [(ngModel)]="newFieldArea" class="w-full px-4 py-3 bg-surface-container-low border border-surface-container-high rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="e.g. 12.5">
+                <input id="newFieldArea" type="text" [(ngModel)]="newFieldArea" class="w-full px-4 py-3 bg-surface-container-low border border-surface-container-high rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="e.g. 12.5">
             </div>
             <div class="flex gap-2 justify-end mt-2">
                 <button (click)="toggleAddForm()" class="px-5 py-2 font-semibold text-on-surface-variant bg-surface-container-high rounded-lg hover:bg-surface-variant transition-colors">Cancel</button>
-                <button (click)="addField()" [disabled]="!newFieldName || newFieldArea === null" class="px-5 py-2 font-semibold text-on-primary bg-primary rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50">Save Field</button>
+                <button (click)="addField()" [disabled]="!newFieldName || !newFieldArea" class="px-5 py-2 font-semibold text-on-primary bg-primary rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50">Save Field</button>
             </div>
         </div>
       </div>
