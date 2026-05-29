@@ -3,8 +3,9 @@ Library    Browser
 Library    RequestsLibrary
 
 *** Variables ***
-${BASE_URL_FE}    http://sward-warden-fe-nginx-view
-${BASE_URL_BE}    http://sward-warden-be
+${EXTERNAL_DNS_URL}    http://sw-bengreene.dev.k8s
+${BASE_URL_FE}         ${EXTERNAL_DNS_URL}
+${BASE_URL_BE}         http://sward-warden-be
 
 *** Test Cases ***
 Field Creation and Deletion Flow
