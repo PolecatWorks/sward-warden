@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { FarmManagementService } from '../services/farm-management.service';
+import { AuthService } from '../services/auth.service';
 import { User } from '../models/user';
 import { Observable } from 'rxjs';
 
@@ -15,7 +16,12 @@ import { Observable } from 'rxjs';
 })
 export class UserProfileComponent implements OnInit {
   users$!: Observable<User[]>;
-  userForm: FormGroup;
+  currentUser$!: Observable<User>;
+  userForm: FormGroup; // For adding team members
+  editProfileForm: FormGroup; // For editing the current user
+
+  // A local variable to store current user id for updates
+  currentUserId!: string;
 
   activeModules = [
     { name: 'Slurry Management Dashboard', icon: 'dashboard', active: true },
@@ -28,16 +34,56 @@ export class UserProfileComponent implements OnInit {
 
   constructor(
     private farmManagementService: FarmManagementService,
+    private authService: AuthService,
     private fb: FormBuilder
   ) {
     this.userForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]]
     });
+
+    this.editProfileForm = this.fb.group({
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      phone: [''],
+      description: ['']
+    });
   }
 
   ngOnInit(): void {
     this.users$ = this.farmManagementService.getUsers();
+
+    this.currentUserId = this.authService.getUserId() || '1';
+    this.loadCurrentUser();
+  }
+
+  loadCurrentUser() {
+      this.currentUser$ = this.farmManagementService.getUser(this.currentUserId);
+      this.currentUser$.subscribe(user => {
+          if (user) {
+              this.editProfileForm.patchValue({
+                  name: user.name,
+                  email: user.email,
+                  phone: user.phone || '',
+                  description: user.description || ''
+              });
+          }
+      });
+  }
+
+  onEditProfileSubmit(): void {
+      if (this.editProfileForm.valid) {
+          const updatedUser: Partial<User> = {
+              name: this.editProfileForm.value.name,
+              email: this.editProfileForm.value.email,
+              phone: this.editProfileForm.value.phone,
+              description: this.editProfileForm.value.description
+          };
+
+          this.farmManagementService.updateUser(this.currentUserId, updatedUser).subscribe(() => {
+              this.loadCurrentUser();
+          });
+      }
   }
 
   onSubmitUser(): void {

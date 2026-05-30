@@ -17,6 +17,8 @@ pub struct User {
     pub name: String,
     pub email: String,
     pub role: Role,
+    pub phone: Option<String>,
+    pub description: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]

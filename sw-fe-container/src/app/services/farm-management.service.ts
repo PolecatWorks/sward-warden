@@ -70,6 +70,18 @@ export class FarmManagementService {
     );
   }
 
+  getUser(id: number | string): Observable<User> {
+    return this.apiUrl$.pipe(
+      switchMap(apiUrl => this.http.get<User>(`${apiUrl}/users/${id}`, { headers: this.getHeaders() }))
+    );
+  }
+
+  updateUser(id: number | string, user: Partial<User>): Observable<User> {
+    return this.apiUrl$.pipe(
+      switchMap(apiUrl => this.http.put<User>(`${apiUrl}/users/${id}`, user, { headers: this.getHeaders() }))
+    );
+  }
+
   // ──────────────────────────────────────────────────────────
   // Local-First CRUD Logic
   // ──────────────────────────────────────────────────────────
