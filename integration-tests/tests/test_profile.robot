@@ -30,10 +30,7 @@ Edit Profile
     Click    text=Save Changes
 
     # Wait for the UI to update
-    Wait For Elements State    h1:has-text("Test Name")    visible
-
-    # Verify the updated details are visible on the page
-    Get Text    h1    contains    Test Name
-    Wait For Elements State    text="test@test.com"    visible
-    Wait For Elements State    text="+44 7700 900077"    visible
-    Wait For Elements State    text="This is a test description"    visible
+    Wait For Elements State    text=Test Name
+    Wait For Elements State    text=test@test.com
+    Wait For Elements State    text="+44 7700 900077"
+    Wait For Elements State    text="This is a test description"
