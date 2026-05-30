@@ -8,7 +8,7 @@ RUN apk add --no-cache python3 make g++
 # Switch to app directory
 COPY package.json package-lock.json .npmrc* ./
 RUN --mount=type=secret,id=NODE_AUTH_TOKEN,env=NODE_AUTH_TOKEN \
-    npm ci
+    npm install --no-audit --no-fund
 
 # Install Rollup's native module specifically for the target platform to bypass npm optional dependencies bug
 RUN if [ "$(uname -m)" = "x86_64" ]; then \
