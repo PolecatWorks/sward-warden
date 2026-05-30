@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Subscription, firstValueFrom, filter, switchMap, from, timer, merge } from 'rxjs';
+import { Subscription, firstValueFrom, filter, switchMap, from, timer, merge, debounceTime } from 'rxjs';
 import { RxdbService, SwardDatabase } from './rxdb/rxdb.service';
 import { NetworkService } from './network.service';
 import { SyncStateService } from './sync-state.service';
@@ -59,7 +59,7 @@ export class SyncEngineService implements OnDestroy {
     private farmService: FarmManagementService,
     private http: HttpClient,
   ) {
-    // Sync triggers: online events + periodic timer
+    // Sync triggers: online events + periodic timer + pending outbox inserts
     const onlineEvent$ = this.networkService.isOnline$.pipe(
       filter(online => online),
     );
@@ -69,7 +69,15 @@ export class SyncEngineService implements OnDestroy {
       filter(online => online),
     );
 
-    this.subscription = merge(onlineEvent$, periodicSync$).pipe(
+    const outboxTrigger$ = this.rxdbService.db$.pipe(
+      switchMap(db => db.outbox.find({ selector: { status: 'pending' } }).$),
+      filter(entries => entries.length > 0),
+      debounceTime(500),
+      switchMap(() => this.networkService.isOnline$),
+      filter(online => online),
+    );
+
+    this.subscription = merge(onlineEvent$, periodicSync$, outboxTrigger$).pipe(
       switchMap(() => from(this.fullSync())),
     ).subscribe();
   }

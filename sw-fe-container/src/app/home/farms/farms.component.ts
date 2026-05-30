@@ -1,4 +1,4 @@
-import { forkJoin } from 'rxjs';
+import { combineLatest } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -38,7 +38,7 @@ export class FarmsComponent implements OnInit {
   loadFarms(): void {
     this.isLoading = true;
     this.errorMessage = null;
-    forkJoin({
+    combineLatest({
       farms: this.farmService.getFarms(),
       fields: this.farmService.getFields()
     }).subscribe({
