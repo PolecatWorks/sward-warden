@@ -26,7 +26,7 @@
       </div>
       <div>
         <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Email Address</p>
-        <p class="font-semibold text-primary">s.oneill&#64;fieldmetric.com</p>
+        <p class="font-semibold text-primary" *ngIf="currentUser$ | async as currentUser">{{ currentUser.email }}</p>
       </div>
     </div>
     <div class="flex items-center gap-4">
