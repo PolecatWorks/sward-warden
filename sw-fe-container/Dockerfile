@@ -10,6 +10,10 @@ COPY package.json package-lock.json .npmrc* ./
 RUN --mount=type=secret,id=NODE_AUTH_TOKEN,env=NODE_AUTH_TOKEN \
     npm ci
 
+# Install Rollup's native module specifically for Alpine arm64 to bypass npm optional dependencies bug
+RUN npm install @rollup/rollup-linux-arm64-musl
+
+
 # Copy application code
 COPY . .
 RUN npm run build
