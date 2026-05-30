@@ -161,7 +161,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          version: 'latest'
+          version: "latest"
 
       - name: Clone Sibling Repos
         run: |
@@ -179,6 +179,7 @@ jobs:
           kubectl delete namespace $NAMESPACE --ignore-not-found
           # Ensure namespace exists
           kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
+          kubectl label namespace $NAMESPACE istio-injection=enabled --overwrite
           # Create a mock secret for sw-be (required by Helm chart)
           kubectl create secret generic sw-be -n $NAMESPACE --from-literal=database_username=mock-user --from-literal=database_password=mock-password --dry-run=client -o yaml | kubectl apply -f -
           # Create docker-registry secret for pulling private images
