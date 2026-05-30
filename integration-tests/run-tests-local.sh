@@ -70,12 +70,14 @@ echo ""
 #   BASE_URL_FE       -> frontend URL for browser tests (test_field_flow.robot)
 #   EXTERNAL_DNS_URL  -> frontend URL for browser/DNS tests (test_navigation.robot, test_external_dns.robot)
 #   BE_POD_IP         -> empty to skip pod-IP-only tests (not applicable locally)
+#   --exclude k8s_only -> skip tests that require a K8s cluster (e.g. external DNS)
 robot \
     --variable BASE_URL:${LOCAL_BE_URL} \
     --variable FE_BASE_URL:${LOCAL_FE_URL} \
     --variable BASE_URL_FE:${LOCAL_FE_URL} \
     --variable EXTERNAL_DNS_URL:${LOCAL_FE_URL} \
     --variable BE_POD_IP: \
+    --exclude k8s_only \
     --loglevel DEBUG \
     -d "${REPORT_DIR}" \
     "${TEST_PATH}"
