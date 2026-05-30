@@ -207,7 +207,7 @@ spec:
       contents:
         app-config.json: |
           {
-            "apiPath": "/sward",
+            "apiPath": "/sward/v0",
             "logLevel": "INFO"
           }
 ---
