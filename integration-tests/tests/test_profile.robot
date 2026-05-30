@@ -30,7 +30,7 @@ Edit Profile
     Click    text=Save Changes
 
     # Wait for the UI to update
-    Wait For Elements State    text=Test Name
-    Wait For Elements State    text=test@test.com
-    Wait For Elements State    text="+44 7700 900077"
-    Wait For Elements State    text="This is a test description"
+    Get Text    h1    ==    Test Name
+    Wait For Elements State    p:has-text("test@test.com")    visible
+    Wait For Elements State    p:has-text("+44 7700 900077")    visible
+    Wait For Elements State    p:has-text("This is a test description")    visible
