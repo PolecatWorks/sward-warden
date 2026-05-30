@@ -21,7 +21,13 @@ Be API Hello Check
 Be API Hello Check via Pod
     [Documentation]    Test to verify the be API hello endpoint directly on the pod IP (port 8080).
     Skip If    '${BE_POD_IP}' == '${EMPTY}'    BE_POD_IP is empty
-    ${response}=    GET    http://${BE_POD_IP}:8080/v0/hello    expected_status=200
+    ${response}=    GET    http://${BE_POD_IP}:8080/hello    expected_status=200
+    Log    API Response: ${response.content}
+    Should Be Equal As Strings    ${response.json()['message']}    hello
+
+Be API Prefixed Hello Check
+    [Documentation]    Test to verify the be API hello endpoint with prefix.
+    ${response}=    GET    ${BE_BASE_URL}/v0/hello    expected_status=200
     Log    API Response: ${response.content}
     Should Be Equal As Strings    ${response.json()['message']}    hello
 

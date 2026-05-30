@@ -53,7 +53,7 @@ $(foreach app,$(RUST_APPS),$(app)-dev):%-dev:
 	SP_BE__DATABASE__URL__URL="postgres://localhost:5432/swarddb" \
 	SP_BE__DATABASE__URL__USERNAME="postgres" \
 	SP_BE__DATABASE__URL__PASSWORD="mysecretpassword" \
-	cargo run -- --config-path config/default.yaml --secrets-dir config/ serve
+	cargo watch -x 'run -- --config-path config/default.yaml --secrets-dir config/ serve'
 
 # Run migrations
 $(foreach app,$(RUST_APPS),$(app)-migrate):%-migrate:

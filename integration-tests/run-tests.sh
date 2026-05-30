@@ -48,7 +48,7 @@ kubectl exec $POD_NAME -n $NS -- /bin/bash -c "
   BE_BASE_URL="http://sward-warden-be/sward"
   FE_BASE_URL="http://sward-warden-fe-nginx-view"
 
-  robot --variable BE_POD_IP:\$BE_POD_IP --variable BE_BASE_URL:\$BE_BASE_URL --variable FE_BASE_URL:\$FE_BASE_URL --variable EXTERNAL_DNS_URL:\$EXTERNAL_DNS_URL --loglevel DEBUG -d /tmp/reports /tmp/robot-tests
+  robot --variable BE_POD_IP:$BE_POD_IP --variable BE_BASE_URL:\$BE_BASE_URL --variable FE_BASE_URL:\$FE_BASE_URL --variable EXTERNAL_DNS_URL:$EXTERNAL_DNS_URL --loglevel DEBUG -d /tmp/reports /tmp/robot-tests
 " || TEST_EXIT_CODE=$?
 
 # Pull reports back
