@@ -344,3 +344,19 @@ spec:
         TAG="sha-$FRONTEND_SHA"
       fi
       echo "{\"image\": \"$IMAGE\", \"tag\": \"$TAG\"}" > "$GARDEN_ACTION_JSON_OUTPUTS_PATH"
+---
+kind: Deploy
+type: kubernetes
+name: telemetry
+description: "Telemetry configuration for Istio access logging"
+spec:
+  manifests:
+    - apiVersion: telemetry.istio.io/v1alpha1
+      kind: Telemetry
+      metadata:
+        name: ns-default
+        namespace: ${environment.namespace}
+      spec:
+        accessLogging:
+          - providers:
+              - name: envoy
