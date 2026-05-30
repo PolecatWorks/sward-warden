@@ -160,15 +160,23 @@ pub async fn start_app_api(state: AppState, ct: CancellationToken) -> Result<(),
     cors_layer = cors_layer.allow_headers(headers);
 
     let metric_layer = PrometheusMetricLayer::new();
-    let app = app_router(state.clone())
-        .layer(
-            TraceLayer::new_for_http()
-                .on_request(DefaultOnRequest::new().level(Level::DEBUG))
-                .on_response(DefaultOnResponse::new().level(Level::DEBUG))
-                .on_failure(DefaultOnFailure::new().level(Level::ERROR)),
-        )
-        .layer(cors_layer)
-        .layer(metric_layer);
+    let api_router = app_router(state.clone());
+    let prefix = state.config.webservice.address.path();
+
+    let app = if prefix.is_empty() || prefix == "/" {
+        api_router
+    } else {
+        let prefix = prefix.trim_end_matches('/');
+        Router::new().nest(prefix, api_router)
+    }
+    .layer(
+        TraceLayer::new_for_http()
+            .on_request(DefaultOnRequest::new().level(Level::DEBUG))
+            .on_response(DefaultOnResponse::new().level(Level::DEBUG))
+            .on_failure(DefaultOnFailure::new().level(Level::ERROR)),
+    )
+    .layer(cors_layer)
+    .layer(metric_layer);
 
     let host = state
         .config

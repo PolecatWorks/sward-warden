@@ -1,37 +1,8 @@
 {
-  "/swarm/v0": {
-    "target": "http://localhost:8080",
-    "secure": false,
-    "pathRewrite": {
-      "^/swarm/v0": "/v0"
-    },
-    "changeOrigin": true,
-    "logLevel": "debug"
-  },
-  "/swarm": {
-    "target": "http://localhost:8080",
-    "secure": false,
-    "pathRewrite": {
-      "^/swarm": "/v0"
-    },
-    "changeOrigin": true,
-    "logLevel": "debug"
-  },
-  "/sward/v0": {
-    "target": "http://localhost:8080",
-    "secure": false,
-    "pathRewrite": {
-      "^/sward/v0": "/v0"
-    },
-    "changeOrigin": true,
-    "logLevel": "debug"
-  },
   "/sward": {
     "target": "http://localhost:8080",
     "secure": false,
-    "pathRewrite": {
-      "^/sward": "/v0"
-    },
+    "pathRewrite": {},
     "changeOrigin": true,
     "logLevel": "debug"
   }

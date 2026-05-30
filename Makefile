@@ -120,7 +120,7 @@ db-local:
 # --- Robot Integration Tests (Local Dev) ---
 # Prerequisites: make compose-db, make sw-be-dev, make sw-fe-dev
 
-LOCAL_BE_URL ?= http://localhost:8080
+LOCAL_BE_URL ?= http://localhost:8080/sward
 LOCAL_FE_URL ?= http://localhost:4200
 ROBOT_VENV := $(BASE_DIR).venv
 ROBOT := $(ROBOT_VENV)/bin/robot
