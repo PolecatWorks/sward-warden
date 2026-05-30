@@ -4,9 +4,8 @@ Library    RequestsLibrary
 Resource    video_resource.robot
 
 *** Variables ***
-${EXTERNAL_DNS_URL}    http://sw-bengreene.dev.k8s
-${BASE_URL_FE}         ${EXTERNAL_DNS_URL}
-${BASE_URL}            http://sward-warden-be
+${EXTERNAL_DNS_URL}
+${BE_BASE_URL}
 
 *** Test Cases ***
 Farm Creation and Deletion Flow
@@ -14,7 +13,7 @@ Farm Creation and Deletion Flow
     [Teardown]    Teardown With Video
     New Browser    chromium    headless=True
     New Context    recordVideo={"dir": "${OUTPUT_DIR}/videos"}
-    New Page    ${BASE_URL_FE}/farms
+    New Page    ${EXTERNAL_DNS_URL}/farms
 
     # Wait for sync/loading
     Sleep    2s
@@ -40,7 +39,7 @@ Farm Creation and Deletion Flow
     Sleep    5s
 
     # 4. Check farm exists via API
-    ${list_response}=    GET    ${BASE_URL}/v0/farms    expected_status=200
+    ${list_response}=    GET    ${BE_BASE_URL}/v0/farms    expected_status=200
     ${farms}=    Set Variable    ${list_response.json()}
 
     ${found_farm}=    Set Variable    ${False}
@@ -64,7 +63,7 @@ Farm Creation and Deletion Flow
     Sleep    5s
 
     # 7. Confirm deleted via API
-    ${list_response_after}=    GET    ${BASE_URL}/v0/farms    expected_status=200
+    ${list_response_after}=    GET    ${BE_BASE_URL}/v0/farms    expected_status=200
     ${farms_after}=    Set Variable    ${list_response_after.json()}
 
     ${found_farm_after}=    Set Variable    ${False}

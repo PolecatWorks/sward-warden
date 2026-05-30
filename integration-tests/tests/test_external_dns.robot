@@ -3,7 +3,7 @@ Library    Browser
 Resource    video_resource.robot
 
 *** Variables ***
-${EXTERNAL_DNS_URL}    http://sward.k8s
+${EXTERNAL_DNS_URL}
 
 *** Test Cases ***
 External DNS Check

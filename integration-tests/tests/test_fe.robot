@@ -2,7 +2,7 @@
 Library    RequestsLibrary
 
 *** Variables ***
-${FE_BASE_URL}    http://sward-warden-fe-nginx-view
+${FE_BASE_URL}
 
 *** Test Cases ***
 Fe Index Check

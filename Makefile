@@ -140,9 +140,8 @@ robot-test: $(ROBOT_VENV)/bin/robot
 	@echo "Running all robot integration tests against local dev..."
 
 	$(ROBOT) \
-		--variable BASE_URL:${LOCAL_BE_URL} \
+		--variable BE_BASE_URL:${LOCAL_BE_URL} \
 		--variable FE_BASE_URL:${LOCAL_FE_URL} \
-		--variable BASE_URL_FE:${LOCAL_FE_URL} \
 		--variable EXTERNAL_DNS_URL:${LOCAL_FE_URL} \
 		--variable BE_POD_IP: \
 		--exclude k8s_only \
@@ -156,7 +155,7 @@ robot-test: $(ROBOT_VENV)/bin/robot
 robot-test-be: $(ROBOT_VENV)/bin/robot
 	@echo "Running backend API robot tests..."
 	$(ROBOT) \
-		--variable BASE_URL:$(LOCAL_BE_URL) \
+		--variable BE_BASE_URL:$(LOCAL_BE_URL) \
 		--variable BE_POD_IP: \
 		--loglevel DEBUG \
 		-d $(ROBOT_REPORT_DIR) \
@@ -190,9 +189,8 @@ robot-test-nav: $(ROBOT_VENV)/bin/robot
 robot-test-hold: $(ROBOT_VENV)/bin/robot
 	@echo "Running test_hold robot tests..."
 	$(ROBOT) \
-		--variable BASE_URL:$(LOCAL_BE_URL) \
-		--variable BASE_URL_BE:$(LOCAL_BE_URL) \
-		--variable BASE_URL_FE:$(LOCAL_FE_URL) \
+		--variable BE_BASE_URL:$(LOCAL_BE_URL) \
+		--variable FE_BASE_URL:$(LOCAL_FE_URL) \
 		--variable EXTERNAL_DNS_URL:$(LOCAL_FE_URL) \
 		--variable BE_POD_IP: \
 		--loglevel DEBUG \
