@@ -48,6 +48,7 @@ $(foreach app,$(RUST_APPS),$(app)-dev):%-dev:
 	-@lsof -t -i :$($*_PORT) | xargs kill -9 2>/dev/null || true
 	$(if $($*_HEALTH_PORT),-@lsof -t -i :$($*_HEALTH_PORT) | xargs kill -9 2>/dev/null || true)
 	cd $*-container && \
+	RUST_LOG=debug \
 	DATABASE_URL="postgres://postgres:mysecretpassword@localhost:5432/swarddb" \
 	SP_BE__DATABASE__URL__URL="postgres://localhost:5432/swarddb" \
 	SP_BE__DATABASE__URL__USERNAME="postgres" \
@@ -138,7 +139,7 @@ $(ROBOT_VENV)/bin/robot:
 robot-test: $(ROBOT_VENV)/bin/robot
 	@echo "Running all robot integration tests against local dev..."
 	PATH=$(ROBOT_VENV)/bin:$$PATH $(BASE_DIR)integration-tests/run-tests-local.sh $(ROBOT_TEST_DIR); \
-		rc=$$?; open $(ROBOT_REPORT_DIR)/report.html; exit $$rc
+		rc=$$?; open $(ROBOT_REPORT_DIR)/log.html; exit $$rc
 
 # Run only backend API tests (RequestsLibrary-based)
 .PHONY: robot-test-be
@@ -150,7 +151,7 @@ robot-test-be: $(ROBOT_VENV)/bin/robot
 		--loglevel DEBUG \
 		-d $(ROBOT_REPORT_DIR) \
 		$(ROBOT_TEST_DIR)/test_be.robot; \
-		rc=$$?; open $(ROBOT_REPORT_DIR)/report.html; exit $$rc
+		rc=$$?; open $(ROBOT_REPORT_DIR)/log.html; exit $$rc
 
 # Run only frontend HTTP tests (RequestsLibrary-based)
 .PHONY: robot-test-fe
@@ -161,7 +162,7 @@ robot-test-fe: $(ROBOT_VENV)/bin/robot
 		--loglevel DEBUG \
 		-d $(ROBOT_REPORT_DIR) \
 		$(ROBOT_TEST_DIR)/test_fe.robot; \
-		rc=$$?; open $(ROBOT_REPORT_DIR)/report.html; exit $$rc
+		rc=$$?; open $(ROBOT_REPORT_DIR)/log.html; exit $$rc
 
 # Run browser-based navigation tests (Browser library)
 .PHONY: robot-test-nav
@@ -172,7 +173,7 @@ robot-test-nav: $(ROBOT_VENV)/bin/robot
 		--loglevel DEBUG \
 		-d $(ROBOT_REPORT_DIR) \
 		$(ROBOT_TEST_DIR)/test_navigation.robot; \
-		rc=$$?; open $(ROBOT_REPORT_DIR)/report.html; exit $$rc
+		rc=$$?; open $(ROBOT_REPORT_DIR)/log.html; exit $$rc
 
 # Run test_hold tests (e.g. field flow end-to-end)
 .PHONY: robot-test-hold
@@ -187,4 +188,4 @@ robot-test-hold: $(ROBOT_VENV)/bin/robot
 		--loglevel DEBUG \
 		-d $(ROBOT_REPORT_DIR) \
 		$(ROBOT_HOLD_DIR); \
-		rc=$$?; open $(ROBOT_REPORT_DIR)/report.html; exit $$rc
+		rc=$$?; open $(ROBOT_REPORT_DIR)/log.html; exit $$rc

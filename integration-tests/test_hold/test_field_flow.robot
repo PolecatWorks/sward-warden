@@ -1,6 +1,7 @@
 *** Settings ***
 Library    Browser
 Library    RequestsLibrary
+Resource    video_resource.robot
 
 *** Variables ***
 ${EXTERNAL_DNS_URL}    http://sw-bengreene.dev.k8s
@@ -10,7 +11,9 @@ ${BASE_URL_BE}         http://sward-warden-be
 *** Test Cases ***
 Field Creation and Deletion Flow
     [Documentation]    Test field creation and deletion flow end-to-end
+    [Teardown]    Teardown With Video
     New Browser    chromium    headless=True
+    New Context    recordVideo={"dir": "${OUTPUT_DIR}/videos"}
     New Page    ${BASE_URL_FE}/farms/1/fields
 
     # Wait for sync
