@@ -4,8 +4,9 @@ Library    RequestsLibrary
 Resource    video_resource.robot
 
 *** Variables ***
-${BASE_URL_FE}         http://localhost:4200
-${BASE_URL_BE}         http://localhost:8080
+${EXTERNAL_DNS_URL}    http://sw-bengreene.dev.k8s
+${BASE_URL_FE}         ${EXTERNAL_DNS_URL}
+${BASE_URL}            http://sward-warden-be
 
 *** Test Cases ***
 Farm Creation and Deletion Flow
@@ -39,7 +40,7 @@ Farm Creation and Deletion Flow
     Sleep    5s
 
     # 4. Check farm exists via API
-    ${list_response}=    GET    ${BASE_URL_BE}/v0/farms    expected_status=200
+    ${list_response}=    GET    ${BASE_URL}/v0/farms    expected_status=200
     ${farms}=    Set Variable    ${list_response.json()}
 
     ${found_farm}=    Set Variable    ${False}
@@ -63,7 +64,7 @@ Farm Creation and Deletion Flow
     Sleep    5s
 
     # 7. Confirm deleted via API
-    ${list_response_after}=    GET    ${BASE_URL_BE}/v0/farms    expected_status=200
+    ${list_response_after}=    GET    ${BASE_URL}/v0/farms    expected_status=200
     ${farms_after}=    Set Variable    ${list_response_after.json()}
 
     ${found_farm_after}=    Set Variable    ${False}

@@ -138,7 +138,17 @@ $(ROBOT_VENV)/bin/robot:
 .PHONY: robot-test
 robot-test: $(ROBOT_VENV)/bin/robot
 	@echo "Running all robot integration tests against local dev..."
-	PATH=$(ROBOT_VENV)/bin:$$PATH $(BASE_DIR)integration-tests/run-tests-local.sh $(ROBOT_TEST_DIR); \
+
+	$(ROBOT) \
+		--variable BASE_URL:${LOCAL_BE_URL} \
+		--variable FE_BASE_URL:${LOCAL_FE_URL} \
+		--variable BASE_URL_FE:${LOCAL_FE_URL} \
+		--variable EXTERNAL_DNS_URL:${LOCAL_FE_URL} \
+		--variable BE_POD_IP: \
+		--exclude k8s_only \
+		--loglevel DEBUG \
+		-d "${ROBOT_REPORT_DIR}" \
+		$(ROBOT_TEST_DIR); \
 		rc=$$?; open $(ROBOT_REPORT_DIR)/log.html; exit $$rc
 
 # Run only backend API tests (RequestsLibrary-based)

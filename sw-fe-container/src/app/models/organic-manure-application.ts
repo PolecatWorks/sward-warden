@@ -1,6 +1,6 @@
 export interface OrganicManureApplication {
-  id?: number | string;
-  event_id: number | string;
+  id?: number;
+  event_id: number;
   manure_type: string;
   volume_applied_m3_per_ha?: number;
   weight_applied_tonnes_per_ha?: number;

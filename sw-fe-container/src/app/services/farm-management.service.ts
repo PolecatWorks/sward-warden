@@ -24,9 +24,10 @@ import { APP_CONFIG, AppConfig } from '../app-config';
 import { Inject } from '@angular/core';
 import { of } from 'rxjs';
 
-/** Generates a short unique ID for local-first record creation. */
+let localIdCounter = 0;
 function generateLocalId(): string {
-  return `local-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+  localIdCounter = (localIdCounter + 1) % 100;
+  return `-${Date.now()}${localIdCounter.toString().padStart(2, '0')}`;
 }
 
 @Injectable({
@@ -168,9 +169,10 @@ export class FarmManagementService {
     );
   }
 
-  /** Get a single field from the local RxDB database by its server ID. */
   getField(id: number | string): Observable<Field | undefined> {
-    const selector = typeof id === 'number' ? { serverId: id } : { id: id };
+    const selector = (typeof id === 'number' && id < 0)
+      ? { id: id.toString() }
+      : (typeof id === 'number' ? { serverId: id } : { id: id });
     return this.rxdbService.db$.pipe(
       switchMap(db => db.fields.findOne({ selector }).$ as Observable<FieldDocType | null>),
       map(doc => doc ? this.fieldDocToModel(doc) : undefined),
@@ -321,7 +323,9 @@ export class FarmManagementService {
     return this.rxdbService.db$.pipe(
       switchMap(db => {
         const collection = (db as any)[entity];
-        const selector = typeof id === 'number' ? { serverId: id } : { id: id };
+        const selector = (typeof id === 'number' && id < 0)
+          ? { id: id.toString() }
+          : (typeof id === 'number' ? { serverId: id } : { id: id });
         return from(collection.findOne({ selector }).exec() as Promise<RxDocument<any> | null>).pipe(
           switchMap(doc => {
             if (doc) {
@@ -366,7 +370,7 @@ export class FarmManagementService {
 
   private farmDocToModel(doc: FarmDocType): Farm {
     return {
-      id: doc.serverId ?? doc.id,
+      id: doc.serverId ?? (doc.id ? Number(doc.id) : undefined),
       user_id: doc.user_id,
       name: doc.name,
       location: doc.location,
@@ -376,7 +380,7 @@ export class FarmManagementService {
 
   private fieldDocToModel(doc: FieldDocType): Field {
     return {
-      id: doc.serverId ?? doc.id,
+      id: doc.serverId ?? (doc.id ? Number(doc.id) : undefined),
       farm_id: doc.farm_id,
       name: doc.name,
       area_hectares: doc.area_hectares,
@@ -386,7 +390,7 @@ export class FarmManagementService {
 
   private eventDocToModel(doc: EventDocType): Event {
     return {
-      id: doc.serverId ?? doc.id,
+      id: doc.serverId ?? (doc.id ? Number(doc.id) : undefined),
       field_id: doc.field_id,
       event_type: doc.event_type,
       description: doc.description,
@@ -554,7 +558,7 @@ export class FarmManagementService {
 
   private swardMovementDocToModel(doc: SwardMovementDocType): SwardMovement {
     return {
-      id: doc.serverId ?? doc.id,
+      id: doc.serverId ?? (doc.id ? Number(doc.id) : undefined),
       farm_id: doc.farm_id,
       movement_type: doc.movement_type as any,
       quantity_m3: doc.quantity_m3,

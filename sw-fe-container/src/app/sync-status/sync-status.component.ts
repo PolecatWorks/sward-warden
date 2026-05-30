@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { SyncStateService, SyncState } from '../services/sync-state.service';
 import { Observable } from 'rxjs';
 
@@ -14,27 +14,30 @@ import { Observable } from 'rxjs';
 @Component({
   selector: 'app-sync-status',
   standalone: true,
-  imports: [CommonModule],
+  imports: [AsyncPipe],
   template: `
-    <ng-container *ngIf="syncState$ | async as state">
+    @if (syncState$ | async; as state) {
       <div class="sync-indicator" [attr.data-testid]="'sync-status-' + state">
         <!-- Offline -->
-        <span *ngIf="state === 'offline'"
-              class="material-symbols-outlined sync-icon sync-icon--offline"
-              aria-label="Offline">cloud_off</span>
-        <span *ngIf="state === 'offline'" class="sync-label sync-label--offline">Offline</span>
+        @if (state === 'offline') {
+          <span class="material-symbols-outlined sync-icon sync-icon--offline"
+                aria-label="Offline">cloud_off</span>
+          <span class="sync-label sync-label--offline">Offline</span>
+        }
 
         <!-- Syncing -->
-        <span *ngIf="state === 'syncing'"
-              class="material-symbols-outlined sync-icon sync-icon--syncing"
-              aria-label="Syncing">sync</span>
+        @if (state === 'syncing') {
+          <span class="material-symbols-outlined sync-icon sync-icon--syncing"
+                aria-label="Syncing">sync</span>
+        }
 
         <!-- Synced -->
-        <span *ngIf="state === 'synced'"
-              class="material-symbols-outlined sync-icon sync-icon--synced"
-              aria-label="Synced">cloud_done</span>
+        @if (state === 'synced') {
+          <span class="material-symbols-outlined sync-icon sync-icon--synced"
+                aria-label="Synced">cloud_done</span>
+        }
       </div>
-    </ng-container>
+    }
   `,
   styleUrl: './sync-status.component.css',
 })

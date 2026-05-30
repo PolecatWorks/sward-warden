@@ -88,7 +88,7 @@ export class FarmsComponent implements OnInit {
     });
   }
 
-  deleteFarm(id: number | string): void {
+  deleteFarm(id: number): void {
     this.farmService.deleteEntity('farms', id).subscribe({
       next: () => {
         this.loadFarms();

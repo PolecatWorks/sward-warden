@@ -5,8 +5,10 @@ import { RxdbService, SwardDatabase } from './rxdb/rxdb.service';
 import { NetworkService } from './network.service';
 import { SyncStateService } from './sync-state.service';
 
+let localIdCounter = 0;
 function generateLocalId(): string {
-  return `local-${Date.now()}-${Math.random().toString(36).substring(2, 10)}`;
+  localIdCounter = (localIdCounter + 1) % 100;
+  return `-${Date.now()}${localIdCounter.toString().padStart(2, '0')}`;
 }
 import { FarmManagementService } from './farm-management.service';
 import { OutboxDocType } from './rxdb/schemas';

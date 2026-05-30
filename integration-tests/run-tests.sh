@@ -33,6 +33,7 @@ BE_POD_IP=$(kubectl get pods -l app.kubernetes.io/name=be -n $NS -o jsonpath='{.
 echo "Backend Pod IP: $BE_POD_IP"
 
 # Create target directory and copy tests
+kubectl exec $POD_NAME -n $NS -- rm -rf /tmp/robot-tests /tmp/reports
 kubectl exec $POD_NAME -n $NS -- mkdir -p /tmp/robot-tests /tmp/reports
 kubectl cp ./tests $POD_NAME:/tmp/robot-tests -n $NS
 

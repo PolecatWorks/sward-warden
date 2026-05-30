@@ -1,6 +1,6 @@
 export interface FertiliserApplication {
-  id?: number | string;
-  event_id: number | string;
+  id?: number;
+  event_id: number;
   fertiliser_type: string;
   amount_applied: number;
   nitrogen_content?: number;

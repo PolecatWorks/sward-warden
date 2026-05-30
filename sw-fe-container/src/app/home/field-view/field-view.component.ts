@@ -17,11 +17,11 @@ import { OrganicManureApplication } from '../../models/organic-manure-applicatio
   styleUrl: './field-view.component.css'
 })
 export class FieldViewComponent implements OnInit {
-  fieldId: number | string = 0;
+  fieldId: number = 0;
   field: Field | undefined;
   events: Event[] = [];
 
-  editingEventId: number | string | null = null;
+  editingEventId: number | null = null;
   editFormData: any = {};
 
 
@@ -75,7 +75,7 @@ export class FieldViewComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       const id = params.get('fieldId');
       if (id) {
-        this.fieldId = isNaN(+id) ? id : +id;
+        this.fieldId = +id;
         this.loadFieldDetails();
         this.loadEvents();
       }
@@ -101,7 +101,7 @@ export class FieldViewComponent implements OnInit {
     });
   }
 
-  getOrganicManureAppForEvent(eventId: number | string): OrganicManureApplication | undefined {
+  getOrganicManureAppForEvent(eventId: number): OrganicManureApplication | undefined {
     return this.organicManureApplications.find(oma => oma.event_id === eventId);
   }
 
@@ -170,7 +170,7 @@ export class FieldViewComponent implements OnInit {
   }
 
 
-  getFertiliserAppForEvent(eventId: number | string): FertiliserApplication | undefined {
+  getFertiliserAppForEvent(eventId: number): FertiliserApplication | undefined {
     return this.fertiliserApplications.find(fa => fa.event_id === eventId);
   }
 
