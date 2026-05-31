@@ -50,12 +50,18 @@ Sward Movement Creation Flow
 
     ${found_movement}=    Set Variable    ${False}
     FOR    ${movement}    IN    @{movements}
-        ${current_consignee}=    Evaluate    $movement.get('consignee_name')
-        ${current_farm_id}=    Evaluate    str($movement.get('farm_id'))
+        ${current_consignee}=    Evaluate    $movement.get('consignee_name', '')
+        ${current_farm_id}=    Evaluate    str($movement.get('farm_id', ''))
         IF    '${current_consignee}' == '${consignee_name}' and '${current_farm_id}' == '${TEST_FARM_ID}'
             ${found_movement}=    Set Variable    ${True}
             BREAK
         END
+    END
+
+    # Debugging output if not found
+    IF    not ${found_movement}
+        Log    Could not find movement. Consignee: ${consignee_name}, Farm ID: ${TEST_FARM_ID}
+        Log    Available movements: ${movements}
     END
     Should Be True    ${found_movement}    Movement not found in API response
 
