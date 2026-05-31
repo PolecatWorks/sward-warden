@@ -19,6 +19,7 @@ export class UserProfileComponent implements OnInit {
   currentUser$!: Observable<User>;
   userForm: FormGroup; // For adding team members
   editProfileForm: FormGroup; // For editing the current user
+  currentUserData?: User; // Store the user data
 
   // A local variable to store current user id for updates
   currentUserId!: string;
@@ -53,7 +54,10 @@ export class UserProfileComponent implements OnInit {
   ngOnInit(): void {
     this.users$ = this.farmManagementService.getUsers();
 
-    this.currentUserId = this.authService.getUserId() || '1';
+    // Handle mock auth 'default-user' gracefully since the backend expects numeric IDs for /users/:id
+    const authId = this.authService.getUserId();
+    this.currentUserId = (!authId || authId === 'default-user') ? '1' : authId;
+
     this.loadCurrentUser();
   }
 
@@ -61,6 +65,7 @@ export class UserProfileComponent implements OnInit {
       this.currentUser$ = this.farmManagementService.getUser(this.currentUserId);
       this.currentUser$.subscribe(user => {
           if (user) {
+              this.currentUserData = user;
               this.editProfileForm.patchValue({
                   name: user.name,
                   email: user.email,
@@ -72,10 +77,12 @@ export class UserProfileComponent implements OnInit {
   }
 
   onEditProfileSubmit(): void {
-      if (this.editProfileForm.valid) {
-          const updatedUser: Partial<User> = {
+      if (this.editProfileForm.valid && this.currentUserData) {
+          const updatedUser: User = {
+              id: this.currentUserData.id,
               name: this.editProfileForm.value.name,
               email: this.editProfileForm.value.email,
+              role: this.currentUserData.role,
               phone: this.editProfileForm.value.phone,
               description: this.editProfileForm.value.description
           };
