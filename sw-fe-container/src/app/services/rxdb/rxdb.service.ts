@@ -2,6 +2,30 @@ import { Injectable, OnDestroy, InjectionToken, Inject, Optional } from '@angula
 import { createRxDatabase, RxDatabase, RxCollection, RxStorage } from 'rxdb';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { Observable, from, shareReplay, switchMap } from 'rxjs';
+
+import * as MurmurHash3 from 'murmurhash3js-revisited';
+
+/**
+ * A pure-JS MurmurHash3 (x86 128-bit) hash function that does NOT rely on
+ * crypto.subtle. crypto.subtle is only available in secure contexts (HTTPS /
+ * localhost), so this allows RxDB to work over plain HTTP (e.g. local k8s dev).
+ *
+ * MurmurHash3 is a production-quality, collision-resistant, non-cryptographic
+ * hash algorithm — appropriate for RxDB document fingerprinting.
+ * Accepts string | ArrayBuffer | Blob to satisfy RxDB's HashFunction contract.
+ */
+async function murmurhash3Hash(input: string | ArrayBuffer | Blob): Promise<string> {
+  let bytes: Uint8Array;
+  if (typeof input === 'string') {
+    bytes = new TextEncoder().encode(input);
+  } else if (input instanceof Blob) {
+    bytes = new Uint8Array(await input.arrayBuffer());
+  } else {
+    bytes = new Uint8Array(input);
+  }
+  return MurmurHash3.x86.hash128(bytes, 0);
+}
+
 import {
   FarmDocType, FieldDocType, EventDocType, OutboxDocType, MetadataDocType,
   SoilAnalysisDocType, FertilisationPlanDocType, FarmRecordDocType,
@@ -68,6 +92,9 @@ export class RxdbService implements OnDestroy {
       name: this.dbName,
       storage: this.storage,
       closeDuplicates: true,
+      // Use MurmurHash3 (pure-JS, no crypto.subtle) so RxDB works over plain
+      // HTTP where browsers restrict the Web Crypto API to secure contexts only.
+      hashFunction: murmurhash3Hash,
     });
 
     await db.addCollections({

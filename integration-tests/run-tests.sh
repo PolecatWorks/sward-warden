@@ -33,6 +33,7 @@ BE_POD_IP=$(kubectl get pods -l app.kubernetes.io/name=be -n $NS -o jsonpath='{.
 echo "Backend Pod IP: $BE_POD_IP"
 
 # Create target directory and copy tests
+kubectl exec $POD_NAME -n $NS -- rm -rf /tmp/robot-tests /tmp/reports
 kubectl exec $POD_NAME -n $NS -- mkdir -p /tmp/robot-tests /tmp/reports
 kubectl cp ./tests $POD_NAME:/tmp/robot-tests -n $NS
 
@@ -44,7 +45,10 @@ kubectl exec $POD_NAME -n $NS -- /bin/bash -c "
   # Try to find robot in common paths if not in PATH
   export PATH=\$PATH:/home/pwuser/.local/bin:/home/pwuser/.venv/bin
 
-  robot --variable BE_POD_IP:$BE_POD_IP --variable EXTERNAL_DNS_URL:$EXTERNAL_DNS_URL --loglevel DEBUG -d /tmp/reports /tmp/robot-tests
+  BE_BASE_URL="http://sward-warden-be/sward"
+  FE_BASE_URL="http://sward-warden-fe-nginx-view"
+
+  robot --variable BE_POD_IP:$BE_POD_IP --variable BE_BASE_URL:\$BE_BASE_URL --variable FE_BASE_URL:\$FE_BASE_URL --variable EXTERNAL_DNS_URL:$EXTERNAL_DNS_URL --loglevel DEBUG -d /tmp/reports /tmp/robot-tests
 " || TEST_EXIT_CODE=$?
 
 # Pull reports back

@@ -53,7 +53,7 @@ $(foreach app,$(RUST_APPS),$(app)-dev):%-dev:
 	SP_BE__DATABASE__URL__URL="postgres://localhost:5432/swarddb" \
 	SP_BE__DATABASE__URL__USERNAME="postgres" \
 	SP_BE__DATABASE__URL__PASSWORD="mysecretpassword" \
-	cargo run -- --config-path config/default.yaml --secrets-dir config/ serve
+	cargo watch -x 'run -- --config-path config/default.yaml --secrets-dir config/ serve'
 
 # Run migrations
 $(foreach app,$(RUST_APPS),$(app)-migrate):%-migrate:
@@ -120,7 +120,7 @@ db-local:
 # --- Robot Integration Tests (Local Dev) ---
 # Prerequisites: make compose-db, make sw-be-dev, make sw-fe-dev
 
-LOCAL_BE_URL ?= http://localhost:8080
+LOCAL_BE_URL ?= http://localhost:8080/sward
 LOCAL_FE_URL ?= http://localhost:4200
 ROBOT_VENV := $(BASE_DIR).venv
 ROBOT := $(ROBOT_VENV)/bin/robot
@@ -138,7 +138,16 @@ $(ROBOT_VENV)/bin/robot:
 .PHONY: robot-test
 robot-test: $(ROBOT_VENV)/bin/robot
 	@echo "Running all robot integration tests against local dev..."
-	PATH=$(ROBOT_VENV)/bin:$$PATH $(BASE_DIR)integration-tests/run-tests-local.sh $(ROBOT_TEST_DIR); \
+
+	$(ROBOT) \
+		--variable BE_BASE_URL:${LOCAL_BE_URL} \
+		--variable FE_BASE_URL:${LOCAL_FE_URL} \
+		--variable EXTERNAL_DNS_URL:${LOCAL_FE_URL} \
+		--variable BE_POD_IP: \
+		--exclude k8s_only \
+		--loglevel DEBUG \
+		-d "${ROBOT_REPORT_DIR}" \
+		$(ROBOT_TEST_DIR); \
 		rc=$$?; open $(ROBOT_REPORT_DIR)/log.html; exit $$rc
 
 # Run only backend API tests (RequestsLibrary-based)
@@ -146,7 +155,7 @@ robot-test: $(ROBOT_VENV)/bin/robot
 robot-test-be: $(ROBOT_VENV)/bin/robot
 	@echo "Running backend API robot tests..."
 	$(ROBOT) \
-		--variable BASE_URL:$(LOCAL_BE_URL) \
+		--variable BE_BASE_URL:$(LOCAL_BE_URL) \
 		--variable BE_POD_IP: \
 		--loglevel DEBUG \
 		-d $(ROBOT_REPORT_DIR) \
@@ -180,9 +189,8 @@ robot-test-nav: $(ROBOT_VENV)/bin/robot
 robot-test-hold: $(ROBOT_VENV)/bin/robot
 	@echo "Running test_hold robot tests..."
 	$(ROBOT) \
-		--variable BASE_URL:$(LOCAL_BE_URL) \
-		--variable BASE_URL_BE:$(LOCAL_BE_URL) \
-		--variable BASE_URL_FE:$(LOCAL_FE_URL) \
+		--variable BE_BASE_URL:$(LOCAL_BE_URL) \
+		--variable FE_BASE_URL:$(LOCAL_FE_URL) \
 		--variable EXTERNAL_DNS_URL:$(LOCAL_FE_URL) \
 		--variable BE_POD_IP: \
 		--loglevel DEBUG \

@@ -27,6 +27,10 @@ use tracing::{Level, info};
 use crate::error::AppError;
 use crate::state::AppState;
 
+pub async fn hello_handler() -> Result<Json<serde_json::Value>, AppError> {
+    Ok(Json(serde_json::json!({ "message": "hello" })))
+}
+
 // Central API Router
 pub fn app_router(state: AppState) -> Router {
     Router::new()
@@ -35,10 +39,7 @@ pub fn app_router(state: AppState) -> Router {
         .route("/v0/admin/fields", get(admin::admin_list_fields))
         .route("/v0/admin/events", get(admin::admin_list_events))
         .route("/v0/admin/audit-logs", get(admin::admin_list_audit_logs))
-        .route(
-            "/v0/hello",
-            get(|| async { Ok::<_, AppError>(Json(serde_json::json!({ "message": "hello" }))) }),
-        )
+        .route("/v0/hello", get(hello_handler))
         .route("/v0/users", get(users::list_users).post(users::create_user))
         .route("/v0/farms", get(farms::list_farms).post(farms::create_farm))
         .route("/v0/farms/{id}", delete(farms::delete_farm))
@@ -160,7 +161,18 @@ pub async fn start_app_api(state: AppState, ct: CancellationToken) -> Result<(),
     cors_layer = cors_layer.allow_headers(headers);
 
     let metric_layer = PrometheusMetricLayer::new();
-    let app = app_router(state.clone())
+    let api_router = app_router(state.clone());
+    let prefix = state.config.webservice.address.path();
+
+    let app = if prefix.is_empty() || prefix == "/" {
+        api_router
+    } else {
+        let prefix = prefix.trim_end_matches('/');
+        Router::new().nest(prefix, api_router)
+    };
+
+    let app = app
+        .route("/hello", get(hello_handler))
         .layer(
             TraceLayer::new_for_http()
                 .on_request(DefaultOnRequest::new().level(Level::DEBUG))

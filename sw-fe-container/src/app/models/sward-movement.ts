@@ -1,6 +1,6 @@
 export interface SwardMovement {
-  id?: number | string;
-  farm_id: number | string;
+  id?: number;
+  farm_id: number;
   movement_type: 'import' | 'export';
   quantity_m3: number;
   date: string;

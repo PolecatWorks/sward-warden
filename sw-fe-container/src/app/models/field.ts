@@ -1,6 +1,6 @@
 export interface Field {
-  id?: number | string;
-  farm_id: number | string;
+  id?: number;
+  farm_id: number;
   name: string;
   area_hectares: number;
   land_use?: string;
