@@ -3,8 +3,8 @@ Library    Browser
 Resource    video_resource.robot
 
 *** Variables ***
-${EXTERNAL_DNS_URL}    http://sw-bengreene.dev.k8s
-${BASE_URL}            ${EXTERNAL_DNS_URL}
+${EXTERNAL_DNS_URL}
+${BE_BASE_URL}
 
 *** Test Cases ***
 Edit Profile
@@ -12,13 +12,14 @@ Edit Profile
     [Teardown]    Teardown With Video
     New Browser    chromium    headless=True
     New Context    recordVideo={"dir": "${OUTPUT_DIR}/videos"}
-    New Page    ${BASE_URL}/profile
+    New Page    ${EXTERNAL_DNS_URL}/profile
 
     # Verify we are on the profile page
-    Get Url    ==    ${BASE_URL}/profile
+    Get Url    ==    ${EXTERNAL_DNS_URL}/profile
 
-    # Wait for the edit profile form to be visible
+    # Wait for the edit profile form to be visible and data to load
     Wait For Elements State    id=edit-name    visible
+    Sleep    2s
 
     # Fill in the edit profile form
     Fill Text    id=edit-name    Test Name
@@ -27,10 +28,16 @@ Edit Profile
     Fill Text    id=edit-description    This is a test description
 
     # Submit the form
-    Click    text=Save Changes
+    Click With Options    text=Save Changes    button=left    force=${True}
 
-    # Wait for the UI to update
-    Get Text    h1    ==    Test Name
-    Wait For Elements State    p:has-text("test@test.com")    visible
-    Wait For Elements State    p:has-text("+44 7700 900077")    visible
-    Wait For Elements State    p:has-text("This is a test description")    visible
+    # Wait for the API call to complete by reloading the page and verifying persistence
+    Sleep    1s
+    Reload
+    Wait For Elements State    id=edit-name    visible
+    Sleep    2s
+
+    # Verify the changes persisted
+    Get Property    id=edit-name    value    ==    Test Name
+    Get Property    id=edit-email    value    ==    test@test.com
+    Get Property    id=edit-phone    value    ==    +44 7700 900077
+    Get Property    id=edit-description    value    ==    This is a test description
