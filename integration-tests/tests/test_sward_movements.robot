@@ -35,7 +35,7 @@ Sward Movement Creation Flow
     Fill Text    textarea[name="consignee_address"]    123 Export Lane
     Fill Text    input[name="transporter_name"]    E2E Transporter
 
-    Click    button[type="submit"]    force=${True}
+    Click    button[type="submit"]
 
     # 3. Wait for movement to appear in the UI
     Wait For Elements State    text=To: ${consignee_name}    visible    timeout=10s
