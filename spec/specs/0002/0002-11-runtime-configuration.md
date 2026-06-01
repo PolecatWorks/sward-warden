@@ -1,9 +1,9 @@
 # 0002-11: Runtime Configuration
 
-**State**: Open
+**State**: Complete
 
 ## Scope
-This specification covers the implementation of dynamic runtime configuration loading for the Angular frontend application.
+This specification covers the implementation of dynamic runtime configuration loading for the Angular fe application.
 
 ## Configuration File
 - **Path**: `sw-fe-container/src/assets/contents/app-config.json`
@@ -42,7 +42,7 @@ export interface AppConfig {
 
 ### 3. API Service Integration
 - Base API services and interceptors must inject `APP_CONFIG`.
-- All backend requests should be prefixed with the `apiPath` provided in the configuration.
+- All be requests should be prefixed with the `apiPath` provided in the configuration.
 
 ### 4. Telemetry and Logging
 - The `otel` configuration should be used to initialize OpenTelemetry providers if present.

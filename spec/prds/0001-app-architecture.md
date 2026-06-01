@@ -36,7 +36,7 @@ This document defines the overarching application architecture for the sward man
 - **Networking:**
   - The application container will serve HTTP traffic on port 8080.
   - Liveness, readiness, startup, shutdown lifecycle, and health events will be served via HTTP on port 8079.
-  - The primary Kubernetes Service exposes the backend application traffic on port 80 (mapping to container port 8080).
+  - The primary Kubernetes Service exposes the be application traffic on port 80 (mapping to container port 8080).
   - The lifecycle port (8079) is not exposed on the Kubernetes Service; lifecycle and health checks can be performed directly on the pod IP.
 
 ## Deployment Requirements
@@ -46,6 +46,6 @@ This document defines the overarching application architecture for the sward man
 
 ## Testing Requirements
 - **Integration Tests:** The application will use Robot Framework for integration testing.
-  - Integration tests must verify the behavior of all backend API endpoints.
+  - Integration tests must verify the behavior of all be API endpoints.
   - The test suite must provide comprehensive coverage of "BREAD" operations (Browse, Read, Edit, Add, Delete) for all domain resources (Users, Farms, Fields, Events, Farm Records, Applications, Compliance Breaches, Sward Movements).
-  - Where a specific backend route (such as Edit, Read by ID, or Delete) is missing, tests must include explicit comments documenting the missing functionality.
+  - Where a specific be route (such as Edit, Read by ID, or Delete) is missing, tests must include explicit comments documenting the missing functionality.

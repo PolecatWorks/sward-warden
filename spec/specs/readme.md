@@ -18,7 +18,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0002-08 Event Tracking FE Specification](./0002/0002-08-event-tracking-fe.md) | Complete |
 | [0002-09 Inventory and Equipment FE Specification](./0002/0002-09-inventory-and-equipment-fe.md) | Complete |
 | [0002-10 Reporting and Export FE Specification](./0002/0002-10-reporting-and-export-fe.md) | Complete |
-| [0002-11 Runtime Configuration Specification](./0002/0002-11-runtime-configuration.md) | Open |
+| [0002-11 Runtime Configuration Specification](./0002/0002-11-runtime-configuration.md) | Complete |
 | [0003-02 User Profile Management Specification](./0003/0003-01-user-profile-management.md) | Complete |
 | [0003-03 Farm Management Specification](./0003/0003-02-farm-management.md) | Complete |
 | [0003-04 Field Management Specification](./0003/0003-03-field-management.md) | Complete |
@@ -65,13 +65,6 @@ This directory contains Technical Specifications derived from the PRDs.
 | [Specification 0014-01: Seed Data Generator](./0014/0014-01-seed-data-generator.md) | Complete |
 | [Specification 0014-02: Parallelize Hams Checks](./0014/0014-02-hams-parallel-checks.md) | Complete |
 
-## Implementation Roadmap
-
-The following "Open" specifications will be implemented in the order listed below to respect technical dependencies and architectural foundations.
-
-| Order | Specification | Primary Dependency |
-| :--- | :--- | :--- |
-| 1 | [0002-11 Runtime Configuration Specification](./0002/0002-11-runtime-configuration.md) | Architectural Foundation |
 
 ## PostGIS Requirement
 
