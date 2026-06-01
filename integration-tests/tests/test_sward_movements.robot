@@ -42,7 +42,7 @@ Sward Movement Creation Flow
     Wait For Elements State    text=${quantity} m³ of Slurry    visible    timeout=10s
 
     # Wait for sync
-    Sleep    5s
+    Sleep    15s
 
     # 4. Verify creation via API
     ${list_response}=    GET    ${BE_BASE_URL}/v0/sward-movements    expected_status=200
@@ -58,12 +58,7 @@ Sward Movement Creation Flow
         END
     END
 
-    # Debugging output if not found
-    IF    not ${found_movement}
-        Log    Could not find movement. Consignee: ${consignee_name}, Farm ID: ${TEST_FARM_ID}
-        Log    Available movements: ${movements}
-    END
-    Should Be True    ${found_movement}    Movement not found in API response
+        Should Be True    ${found_movement}    Movement not found in API response
 
 *** Keywords ***
 Create Test Farm
