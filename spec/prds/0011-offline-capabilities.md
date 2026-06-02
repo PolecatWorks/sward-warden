@@ -32,3 +32,10 @@ When the same record is edited offline and on the server, a conflict resolution 
 ## User Interface
 - Monitor network status and provide an indicator on the FE. The application will use an `isOnline$` observable stream (combining window `online` and `offline` events) to display the current connectivity state to the user.
 - Display a status icon on the screen indicating the current sync state: "offline", "syncing", or "synced".
+
+### E. Self-Healing and Recovery
+In situations where the local database becomes corrupted or unrecoverably out of sync with the server database (e.g., due to schema changes, structural corruption, or irreconcilable conflicts), the application must automatically heal itself to avoid locking up or preventing user access.
+- **Error Detection:** Detect critical sync failures or database initialization errors.
+- **Automatic Wipe:** Automatically delete the local RxDB instance and all associated local storage when an unrecoverable error is detected.
+- **Full Re-Sync:** Recreate the local database from scratch and trigger a full synchronization pull from the server to restore a known-good state.
+- **User Continuity:** Ensure the application remains usable and recovers gracefully without requiring manual user intervention or application reinstalls.
