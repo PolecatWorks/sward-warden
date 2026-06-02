@@ -149,10 +149,16 @@ export class SyncEngineService implements OnDestroy {
   ): Promise<void> {
     const payload = JSON.parse(entry.payload);
 
+    const endpointMap: Record<string, string> = {
+      compliance_breaches: 'compliance-breaches',
+      sward_movements: 'sward-movements',
+    };
+    const endpoint = endpointMap[entry.entityType] || entry.entityType;
+
     switch (entry.actionType) {
       case 'POST': {
         const response = await firstValueFrom(
-          this.http.post<any>(`${apiUrl}/${entry.entityType}`, payload, { headers })
+          this.http.post<any>(`${apiUrl}/${endpoint}`, payload, { headers })
         );
         if (response?.id) {
           await this.updateLocalDocServerId(db, entry.entityType, entry.localDocId, response.id);
@@ -163,7 +169,7 @@ export class SyncEngineService implements OnDestroy {
         const serverId = payload.id;
         if (serverId) {
           await firstValueFrom(
-            this.http.delete(`${apiUrl}/${entry.entityType}/${serverId}`, { headers })
+            this.http.delete(`${apiUrl}/${endpoint}/${serverId}`, { headers })
           );
         }
         break;
@@ -172,7 +178,7 @@ export class SyncEngineService implements OnDestroy {
         const serverId = payload.id;
         if (serverId) {
           await firstValueFrom(
-            this.http.put(`${apiUrl}/${entry.entityType}/${serverId}`, payload, { headers })
+            this.http.put(`${apiUrl}/${endpoint}/${serverId}`, payload, { headers })
           );
         }
         break;
