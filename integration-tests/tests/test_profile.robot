@@ -28,7 +28,7 @@ Edit Profile
     Fill Text    id=edit-description    This is a test description
 
     # Submit the form
-    Click With Options    text=Save Changes    button=left    force=${True}
+    Click    text=Save Changes    button=left    force=${True}
 
     # Wait for the API call to complete by reloading the page and verifying persistence
     Sleep    1s
