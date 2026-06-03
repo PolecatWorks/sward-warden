@@ -10,7 +10,7 @@ on:
         default: "local"
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 
 concurrency:
   group: k8s-integration-env
@@ -85,7 +85,7 @@ jobs:
           GH_VERSION=$(curl -sL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/cli/cli/releases/latest | jq -r .tag_name | sed 's/v//' || echo "")
           if [ -z "$GH_VERSION" ] || [ "$GH_VERSION" == "null" ]; then
             echo "Failed to get GH_VERSION, falling back to a known version"
-            GH_VERSION="2.49.2"
+            GH_VERSION="2.54.0"
           fi
 
           # Retry download up to 5 times
@@ -108,6 +108,7 @@ jobs:
             mkdir -p $HOME/.local/bin
             mv gh_${GH_VERSION}_linux_arm64/bin/gh $HOME/.local/bin/ || true
             echo "$HOME/.local/bin" >> $GITHUB_PATH
+            chmod +x $HOME/.local/bin/gh
             $HOME/.local/bin/gh --version
           fi
 
@@ -136,6 +137,7 @@ jobs:
           fi
           tar xzf garden.tar.gz
           echo "$(pwd)/linux-arm64" >> $GITHUB_PATH
+          chmod +x $(pwd)/linux-arm64/garden
           ./linux-arm64/garden version
 
       - name: Set up kubectl
