@@ -90,7 +90,7 @@ jobs:
 
           # Retry download up to 5 times
           for i in 1 2 3 4 5; do
-            if curl -sSL -f "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz" -o gh.tar.gz; then
+            if curl -sSL -f "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_arm64.tar.gz" -o gh.tar.gz; then
               break
             else
               echo "Download failed, retrying in 10s..."
@@ -103,10 +103,10 @@ jobs:
           else
             tar xzf gh.tar.gz
             # Add it to GITHUB_PATH so subsequent steps can use it
-            echo "$(pwd)/gh_${GH_VERSION}_linux_amd64/bin" >> $GITHUB_PATH
+            echo "$(pwd)/gh_${GH_VERSION}_linux_arm64/bin" >> $GITHUB_PATH
             # Also move to a directory already in PATH just in case
             mkdir -p $HOME/.local/bin
-            mv gh_${GH_VERSION}_linux_amd64/bin/gh $HOME/.local/bin/ || true
+            mv gh_${GH_VERSION}_linux_arm64/bin/gh $HOME/.local/bin/ || true
             echo "$HOME/.local/bin" >> $GITHUB_PATH
             $HOME/.local/bin/gh --version
           fi
@@ -122,7 +122,7 @@ jobs:
           echo "Using Garden version $GARDEN_VERSION"
 
           for i in 1 2 3 4 5; do
-            if curl -sSL -f "https://github.com/garden-io/garden/releases/download/${GARDEN_VERSION}/garden-${GARDEN_VERSION}-linux-amd64.tar.gz" -o garden.tar.gz; then
+            if curl -sSL -f "https://github.com/garden-io/garden/releases/download/${GARDEN_VERSION}/garden-${GARDEN_VERSION}-linux-arm64.tar.gz" -o garden.tar.gz; then
               break
             else
               echo "Download failed, retrying in 10s..."
