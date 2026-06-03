@@ -135,8 +135,8 @@ jobs:
             exit 1
           fi
           tar xzf garden.tar.gz
-          echo "$(pwd)/linux-amd64" >> $GITHUB_PATH
-          ./linux-amd64/garden version
+          echo "$(pwd)/linux-arm64" >> $GITHUB_PATH
+          ./linux-arm64/garden version
 
       - name: Set up kubectl
         uses: azure/setup-kubectl@v4
