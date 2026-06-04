@@ -9,8 +9,6 @@ on:
         required: false
         default: "local"
 
-env:
-
 
 concurrency:
   group: k8s-integration-env
