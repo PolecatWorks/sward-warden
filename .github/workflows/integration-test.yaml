@@ -9,6 +9,8 @@ on:
         required: false
         default: "local"
 
+env:
+
 
 concurrency:
   group: k8s-integration-env
@@ -88,7 +90,7 @@ jobs:
 
           # Retry download up to 5 times
           for i in 1 2 3 4 5; do
-            if curl -sSL -f "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_arm64.tar.gz" -o gh.tar.gz; then
+            if curl -sSL -f "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz" -o gh.tar.gz; then
               break
             else
               echo "Download failed, retrying in 10s..."
@@ -101,10 +103,11 @@ jobs:
           else
             tar xzf gh.tar.gz
             # Add it to GITHUB_PATH so subsequent steps can use it
-            echo "$(pwd)/gh_${GH_VERSION}_linux_arm64/bin" >> $GITHUB_PATH
+            echo "$(pwd)/gh_${GH_VERSION}_linux_amd64/bin" >> $GITHUB_PATH
+            chmod +x $(pwd)/gh_${GH_VERSION}_linux_amd64/bin/gh
             # Also move to a directory already in PATH just in case
             mkdir -p $HOME/.local/bin
-            mv gh_${GH_VERSION}_linux_arm64/bin/gh $HOME/.local/bin/ || true
+            mv gh_${GH_VERSION}_linux_amd64/bin/gh $HOME/.local/bin/ || true
             echo "$HOME/.local/bin" >> $GITHUB_PATH
             chmod +x $HOME/.local/bin/gh
             $HOME/.local/bin/gh --version
@@ -121,7 +124,7 @@ jobs:
           echo "Using Garden version $GARDEN_VERSION"
 
           for i in 1 2 3 4 5; do
-            if curl -sSL -f "https://github.com/garden-io/garden/releases/download/${GARDEN_VERSION}/garden-${GARDEN_VERSION}-linux-arm64.tar.gz" -o garden.tar.gz; then
+            if curl -sSL -f "https://github.com/garden-io/garden/releases/download/${GARDEN_VERSION}/garden-${GARDEN_VERSION}-linux-amd64.tar.gz" -o garden.tar.gz; then
               break
             else
               echo "Download failed, retrying in 10s..."
@@ -134,9 +137,9 @@ jobs:
             exit 1
           fi
           tar xzf garden.tar.gz
-          echo "$(pwd)/linux-arm64" >> $GITHUB_PATH
-          chmod +x $(pwd)/linux-arm64/garden
-          ./linux-arm64/garden version
+          echo "$(pwd)/linux-amd64" >> $GITHUB_PATH
+          chmod +x $(pwd)/linux-amd64/garden
+          ./linux-amd64/garden version
 
       - name: Set up kubectl
         uses: azure/setup-kubectl@v4
