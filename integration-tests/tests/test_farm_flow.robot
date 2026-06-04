@@ -24,12 +24,12 @@ Farm Creation and Deletion Flow
     ${farm_location}=    Set Variable    E2E Test Location
 
     # 1. Click Add Farm FAB using UI
-    Click    \#add-farm-fab    button=left
+    Click    \#add-farm-fab
 
     # 2. Fill farm details in Modal
     Fill Text    \#farm-name-input    ${farm_name}
     Fill Text    \#farm-location-input    ${farm_location}
-    Click    \#save-farm-btn    button=left
+    Click    \#save-farm-btn
 
     # 3. View the created farm in UI
     # Since it is dynamically added, wait a bit or look for it
@@ -54,7 +54,7 @@ Farm Creation and Deletion Flow
     Should Be True    ${found_farm}    Farm not found in API response
 
     # 5. Delete farm using UI
-    Click    button[data-testid="delete-farm-${farm_id}"]    button=left
+    Click    button[data-testid="delete-farm-${farm_id}"]
 
     # 6. Confirm deleted in UI (wait until text is not present)
     Wait For Elements State    text=${farm_name}    detached    timeout=10s
