@@ -15,9 +15,9 @@ spec:
         containers:
           - name: robot
             image: marketsquare/robotframework-browser:latest
-            command: ["/bin/bash", "-c", "tail -f /dev/null"]
+            command: ["/bin/bash", "-c", "sleep infinity"]
             securityContext:
-              runAsUser: 0
+              runAsUser: 1001
 
 ---
 kind: Test
