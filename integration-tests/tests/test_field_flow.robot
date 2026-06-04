@@ -32,12 +32,12 @@ Field Creation and Deletion Flow
     ${field_area}=    Set Variable    15.5
 
     # 3. Click "Add Field"
-    Click    button >> text=Add Field    button=left    force=${True}
+    Click    button >> text=Add Field    button=left
 
     # 4. Fill in field details and save
     Fill Text    \#newFieldName    ${field_name}
     Fill Text    \#newFieldArea    ${field_area}
-    Click    button >> text=Save Field    button=left    force=${True}
+    Click    button >> text=Save Field    button=left
 
     # 5. Wait for field to appear in the UI
     Wait For Elements State    text=${field_name}    visible    timeout=10s
@@ -63,7 +63,7 @@ Field Creation and Deletion Flow
     # 7. Delete field via UI
     # Re-evaluating the locator for delete button to avoid xpath complexity.
     # We look for the delete button matching the specific field ID.
-    Click    button[aria-label="Delete ${field_name}"]    button=left    force=${True}
+    Click    button[aria-label="Delete ${field_name}"]    button=left
 
     # 8. Confirm deleted in UI
     Wait For Elements State    text=${field_name}    detached    timeout=10s
