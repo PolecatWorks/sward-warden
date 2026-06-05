@@ -29,6 +29,14 @@ When the same record is edited offline and on the server, a conflict resolution 
 - **Semantic Merging:** Merge specific fields (e.g., keep the server's status but the mobile's notes).
 - **Version Headers:** Use ETags or a `version_id`. If versions don't match, the server rejects the push and sends current data back to the mobile device for the user to resolve.
 
+### E. Self-Healing and Recovery Mechanisms
+To prevent the application from entering a permanently locked or degraded state due to local database corruption, IndexedDB/Dexie limits, or schema mismatches (such as when a new version of the UI is deployed with updated schemas):
+- **Initialization Failure Detection:** The application must intercept any initialization errors or failures when setting up or adding collections to the local database.
+- **Auto-Recovery via Database Wipe:** If initialization fails, the application should automatically wipe the local database (e.g. calling `removeRxDatabase` and clearing related caches) and attempt initialization again from scratch.
+- **Data Reconstruction (Full Sync):** Following a database wipe, the application must perform a full initial synchronization (starting from the epoch checkpoint) to reconstruct the local state from the server.
+- **Graceful Online Fallback:** In the event that local storage is completely blocked or corrupted beyond recovery (e.g. browser storage permissions disabled), the app must gracefully degrade to an online-only fallback mode, making direct API calls to the server rather than using the local database.
+- **Outbox Queue Management:** Stuck or permanently invalid outbox actions (e.g. HTTP 400 Bad Request) must be marked as permanently failed rather than blocking the synchronization queue indefinitely.
+
 ## User Interface
 - Monitor network status and provide an indicator on the FE. The application will use an `isOnline$` observable stream (combining window `online` and `offline` events) to display the current connectivity state to the user.
 - Display a status icon on the screen indicating the current sync state: "offline", "syncing", or "synced".
