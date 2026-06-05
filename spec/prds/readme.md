@@ -22,3 +22,4 @@ PRDs dictate the high-level features and requirements of the project. Every PRD 
 - [0014 Seed Data Generator](./0014-seed-data-generator.md)
 - [0015 Security CORS Policy Hardening](./0015-security-cors.md)
 - [0016 Fields-First UX for Farm Management](./0016-fields-first-ux.md)
+- [0017 Dev User Authentication & Multi-User Testing](./0017-dev-user-authentication.md)

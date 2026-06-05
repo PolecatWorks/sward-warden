@@ -4,9 +4,10 @@ use crate::state::AppState;
 use axum::{Json, extract::State};
 
 pub async fn list_users(State(state): State<AppState>) -> Result<Json<Vec<User>>, AppError> {
-    let users = sqlx::query_as::<_, User>("SELECT id, name, email, role, phone, description FROM users")
-        .fetch_all(&state.db_pool)
-        .await;
+    let users =
+        sqlx::query_as::<_, User>("SELECT id, name, email, role, phone, description FROM users")
+            .fetch_all(&state.db_pool)
+            .await;
     Ok(Json(users?))
 }
 
@@ -30,10 +31,12 @@ pub async fn get_user(
     State(state): State<AppState>,
     axum::extract::Path(id): axum::extract::Path<i64>,
 ) -> Result<Json<User>, AppError> {
-    let user = sqlx::query_as::<_, User>("SELECT id, name, email, role, phone, description FROM users WHERE id = $1")
-        .bind(id)
-        .fetch_one(&state.db_pool)
-        .await;
+    let user = sqlx::query_as::<_, User>(
+        "SELECT id, name, email, role, phone, description FROM users WHERE id = $1",
+    )
+    .bind(id)
+    .fetch_one(&state.db_pool)
+    .await;
     Ok(Json(user?))
 }
 

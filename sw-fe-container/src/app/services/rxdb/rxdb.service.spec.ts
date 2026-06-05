@@ -16,7 +16,7 @@ describe('RxdbService', () => {
     TestBed.configureTestingModule({
       providers: [
         RxdbService,
-        { provide: RXDB_STORAGE, useValue: getRxStorageMemory() },
+        { provide: RXDB_STORAGE, useFactory: () => getRxStorageMemory() },
         { provide: RXDB_DB_NAME, useValue: testDbName },
       ],
     });
@@ -24,8 +24,15 @@ describe('RxdbService', () => {
   });
 
   afterEach(async () => {
-    const db = await firstValueFrom(service.db$);
-    await db.remove();
+    try {
+      const db = await firstValueFrom(service.db$);
+      if (db) {
+        await db.remove();
+      }
+    } catch (e) {
+      const storage = TestBed.inject(RXDB_STORAGE);
+      await rxdbModule.removeRxDatabase(testDbName, storage);
+    }
   });
 
   it('should be created', () => {
@@ -131,6 +138,9 @@ describe('RxdbService', () => {
       const db = await service['createDatabase']();
       expect(db).toBeTruthy();
       expect(callCount).toBe(2);
+
+      // Clean up the newly created database instance
+      await db.remove();
     });
 
     it('should activate fallbackToRest on second failure', async () => {

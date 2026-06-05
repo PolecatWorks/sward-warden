@@ -57,8 +57,8 @@
       <div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container lg:hidden">
-            <img alt="Seamus O'Neill Profile"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEGLVw7OJxGjDvarhM4qk8kwucVrFtr2LhZEnaBrkmsU-zTvETHxqqhqPe8uNJGzakLfepGm665SgCJvPPpt8B83L8FPfZpDnLS88vJsBQzhXdlteqviG82bhlHXzWn2za5JxQWWf3-Xd13318Hmd3MYo1wmxKnO2sR09K4ZrygrJ_0tOrra17-xn9c5GgOBifkKCV5dVJhoufTcuHGNXs0PIvQgPvANInQWOqHjOxi8gMnO-Vg_yXzQqHdPttBr-CvunJqZnhsA"
+            <img [alt]="(currentUser$ | async)?.name + ' Profile'"
+              src="https://ui-avatars.com/api/?name={{ (currentUser$ | async)?.name }}&background=random"
               class="w-full h-full object-cover" />
           </div>
           <a routerLink="/home" class="lg:hidden cursor-pointer hover:opacity-80 transition-opacity"><h1 class="text-xl font-black text-[#154212] dark:text-white font-['Work_Sans'] tracking-tight">SwardWarden</h1></a>
@@ -66,14 +66,14 @@
         </div>
         <div class="flex items-center gap-4">
            <div class="hidden lg:flex items-center gap-3 mr-4">
-             <span class="text-sm font-bold text-on-surface-variant font-['Work_Sans']">Seamus O'Neill</span>
+             <span class="text-sm font-bold text-on-surface-variant font-['Work_Sans']">{{ (currentUser$ | async)?.name }}</span>
              <div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container">
-               <img alt="Profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEGLVw7OJxGjDvarhM4qk8kwucVrFtr2LhZEnaBrkmsU-zTvETHxqqhqPe8uNJGzakLfepGm665SgCJvPPpt8B83L8FPfZpDnLS88vJsBQzhXdlteqviG82bhlHXzWn2za5JxQWWf3-Xd13318Hmd3MYo1wmxKnO2sR09K4ZrygrJ_0tOrra17-xn9c5GgOBifkKCV5dVJhoufTcuHGNXs0PIvQgPvANInQWOqHjOxi8gMnO-Vg_yXzQqHdPttBr-CvunJqZnhsA" class="w-full h-full object-cover" />
+               <img alt="Profile" src="https://ui-avatars.com/api/?name={{ (currentUser$ | async)?.name }}&background=random" class="w-full h-full object-cover" />
              </div>
            </div>
            <button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#f4f4f0] dark:hover:bg-[#2d302d] transition-colors active:scale-95"
-            id="settings-btn" aria-label="Settings">
-            <span class="material-symbols-outlined text-[#154212] dark:text-[#f4f4f0]">settings</span>
+            id="settings-btn" aria-label="Settings" (click)="logout()">
+            <span class="material-symbols-outlined text-[#154212] dark:text-[#f4f4f0]" title="Switch User">logout</span>
           </button>
         </div>
       </div>

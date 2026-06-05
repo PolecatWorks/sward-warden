@@ -24,6 +24,8 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0003-03 Farm Management Specification](./0003/0003-02-farm-management.md) | Complete |
 | [0003-04 Field Management Specification](./0003/0003-03-field-management.md) | Complete |
 | [0003-05 Event Tracking Specification](./0003/0003-04-event-tracking.md) | Complete |
+| [0003-06 Farm Editing Specification](./0003/0003-05-farm-editing.md) | Open |
+| [0003-07 Field Moving Specification](./0003/0003-06-field-moving.md) | Open |
 | [0004-02 General Farm Records Specification](./0004/0004-01-general-farm-records.md) | Complete |
 | [0004-03 Fertiliser Application Records Specification](./0004/0004-02-fertiliser-application-records.md) | Complete |
 | [0004-04 Fertilisation Plan Specification](./0004/0004-03-fertilisation-plan.md) | Complete |
@@ -85,3 +87,4 @@ Specifications under PRD 0008 (Spatial Optimization) require the PostGIS extensi
 
 | [0015-01 Security CORS Fix](./0015/0015-01-security-cors.md) | Complete |
 | [0016-01 Fields-First UX](./0016/0016-01-fields-first-ux.md) | Complete |
+| [0017-01 Dev User Authentication & Multi-User Testing](./0017/0017-01-dev-user-authentication.md) | Complete |
