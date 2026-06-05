@@ -20,3 +20,5 @@ PRDs dictate the high-level features and requirements of the project. Every PRD 
 - [0012 Responsive Design](./0012-responsive-design.md)
 - [0013 Administration and Support Console](./0013-administration-console.md)
 - [0014 Seed Data Generator](./0014-seed-data-generator.md)
+- [0015 Security CORS Policy Hardening](./0015-security-cors.md)
+- [0016 Fields-First UX for Farm Management](./0016-fields-first-ux.md)
