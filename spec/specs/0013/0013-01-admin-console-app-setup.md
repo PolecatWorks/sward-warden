@@ -10,6 +10,10 @@ As per PRD 013, the Administration Console must be a separate interface from the
 - Ensure the admin console has its own routing and layout.
 - Configure build and deployment scripts (Makefile) to handle the new admin fe.
 - Implement a basic shell with a sidebar for navigation between administrative sections (Users, Support Views, Audit Logs).
+- **Network-Level Security & IP Restrictions**:
+  - The ingress configuration for `sw-admin-container` must restrict access to approved IP CIDR blocks (e.g. corporate VPN subnets).
+  - All backend endpoints prefixed with `/admin/` must perform middleware checks to validate that the request origin matches the allowed IP whitelist or comes through the VPN gateway.
+
 
 ## 3. Technical Details
 - **Framework**: Angular (matching existing stack).

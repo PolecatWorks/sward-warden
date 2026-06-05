@@ -19,6 +19,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0002-09 Inventory and Equipment FE Specification](./0002/0002-09-inventory-and-equipment-fe.md) | Complete |
 | [0002-10 Reporting and Export FE Specification](./0002/0002-10-reporting-and-export-fe.md) | Complete |
 | [0002-11 Runtime Configuration Specification](./0002/0002-11-runtime-configuration.md) | Complete |
+| [0002-12 Front-End Design System and UI Shell](./0002/0002-12-fe-design-system.md) | Complete |
 | [0003-02 User Profile Management Specification](./0003/0003-01-user-profile-management.md) | Complete |
 | [0003-03 Farm Management Specification](./0003/0003-02-farm-management.md) | Complete |
 | [0003-04 Field Management Specification](./0003/0003-03-field-management.md) | Complete |
@@ -30,19 +31,23 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0004-06 Import and Export Records Specification](./0004/0004-05-import-export-records.md) | Complete |
 | [0004-07 Soil Analysis Results Specification](./0004/0004-06-soil-analysis-results.md) | Complete |
 | [0004-07 Spreading Equipment Exemptions Specification](./0004/0004-07-spreading-equipment-exemptions.md) | Complete |
+| [0004-08 Spreading Records Front-End Components](./0004/0004-08-spreading-records-fe.md) | Complete |
 | [0005-02 Spraying (Pesticide Use) Records Specification](./0005/0005-01-spraying-records.md) | Complete |
 | [0005-03 Chemical Fertiliser Management Specification](./0005/0005-02-chemical-fertiliser-management.md) | Complete |
 | [0005-04 Sward and Organic Manure Management Specification](./0005/0005-03-slurry-and-organic-manure-management.md) | Complete |
 | [0005-05 Compliance Penalty Matrix Specification](./0005/0005-04-compliance-penalty-matrix.md) | Complete |
+| [0005-05 Compliance Engine Rules and UI Components](./0005/0005-05-compliance-engine-and-ui.md) | Complete |
 | [0006-01 Storage Capacity Tracking Specification](./0006/0006-01-storage-capacity-tracking.md) | Complete |
 | [0006-02 Chemical and Pesticide Inventory Specification](./0006/0006-02-chemical-and-pesticide-inventory.md) | Complete |
 | [0006-03 Equipment Tracking Specification](./0006/0006-03-equipment-tracking.md) | Complete |
 | [0006-04 Import and Export Contracts Specification](./0006/0006-04-import-export-contracts.md) | Complete |
+| [0006-05 Inventory and Equipment Tracking Front-End](./0006/0006-05-inventory-tracking-fe.md) | Complete |
 | [0007-01 Digital Pesticide Records Export Specification](./0007/0007-01-digital-pesticide-records-export.md) | Complete |
 | [0007-02 Annual Fertilisation Accounts Specification](./0007/0007-02-annual-fertilisation-accounts.md) | Complete |
 | [0007-03 General Farm Records Export Specification](./0007/0007-03-general-farm-records-export.md) | Complete |
 | [0007-04 Soil Analysis Reports Specification](./0007/0007-04-soil-analysis-reports.md) | Complete |
 | [0007-05 Import and Export Reporting Specification](./0007/0007-05-import-export-reporting.md) | Complete |
+| [0007-06 Reporting Center Front-End Components](./0007/0007-06-reporting-fe.md) | Complete |
 | [0008-01 Optimization Engine Core Specification](./0008/0008-01-optimization-engine-core.md) | Complete |
 | [0008-02 Weather Integration Data Specification](./0008/0008-02-weather-integration-data.md) | Complete |
 | [0008-03 Topology and Waterway Data Specification](./0008/0008-03-topology-and-waterway-data.md) | Complete |

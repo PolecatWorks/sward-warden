@@ -13,3 +13,15 @@ This specification covers the integration test requirements for testing backend 
 - Integration tests must extract the backend Pod IP from the cluster dynamically.
 - Integration tests must verify the backend application HTTP endpoint directly on the Pod IP on port 8080.
 - Integration tests must verify the backend lifecycle/health endpoint (`/hams/alive`) directly on the Pod IP on port 8079.
+
+## Robot Framework Test Suite and BREAD Coverage
+- The integration test suite, built using **Robot Framework**, must provide comprehensive coverage of **BREAD** (Browse, Read, Edit, Add, Delete) operations for all primary domain resources:
+  - Users
+  - Farms
+  - Fields
+  - Events
+  - Farm Records
+  - Applications
+  - Compliance Breaches
+  - Sward Movements
+- For any backend routes or resources that are intentionally omitted from coverage, the test suite codebase must include explicit documentation comments explaining the omission and its justification.

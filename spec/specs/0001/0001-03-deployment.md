@@ -17,7 +17,7 @@ This specification details the deployment and infrastructure mechanisms as per P
 
 ## Be Deployment specifics
 - The be Kubernetes Deployment should be configured to handle lifecycle events via HTTP on port 8079 (liveness, readiness probes).
-- The primary service will expose the be application traffic on port 8080.
+- The primary service will expose the be application traffic on port 80 (mapping to container port 8080).
 - Migration processes should be structured using Init Containers or Helm Hooks via the application's CLI `migrate` subcommand.
 
 ## Expected Workflows

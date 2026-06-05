@@ -7,9 +7,14 @@ This specification covers the be implementation for weather data handling and sa
 
 ## Requirements
 
-### Static Weather Data
+### Static Weather Data and Forecast Reliability
 - Integrate a mechanism to load and serve static weather datasets (for the initial version, representing current conditions and a 48-hour forecast).
 - Data should include precipitation probability, precipitation amount, temperature, and wind speed at appropriate intervals (e.g., hourly).
+- **Forecast Reliability Calculation**:
+  - The API must calculate and return a `reliability_percentage` for each segment of the forecast timeline.
+  - Calculation formula: `100 - (hours_ahead * 0.83)`, capping the minimum reliability at `60%` at the 48-hour limit.
+  - The front-end weather widgets must display this percentage (styled as a confidence index badge) to help operators assess risk.
+
 
 ### Safety Lock Logic
 - Implement be validation logic that intercepts requests to schedule or log sward applications.
