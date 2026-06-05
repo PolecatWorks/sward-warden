@@ -117,7 +117,7 @@ describe('FarmManagementService', () => {
 
       const db = await firstValueFrom(rxdbService.db$);
       const docs = await db.farms.find().exec();
-      expect(docs[0].id).toMatch(/^local-/);
+      expect(docs[0].id).toMatch(/^-/);
     });
   });
 

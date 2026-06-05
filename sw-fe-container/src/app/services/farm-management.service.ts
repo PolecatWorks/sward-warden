@@ -157,6 +157,11 @@ export class FarmManagementService {
 
   /** Get all farms from the local RxDB database as a reactive observable. */
   getFarms(): Observable<Farm[]> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.get<Farm[]>(`${apiUrl}/farms`, { headers: this.getHeaders() }))
+      );
+    }
     return this.rxdbService.db$.pipe(
       switchMap(db => db.farms.find().$ as Observable<FarmDocType[]>),
       map(docs => docs.map(doc => this.farmDocToModel(doc))),
@@ -165,6 +170,11 @@ export class FarmManagementService {
 
   /** Add a farm to the local RxDB database and queue an outbox entry. */
   addFarm(farm: Farm): Observable<Farm> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.post<Farm>(`${apiUrl}/farms`, farm, { headers: this.getHeaders() }))
+      );
+    }
     return this.insertEntity<FarmDocType, Farm>(
       'farms',
       { serverId: typeof farm.id === 'number' ? farm.id : undefined, user_id: farm.user_id, name: farm.name, location: farm.location, has_derogation: farm.has_derogation },
@@ -175,6 +185,11 @@ export class FarmManagementService {
 
   /** Get all fields from the local RxDB database. */
   getFields(): Observable<Field[]> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.get<Field[]>(`${apiUrl}/fields`, { headers: this.getHeaders() }))
+      );
+    }
     return this.rxdbService.db$.pipe(
       switchMap(db => db.fields.find().$ as Observable<FieldDocType[]>),
       map(docs => docs.map(doc => this.fieldDocToModel(doc))),
@@ -182,6 +197,11 @@ export class FarmManagementService {
   }
 
   getField(id: number | string): Observable<Field | undefined> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.getFields().pipe(
+        map(fields => fields.find(f => f.id === id || (typeof id === 'number' && f.id === id)))
+      );
+    }
     const selector = (typeof id === 'number' && id < 0)
       ? { id: id.toString() }
       : (typeof id === 'number' ? { serverId: id } : { id: id });
@@ -193,6 +213,11 @@ export class FarmManagementService {
 
   /** Add a field to the local RxDB database and queue an outbox entry. */
   addField(field: Field): Observable<Field> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.post<Field>(`${apiUrl}/fields`, field, { headers: this.getHeaders() }))
+      );
+    }
     return this.insertEntity<FieldDocType, Field>(
       'fields',
       { serverId: typeof field.id === 'number' ? field.id : undefined, farm_id: field.farm_id, name: field.name, area_hectares: field.area_hectares, land_use: field.land_use },
@@ -203,6 +228,11 @@ export class FarmManagementService {
 
   /** Get all events from the local RxDB database. */
   getEvents(): Observable<Event[]> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.get<Event[]>(`${apiUrl}/events`, { headers: this.getHeaders() }))
+      );
+    }
     return this.rxdbService.db$.pipe(
       switchMap(db => db.events.find().$ as Observable<EventDocType[]>),
       map(docs => docs.map(doc => this.eventDocToModel(doc))),
@@ -211,6 +241,11 @@ export class FarmManagementService {
 
   /** Add an event to the local RxDB database and queue an outbox entry. */
   addEvent(event: Event): Observable<Event> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.post<Event>(`${apiUrl}/events`, event, { headers: this.getHeaders() }))
+      );
+    }
     return this.insertEntity<EventDocType, Event>(
       'events',
       { serverId: typeof event.id === 'number' ? event.id : undefined, field_id: event.field_id, event_type: event.event_type, description: event.description, date: event.date },
@@ -218,8 +253,14 @@ export class FarmManagementService {
       (doc) => this.eventDocToModel(doc)
     );
   }
-/** Update an event in the local RxDB database and queue an outbox entry. */
+
+  /** Update an event in the local RxDB database and queue an outbox entry. */
   updateEvent(localId: string, event: Partial<Event>): Observable<Event> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.put<Event>(`${apiUrl}/events/${event.id}`, event, { headers: this.getHeaders() }))
+      );
+    }
     const updates: any = {};
     const outboxPayload: any = {};
 
@@ -241,6 +282,11 @@ export class FarmManagementService {
 
   /** Get all soil analyses from the local RxDB database. */
   getSoilAnalyses(): Observable<SoilAnalysis[]> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.get<SoilAnalysis[]>(`${apiUrl}/soil_analyses`, { headers: this.getHeaders() }))
+      );
+    }
     return this.rxdbService.db$.pipe(
       switchMap(db => db.soil_analyses.find().$ as Observable<SoilAnalysisDocType[]>),
       map(docs => docs.map(doc => this.soilAnalysisDocToModel(doc))),
@@ -249,6 +295,11 @@ export class FarmManagementService {
 
   /** Add a soil analysis to the local RxDB database and queue an outbox entry. */
   addSoilAnalysis(analysis: SoilAnalysis): Observable<SoilAnalysis> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.post<SoilAnalysis>(`${apiUrl}/soil_analyses`, analysis, { headers: this.getHeaders() }))
+      );
+    }
     return this.insertEntity<SoilAnalysisDocType, SoilAnalysis>(
       'soil_analyses',
       { serverId: typeof analysis.id === 'number' ? analysis.id : undefined, field_id: analysis.field_id, sample_date: analysis.sample_date, ph_level: analysis.ph_level, phosphorus_index: analysis.phosphorus_index, potassium_index: analysis.potassium_index, magnesium_index: analysis.magnesium_index },
@@ -259,6 +310,11 @@ export class FarmManagementService {
 
   /** Get all fertilisation plans from the local RxDB database. */
   getFertilisationPlans(): Observable<FertilisationPlan[]> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.get<FertilisationPlan[]>(`${apiUrl}/fertilisation_plans`, { headers: this.getHeaders() }))
+      );
+    }
     return this.rxdbService.db$.pipe(
       switchMap(db => db.fertilisation_plans.find().$ as Observable<FertilisationPlanDocType[]>),
       map(docs => docs.map(doc => this.fertilisationPlanDocToModel(doc))),
@@ -267,6 +323,11 @@ export class FarmManagementService {
 
   /** Add a fertilisation plan to the local RxDB database and queue an outbox entry. */
   addFertilisationPlan(plan: FertilisationPlan): Observable<FertilisationPlan> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.post<FertilisationPlan>(`${apiUrl}/fertilisation_plans`, plan, { headers: this.getHeaders() }))
+      );
+    }
     return this.insertEntity<FertilisationPlanDocType, FertilisationPlan>(
       'fertilisation_plans',
       { serverId: typeof plan.id === 'number' ? plan.id : undefined, field_id: plan.field_id, crop_type: plan.crop_type, target_yield: plan.target_yield, nitrogen_requirement: plan.nitrogen_requirement, phosphorus_requirement: plan.phosphorus_requirement, potassium_requirement: plan.potassium_requirement, application_date: plan.application_date },
@@ -275,9 +336,13 @@ export class FarmManagementService {
     );
   }
 
-
   /** Get all farm records from the local RxDB database. */
   getFarmRecords(): Observable<FarmRecord[]> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.get<FarmRecord[]>(`${apiUrl}/farm_records`, { headers: this.getHeaders() }))
+      );
+    }
     return this.rxdbService.db$.pipe(
       switchMap(db => db.farm_records.find().$ as Observable<FarmRecordDocType[]>),
       map(docs => docs.map(doc => this.farmRecordDocToModel(doc))),
@@ -286,6 +351,11 @@ export class FarmManagementService {
 
   /** Add a farm record to the local RxDB database and queue an outbox entry. */
   addFarmRecord(record: FarmRecord): Observable<FarmRecord> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.post<FarmRecord>(`${apiUrl}/farm_records`, record, { headers: this.getHeaders() }))
+      );
+    }
     return this.insertEntity<FarmRecordDocType, FarmRecord>(
       'farm_records',
       { serverId: typeof record.id === 'number' ? record.id : undefined, farm_id: record.farm_id, agricultural_area: record.agricultural_area, manure_storage_capacity: record.manure_storage_capacity, year: record.year, has_derogation: record.has_derogation },
@@ -321,6 +391,11 @@ export class FarmManagementService {
   // ──────────────────────────────────────────────────────────
 
   getOrganicManureApplications(): Observable<OrganicManureApplication[]> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.get<OrganicManureApplication[]>(`${apiUrl}/organic-manure-applications`, { headers: this.getHeaders() }))
+      );
+    }
     return this.rxdbService.db$.pipe(
       switchMap(db => from(db.organic_manure_applications.find().$)),
       map((docs: any[]) => docs.map(doc => this.organicManureApplicationDocToModel(doc)))
@@ -332,6 +407,16 @@ export class FarmManagementService {
   // ──────────────────────────────────────────────────────────
 
   deleteEntity(entity: OutboxEntityType, id: number | string): Observable<void> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      const endpointMap: Record<string, string> = {
+        compliance_breaches: 'compliance-breaches',
+        sward_movements: 'sward-movements',
+      };
+      const endpoint = endpointMap[entity] || entity;
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.delete<void>(`${apiUrl}/${endpoint}/${id}`, { headers: this.getHeaders() }))
+      );
+    }
     return this.rxdbService.db$.pipe(
       switchMap(db => {
         const collection = (db as any)[entity];
@@ -469,6 +554,12 @@ export class FarmManagementService {
   }
 
   getComplianceBreachesForFarm(farmId: number): Observable<ComplianceBreach[]> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.get<ComplianceBreach[]>(`${apiUrl}/compliance-breaches`, { headers: this.getHeaders() })),
+        map(breaches => breaches.filter(b => b.farm_id === farmId))
+      );
+    }
     return this.rxdbService.db$.pipe(
       switchMap(db => from(db.compliance_breaches.find({ selector: { farm_id: farmId } }).$)),
       map((docs: any[]) => docs.map(doc => this.complianceBreachDocToModel(doc)))
@@ -476,6 +567,11 @@ export class FarmManagementService {
   }
 
   addComplianceBreach(breach: ComplianceBreach): Observable<ComplianceBreach> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.post<ComplianceBreach>(`${apiUrl}/compliance-breaches`, breach, { headers: this.getHeaders() }))
+      );
+    }
     return this.insertEntity<ComplianceBreachDocType, ComplianceBreach>(
       'compliance_breaches',
       {
@@ -495,6 +591,11 @@ export class FarmManagementService {
   }
 
   addOrganicManureApplication(app: OrganicManureApplication): Observable<OrganicManureApplication> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.post<OrganicManureApplication>(`${apiUrl}/organic-manure-applications`, app, { headers: this.getHeaders() }))
+      );
+    }
     return this.insertEntity<OrganicManureApplicationDocType, OrganicManureApplication>(
       'organic_manure_applications',
       {
@@ -516,6 +617,11 @@ export class FarmManagementService {
   }
 
   updateOrganicManureApplication(localId: string, serverId: number | string | undefined, app: Partial<OrganicManureApplication>): Observable<OrganicManureApplication> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.put<OrganicManureApplication>(`${apiUrl}/organic-manure-applications/${serverId}`, app, { headers: this.getHeaders() }))
+      );
+    }
     const updates: any = {};
     const outboxPayload: any = {};
 
@@ -541,6 +647,12 @@ export class FarmManagementService {
 
 
   getSwardMovementsForFarm(farmId: number): Observable<SwardMovement[]> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.get<SwardMovement[]>(`${apiUrl}/sward-movements`, { headers: this.getHeaders() })),
+        map(movements => movements.filter(m => m.farm_id === farmId))
+      );
+    }
     return this.rxdbService.db$.pipe(
       switchMap(db => from(db.sward_movements.find({ selector: { farm_id: farmId } }).$)),
       map((docs: any[]) => docs.map(doc => this.swardMovementDocToModel(doc)))
@@ -548,6 +660,11 @@ export class FarmManagementService {
   }
 
   addSwardMovement(movement: SwardMovement): Observable<SwardMovement> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.post<SwardMovement>(`${apiUrl}/sward-movements`, movement, { headers: this.getHeaders() }))
+      );
+    }
     return this.insertEntity<SwardMovementDocType, SwardMovement>(
       'sward_movements',
       {

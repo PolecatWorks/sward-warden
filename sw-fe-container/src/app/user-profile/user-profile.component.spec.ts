@@ -10,8 +10,11 @@ describe('UserProfileComponent', () => {
   let mockFarmService: jasmine.SpyObj<FarmManagementService>;
 
   beforeEach(async () => {
-    mockFarmService = jasmine.createSpyObj('FarmManagementService', ['getUsers']);
+    mockFarmService = jasmine.createSpyObj('FarmManagementService', ['getUsers', 'getUser', 'updateUser', 'addUser']);
     mockFarmService.getUsers.and.returnValue(of([{ id: 1, name: 'Test User', email: 'test@example.com' }]));
+    mockFarmService.getUser.and.returnValue(of({ id: 1, name: 'Test User', email: 'test@example.com' }));
+    mockFarmService.updateUser.and.returnValue(of({ id: 1, name: 'Updated User', email: 'test@example.com' }));
+    mockFarmService.addUser.and.returnValue(of({ id: 2, name: 'New User', email: 'new@example.com' }));
 
     await TestBed.configureTestingModule({
       imports: [UserProfileComponent],
