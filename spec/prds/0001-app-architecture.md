@@ -49,3 +49,9 @@ This document defines the overarching application architecture for the sward man
   - Integration tests must verify the behavior of all be API endpoints.
   - The test suite must provide comprehensive coverage of "BREAD" operations (Browse, Read, Edit, Add, Delete) for all domain resources (Users, Farms, Fields, Events, Farm Records, Applications, Compliance Breaches, Sward Movements).
   - Where a specific be route (such as Edit, Read by ID, or Delete) is missing, tests must include explicit comments documenting the missing functionality.
+
+## CI/CD Workflow Requirements
+- **Integration Test Concurrency:** Integration test workflow runs must use dynamic concurrency grouping.
+  - Runs must be grouped by the target pull request or reference (e.g. branch) to prevent global queuing across different PRs.
+  - On new pushes to an existing PR, the active in-progress integration test run for that PR must be automatically cancelled.
+  - Cancelled runs must cleanly teardown their Garden environment and delete their specific Kubernetes namespace to avoid resource leaks.
