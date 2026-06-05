@@ -18,7 +18,22 @@ This specification covers the implementation of the be architecture refactoring 
    - Bound main Axum application on configured port (e.g., 8080).
 8. **Tests Pass**: The refactored be must compile successfully and all existing unit tests should be updated to pass.
 
-## 3. Implementation Steps
+## 3. Lifecycle, Startup and Shutdown Mechanics
+1. **Synchronous Setup**:
+   - The HaMS (Health and Monitoring Service) service initialization and startup must occur synchronously in `main()` *before* the Tokio async runtime is booted.
+   - This ensures that if port binding or early configuration fails, the process terminates immediately without starting background threads.
+2. **Unified Shutdown Handling**:
+   - Register a shutdown callback hook with HaMS that is linked to a Tokio `CancellationToken`.
+   - When HaMS receives a shutdown signal (e.g. SIGTERM/SIGINT), it must trigger `CancellationToken::cancel()` to gracefully stop the async web server and all background tasks.
+3. **Non-Blocking Probes**:
+   - All early/initial health probes must be registered with the monitoring engine during the synchronous setup phase so they are immediately active when the port opens, preventing probes from blocking Tokio thread execution pool start.
+4. **Centralized Startup Error Handling**:
+   - Wrap the startup phase with error catching logic. If startup fails, apply a configurable `fail_debug_delay` (retrieved from `AppConfig` under `WebServiceConfig.fail_debug_delay_seconds`) before exiting.
+   - This delay keeps the container alive in a failed state for a short period to allow operators to retrieve Kubernetes logs (`kubectl logs`) before the Pod restarts.
+5. **Graceful Cleanup**:
+   - After the Tokio async runtime exits, `main()` must execute cleanup routines: explicitly deregister the service from Prometheus registry endpoints and stop the HaMS agent.
+
+## 4. Implementation Steps
 1. **Update Cargo.toml**: Add the dependencies defined in PRD 0009. Update the `[package]` edition if needed.
 2. **Create config structure**: Create `src/config.rs` that loads from `config/default.yaml`, env vars `SP_BE__*`, etc. using `figment`.
 3. **Setup state and errors**: Create `src/state.rs` for `AppState` and `src/error.rs` for `AppError`.
