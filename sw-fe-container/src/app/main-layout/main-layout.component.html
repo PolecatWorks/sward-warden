@@ -81,7 +81,7 @@
 
     <!-- Main Content Area -->
     <main class="flex-grow pb-28 lg:pb-12 max-w-7xl mx-auto w-full px-4 sm:px-8">
-      <div *ngIf="fallbackToRest$ | async" class="my-4 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-2xl flex items-start gap-3 text-amber-800 dark:text-amber-300">
+      <div *ngIf="fallbackToRest$ | async" id="fallback-warning-banner" class="my-4 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-2xl flex items-start gap-3 text-amber-800 dark:text-amber-300">
         <span class="material-symbols-outlined text-amber-500 text-2xl shrink-0">warning</span>
         <div>
           <h4 class="font-bold text-sm font-['Work_Sans'] leading-none mb-1">Local Storage Fallback Active</h4>
