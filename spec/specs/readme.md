@@ -59,7 +59,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [Specification 0011-03: Be Delta Sync API](./0011/0011-03-be-delta-sync-api.md) | Complete |
 | [Specification 0011-04: Outbox Pattern and Push Sync](./0011/0011-04-outbox-pattern-push-sync.md) | Complete |
 | [Specification 0011-05: Delta Sync Client and Conflict Resolution](./0011/0011-05-delta-sync-client-and-conflict-resolution.md) | Complete |
-| [Specification 0011-06: Self-Healing and Recovery Mechanisms](./0011/0011-06-self-healing-and-recovery.md) | Open |
+| [Specification 0011-06: Self-Healing and Recovery Mechanisms](./0011/0011-06-self-healing-and-recovery.md) | Complete |
 | [Spec 0012-01: Adaptive Layouts](./0012/0012-01-adaptive-layouts.md) | Complete |
 | [Spec 0012-02: Component Scaling and Typography](./0012/0012-02-component-scaling-and-typography.md) | Complete |
 | [Spec 0012-03: Responsive Design Implementation Guidelines](./0012/0012-03-implementation-guidelines.md) | Complete |

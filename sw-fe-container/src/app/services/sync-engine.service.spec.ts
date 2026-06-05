@@ -188,9 +188,9 @@ describe('SyncEngineService', () => {
       entityType: 'farms',
       localDocId: 'local-maxretry-1',
       payload: JSON.stringify({ name: 'Max Retry Farm', location: 'Nowhere' }),
-      timestamp: new Date().toISOString(),
+      timestamp: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
       status: 'pending',
-      retryCount: 2,
+      retryCount: 4,
     });
 
     await db.farms.insert({
@@ -211,7 +211,7 @@ describe('SyncEngineService', () => {
 
     const entries = await db.outbox.find().exec();
     expect(entries.length).toBe(1);
-    expect(entries[0].retryCount).toBe(3);
+    expect(entries[0].retryCount).toBe(5);
     expect(entries[0].status).toBe('failed');
 
     const farm = await db.farms.findOne('local-maxretry-1').exec();
@@ -520,5 +520,77 @@ describe('SyncEngineService', () => {
 
     expect(states).toContain('syncing');
     expect(states[states.length - 1]).toBe('synced');
+  });
+
+  describe('Outbox Backoff and Client Error Handling', () => {
+    it('should respect backoff period on retry', async () => {
+      const db = await firstValueFrom(rxdbService.db$);
+
+      await db.outbox.insert({
+        id: 'outbox-backoff-1',
+        actionType: 'POST',
+        entityType: 'farms',
+        localDocId: 'local-backoff-1',
+        payload: JSON.stringify({ name: 'Backoff Farm', location: 'Nowhere' }),
+        timestamp: new Date().toISOString(),
+        status: 'pending',
+        retryCount: 1,
+      });
+
+      await db.farms.insert({
+        id: 'local-backoff-1',
+        name: 'Backoff Farm',
+        location: 'Nowhere',
+        syncStatus: 'pending',
+        updatedAt: new Date().toISOString(),
+      });
+
+      await service.processOutbox();
+
+      httpMock.expectNone('/v0/farms');
+
+      const entries = await db.outbox.find().exec();
+      expect(entries.length).toBe(1);
+      expect(entries[0].retryCount).toBe(1);
+    });
+
+    it('should mark as failed immediately on 400 client error', async () => {
+      const db = await firstValueFrom(rxdbService.db$);
+
+      await db.outbox.insert({
+        id: 'outbox-400-1',
+        actionType: 'POST',
+        entityType: 'farms',
+        localDocId: 'local-400-1',
+        payload: JSON.stringify({ name: 'Invalid Farm', location: 'Invalid' }),
+        timestamp: new Date().toISOString(),
+        status: 'pending',
+        retryCount: 0,
+      });
+
+      await db.farms.insert({
+        id: 'local-400-1',
+        name: 'Invalid Farm',
+        location: 'Invalid',
+        syncStatus: 'pending',
+        updatedAt: new Date().toISOString(),
+      });
+
+      const processPromise = service.processOutbox();
+      await new Promise(resolve => setTimeout(resolve, 50));
+
+      const farmReq = httpMock.expectOne('/v0/farms');
+      farmReq.flush('Bad Request', { status: 400, statusText: 'Bad Request' });
+
+      await processPromise;
+
+      const entries = await db.outbox.find().exec();
+      expect(entries.length).toBe(1);
+      expect(entries[0].status).toBe('failed');
+      expect(entries[0].retryCount).toBe(1);
+
+      const farm = await db.farms.findOne('local-400-1').exec();
+      expect(farm?.syncStatus).toBe('failed');
+    });
   });
 });

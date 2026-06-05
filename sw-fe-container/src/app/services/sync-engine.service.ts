@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Subscription, firstValueFrom, filter, switchMap, from, timer, merge, debounceTime } from 'rxjs';
+import { Subscription, firstValueFrom, filter, switchMap, from, timer, merge, debounceTime, catchError, of } from 'rxjs';
 import { RxdbService, SwardDatabase } from './rxdb/rxdb.service';
 import { NetworkService } from './network.service';
 import { SyncStateService } from './sync-state.service';
@@ -14,7 +14,7 @@ import { FarmManagementService } from './farm-management.service';
 import { OutboxDocType } from './rxdb/schemas';
 
 /** Maximum retry attempts before marking an outbox entry as permanently failed. */
-const MAX_RETRIES = 3;
+const MAX_RETRIES = 5;
 
 /** Periodic sync interval in milliseconds (default: 5 minutes). */
 const SYNC_INTERVAL_MS = 5 * 60 * 1000;
@@ -72,7 +72,9 @@ export class SyncEngineService implements OnDestroy {
     );
 
     const outboxTrigger$ = this.rxdbService.db$.pipe(
-      switchMap(db => db.outbox.find({ selector: { status: 'pending' } }).$),
+      catchError(() => of(null)), // avoid app crash on db init failure
+      filter(db => db !== null),
+      switchMap(db => db!.outbox.find({ selector: { status: 'pending' } }).$),
       filter(entries => entries.length > 0),
       debounceTime(500),
       switchMap(() => this.networkService.isOnline$),
@@ -80,6 +82,7 @@ export class SyncEngineService implements OnDestroy {
     );
 
     this.subscription = merge(onlineEvent$, periodicSync$, outboxTrigger$).pipe(
+      filter(() => !this.rxdbService.fallbackToRest$.value),
       switchMap(() => from(this.fullSync())),
     ).subscribe();
   }
@@ -90,7 +93,7 @@ export class SyncEngineService implements OnDestroy {
    * 2. Pull: fetch delta changes from the be
    */
   async fullSync(): Promise<void> {
-    if (this.syncInProgress) return;
+    if (this.syncInProgress || this.rxdbService.fallbackToRest$.value) return;
     this.syncInProgress = true;
 
     try {
@@ -107,6 +110,8 @@ export class SyncEngineService implements OnDestroy {
 
   /** Process all pending outbox entries in chronological order. */
   async processOutbox(): Promise<void> {
+    if (this.rxdbService.fallbackToRest$.value) return;
+
     const db = await firstValueFrom(this.rxdbService.db$);
     const pendingEntries = await db.outbox.find({
       selector: { status: 'pending' },
@@ -117,22 +122,51 @@ export class SyncEngineService implements OnDestroy {
       return;
     }
 
+    const now = Date.now();
+    let hasValidEntries = false;
+
+    // Filter out entries still in backoff
+    const entriesToProcess = pendingEntries.filter(entry => {
+      if (entry.retryCount > 0) {
+        const lastAttemptTime = new Date(entry.timestamp).getTime();
+        const backoffMs = Math.pow(2, entry.retryCount - 1) * 30 * 1000; // 30s, 60s, 120s...
+        if (now - lastAttemptTime < backoffMs) {
+          return false;
+        }
+      }
+      hasValidEntries = true;
+      return true;
+    });
+
+    if (!hasValidEntries || entriesToProcess.length === 0) {
+      return;
+    }
+
     this.syncStateService.setSyncing();
 
     const apiUrl = await firstValueFrom(this.farmService.apiUrl$);
     const headers = this.farmService.getHeaders();
 
-    for (const entry of pendingEntries) {
+    for (const entry of entriesToProcess) {
       try {
         await this.processEntry(entry, apiUrl, headers, db);
         await entry.remove();
-      } catch (error) {
+      } catch (error: any) {
         const newRetryCount = (entry.retryCount || 0) + 1;
-        if (newRetryCount >= MAX_RETRIES) {
-          await entry.patch({ status: 'failed', retryCount: newRetryCount });
+        const isClientError = error && (error.status === 400 || error.status === 422);
+
+        if (isClientError || newRetryCount >= MAX_RETRIES) {
+          await entry.patch({
+            status: 'failed',
+            retryCount: newRetryCount,
+            timestamp: new Date().toISOString()
+          });
           await this.updateLocalDocStatus(db, entry.entityType, entry.localDocId, 'failed');
         } else {
-          await entry.patch({ retryCount: newRetryCount });
+          await entry.patch({
+            retryCount: newRetryCount,
+            timestamp: new Date().toISOString()
+          });
         }
       }
     }
@@ -192,6 +226,7 @@ export class SyncEngineService implements OnDestroy {
 
   /** Fetch changed records from the be and upsert into local RxDB. */
   async pullSync(): Promise<void> {
+    if (this.rxdbService.fallbackToRest$.value) return;
     const db = await firstValueFrom(this.rxdbService.db$);
     const apiUrl = await firstValueFrom(this.farmService.apiUrl$);
     const headers = this.farmService.getHeaders();

@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy, InjectionToken, Inject, Optional } from '@angular/core';
-import { createRxDatabase, RxDatabase, RxCollection, RxStorage } from 'rxdb';
+import { createRxDatabase, RxDatabase, RxCollection, RxStorage, removeRxDatabase } from 'rxdb';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
-import { Observable, from, shareReplay, switchMap } from 'rxjs';
+import { Observable, from, shareReplay, switchMap, BehaviorSubject } from 'rxjs';
 
 import * as MurmurHash3 from 'murmurhash3js-revisited';
 
@@ -74,6 +74,9 @@ export class RxdbService implements OnDestroy {
   /** The lazily-initialised database observable — shared across all consumers. */
   readonly db$: Observable<SwardDatabase>;
 
+  /** Emits true if the database cannot be initialized (falling back to REST mode). */
+  readonly fallbackToRest$ = new BehaviorSubject<boolean>(false);
+
   private storage: RxStorage<any, any>;
   private dbName: string;
 
@@ -86,32 +89,64 @@ export class RxdbService implements OnDestroy {
     this.db$ = from(this.createDatabase()).pipe(shareReplay(1));
   }
 
-  /** Create the RxDB database and add all collections. */
+  /** Create the RxDB database and add all collections. Wrap in try/catch for self-healing. */
   private async createDatabase(): Promise<SwardDatabase> {
-    const db = await createRxDatabase<SwardCollections>({
-      name: this.dbName,
-      storage: this.storage,
-      closeDuplicates: true,
-      // Use MurmurHash3 (pure-JS, no crypto.subtle) so RxDB works over plain
-      // HTTP where browsers restrict the Web Crypto API to secure contexts only.
-      hashFunction: murmurhash3Hash,
-    });
+    try {
+      return await this.tryCreateDatabase();
+    } catch (err) {
+      console.warn('RxDB Database initialization failed. Attempting self-healing/wipe...', err);
+      try {
+        // Attempt to wipe the existing database
+        await removeRxDatabase(this.dbName, this.storage);
+        console.log('RxDB Database successfully wiped. Re-attempting initialization.');
 
-    await db.addCollections({
-      farms: { schema: farmSchema },
-      fields: { schema: fieldSchema },
-      events: { schema: eventSchema },
-      soil_analyses: { schema: soilAnalysisSchema },
-      fertilisation_plans: { schema: fertilisationPlanSchema },
-      farm_records: { schema: farmRecordSchema },
-      organic_manure_applications: { schema: organicManureApplicationSchema },
-      compliance_breaches: { schema: complianceBreachSchema },
-      sward_movements: { schema: swardMovementSchema },
-      outbox: { schema: outboxSchema },
-      metadata: { schema: metadataSchema },
-    });
+        // Re-try database creation
+        return await this.tryCreateDatabase();
+      } catch (retryErr) {
+        console.error('RxDB Database initialization failed on second attempt. Falling back to REST mode.', retryErr);
+        this.fallbackToRest$.next(true);
+        throw retryErr;
+      }
+    }
+  }
 
-    return db;
+  private async tryCreateDatabase(): Promise<SwardDatabase> {
+    let db: SwardDatabase | null = null;
+    try {
+      db = await createRxDatabase<SwardCollections>({
+        name: this.dbName,
+        storage: this.storage,
+        closeDuplicates: true,
+        // Use MurmurHash3 (pure-JS, no crypto.subtle) so RxDB works over plain
+        // HTTP where browsers restrict the Web Crypto API to secure contexts only.
+        hashFunction: murmurhash3Hash,
+      });
+
+      await db.addCollections({
+        farms: { schema: farmSchema },
+        fields: { schema: fieldSchema },
+        events: { schema: eventSchema },
+        soil_analyses: { schema: soilAnalysisSchema },
+        fertilisation_plans: { schema: fertilisationPlanSchema },
+        farm_records: { schema: farmRecordSchema },
+        organic_manure_applications: { schema: organicManureApplicationSchema },
+        compliance_breaches: { schema: complianceBreachSchema },
+        sward_movements: { schema: swardMovementSchema },
+        outbox: { schema: outboxSchema },
+        metadata: { schema: metadataSchema },
+      });
+
+      return db;
+    } catch (err) {
+      if (db) {
+        try {
+          await db.close();
+        } catch (closeErr) {
+          // ignore close errors
+        }
+      }
+      throw err;
+    }
   }
 
   /** Observable emitting the farms RxCollection. */

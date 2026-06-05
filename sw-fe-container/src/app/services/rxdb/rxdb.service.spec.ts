@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { RxdbService, SwardDatabase, RXDB_STORAGE, RXDB_DB_NAME } from './rxdb.service';
 import { getRxStorageMemory } from 'rxdb/plugins/storage-memory';
 import { firstValueFrom } from 'rxjs';
+import * as rxdbModule from 'rxdb';
 
 let testCounter = 0;
 
@@ -109,5 +110,47 @@ describe('RxdbService', () => {
     const db1 = await firstValueFrom(service.db$);
     const db2 = await firstValueFrom(service.db$);
     expect(db1).toBe(db2);
+  });
+
+  describe('Self-Healing & Fallback', () => {
+    it('should wipe database and retry on initialization failure', async () => {
+      // Close the database instance created during construction to avoid storage lock/removal conflicts
+      const existingDb = await firstValueFrom(service.db$);
+      await existingDb.close();
+
+      let callCount = 0;
+      const tryCreateSpy = spyOn<any>(service, 'tryCreateDatabase').and.callFake(async () => {
+        callCount++;
+        if (callCount === 1) {
+          throw new Error('Simulated database corruption/schema mismatch');
+        }
+        tryCreateSpy.and.callThrough();
+        return await service['tryCreateDatabase']();
+      });
+
+      const db = await service['createDatabase']();
+      expect(db).toBeTruthy();
+      expect(callCount).toBe(2);
+    });
+
+    it('should activate fallbackToRest on second failure', async () => {
+      // Close the database instance created during construction to avoid storage lock/removal conflicts
+      const existingDb = await firstValueFrom(service.db$);
+      await existingDb.close();
+
+      let callCount = 0;
+      spyOn<any>(service, 'tryCreateDatabase').and.callFake(async () => {
+        callCount++;
+        throw new Error('Persistent failure');
+      });
+
+      try {
+        await service['createDatabase']();
+        fail('Should have thrown an error');
+      } catch (err) {
+        expect(callCount).toBe(2);
+        expect(service.fallbackToRest$.value).toBe(true);
+      }
+    });
   });
 });

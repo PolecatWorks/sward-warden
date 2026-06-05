@@ -46,3 +46,9 @@ When working with agentic assistants (like Antigravity) that use an automated pl
    - **Step 3: User Approval**: Present the agent plan to the user for explicit approval before running code-modifying commands.
    - **Step 4: Execute & Verify**: Implement the specifications using TDD, tracking progress in `task.md`.
    - **Step 5: Document Results**: Complete the task by updating the status of the Spec file in both the file header and `spec/specs/readme.md` (e.g., from "Open" or "In Progress" to "Complete"), then detail the verification in `walkthrough.md`.
+
+## Development Environment
+
+When running locally, the following default services are available and auto-recompile on changes:
+- **Frontend URL**: `http://localhost:4200`
+- **Backend API URL**: `http://localhost:8080`
