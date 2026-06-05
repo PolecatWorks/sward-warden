@@ -29,3 +29,20 @@ This file describes the workflow and development patterns for our agents to foll
 - The specs readme (`spec/specs/readme.md`) must show a summary of all specs as a table with columns for the Specification (link) and Status (state).
 
 - **NOTE**: PRD files can mutate over time. Spec files are immutable, however when a spec file has updates and it is not complete (ie still in open state) then it can be modified and does not need to be superceeded. Spec files can be in the following states: Open / Complete / Deprecated / Superceeded.
+
+## Integration with Agent Planning Mode
+
+When working with agentic assistants (like Antigravity) that use an automated planning/execution mode, align the project specifications with the agent's native planning files as follows:
+
+1. **Mapping Project Specs to Agent Plans**:
+   - **Project Specification (`spec/specs/`)**: This is the permanent, version-controlled source of truth in the repository describing *what* needs to be built and *how* it should function.
+   - **Agent Implementation Plan (`implementation_plan.md`)**: When the agent enters Planning Mode, it creates this file in its workspace session. It serves as the chat-specific execution roadmap, detailing the exact file edits, commands, and verification steps the agent will perform *during this specific session* to implement the active project specification.
+   - **Agent Task List (`task.md`)**: The agent's session TODO list, used to track mechanical progress during development.
+   - **Agent Walkthrough (`walkthrough.md`)**: The final summary of changes, test outputs, and verification results for the current session.
+
+2. **Sequential Workflow for Agents**:
+   - **Step 1: Reference / Create Specs**: Read the PRD (`spec/prds/`) and retrieve or create/modify the Specification (`spec/specs/`) for the feature.
+   - **Step 2: Generate Agent Plan**: Initialize the agent's Planning Mode. The `implementation_plan.md` must clearly trace its proposed changes back to the active Project Specification.
+   - **Step 3: User Approval**: Present the agent plan to the user for explicit approval before running code-modifying commands.
+   - **Step 4: Execute & Verify**: Implement the specifications using TDD, tracking progress in `task.md`.
+   - **Step 5: Document Results**: Complete the task by updating the status of the Spec file in both the file header and `spec/specs/readme.md` (e.g., from "Open" or "In Progress" to "Complete"), then detail the verification in `walkthrough.md`.
