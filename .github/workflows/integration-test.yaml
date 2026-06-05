@@ -11,8 +11,8 @@ on:
 
 
 concurrency:
-  group: k8s-integration-env
-  cancel-in-progress: false
+  group: k8s-integration-env-${{ github.event.pull_request.number || github.event.inputs.pr_number || github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
