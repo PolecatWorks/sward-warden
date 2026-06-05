@@ -40,6 +40,8 @@ fn get_test_state() -> AppState {
                 allow_methods: vec![],
                 allow_headers: vec![],
             },
+            timeout: std::time::Duration::from_secs(30),
+            max_connections: 100,
         },
         hams: ::hams::hams::config::HamsConfig::default(),
         runtime: ThreadRuntime {
