@@ -51,3 +51,34 @@ pub async fn delete_farm(
     *state.farms_cache.write().await = None;
     Ok(StatusCode::NO_CONTENT)
 }
+
+pub async fn get_farm(
+    State(state): State<AppState>,
+    Path(id): Path<i64>,
+) -> Result<Json<Farm>, AppError> {
+    let farm = sqlx::query_as::<_, Farm>(
+        "SELECT id, user_id, name, location, has_derogation, updated_at, is_deleted FROM farms WHERE id = $1 AND user_id = 1 AND is_deleted = FALSE"
+    )
+    .bind(id)
+    .fetch_one(&state.db_pool)
+    .await?;
+    Ok(Json(farm))
+}
+
+pub async fn update_farm(
+    State(state): State<AppState>,
+    Path(id): Path<i64>,
+    Json(farm): Json<Farm>,
+) -> Result<Json<Farm>, AppError> {
+    let updated_farm = sqlx::query_as::<_, Farm>(
+        "UPDATE farms SET name = $1, location = $2, has_derogation = $3, updated_at = NOW() WHERE id = $4 AND user_id = 1 AND is_deleted = FALSE RETURNING id, user_id, name, location, has_derogation, updated_at, is_deleted"
+    )
+    .bind(&farm.name)
+    .bind(&farm.location)
+    .bind(farm.has_derogation.unwrap_or(false))
+    .bind(id)
+    .fetch_one(&state.db_pool)
+    .await?;
+    *state.farms_cache.write().await = None;
+    Ok(Json(updated_farm))
+}

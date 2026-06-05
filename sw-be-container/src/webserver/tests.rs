@@ -251,3 +251,49 @@ async fn test_cors_headers_present() {
     assert!(methods.contains("GET"));
     assert!(methods.contains("POST"));
 }
+
+#[tokio::test]
+async fn test_get_farm_route_exists() {
+    let state = get_test_state();
+    let app = app_router(state);
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .uri("/v0/farms/999")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    // The route should exist, so it should not return NOT_FOUND (404)
+    // It might return INTERNAL_SERVER_ERROR (500) if database isn't fully mocked/accessible,
+    // or NOT_FOUND if it queried the DB successfully but ID 999 doesn't exist.
+    assert_ne!(response.status(), StatusCode::NOT_FOUND);
+}
+
+#[tokio::test]
+async fn test_put_farm_route_exists() {
+    let state = get_test_state();
+    let app = app_router(state);
+
+    let farm_json = serde_json::json!({
+        "name": "Updated Farm Name",
+        "location": "Updated Location"
+    });
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .method("PUT")
+                .uri("/v0/farms/999")
+                .header("Content-Type", "application/json")
+                .body(Body::from(farm_json.to_string()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_ne!(response.status(), StatusCode::NOT_FOUND);
+}

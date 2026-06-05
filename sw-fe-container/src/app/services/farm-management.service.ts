@@ -183,6 +183,57 @@ export class FarmManagementService {
     );
   }
 
+  /** Update a farm in the local RxDB database and queue an outbox entry. */
+  updateFarm(id: number | string, farm: Partial<Farm>): Observable<Farm> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.put<Farm>(`${apiUrl}/farms/${id}`, farm, { headers: this.getHeaders() }))
+      );
+    }
+    return this.rxdbService.db$.pipe(
+      switchMap(db => {
+        const selector = (typeof id === 'number' && id < 0)
+          ? { id: id.toString() }
+          : (typeof id === 'number' ? { serverId: id } : { id: id });
+        return from(db.farms.findOne({ selector }).exec() as Promise<RxDocument<any> | null>).pipe(
+          switchMap(doc => {
+            if (!doc) {
+              throw new Error(`Farm with id ${id} not found`);
+            }
+            const localId = doc.id;
+            const serverId = doc.serverId;
+            const updates: any = {};
+            const outboxPayload: any = {};
+
+            if (farm.name !== undefined) updates.name = outboxPayload.name = farm.name;
+            if (farm.location !== undefined) updates.location = outboxPayload.location = farm.location;
+            if (farm.has_derogation !== undefined) updates.has_derogation = outboxPayload.has_derogation = farm.has_derogation;
+
+            const updateData = {
+              ...updates,
+              syncStatus: 'pending',
+              updatedAt: new Date().toISOString()
+            };
+
+            return from(doc.patch(updateData)).pipe(
+              switchMap((patchedDoc: any) => {
+                const payload = { ...outboxPayload };
+                if (serverId) {
+                  payload.id = serverId;
+                }
+                return from(this.createOutboxEntry(db, 'PUT', 'farms', localId, payload)).pipe(
+                  map(() => patchedDoc as FarmDocType)
+                );
+              })
+            );
+          })
+        );
+      }),
+      map(doc => this.farmDocToModel(doc))
+    );
+  }
+
+
   /** Get all fields from the local RxDB database. */
   getFields(): Observable<Field[]> {
     if (this.rxdbService.fallbackToRest$.value) {

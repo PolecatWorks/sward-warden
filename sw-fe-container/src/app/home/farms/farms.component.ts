@@ -26,6 +26,11 @@ export class FarmsComponent implements OnInit {
   isSaving: boolean = false;
   errorMessage: string | null = null;
 
+  showEditFarmModal: boolean = false;
+  editingFarm: Farm | null = null;
+  editFarmName: string = '';
+  editFarmLocation: string = '';
+
   constructor(
     private farmService: FarmManagementService,
     private logger: LoggerService
@@ -111,5 +116,46 @@ export class FarmsComponent implements OnInit {
     this.showAddFarmModal = false;
     this.newFarmName = '';
     this.newFarmLocation = '';
+  }
+
+  openEditFarmModal(farm: Farm, event: Event): void {
+    event.stopPropagation();
+    this.editingFarm = farm;
+    this.editFarmName = farm.name;
+    this.editFarmLocation = farm.location;
+    this.errorMessage = null;
+    this.showEditFarmModal = true;
+  }
+
+  closeEditFarmModal(): void {
+    this.showEditFarmModal = false;
+    this.editingFarm = null;
+    this.editFarmName = '';
+    this.editFarmLocation = '';
+  }
+
+  editFarm(): void {
+    if (!this.editingFarm || !this.editFarmName || !this.editFarmLocation) {
+      return;
+    }
+
+    const updatedData: Partial<Farm> = {
+      name: this.editFarmName,
+      location: this.editFarmLocation
+    };
+
+    this.isSaving = true;
+    this.farmService.updateFarm(this.editingFarm.id!, updatedData).subscribe({
+      next: () => {
+        this.closeEditFarmModal();
+        this.isSaving = false;
+        this.loadFarms();
+      },
+      error: (err) => {
+        this.errorMessage = 'Failed to update farm. Please try again.';
+        this.isSaving = false;
+        this.logger.error('Error updating farm:', err);
+      }
+    });
   }
 }

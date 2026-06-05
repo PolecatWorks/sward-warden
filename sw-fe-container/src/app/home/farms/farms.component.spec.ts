@@ -28,11 +28,13 @@ describe('FarmsComponent', () => {
       'getFarms',
       'getFields',
       'addFarm',
+      'updateFarm',
       'deleteEntity',
     ]);
     spy.getFarms.and.returnValue(of(mockFarms));
     spy.getFields.and.returnValue(of([]));
     spy.addFarm.and.returnValue(of({ id: 3, name: 'New Farm', location: 'Galway, Ireland' }));
+    spy.updateFarm.and.returnValue(of({ id: 1, name: 'Updated Farm', location: 'Kerry, Ireland' }));
     spy.deleteEntity.and.returnValue(of(undefined));
 
     await TestBed.configureTestingModule({
@@ -220,6 +222,51 @@ describe('FarmsComponent', () => {
       farmServiceSpy.deleteEntity.and.returnValue(throwError(() => new Error('Delete failed')));
       component.deleteFarm(1);
       expect(component.errorMessage).toContain('Failed to delete farm');
+    });
+  });
+
+  // ── Edit Farm ──────────────────────────────────────────────
+  describe('editFarm', () => {
+    beforeEach(() => {
+      fixture.detectChanges();
+      farmServiceSpy.updateFarm.and.returnValue(of({ id: 1, name: 'Updated Farm', location: 'Kerry, Ireland' }));
+    });
+
+    it('should open edit modal and prefill inputs', () => {
+      const farmToEdit = mockFarms[0];
+      const dummyEvent = new Event('click');
+      component.openEditFarmModal(farmToEdit, dummyEvent);
+      expect(component.showEditFarmModal).toBeTrue();
+      expect(component.editingFarm).toEqual(farmToEdit);
+      expect(component.editFarmName).toBe(farmToEdit.name);
+      expect(component.editFarmLocation).toBe(farmToEdit.location);
+    });
+
+    it('should call updateFarm service with correct parameters and reload farms', () => {
+      const farmToEdit = mockFarms[0];
+      const dummyEvent = new Event('click');
+      component.openEditFarmModal(farmToEdit, dummyEvent);
+      component.editFarmName = 'Truly Updated Farm';
+      component.editFarmLocation = 'New Location';
+      component.editFarm();
+
+      expect(farmServiceSpy.updateFarm).toHaveBeenCalledOnceWith(1, {
+        name: 'Truly Updated Farm',
+        location: 'New Location',
+      });
+      expect(farmServiceSpy.getFarms).toHaveBeenCalledTimes(2);
+      expect(component.showEditFarmModal).toBeFalse();
+    });
+
+    it('should show error message when updateFarm fails', () => {
+      farmServiceSpy.updateFarm.and.returnValue(throwError(() => new Error('Update failed')));
+      const farmToEdit = mockFarms[0];
+      const dummyEvent = new Event('click');
+      component.openEditFarmModal(farmToEdit, dummyEvent);
+      component.editFarm();
+
+      expect(component.errorMessage).toContain('Failed to update farm');
+      expect(component.isSaving).toBeFalse();
     });
   });
 });

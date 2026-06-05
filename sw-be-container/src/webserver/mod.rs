@@ -46,7 +46,12 @@ pub fn app_router(state: AppState) -> Router {
             get(users::get_user).put(users::update_user),
         )
         .route("/v0/farms", get(farms::list_farms).post(farms::create_farm))
-        .route("/v0/farms/{id}", delete(farms::delete_farm))
+        .route(
+            "/v0/farms/{id}",
+            get(farms::get_farm)
+                .put(farms::update_farm)
+                .delete(farms::delete_farm),
+        )
         .route(
             "/v0/farms/{farm_id}/soil-analyses",
             get(events::list_soil_analyses),
