@@ -1,0 +1,44 @@
+<div class="min-h-screen bg-[#faf9f5] dark:bg-[#1a1c1a] flex flex-col justify-center items-center p-4">
+  <div class="w-full max-w-md bg-white dark:bg-black/20 backdrop-blur-2xl p-8 rounded-3xl shadow-xl border border-black/5">
+    <div class="flex items-center gap-3 mb-8 justify-center">
+      <div class="w-12 h-12 rounded-2xl overflow-hidden bg-primary/10 flex items-center justify-center">
+        <span class="material-symbols-outlined text-primary text-3xl">agriculture</span>
+      </div>
+      <div>
+        <h1 class="text-2xl font-black text-[#154212] dark:text-white font-['Work_Sans'] tracking-tighter leading-none">Sward</h1>
+        <p class="text-[10px] font-bold text-primary tracking-widest uppercase opacity-60">Warden</p>
+      </div>
+    </div>
+
+    <div class="mb-8 text-center">
+      <h2 class="text-xl font-bold text-primary mb-2">Development Login</h2>
+      <p class="text-sm text-on-surface-variant">Select a user to continue.</p>
+    </div>
+
+    <div class="space-y-3">
+      <ng-container *ngIf="users$ | async as users; else loading">
+        <div *ngFor="let user of users"
+             [attr.id]="'user-card-' + user.id"
+             (click)="loginAs(user.id)"
+             class="group relative overflow-hidden rounded-xl bg-surface-container-lowest p-4 transition-all hover:bg-primary/5 hover:scale-[1.02] cursor-pointer border border-transparent hover:border-primary/20 flex items-center gap-4">
+           <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+             {{ user.name.charAt(0) }}
+           </div>
+           <div>
+             <h3 class="font-bold text-primary">{{ user.name }}</h3>
+             <p class="text-xs text-on-surface-variant">{{ user.email }} • {{ user.role }}</p>
+           </div>
+           <span class="material-symbols-outlined text-primary ml-auto opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+        </div>
+        <div *ngIf="users.length === 0" class="text-center text-on-surface-variant p-4">
+          No users found. Ensure the database is seeded.
+        </div>
+      </ng-container>
+      <ng-template #loading>
+        <div class="text-center text-on-surface-variant p-4">
+          Loading users...
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>

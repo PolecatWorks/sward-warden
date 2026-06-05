@@ -54,9 +54,9 @@ export class UserProfileComponent implements OnInit {
   ngOnInit(): void {
     this.users$ = this.farmManagementService.getUsers();
 
-    // Handle mock auth 'default-user' gracefully since the backend expects numeric IDs for /users/:id
+
     const authId = this.authService.getUserId();
-    this.currentUserId = (!authId || authId === 'default-user') ? '1' : authId;
+    this.currentUserId = authId || '1';
 
     this.loadCurrentUser();
   }

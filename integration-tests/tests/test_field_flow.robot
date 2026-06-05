@@ -22,7 +22,8 @@ Field Creation and Deletion Flow
     ${farm_id}=    Convert To String    ${farm_response.json()['id']}
 
     # 2. Navigate to the created farm's fields page
-    New Page    ${EXTERNAL_DNS_URL}/farms/${farm_id}/fields
+    Login As Demo User
+    Go To    ${EXTERNAL_DNS_URL}/farms/${farm_id}/fields
 
     # Wait for sync/loading
     Sleep    2s

@@ -40,14 +40,14 @@ describe('SyncEngineService', () => {
             apiUrl$: of('/v0'),
             getHeaders: () => new HttpHeaders({
               'Content-Type': 'application/json',
-              'X-User-ID': 'test-user',
+              'X-User-ID': '1',
             }),
           },
         },
-        { provide: RXDB_STORAGE, useValue: getRxStorageMemory() },
+        { provide: RXDB_STORAGE, useFactory: () => getRxStorageMemory() },
         { provide: RXDB_DB_NAME, useValue: testDbName },
         { provide: NetworkService, useValue: { isOnline$: mockOnline$.asObservable() } },
-        { provide: AuthService, useValue: { getUserId: () => 'test-user' } },
+        { provide: AuthService, useValue: { getUserId: () => '1' } },
       ],
     });
 

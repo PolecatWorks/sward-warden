@@ -16,7 +16,8 @@ Sward Movement Creation Flow
     New Context    recordVideo={"dir": "${OUTPUT_DIR}/videos"}
 
     # 1. Navigate to the created farm's sward movements page
-    New Page    ${EXTERNAL_DNS_URL}/farms/${TEST_FARM_ID}/movements
+    Login As Demo User
+    Go To    ${EXTERNAL_DNS_URL}/farms/${TEST_FARM_ID}/movements
 
     # Wait for sync/loading
     Sleep    2s

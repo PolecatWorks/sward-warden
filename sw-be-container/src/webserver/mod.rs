@@ -14,7 +14,7 @@ pub mod weather;
 
 use axum::{
     Json, Router,
-    routing::{delete, get, put},
+    routing::{delete, get},
 };
 use axum_prometheus::PrometheusMetricLayer;
 use tokio_util::sync::CancellationToken;
@@ -41,7 +41,10 @@ pub fn app_router(state: AppState) -> Router {
         .route("/v0/admin/audit-logs", get(admin::admin_list_audit_logs))
         .route("/v0/hello", get(hello_handler))
         .route("/v0/users", get(users::list_users).post(users::create_user))
-        .route("/v0/users/{id}", get(users::get_user).put(users::update_user))
+        .route(
+            "/v0/users/{id}",
+            get(users::get_user).put(users::update_user),
+        )
         .route("/v0/farms", get(farms::list_farms).post(farms::create_farm))
         .route("/v0/farms/{id}", delete(farms::delete_farm))
         .route(

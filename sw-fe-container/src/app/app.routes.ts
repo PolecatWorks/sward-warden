@@ -33,12 +33,17 @@ import { SoilAnalysisReportsComponent } from './soil-analysis-reports/soil-analy
 import { ImportExportReportingComponent } from './import-export-reporting/import-export-reporting.component';
 
 
+import { authGuard } from "./services/auth.guard";
+import { LoginComponent } from "./login/login.component";
+
 export const routes: Routes = [
+  { path: "login", component: LoginComponent },
   { path: 'fertilisation-plans', component: FertilisationPlansComponent },
   { path: 'soil-analysis-results', component: SoilAnalysisResults },
   {
     path: '',
     component: MainLayoutComponent,
+    canActivate: [authGuard],
     children: [
       // ── Core Navigation ──
       { path: 'home', component: HomeComponent },

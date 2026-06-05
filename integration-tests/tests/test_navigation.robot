@@ -11,7 +11,8 @@ Navigate Through App
     [Teardown]    Teardown With Video
     New Browser    chromium    headless=True
     New Context    recordVideo={"dir": "${OUTPUT_DIR}/videos"}
-    New Page    ${EXTERNAL_DNS_URL}/dashboard
+    Login As Demo User
+    Go To    ${EXTERNAL_DNS_URL}/dashboard
     Get Url    ==    ${EXTERNAL_DNS_URL}/dashboard
     Go To    ${EXTERNAL_DNS_URL}/farms
     Get Url    ==    ${EXTERNAL_DNS_URL}/farms

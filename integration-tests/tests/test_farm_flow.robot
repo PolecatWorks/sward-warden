@@ -13,7 +13,8 @@ Farm Creation and Deletion Flow
     [Teardown]    Teardown With Video
     New Browser    chromium    headless=True
     New Context    recordVideo={"dir": "${OUTPUT_DIR}/videos"}
-    New Page    ${EXTERNAL_DNS_URL}/farms
+    Login As Demo User
+    Go To    ${EXTERNAL_DNS_URL}/farms
 
     # Wait for sync/loading
     Sleep    2s
