@@ -13,9 +13,10 @@ Verify REST Fallback and Warning Banner on Database Failure
     [Teardown]    Teardown With Video
     New Browser    chromium    headless=True
     New Context    recordVideo={"dir": "${OUTPUT_DIR}/videos"}
+    Login As Demo User
 
     # 1. Load the application with the mock persistent failure query parameter
-    New Page    ${EXTERNAL_DNS_URL}/dashboard?mock-db-fail-persistent=true
+    Go To    ${EXTERNAL_DNS_URL}/dashboard?mock-db-fail-persistent=true
 
     # 2. Verify that the REST fallback warning banner is displayed in the UI shell
     Wait For Elements State    \#fallback-warning-banner    visible    timeout=10s

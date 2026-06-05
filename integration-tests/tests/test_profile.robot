@@ -12,7 +12,8 @@ Edit Profile
     [Teardown]    Teardown With Video
     New Browser    chromium    headless=True
     New Context    recordVideo={"dir": "${OUTPUT_DIR}/videos"}
-    New Page    ${EXTERNAL_DNS_URL}/profile
+    Login As Demo User
+    Go To    ${EXTERNAL_DNS_URL}/profile
 
     # Verify we are on the profile page
     Get Url    ==    ${EXTERNAL_DNS_URL}/profile
