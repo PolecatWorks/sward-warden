@@ -1,6 +1,6 @@
 # 0003-07 Field Moving Specification
 
-**State**: Open
+**State**: Complete
 
 ## Scope
 This specification covers the implementation details of moving (migrating) a field to a different farm, as part of Field Management in PRD 0003.

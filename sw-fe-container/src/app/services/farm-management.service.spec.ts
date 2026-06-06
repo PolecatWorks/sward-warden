@@ -206,6 +206,54 @@ describe('FarmManagementService', () => {
     });
   });
 
+  // ── updateField (local-first) ───────────────────────────
+  describe('updateField', () => {
+    it('should patch local RxDB field document and create PUT outbox entry', async () => {
+      const db = await firstValueFrom(rxdbService.db$);
+      await db.fields.insert({
+        id: 'field-1',
+        serverId: 123,
+        farm_id: 1,
+        name: 'Old Field Name',
+        area_hectares: 10,
+        land_use: 'grassland',
+        syncStatus: 'synced',
+        updatedAt: new Date().toISOString(),
+      });
+
+      const updatedField = await firstValueFrom(service.updateField(123, {
+        name: 'New Field Name',
+        farm_id: 2,
+        area_hectares: 12,
+        land_use: 'arable'
+      }));
+
+      expect(updatedField.name).toBe('New Field Name');
+      expect(updatedField.farm_id).toBe(2);
+      expect(updatedField.area_hectares).toBe(12);
+      expect(updatedField.land_use).toBe('arable');
+
+      // Verify RxDB document updated
+      const doc = await db.fields.findOne({ selector: { serverId: 123 } }).exec();
+      expect(doc).not.toBeNull();
+      expect(doc!.name).toBe('New Field Name');
+      expect(doc!.farm_id).toBe(2);
+      expect(doc!.syncStatus).toBe('pending');
+
+      // Verify outbox entry
+      const outbox = await db.outbox.find().exec();
+      expect(outbox.length).toBe(1);
+      expect(outbox[0].actionType).toBe('PUT');
+      expect(outbox[0].entityType).toBe('fields');
+      expect(outbox[0].status).toBe('pending');
+
+      const payload = JSON.parse(outbox[0].payload);
+      expect(payload.id).toBe(123);
+      expect(payload.name).toBe('New Field Name');
+      expect(payload.farm_id).toBe(2);
+    });
+  });
+
   // ── Outbox entries on writes ────────────────────────────
   describe('outbox entries', () => {
     it('should create a POST outbox entry when adding a farm', async () => {

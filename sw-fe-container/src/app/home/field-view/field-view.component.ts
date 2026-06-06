@@ -7,6 +7,7 @@ import { Field } from '../../models/field';
 import { Event } from '../../models/event';
 import { FertiliserApplication } from '../../models/fertiliser-application';
 import { OrganicManureApplication } from '../../models/organic-manure-application';
+import { Farm } from '../../models/farm';
 
 @Component({
   selector: 'app-field-view',
@@ -23,6 +24,15 @@ export class FieldViewComponent implements OnInit {
 
   editingEventId: number | null = null;
   editFormData: any = {};
+
+  showEditFieldModal: boolean = false;
+  editFieldName: string = '';
+  editFieldArea: number = 0;
+  editFieldLandUse: string = 'grassland';
+  editFieldFarmId: number = 0;
+  farms: Farm[] = [];
+  isSaving: boolean = false;
+  errorMessage: string | null = null;
 
 
   showFertiliserForm: boolean = false;
@@ -72,6 +82,7 @@ export class FieldViewComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadFarms();
     this.route.paramMap.subscribe(params => {
       const id = params.get('fieldId');
       if (id) {
@@ -85,6 +96,66 @@ export class FieldViewComponent implements OnInit {
   loadFieldDetails(): void {
     this.farmService.getField(this.fieldId).subscribe(field => {
       this.field = field;
+    });
+  }
+
+  loadFarms(): void {
+    this.farmService.getFarms().subscribe({
+      next: (farms) => {
+        this.farms = farms;
+      },
+      error: (err) => {
+        console.error('Error loading farms:', err);
+      }
+    });
+  }
+
+  openEditFieldModal(): void {
+    if (!this.field) return;
+
+    this.editFieldName = this.field.name;
+    this.editFieldArea = this.field.area_hectares;
+    this.editFieldLandUse = this.field.land_use || 'grassland';
+    this.editFieldFarmId = this.field.farm_id;
+    this.errorMessage = null;
+    this.showEditFieldModal = true;
+  }
+
+
+  closeEditFieldModal(): void {
+    this.showEditFieldModal = false;
+    this.editFieldName = '';
+    this.editFieldArea = 0;
+    this.editFieldLandUse = 'grassland';
+    this.editFieldFarmId = 0;
+    this.errorMessage = null;
+  }
+
+  editField(): void {
+    if (!this.field || !this.editFieldName || this.editFieldArea <= 0 || !this.editFieldFarmId) {
+      this.errorMessage = 'Please enter valid details.';
+      return;
+    }
+
+    const updatedData: Partial<Field> = {
+      name: this.editFieldName,
+      area_hectares: this.editFieldArea,
+      land_use: this.editFieldLandUse,
+      farm_id: +this.editFieldFarmId
+    };
+
+    this.isSaving = true;
+    this.farmService.updateField(this.fieldId, updatedData).subscribe({
+      next: () => {
+        this.closeEditFieldModal();
+        this.isSaving = false;
+        this.loadFieldDetails();
+      },
+      error: (err) => {
+        this.errorMessage = 'Failed to update field. Please try again.';
+        this.isSaving = false;
+        console.error('Error updating field:', err);
+      }
     });
   }
 

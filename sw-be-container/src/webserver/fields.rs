@@ -42,3 +42,36 @@ pub async fn delete_field(
         .await?;
     Ok(StatusCode::NO_CONTENT)
 }
+
+pub async fn update_field(
+    State(state): State<AppState>,
+    Path(id): Path<i64>,
+    Json(field): Json<Field>,
+) -> Result<Json<Field>, AppError> {
+    // Validate destination farm ownership
+    let farm_exists = sqlx::query_scalar::<_, bool>(
+        "SELECT EXISTS(SELECT 1 FROM farms WHERE id = $1 AND user_id = 1 AND is_deleted = FALSE)",
+    )
+    .bind(field.farm_id)
+    .fetch_one(&state.db_pool)
+    .await?;
+
+    if !farm_exists {
+        return Err(AppError::NotFound(
+            "Destination farm not found or unauthorized".into(),
+        ));
+    }
+
+    let updated_field = sqlx::query_as::<_, Field>(
+        "UPDATE fields SET farm_id = $1, name = $2, area_hectares = $3, land_use = $4, updated_at = NOW() WHERE id = $5 AND farm_id IN (SELECT id FROM farms WHERE user_id = 1) AND is_deleted = FALSE RETURNING id, farm_id, name, area_hectares, land_use, updated_at, is_deleted"
+    )
+    .bind(field.farm_id)
+    .bind(&field.name)
+    .bind(field.area_hectares)
+    .bind(&field.land_use)
+    .bind(id)
+    .fetch_one(&state.db_pool)
+    .await?;
+
+    Ok(Json(updated_field))
+}

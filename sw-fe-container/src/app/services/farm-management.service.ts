@@ -233,6 +233,57 @@ export class FarmManagementService {
     );
   }
 
+  /** Update a field in the local RxDB database and queue an outbox entry. */
+  updateField(id: number | string, field: Partial<Field>): Observable<Field> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap(apiUrl => this.http.put<Field>(`${apiUrl}/fields/${id}`, field, { headers: this.getHeaders() }))
+      );
+    }
+    return this.rxdbService.db$.pipe(
+      switchMap(db => {
+        const selector = (typeof id === 'number' && id < 0)
+          ? { id: id.toString() }
+          : (typeof id === 'number' ? { serverId: id } : { id: id });
+        return from(db.fields.findOne({ selector }).exec() as Promise<RxDocument<any> | null>).pipe(
+          switchMap(doc => {
+            if (!doc) {
+              throw new Error(`Field with id ${id} not found`);
+            }
+            const localId = doc.id;
+            const serverId = doc.serverId;
+            const updates: any = {};
+            const outboxPayload: any = {};
+
+            if (field.farm_id !== undefined) updates.farm_id = outboxPayload.farm_id = field.farm_id;
+            if (field.name !== undefined) updates.name = outboxPayload.name = field.name;
+            if (field.area_hectares !== undefined) updates.area_hectares = outboxPayload.area_hectares = field.area_hectares;
+            if (field.land_use !== undefined) updates.land_use = outboxPayload.land_use = field.land_use;
+
+            const updateData = {
+              ...updates,
+              syncStatus: 'pending',
+              updatedAt: new Date().toISOString()
+            };
+
+            return from(doc.patch(updateData)).pipe(
+              switchMap((patchedDoc: any) => {
+                const payload = { ...outboxPayload };
+                if (serverId) {
+                  payload.id = serverId;
+                }
+                return from(this.createOutboxEntry(db, 'PUT', 'fields', localId, payload)).pipe(
+                  map(() => patchedDoc as FieldDocType)
+                );
+              })
+            );
+          })
+        );
+      }),
+      map(doc => this.fieldDocToModel(doc))
+    );
+  }
+
 
   /** Get all fields from the local RxDB database. */
   getFields(): Observable<Field[]> {
