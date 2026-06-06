@@ -21,6 +21,8 @@ The current be implementation in `sw-be-container` is a simple proof-of-concept 
   4. Environment variables prefixed with `SP_BE__`.
 - Configuration should be strictly typed (e.g., `AppConfig` containing sub-configurations like `WebServiceConfig`, `RuntimeConfig`, `DatabaseConfig`, `HamsConfig`).
 - The application should *fail fast* if required configurations are missing or malformed.
+- **No Defaults in Loaded Configuration**: Avoid defining default fallbacks for configuration fields (e.g., using `#[serde(default)]` or custom default deserialization functions). All configuration properties must be explicitly provided in configuration sources (such as YAML files, Helm values, Garden manifests, or environment variables) so that assumptions are not hidden and the explicit state of the application is clearly visible.
+
 
 ### 3.2. Application State (`AppState`)
 - Introduce a centralized strongly-typed `AppState` struct replacing the existing `Arc<RwLock>` defaults.

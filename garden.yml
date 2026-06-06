@@ -111,15 +111,26 @@ spec:
     config:
       webservice:
         address: http://0.0.0.0:8080/sward
+        forwarding_headers: []
         cors:
           allow_origins: []
           allow_methods: ["GET", "POST", "OPTIONS"]
           allow_headers: ["Content-Type", "Authorization"]
+        timeout: "30s"
+        max_connections: 100
       database:
         url:
           url: postgresql://postgres-test:5432/sward_warden
           username_file: persistence/db/connection/username
           password_file: persistence/db/connection/password
+        max_connections: 10
+      runtime:
+        threads: 0
+        stack_size: 3000000
+        name: "default"
+      debugging:
+        fail_debug_delay: null
+
     initContainer:
       env:
         - name: SP_BE__DEBUGGING__FAIL_DEBUG_DELAY

@@ -194,7 +194,9 @@ pub async fn start_app_api(state: AppState, ct: CancellationToken) -> Result<(),
             axum::http::StatusCode::REQUEST_TIMEOUT,
             state.config.webservice.timeout,
         ))
-        .layer(tower::limit::GlobalConcurrencyLimitLayer::new(state.config.webservice.max_connections));
+        .layer(tower::limit::GlobalConcurrencyLimitLayer::new(
+            state.config.webservice.max_connections,
+        ));
 
     let host = state
         .config
