@@ -299,3 +299,30 @@ async fn test_put_farm_route_exists() {
 
     assert_ne!(response.status(), StatusCode::NOT_FOUND);
 }
+
+#[tokio::test]
+async fn test_put_field_route_exists() {
+    let state = get_test_state();
+    let app = app_router(state);
+
+    let field_json = serde_json::json!({
+        "farm_id": 1,
+        "name": "Updated Field Name",
+        "area_hectares": 12.5,
+        "land_use": "arable"
+    });
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .method("PUT")
+                .uri("/v0/fields/999")
+                .header("Content-Type", "application/json")
+                .body(Body::from(field_json.to_string()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_ne!(response.status(), StatusCode::NOT_FOUND);
+}
