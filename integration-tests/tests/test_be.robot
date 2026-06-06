@@ -75,9 +75,18 @@ Farms BREAD Operations
     ${farms}=    Set Variable    ${list_response.json()}
     Should Not Be Empty    ${farms}
 
-    # Missing Endpoints:
-    # 3. Read: GET /v0/farms/${farm_id} is missing.
-    # 4. Edit: PUT/PATCH /v0/farms/${farm_id} is missing.
+    # 3. Read (Get) Farm
+    ${get_response}=    GET    ${BE_BASE_URL}/v0/farms/${farm_id}    expected_status=200
+    Log    Get Farm Response: ${get_response.content}
+    Should Be Equal As Strings    ${get_response.json()['name']}    Test Farm
+
+    # 4. Edit (Update) Farm
+    &{edit_farm_data}=    Create Dictionary    name=Updated Farm Name    location=Updated Location    has_derogation=${False}
+    ${edit_response}=    PUT    ${BE_BASE_URL}/v0/farms/${farm_id}    json=${edit_farm_data}    expected_status=200
+    Log    Edit Farm Response: ${edit_response.content}
+    Should Be Equal As Strings    ${edit_response.json()['name']}    Updated Farm Name
+    Should Be Equal As Strings    ${edit_response.json()['location']}    Updated Location
+
 
     # 5. Delete (Delete) Farm
     ${delete_response}=    DELETE    ${BE_BASE_URL}/v0/farms/${farm_id}    expected_status=204

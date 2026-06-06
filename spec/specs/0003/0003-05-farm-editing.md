@@ -1,24 +1,30 @@
-# 0003-05 Farm Editing Specification
+# 0003-06 Farm Editing Specification
 
-**State**: Open
+**State**: Complete
 
-## Scope
-This specification covers the implementation details of editing a farm after it has been created, as part of Farm Management in PRD 0003.
+## 1. Overview
+This specification details the design and implementation for editing a farm's details (specifically its `name`, `location`, and `has_derogation` status) after it has been created.
 
-## Features
-- **Backend API Endpoints**:
-  - `GET /v0/farms/{id}`: Fetch details for a specific farm.
-  - `PUT /v0/farms/{id}`: Update farm name, location, and derogation status.
-- **Frontend local-first support**:
-  - Extend `FarmManagementService` to support updating farms locally in RxDB and queuing a sync outbox entry.
-- **Farm Editing UI**:
-  - Introduce an edit modal or edit view on the Farms page to allow editing existing farms.
+## 2. Requirements
 
-## Technical Details
-- **Backend**:
-  - Register new routes on `app_router` in `sw-be-container/src/webserver/mod.rs`.
-  - Add query handlers in `sw-be-container/src/webserver/farms.rs`.
-  - Invalidate the farms read cache upon a successful update.
-- **Frontend**:
-  - Implement `updateFarm` in `FarmManagementService` to support local-first updating and queuing outbox `PUT` action.
-  - Add an edit button on each farm card in `FarmsComponent` which opens an edit dialog pre-filled with the farm details.
+### 2.1. Backend API
+- Implement a route: `GET /v0/farms/{id}` to fetch details for a single farm.
+- Implement a route: `PUT /v0/farms/{id}` to update a farm's details.
+- Access is restricted to farms belonging to the current user (hardcoded fallback `user_id = 1` matching other routes).
+- The PUT route should update the farm's `name`, `location`, `has_derogation` status, and set `updated_at` to the current time, invalidate the cache, and return the updated farm model.
+
+### 2.2. Frontend Service (`FarmManagementService`)
+- Add method `updateFarm(id: number | string, farm: Partial<Farm>): Observable<Farm>`
+- If offline/syncing is active (`fallbackToRest$` is false), the method will update the local RxDB database document, set `syncStatus` to `pending`, and queue a `PUT` outbox entry.
+- If REST fallback is active, it will make a direct HTTP `PUT` request to `/v0/farms/{id}`.
+
+### 2.3. Frontend UI Components
+- Add component state for the edit farm modal (`showEditFarmModal`, `editingFarm`, `editFarmName`, `editFarmLocation`).
+- Add an "Edit" button (pen icon) to each farm card next to the delete button.
+- Clicking the "Edit" button opens the Edit Farm modal, prefilled with the farm's current name and location.
+- Saving updates the farm via `FarmManagementService.updateFarm` and reloads the farms list.
+
+## 3. Verification Plan
+- Unit tests for the backend GET and PUT routes.
+- Unit tests for frontend service `updateFarm` and UI component `FarmsComponent` edit modal flow.
+- Integration tests in `test_be.robot` to verify GET and PUT endpoints for farms.
