@@ -28,7 +28,7 @@ axum-prometheus = "^0.10"
 
 thiserror = "^2.0"
 reqwest = { version = "^0.13", default-features = false, features = ["json"] }
-tower-http = { version = "^0.6", features = ["trace", "cors"] }
+tower-http = { version = "^0.6", features = ["trace", "cors", "timeout"] }
 tokio-util = "^0.7"
 serde_with = "^3.16"
 humantime-serde = "^1.1"
@@ -39,6 +39,7 @@ dashmap = "^6.0"
 hams = { git = "https://github.com/PolecatWorks/hams.git" }
 ffi-log2 = { git = "https://github.com/PolecatWorks/hams.git" }
 sqlx = { version = "0.8", features = ["postgres", "runtime-tokio-rustls", "chrono"] }
+tower = { version = "0.5", features = ["limit", "timeout"] }
 
 [dev-dependencies]
 tower = { version = "0.5", features = ["util"] }

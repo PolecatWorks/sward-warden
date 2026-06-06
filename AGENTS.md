@@ -52,3 +52,7 @@ When working with agentic assistants (like Antigravity) that use an automated pl
 When running locally, the following default services are available and auto-recompile on changes:
 - **Frontend URL**: `http://localhost:4200`
 - **Backend API URL**: `http://localhost:8080`
+
+When building Docker images, always use the specific container targets:
+- **Frontend Docker Image**: `make sw-fe-docker`
+- **Backend Docker Image**: `make sw-be-docker`

@@ -81,6 +81,18 @@ pub struct WebServiceConfig {
     #[serde(default)]
     pub forwarding_headers: Vec<String>,
     pub cors: CorsConfig,
+    #[serde(with = "humantime_serde", default = "default_timeout")]
+    pub timeout: Duration,
+    #[serde(default = "default_max_connections_web")]
+    pub max_connections: usize,
+}
+
+fn default_timeout() -> Duration {
+    Duration::from_secs(30)
+}
+
+fn default_max_connections_web() -> usize {
+    100
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]

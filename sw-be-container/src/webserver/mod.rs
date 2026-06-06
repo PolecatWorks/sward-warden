@@ -189,7 +189,12 @@ pub async fn start_app_api(state: AppState, ct: CancellationToken) -> Result<(),
                 .on_failure(DefaultOnFailure::new().level(Level::ERROR)),
         )
         .layer(cors_layer)
-        .layer(metric_layer);
+        .layer(metric_layer)
+        .layer(tower_http::timeout::TimeoutLayer::with_status_code(
+            axum::http::StatusCode::REQUEST_TIMEOUT,
+            state.config.webservice.timeout,
+        ))
+        .layer(tower::limit::GlobalConcurrencyLimitLayer::new(state.config.webservice.max_connections));
 
     let host = state
         .config
