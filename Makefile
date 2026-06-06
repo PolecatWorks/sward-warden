@@ -120,6 +120,8 @@ db-local:
 # --- Robot Integration Tests (Local Dev) ---
 # Prerequisites: make compose-db, make sw-be-dev, make sw-fe-dev
 
+# LOCAL_BE_URL ?= http://127.0.0.1:8080/sward
+# LOCAL_FE_URL ?= http://127.0.0.1:4200
 LOCAL_BE_URL ?= http://localhost:8080/sward
 LOCAL_FE_URL ?= http://localhost:4200
 ROBOT_VENV := $(BASE_DIR).venv
@@ -134,11 +136,15 @@ $(ROBOT_VENV)/bin/robot:
 	$(ROBOT_VENV)/bin/pip install robotframework robotframework-requests robotframework-browser
 	$(ROBOT_VENV)/bin/python -m Browser.entry init
 
+# --- Service Waiting Targets ---
+.PHONY: wait-all
+wait-all: $(ROBOT_VENV)/bin/robot
+	$(ROBOT_VENV)/bin/python integration-tests/wait_for_services.py $(LOCAL_BE_URL) $(LOCAL_FE_URL)
+
 # Run all robot integration tests against local dev
 .PHONY: robot-test
-robot-test: $(ROBOT_VENV)/bin/robot
+robot-test: $(ROBOT_VENV)/bin/robot wait-all
 	@echo "Running all robot integration tests against local dev..."
-
 	$(ROBOT) \
 		--variable BE_BASE_URL:${LOCAL_BE_URL} \
 		--variable FE_BASE_URL:${LOCAL_FE_URL} \
@@ -152,7 +158,7 @@ robot-test: $(ROBOT_VENV)/bin/robot
 
 # Run only backend API tests (RequestsLibrary-based)
 .PHONY: robot-test-be
-robot-test-be: $(ROBOT_VENV)/bin/robot
+robot-test-be: $(ROBOT_VENV)/bin/robot wait-all
 	@echo "Running backend API robot tests..."
 	$(ROBOT) \
 		--variable BE_BASE_URL:$(LOCAL_BE_URL) \
@@ -164,7 +170,7 @@ robot-test-be: $(ROBOT_VENV)/bin/robot
 
 # Run only frontend HTTP tests (RequestsLibrary-based)
 .PHONY: robot-test-fe
-robot-test-fe: $(ROBOT_VENV)/bin/robot
+robot-test-fe: $(ROBOT_VENV)/bin/robot wait-all
 	@echo "Running frontend HTTP robot tests..."
 	$(ROBOT) \
 		--variable FE_BASE_URL:$(LOCAL_FE_URL) \
@@ -175,7 +181,7 @@ robot-test-fe: $(ROBOT_VENV)/bin/robot
 
 # Run browser-based navigation tests (Browser library)
 .PHONY: robot-test-nav
-robot-test-nav: $(ROBOT_VENV)/bin/robot
+robot-test-nav: $(ROBOT_VENV)/bin/robot wait-all
 	@echo "Running browser navigation robot tests..."
 	$(ROBOT) \
 		--variable EXTERNAL_DNS_URL:$(LOCAL_FE_URL) \
@@ -186,7 +192,7 @@ robot-test-nav: $(ROBOT_VENV)/bin/robot
 
 # Run test_hold tests (e.g. field flow end-to-end)
 .PHONY: robot-test-hold
-robot-test-hold: $(ROBOT_VENV)/bin/robot
+robot-test-hold: $(ROBOT_VENV)/bin/robot wait-all
 	@echo "Running test_hold robot tests..."
 	$(ROBOT) \
 		--variable BE_BASE_URL:$(LOCAL_BE_URL) \
