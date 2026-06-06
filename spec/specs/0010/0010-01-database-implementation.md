@@ -22,6 +22,7 @@ Implement a PostgreSQL connection pool using `sqlx`, migrate all CRUD operations
    - Replace vector `.read()` and `.write()` operations with `sqlx::query_as!` and `sqlx::query!` macros.
    - **Multi-tenancy Enforced**:
      - Extract the `user_id` dynamically from a secure authenticated context (e.g., validated JWT token). For local development, an `X-User-ID` header may be temporarily accepted.
+     - **TODO**: Implement proper JWT payload parsing and authorization middleware in `src/webserver/auth.rs`. Remove reliance on `X-User-ID` for the production build.
      - Remove any hardcoded user IDs (e.g., `user_id = 1`).
      - Enforce tenant isolation on **read** operations: all list/select/delete queries must filter by `user_id` across all user data endpoints.
      - Enforce tenant isolation on **write** operations: all create (`INSERT`) and update (`UPDATE`) queries must verify parent ownership. For example, when inserting a `Field`, verify via database subquery or transaction that the associated `farm_id` belongs to the authenticated user. Direct cross-tenant writes must be prevented at the database query layer.
