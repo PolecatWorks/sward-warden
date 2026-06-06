@@ -7,7 +7,8 @@ Migrate the `sw-be-container` be away from the legacy MVP in-memory `RwLock<Vec<
 1. **Connection Pooling**: Utilize `sqlx` to establish a robust, asynchronous PostgreSQL connection pool (`PgPool`) initialized on application startup.
 2. **State Migration**: Update the `AppState` in `src/state.rs` to hold the `sqlx::PgPool` instead of the legacy in-memory collections (`users`, `farms`, `fields`, `events`, `farm_records`).
 3. **Multi-Tenancy**: The application must enforce strict multi-tenancy. Every request that interacts with user-specific data (e.g., `farms`, `fields`, `events`, `applications`, `movements`, `soil_analyses`, `fertilisation_plans`, `farm_records`, `compliance_breaches`) must filter the query based on the authenticated user's ID to prevent cross-account data leakage.
-   - The backend MUST extract the `user_id` dynamically from the incoming request (e.g., via the `X-User-ID` header).
+   - The backend MUST extract the `user_id` dynamically from a secure authenticated context (e.g., validated JWT token payload).
+   - **Note on `X-User-ID` Header:** While `X-User-ID` may be used as a temporary development mechanism (as per PRD 0017) or injected by a trusted internal API gateway, production environments must never blindly trust a raw `X-User-ID` header originating from the client, as this introduces IDOR vulnerabilities.
    - Hardcoded user IDs (such as `user_id = 1`) are prohibited.
    - Admin users may be allowed to see all records via dedicated admin endpoints, but normal users MUST ONLY see data linked to their own `user_id`.
    - All assets and tables in the system that relate to a user's data must enforce this.
