@@ -21,7 +21,8 @@ describe('FieldsComponent', () => {
           useValue: {
             getFields: () => of([]),
             addField: () => of({}),
-            deleteEntity: () => of({})
+            deleteEntity: () => of({}),
+            updateField: () => of({})
           }
         }
       ],
@@ -36,5 +37,44 @@ describe('FieldsComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should start inline editing with field details', () => {
+    const field = { id: 42, farm_id: 1, name: 'South Paddock', area_hectares: 8.5 };
+    component.startEdit(field);
+    expect(component.editingFieldId).toBe(42);
+    expect(component.editFieldName).toBe('South Paddock');
+    expect(component.editFieldArea).toBe('8.5');
+  });
+
+  it('should clear editing state on cancel', () => {
+    const field = { id: 42, farm_id: 1, name: 'South Paddock', area_hectares: 8.5 };
+    component.startEdit(field);
+    component.cancelEdit();
+    expect(component.editingFieldId).toBeNull();
+    expect(component.editFieldName).toBe('');
+    expect(component.editFieldArea).toBe('');
+  });
+
+  it('should call updateField and refresh list on saveField', () => {
+    const farmService = TestBed.inject(FarmManagementService);
+    spyOn(farmService, 'updateField').and.callThrough();
+    spyOn(component, 'loadFields').and.callThrough();
+
+    const field = { id: 42, farm_id: 1, name: 'South Paddock', area_hectares: 8.5 };
+    component.startEdit(field);
+    component.editFieldName = 'Updated Paddock';
+    component.editFieldArea = '9.2';
+
+    component.saveField(field);
+
+    expect(farmService.updateField).toHaveBeenCalledWith(42, {
+      id: 42,
+      farm_id: 1,
+      name: 'Updated Paddock',
+      area_hectares: 9.2
+    });
+    expect(component.loadFields).toHaveBeenCalled();
+    expect(component.editingFieldId).toBeNull();
   });
 });

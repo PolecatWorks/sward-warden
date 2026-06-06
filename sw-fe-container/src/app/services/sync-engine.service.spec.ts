@@ -24,7 +24,7 @@ describe('SyncEngineService', () => {
 
   beforeEach(() => {
     syncTestCounter++;
-    testDbName = `sync-engine-test-${syncTestCounter}`;
+    testDbName = `sync-engine-test-${syncTestCounter}-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
     mockOnline$ = new BehaviorSubject<boolean>(false); // Start offline
 
     TestBed.configureTestingModule({
