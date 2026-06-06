@@ -88,3 +88,4 @@ Specifications under PRD 0008 (Spatial Optimization) require the PostGIS extensi
 | [0015-01 Security CORS Fix](./0015/0015-01-security-cors.md) | Complete |
 | [0016-01 Fields-First UX](./0016/0016-01-fields-first-ux.md) | Complete |
 | [0017-01 Dev User Authentication & Multi-User Testing](./0017/0017-01-dev-user-authentication.md) | Complete |
+| [0017-02 Dev User Creation](./0017/0017-02-dev-user-creation.md) | Complete |
