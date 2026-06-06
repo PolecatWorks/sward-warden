@@ -10,35 +10,115 @@
       </div>
     </div>
 
-    <div class="mb-8 text-center">
-      <h2 class="text-xl font-bold text-primary mb-2">Development Login</h2>
-      <p class="text-sm text-on-surface-variant">Select a user to continue.</p>
+    <!-- Error Alert Box -->
+    <div *ngIf="errorMsg" class="mb-6 p-4 bg-error-container text-on-error-container rounded-xl flex items-start gap-3 border border-error/20">
+      <span class="material-symbols-outlined text-error mt-0.5">error</span>
+      <div class="flex-1 text-sm">
+        <p class="font-bold">Connection Issue</p>
+        <p class="opacity-90">{{ errorMsg }}</p>
+      </div>
     </div>
 
-    <div class="space-y-3">
-      <ng-container *ngIf="users$ | async as users; else loading">
-        <div *ngFor="let user of users"
-             [attr.id]="'user-card-' + user.id"
-             (click)="loginAs(user.id)"
-             class="group relative overflow-hidden rounded-xl bg-surface-container-lowest p-4 transition-all hover:bg-primary/5 hover:scale-[1.02] cursor-pointer border border-transparent hover:border-primary/20 flex items-center gap-4">
-           <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-             {{ user.name.charAt(0) }}
-           </div>
-           <div>
-             <h3 class="font-bold text-primary">{{ user.name }}</h3>
-             <p class="text-xs text-on-surface-variant">{{ user.email }} • {{ user.role }}</p>
-           </div>
-           <span class="material-symbols-outlined text-primary ml-auto opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+    <!-- Dev Login Area (When NOT showing Create Form) -->
+    <div *ngIf="!showCreateForm">
+      <div class="mb-8 text-center">
+        <h2 class="text-xl font-bold text-primary mb-2">Development Login</h2>
+        <p class="text-sm text-on-surface-variant">Select a user to continue.</p>
+      </div>
+
+      <div class="space-y-3 mb-6">
+        <ng-container *ngIf="users$ | async as users; else loading">
+          <div *ngFor="let user of users"
+               [attr.id]="'user-card-' + user.id"
+               (click)="loginAs(user.id)"
+               class="group relative overflow-hidden rounded-xl bg-surface-container-lowest p-4 transition-all hover:bg-primary/5 hover:scale-[1.02] cursor-pointer border border-transparent hover:border-primary/20 flex items-center gap-4">
+             <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+               {{ user.name.charAt(0) }}
+             </div>
+             <div>
+               <h3 class="font-bold text-primary">{{ user.name }}</h3>
+               <p class="text-xs text-on-surface-variant">{{ user.email }} • {{ user.role }}</p>
+             </div>
+             <span class="material-symbols-outlined text-primary ml-auto opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+          </div>
+          <div *ngIf="users.length === 0" class="text-center text-on-surface-variant p-6 bg-surface-container-low rounded-xl border border-dashed border-outline-variant">
+            <span class="material-symbols-outlined text-primary text-3xl mb-2">group_off</span>
+            <p class="text-sm font-semibold mb-1">No users found</p>
+            <p class="text-xs opacity-75">Create a user below to get started.</p>
+          </div>
+        </ng-container>
+        <ng-template #loading>
+          <div class="flex flex-col items-center justify-center p-6 text-on-surface-variant">
+            <span class="material-symbols-outlined animate-spin text-primary text-3xl mb-2">progress_activity</span>
+            <p class="text-sm">Loading users...</p>
+          </div>
+        </ng-template>
+      </div>
+
+      <div class="border-t border-outline-variant/50 pt-4">
+        <button (click)="toggleCreateForm()"
+                class="w-full py-3 bg-[#154212] hover:bg-[#154212]/90 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-all">
+          <span class="material-symbols-outlined text-lg">person_add</span>
+          Create New User
+        </button>
+      </div>
+    </div>
+
+    <!-- Create User Form (When Toggle Active) -->
+    <div *ngIf="showCreateForm">
+      <div class="mb-6 text-center">
+        <h2 class="text-xl font-bold text-primary mb-1">Create Developer Account</h2>
+        <p class="text-sm text-on-surface-variant">Fill in the profile details below.</p>
+      </div>
+
+      <form [formGroup]="createUserForm" (ngSubmit)="onSubmitUser()" class="space-y-4">
+        <div class="space-y-1">
+          <label class="text-xs font-bold text-[#154212] tracking-wider uppercase opacity-85" for="new-name">Full Name *</label>
+          <input id="new-name" formControlName="name" type="text" placeholder="e.g. Seamus O'Neill"
+            class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm">
         </div>
-        <div *ngIf="users.length === 0" class="text-center text-on-surface-variant p-4">
-          No users found. Ensure the database is seeded.
+
+        <div class="space-y-1">
+          <label class="text-xs font-bold text-[#154212] tracking-wider uppercase opacity-85" for="new-email">Email Address *</label>
+          <input id="new-email" formControlName="email" type="email" placeholder="e.g. seamus@example.com"
+            class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm">
         </div>
-      </ng-container>
-      <ng-template #loading>
-        <div class="text-center text-on-surface-variant p-4">
-          Loading users...
+
+        <div class="space-y-1">
+          <label class="text-xs font-bold text-[#154212] tracking-wider uppercase opacity-85" for="new-role">Role *</label>
+          <select id="new-role" formControlName="role"
+            class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm">
+            <option value="user">User</option>
+            <option value="support">Support</option>
+            <option value="admin">Admin</option>
+          </select>
         </div>
-      </ng-template>
+
+        <div class="space-y-1">
+          <label class="text-xs font-bold text-[#154212] tracking-wider uppercase opacity-85" for="new-phone">Phone Number (Optional)</label>
+          <input id="new-phone" formControlName="phone" type="text" placeholder="e.g. +44 7700 900077"
+            class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm">
+        </div>
+
+        <div class="space-y-1">
+          <label class="text-xs font-bold text-[#154212] tracking-wider uppercase opacity-85" for="new-desc">Description (Optional)</label>
+          <textarea id="new-desc" formControlName="description" rows="2" placeholder="e.g. Farm owner in County Down"
+            class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm"></textarea>
+        </div>
+
+        <div class="flex flex-col gap-2 pt-2">
+          <button type="submit" [disabled]="!createUserForm.valid || isSubmitting"
+            class="w-full py-3 bg-[#154212] hover:bg-[#154212]/90 disabled:opacity-50 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-all">
+            <span class="material-symbols-outlined text-lg animate-spin" *ngIf="isSubmitting">progress_activity</span>
+            <span class="material-symbols-outlined text-lg" *ngIf="!isSubmitting">save</span>
+            Save and Register User
+          </button>
+          <button type="button" (click)="toggleCreateForm()" [disabled]="isSubmitting"
+            class="w-full py-3 text-on-surface-variant hover:bg-black/5 dark:hover:bg-white/5 rounded-xl font-bold transition-all text-sm">
+            Cancel
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

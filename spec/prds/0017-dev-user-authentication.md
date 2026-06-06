@@ -26,6 +26,9 @@ Replace the automatic `default-user` fallback with an explicit development-only 
 - This page must fetch the list of available seeded users from the backend (`GET /users` via `FarmManagementService.getUsers()`).
 - The page should present these users in a list or dropdown, allowing the developer to click/select one to log in.
 - Upon selection, the app saves the selected user's ID via `AuthService` and redirects the user to the main application (e.g., `/home`).
+- **User Creation:** Provide an inline, toggleable creation form (Name, Email, Role, Phone, Description) to dynamically create new users via `POST /v0/users` in cases where the database has just been reset or needs custom test profiles.
+- **Error Handling:** If fetching users from the backend fails (e.g. server is down), display a clear, informative error message prompting the user to check if the backend service is running instead of hanging on "Loading users...".
+
 
 ### 3.3. Routing and Guard Updates
 - Implement a basic route guard (or application initialization logic) that checks if a user is authenticated.
