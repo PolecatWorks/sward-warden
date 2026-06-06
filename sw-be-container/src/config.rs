@@ -37,10 +37,8 @@ pub struct AppConfig {
     pub webservice: WebServiceConfig,
     #[serde(serialize_with = "serialize_hams")]
     pub hams: HamsConfig,
-    #[serde(default)]
     pub runtime: ThreadRuntime,
     pub startup_checks: StartupCheckConfig,
-    #[serde(default)]
     pub debugging: DebuggingConfig,
 }
 
@@ -53,19 +51,14 @@ where
 
 #[derive(Deserialize, Serialize, Debug, Clone, Default)]
 pub struct DebuggingConfig {
-    #[serde(with = "humantime_serde", default)]
+    #[serde(with = "humantime_serde")]
     pub fail_debug_delay: Option<Duration>,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct DatabaseConfig {
     pub url: UrlWithUsernamePassword,
-    #[serde(default = "default_max_connections")]
     pub max_connections: u32,
-}
-
-fn default_max_connections() -> u32 {
-    10
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -78,21 +71,11 @@ pub struct CorsConfig {
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct WebServiceConfig {
     pub address: Url,
-    #[serde(default)]
     pub forwarding_headers: Vec<String>,
     pub cors: CorsConfig,
-    #[serde(with = "humantime_serde", default = "default_timeout")]
+    #[serde(with = "humantime_serde")]
     pub timeout: Duration,
-    #[serde(default = "default_max_connections_web")]
     pub max_connections: usize,
-}
-
-fn default_timeout() -> Duration {
-    Duration::from_secs(30)
-}
-
-fn default_max_connections_web() -> usize {
-    100
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -190,12 +173,16 @@ mod tests {
         writeln!(file, "    url: postgres://localhost:5432/db").unwrap();
         writeln!(file, "    username_file: db_user").unwrap();
         writeln!(file, "    password_file: db_pass").unwrap();
+        writeln!(file, "  max_connections: 10").unwrap();
         writeln!(file, "webservice:").unwrap();
         writeln!(file, "  address: http://0.0.0.0:8080").unwrap();
+        writeln!(file, "  forwarding_headers: []").unwrap();
         writeln!(file, "  cors:").unwrap();
         writeln!(file, "    allow_origins: []").unwrap();
         writeln!(file, "    allow_methods: ['GET', 'POST']").unwrap();
         writeln!(file, "    allow_headers: ['content-type']").unwrap();
+        writeln!(file, "  timeout: 30s").unwrap();
+        writeln!(file, "  max_connections: 100").unwrap();
         writeln!(file, "hams:").unwrap();
         writeln!(file, "  name: test").unwrap();
         writeln!(file, "  version: 0.1.0").unwrap();
@@ -204,6 +191,12 @@ mod tests {
         writeln!(file, "  fails: 1").unwrap();
         writeln!(file, "  timeout: 1s").unwrap();
         writeln!(file, "  enabled: false").unwrap();
+        writeln!(file, "runtime:").unwrap();
+        writeln!(file, "  threads: 0").unwrap();
+        writeln!(file, "  stack_size: 3000000").unwrap();
+        writeln!(file, "  name: default").unwrap();
+        writeln!(file, "debugging:").unwrap();
+        writeln!(file, "  fail_debug_delay: null").unwrap();
 
         let config = AppConfig::load(&test_config_path, &test_dir).unwrap();
 
