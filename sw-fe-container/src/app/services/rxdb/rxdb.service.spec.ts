@@ -12,7 +12,7 @@ describe('RxdbService', () => {
 
   beforeEach(() => {
     testCounter++;
-    testDbName = `rxdb-svc-test-${testCounter}`;
+    testDbName = `rxdb-svc-test-${testCounter}-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
     TestBed.configureTestingModule({
       providers: [
         RxdbService,

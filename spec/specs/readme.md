@@ -26,6 +26,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0003-05 Event Tracking Specification](./0003/0003-04-event-tracking.md) | Complete |
 | [0003-06 Farm Editing Specification](./0003/0003-05-farm-editing.md) | Complete |
 | [0003-07 Field Moving Specification](./0003/0003-06-field-moving.md) | Complete |
+| [0003-08 Field Editing Specification](./0003/0003-05-field-editing.md) | Complete |
 | [0004-02 General Farm Records Specification](./0004/0004-01-general-farm-records.md) | Complete |
 | [0004-03 Fertiliser Application Records Specification](./0004/0004-02-fertiliser-application-records.md) | Complete |
 | [0004-04 Fertilisation Plan Specification](./0004/0004-03-fertilisation-plan.md) | Complete |

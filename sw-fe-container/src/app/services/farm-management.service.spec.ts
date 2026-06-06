@@ -21,7 +21,7 @@ describe('FarmManagementService', () => {
 
   beforeEach(() => {
     farmTestCounter++;
-    testDbName = `farm-svc-test-${farmTestCounter}`;
+    testDbName = `farm-svc-test-${farmTestCounter}-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),

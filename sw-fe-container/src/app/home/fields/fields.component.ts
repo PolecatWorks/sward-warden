@@ -19,6 +19,10 @@ export class FieldsComponent implements OnInit {
   newFieldArea: string = '';
   showAddForm: boolean = false;
 
+  editingFieldId: number | null = null;
+  editFieldName: string = '';
+  editFieldArea: string = '';
+
   get totalArea(): number {
     return this.fields.reduce((acc, field) => acc + (field.area_hectares || 0), 0);
   }
@@ -70,6 +74,35 @@ export class FieldsComponent implements OnInit {
   deleteField(id: number): void {
     this.farmService.deleteEntity('fields', id).subscribe(() => {
       this.loadFields();
+    });
+  }
+
+  startEdit(field: Field): void {
+    this.editingFieldId = field.id || null;
+    this.editFieldName = field.name;
+    this.editFieldArea = String(field.area_hectares);
+  }
+
+  cancelEdit(): void {
+    this.editingFieldId = null;
+    this.editFieldName = '';
+    this.editFieldArea = '';
+  }
+
+  saveField(field: Field): void {
+    if (!field.id || !this.editFieldName || !this.editFieldArea) return;
+    const area = parseFloat(this.editFieldArea);
+    if (isNaN(area)) return;
+
+    const updatedField: Partial<Field> = {
+      ...field,
+      name: this.editFieldName,
+      area_hectares: area
+    };
+
+    this.farmService.updateField(field.id, updatedField).subscribe(() => {
+      this.loadFields();
+      this.cancelEdit();
     });
   }
 }
