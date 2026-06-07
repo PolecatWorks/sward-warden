@@ -91,4 +91,5 @@ Specifications under PRD 0008 (Spatial Optimization) require the PostGIS extensi
 | [0016-02 Fields-First Card UX](./0016/0016-02-fields-first-card-ux.md) | Complete |
 | [0017-01 Dev User Authentication & Multi-User Testing](./0017/0017-01-dev-user-authentication.md) | Complete |
 | [0017-02 Dev User Creation](./0017/0017-02-dev-user-creation.md) | Complete |
+| [0017-03 Header User Switcher](./0017/0017-03-header-user-switcher.md) | Complete |
 | [0017-04 Dev User Role Creation Support](./0017/0017-04-dev-user-role-creation-support.md) | Complete |

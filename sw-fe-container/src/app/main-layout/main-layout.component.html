@@ -65,6 +65,13 @@
           <app-sync-status></app-sync-status>
         </div>
         <div class="flex items-center gap-4">
+           <select id="user-switcher-dropdown" #userSelect (change)="switchUser(userSelect.value)"
+             class="px-3 py-1.5 bg-white dark:bg-[#2d302d] border border-black/5 dark:border-white/10 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary text-xs font-bold font-['Work_Sans'] text-on-surface cursor-pointer">
+             <option *ngFor="let u of users$ | async" [value]="u.id" [selected]="u.id === (currentUser$ | async)?.id">
+               {{ u.name }} ({{ u.role || 'User' }})
+             </option>
+           </select>
+
            <div class="hidden lg:flex items-center gap-3 mr-4">
              <span class="text-sm font-bold text-on-surface-variant font-['Work_Sans']">{{ (currentUser$ | async)?.name }}</span>
              <div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container">

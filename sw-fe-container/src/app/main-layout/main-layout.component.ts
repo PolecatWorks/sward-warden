@@ -18,6 +18,7 @@ import { Observable } from 'rxjs';
 export class MainLayoutComponent implements OnInit {
   readonly fallbackToRest$: Observable<boolean>;
   currentUser$!: Observable<User>;
+  users$: Observable<User[]> | undefined;
 
   constructor(
     private rxdbService: RxdbService,
@@ -33,10 +34,20 @@ export class MainLayoutComponent implements OnInit {
     if (userId) {
       this.currentUser$ = this.farmManagementService.getUser(userId);
     }
+    this.users$ = this.farmManagementService.getUsers();
   }
 
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  switchUser(userId: string | number): void {
+    this.authService.login(userId.toString());
+    this.reloadPage();
+  }
+
+  reloadPage(): void {
+    window.location.reload();
   }
 }
