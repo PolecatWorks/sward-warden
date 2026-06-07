@@ -6,7 +6,7 @@ This document defines the requirements for user profiles and the management of f
 ## Key Features
 
 1. **User Profile Management**
-   - **Profile Edit Interaction**: The profile page must not feature always-visible editable inputs. Instead, it must use a toggleable edit mode or button pattern (matching the farm/field edit pattern).
+   - **Profile Edit Interaction**: The profile page must not feature always-visible editable inputs or an inline "Edit Profile" form section. Instead, a pencil icon button must be displayed next to the user's name in the hero banner. Clicking this pencil icon opens a modal dialog (matching the farm/field edit modal pattern) allowing the user to update their name, email, phone, and description.
    - **Profile Content Restrictions**: Do not include navigation links to manage farms, reports, or inventory on the profile page itself (these are managed in other dedicated app areas).
    - **User Directory Privacy**: The backend API must block general users from listing all users in the system (`GET /users` must be rejected/restricted in non-dev environments). The profile page must not display list views of other users.
    - **Team Members (TODO)**: Team member management has not yet been fully discussed or defined, and is marked as a future TODO.
@@ -14,14 +14,14 @@ This document defines the requirements for user profiles and the management of f
 2. **Farm Management**
    - Once joined, users must be able to create and manage multiple farms within their account.
    - **Risky Delete Protection**: A farm cannot be deleted from the list view. Deletion is only accessible from a dedicated Farm Details page (`/farms/:farmId`).
-   - **Farm Deletion UI**: Replace the large, noisy "Danger Zone" block with a simple red trash can button. Clicking this button reveals an inline "Are you sure?" confirmation button directly below it.
+   - **Farm Deletion UI**: Replace the large, noisy "Danger Zone" block with a simple red trash can icon button placed next to the edit pencil icon in the page header. Clicking this icon reveals an inline "Are you sure?" confirmation panel directly below the header actions.
    - **Safe Farm Deletion**: Farm deletion must block if there are any active (non-deleted) fields belonging to the farm. Users must migrate or delete the fields first. Enforced on both frontend (disabled state + warning) and backend (HTTP 400 rejection).
    - **List Layout & Experience**: The farms list view must offer a prominent, big "Add Farm" button similar to the fields list view.
    - **Empty State**: When no farms exist, display a prominent, center-aligned empty state card with an icon, welcoming description, and a large "Add Farm" button.
 
 3. **Field Management**
    - Within each farm, users must be able to create and manage multiple fields.
-   - **Field Deletion UI**: The delete button must not be visible on the fields list view. It is only accessible within the field detail page (`/fields/:fieldId`). Clicking it must reveal an inline "Are you sure?" confirmation button directly below.
+   - **Field Deletion UI**: The delete button must not be visible on the fields list view. It is only accessible within the field detail page (`/fields/:fieldId`) as a red trash can icon button placed next to the edit pencil icon in the page header. Clicking it reveals an inline "Are you sure?" confirmation panel directly below the header actions.
    - **Field Migration/Moving**: Users must be able to edit field details and migrate a field to another farm in their portfolio.
    - **Separate Navigation**: Split Farms and Fields into separate main menu items. The top-level Fields view (`/fields`) displays all fields in the portfolio.
    - **List Layout & Experience**: The fields list view must display a prominent, big "Add Field" button.

@@ -182,6 +182,14 @@ export class FieldsComponent implements OnInit {
     });
   }
 
+  saveFieldFromList(): void {
+    if (!this.editingFieldId || !this.editFieldName || !this.editFieldArea) return;
+    const fieldId = this.editingFieldId;
+    const field = this.fields.find(f => f.id === fieldId);
+    if (!field) return;
+    this.saveField(field);
+  }
+
   openEditFarmModal(): void {
     if (!this.farm) return;
     this.editFarmName = this.farm.name;

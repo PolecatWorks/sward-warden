@@ -40,7 +40,7 @@
         <p class="text-lg font-semibold text-on-surface">No farms yet</p>
         <p class="text-sm text-on-surface-variant">Tap the button below to add your first farm.</p>
       </div>
-      <button (click)="openAddFarmModal()" class="px-6 py-2.5 rounded-full bg-primary text-on-primary font-medium hover:bg-primary/90 transition-colors" id="add-farm-empty-btn" data-testid="add-farm-empty-btn">
+      <button (click)="openAddFarmModal()" class="px-6 py-2.5 rounded-full bg-primary text-on-primary font-medium hover:bg-primary/90 transition-colors" id="add-farm-fab" data-testid="add-farm-empty-btn">
         Add Farm
       </button>
     </div>
@@ -83,14 +83,18 @@
           </div>
         </div>
       </div>
+      <!-- Large Centred Add Button (shown when farms exist) -->
+      <div class="flex justify-center mt-6 mb-2">
+        <button (click)="openAddFarmModal()" id="add-farm-fab"
+          class="px-8 py-3 rounded-full bg-primary text-on-primary font-semibold text-base hover:bg-primary/90 transition-colors shadow-md flex items-center gap-2"
+          aria-label="Add new farm">
+          <span class="material-symbols-outlined">add</span>
+          Add Farm
+        </button>
+      </div>
     </div>
   </div>
 </main>
-
-<!-- FAB: Add New Farm -->
-<button (click)="openAddFarmModal()" id="add-farm-fab" class="fixed right-6 bottom-24 lg:bottom-8 w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center z-40 active:scale-90 transition-transform" aria-label="Add new farm">
-  <span class="material-symbols-outlined text-2xl">add</span>
-</button>
 
 <!-- Add Farm Modal -->
 <div *ngIf="showAddFarmModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-labelledby="add-farm-modal-title">
