@@ -4,6 +4,18 @@ use crate::state::AppState;
 use axum::{Json, extract::State};
 
 pub async fn list_users(State(state): State<AppState>) -> Result<Json<Vec<User>>, AppError> {
+    let env = state
+        .config
+        .debugging
+        .environment
+        .as_deref()
+        .unwrap_or("production");
+    if env != "development" && env != "testing" {
+        return Err(AppError::Forbidden(
+            "User directory listing is disabled in this environment".to_string(),
+        ));
+    }
+
     let users =
         sqlx::query_as::<_, User>("SELECT id, name, email, role, phone, description FROM users")
             .fetch_all(&state.db_pool)

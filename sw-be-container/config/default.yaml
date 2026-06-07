@@ -26,3 +26,4 @@ runtime:
   name: "default"
 debugging:
   fail_debug_delay: null
+  environment: "development"

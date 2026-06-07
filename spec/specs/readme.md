@@ -90,7 +90,11 @@ Specifications under PRD 0008 (Spatial Optimization) require the PostGIS extensi
 | [0015-01 Security CORS Fix](./0015/0015-01-security-cors.md) | Complete |
 | [0016-01 Fields-First UX](./0016/0016-01-fields-first-ux.md) | Superceeded |
 | [0016-02 Fields-First Card UX](./0016/0016-02-fields-first-card-ux.md) | Complete |
+| [0016-03 Fields-First UX Enhancements](./0016/0016-03-fields-first-ux-enhancements.md) | Complete |
 | [0017-01 Dev User Authentication & Multi-User Testing](./0017/0017-01-dev-user-authentication.md) | Complete |
 | [0017-02 Dev User Creation](./0017/0017-02-dev-user-creation.md) | Complete |
 | [0017-03 Header User Switcher](./0017/0017-03-header-user-switcher.md) | Complete |
 | [0017-04 Dev User Role Creation Support](./0017/0017-04-dev-user-role-creation-support.md) | Complete |
+| [0017-05 User Directory Privacy](./0017/0017-05-user-directory-privacy.md) | Complete |
+| [0003-08 Ownership & Safe Deletion](./0003/0003-08-ownership-and-safe-deletion.md) | Complete |
+| [0006-06 Portfolio-Level Inventory](./0006/0006-06-portfolio-inventory.md) | Complete |

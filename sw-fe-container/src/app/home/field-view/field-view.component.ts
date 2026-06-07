@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { FarmManagementService } from '../../services/farm-management.service';
 import { Field } from '../../models/field';
 import { Event } from '../../models/event';
@@ -33,6 +33,7 @@ export class FieldViewComponent implements OnInit {
   farms: Farm[] = [];
   isSaving: boolean = false;
   errorMessage: string | null = null;
+  showDeleteConfirm: boolean = false;
 
 
   showFertiliserForm: boolean = false;
@@ -78,7 +79,8 @@ export class FieldViewComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private farmService: FarmManagementService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -96,6 +98,22 @@ export class FieldViewComponent implements OnInit {
   loadFieldDetails(): void {
     this.farmService.getField(this.fieldId).subscribe(field => {
       this.field = field;
+    });
+  }
+
+  confirmDelete(): void {
+    if (!this.fieldId) return;
+    this.isSaving = true;
+    this.farmService.deleteEntity('fields', this.fieldId).subscribe({
+      next: () => {
+        this.isSaving = false;
+        this.router.navigate(['/fields']);
+      },
+      error: (err) => {
+        this.isSaving = false;
+        this.errorMessage = 'Failed to delete field. Please try again.';
+        console.error('Error deleting field:', err);
+      }
     });
   }
 

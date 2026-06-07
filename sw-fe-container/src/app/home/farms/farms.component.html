@@ -38,8 +38,11 @@
       <span class="material-symbols-outlined text-6xl text-on-surface-variant/40">agriculture</span>
       <div class="space-y-1">
         <p class="text-lg font-semibold text-on-surface">No farms yet</p>
-        <p class="text-sm text-on-surface-variant">Tap the + button below to add your first farm.</p>
+        <p class="text-sm text-on-surface-variant">Tap the button below to add your first farm.</p>
       </div>
+      <button (click)="openAddFarmModal()" class="px-6 py-2.5 rounded-full bg-primary text-on-primary font-medium hover:bg-primary/90 transition-colors" id="add-farm-empty-btn" data-testid="add-farm-empty-btn">
+        Add Farm
+      </button>
     </div>
 
     <!-- Content (Farms exist) -->

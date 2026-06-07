@@ -110,13 +110,13 @@ export class FieldsComponent implements OnInit {
       if (isNaN(area)) return;
 
       const targetFarmId = this.farmId || this.selectedFarmId;
-      if (!targetFarmId) {
+      if (!targetFarmId && this.farms.length > 0) {
         this.errorMessage = 'Please select a farm.';
         return;
       }
 
       const newField: Field = {
-        farm_id: targetFarmId,
+        farm_id: targetFarmId || 0,
         name: this.newFieldName,
         area_hectares: area
       };

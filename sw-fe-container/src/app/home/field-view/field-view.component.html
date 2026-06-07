@@ -432,6 +432,48 @@
         </div>
       </div>
     </section>
+
+    <!-- Danger Zone Card -->
+    <div class="p-6 rounded-2xl bg-error-container/5 dark:bg-error-container/2 border border-error/10 space-y-4 mt-6">
+      <h3 class="text-lg font-bold text-error">Danger Zone</h3>
+      <p class="text-xs text-on-surface-variant">Deleting a field is permanent.</p>
+
+      <div class="flex flex-col gap-4">
+        <!-- Delete button action -->
+        <div class="flex items-center">
+          <button
+            (click)="showDeleteConfirm = !showDeleteConfirm"
+            class="px-5 py-2.5 rounded-full bg-error text-white font-medium hover:bg-error/95 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            data-testid="delete-field-btn"
+            id="delete-field-btn">
+            Delete Field
+          </button>
+        </div>
+
+        <!-- Inline Confirmation Panel -->
+        <div *ngIf="showDeleteConfirm" class="p-4 rounded-xl bg-surface-container-high border border-black/5 dark:border-white/10 space-y-4 animate-fadeIn" id="delete-confirm-panel" data-testid="delete-confirm-panel">
+          <p class="text-sm font-semibold text-on-surface">Are you sure you want to delete this field? This action cannot be undone.</p>
+          <div class="flex gap-3">
+            <button
+              (click)="confirmDelete()"
+              [disabled]="isSaving"
+              class="px-4 py-2 rounded-xl bg-error text-white text-xs font-bold hover:bg-error/90 disabled:opacity-50 transition-colors flex items-center gap-1"
+              data-testid="confirm-delete-field-btn"
+              id="confirm-delete-field-btn">
+              <span *ngIf="isSaving" class="material-symbols-outlined text-xs animate-spin">progress_activity</span>
+              Yes, Delete
+            </button>
+            <button
+              (click)="showDeleteConfirm = false"
+              class="px-4 py-2 rounded-xl bg-surface-container-low text-on-surface text-xs font-bold hover:bg-surface-container-high transition-colors"
+              data-testid="cancel-delete-field-btn"
+              id="cancel-delete-field-btn">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <ng-template #loadingTemplate>
