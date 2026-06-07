@@ -1,6 +1,6 @@
 # 0003-07 Farm and Field Management Updates Specification
 
-**State**: Open
+**State**: Complete
 
 ## Scope
 This specification covers the implementation details for several enhancements to Farm and Field Management under PRD 0003:

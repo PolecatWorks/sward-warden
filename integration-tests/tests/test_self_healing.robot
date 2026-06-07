@@ -40,9 +40,6 @@ Verify REST Fallback and Warning Banner on Database Failure
     # 6. Wait for the add farm modal to close
     Wait For Elements State    \#save-farm-btn    detached    timeout=5s
 
-    # Switch to Farms tab to see the list of farms
-    Click With Options    [data-testid="farms-tab"]    button=left    force=${True}
-
     # 7. Verify the farm card appears in the UI list
     Wait For Elements State    div[data-testid^="farm-card-"] h3 >> text=${farm_name}    visible    timeout=10s
 
@@ -63,5 +60,9 @@ Verify REST Fallback and Warning Banner on Database Failure
     Should Be True    ${found_farm}    Farm was not written directly to the backend API during REST fallback mode
 
     # 9. Clean up: Delete the farm via the UI
-    Click With Options    button[data-testid="delete-farm-${farm_id}"]    button=left    force=${True}
-    Wait For Elements State    div[data-testid^="farm-card-"] h3 >> text=${farm_name}    detached    timeout=10s
+    Go To    ${EXTERNAL_DNS_URL}/farms/${farm_id}?mock-db-fail-persistent=true
+    Wait For Elements State    id=farm-name-heading    visible    timeout=5s
+    Click With Options    button[data-testid="delete-farm-btn"]    button=left    force=${True}
+    Wait For Elements State    id=delete-confirm-panel    visible    timeout=5s
+    Click With Options    button[data-testid="confirm-delete-farm-btn"]    button=left    force=${True}
+    Wait For Elements State    text=${farm_name}    detached    timeout=10s

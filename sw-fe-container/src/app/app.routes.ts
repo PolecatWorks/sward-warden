@@ -9,6 +9,7 @@ import { FieldsComponent } from './home/fields/fields.component';
 import { FieldViewComponent } from './home/field-view/field-view.component';
 import { ComplianceReportComponent } from './home/compliance-report/compliance-report.component';
 import { SwardMovementsComponent } from './home/sward-movements/sward-movements.component';
+import { FarmDetailComponent } from './home/farm-detail/farm-detail.component';
 
 import { SlurryDashboardComponent } from './slurry-dashboard/slurry-dashboard.component';
 import { ComplianceTrackingComponent } from './compliance-tracking/compliance-tracking.component';
@@ -53,9 +54,11 @@ export const routes: Routes = [
 
       // ── Farm Hierarchy ──
       { path: 'farms', component: FarmsComponent },
+      { path: 'farms/:farmId', component: FarmDetailComponent },
       { path: 'farms/:farmId/fields', component: FieldsComponent },
       { path: 'farms/:farmId/compliance', component: ComplianceReportComponent },
       { path: 'farms/:id/movements', component: SwardMovementsComponent },
+      { path: 'fields', component: FieldsComponent },
       { path: 'fields/:fieldId', component: FieldViewComponent },
 
       // ── Farm Management ──

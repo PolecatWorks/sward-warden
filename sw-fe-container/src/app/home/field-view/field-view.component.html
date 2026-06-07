@@ -1,6 +1,6 @@
 <div class="px-6 pt-4 max-w-2xl mx-auto">
   <div *ngIf="field; else loadingTemplate">
-    <a [routerLink]="['/farms', field.farm_id, 'fields']" class="inline-flex items-center text-sm font-medium text-on-surface-variant hover:text-primary mb-4">
+    <a [routerLink]="['/farms', field.farm_id, 'fields']" class="inline-flex items-center text-sm font-medium text-on-surface-variant hover:text-primary mb-4" id="back-to-fields-link" data-testid="back-to-fields-link">
       <span class="material-symbols-outlined mr-1" style="font-size: 18px;">arrow_back</span>
       Back to Fields
     </a>
