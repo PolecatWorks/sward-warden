@@ -32,6 +32,12 @@ Farm Creation and Deletion Flow
     Fill Text    \#farm-location-input    ${farm_location}
     Click With Options    \#save-farm-btn    button=left    force=${True}
 
+    # Wait for the add farm modal to close
+    Wait For Elements State    \#save-farm-btn    detached    timeout=5s
+
+    # Switch to Farms tab to see the list of farms
+    Click With Options    [data-testid="farms-tab"]    button=left    force=${True}
+
     # 3. View the created farm in UI
     # Since it is dynamically added, wait a bit or look for it
     Wait For Elements State    text=${farm_name}    visible    timeout=10s

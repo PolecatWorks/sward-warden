@@ -1,6 +1,6 @@
 # Specification 0016-01: Fields-First UX for Farm Management
 
-**State**: Complete
+**State**: Superceeded (by [0016-02](./0016-02-fields-first-card-ux.md))
 
 ## Overview
 This specification details the UI/UX changes required to optimize the "Farms and Fields" page for users, particularly those with a single farm. The goal is to prioritize the presentation of fields over farms, reducing cognitive load and simplifying the primary workflow for the majority of users.

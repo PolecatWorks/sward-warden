@@ -154,7 +154,7 @@ robot-test: $(ROBOT_VENV)/bin/robot wait-all
 		--loglevel DEBUG \
 		-d "${ROBOT_REPORT_DIR}" \
 		$(ROBOT_TEST_DIR); \
-		rc=$$?; open $(ROBOT_REPORT_DIR)/log.html; exit $$rc
+		rc=$$?; if [ -t 1 ]; then open $(ROBOT_REPORT_DIR)/log.html; fi; exit $$rc
 
 # Run only backend API tests (RequestsLibrary-based)
 .PHONY: robot-test-be
@@ -166,7 +166,7 @@ robot-test-be: $(ROBOT_VENV)/bin/robot wait-all
 		--loglevel DEBUG \
 		-d $(ROBOT_REPORT_DIR) \
 		$(ROBOT_TEST_DIR)/test_be.robot; \
-		rc=$$?; open $(ROBOT_REPORT_DIR)/log.html; exit $$rc
+		rc=$$?; if [ -t 1 ]; then open $(ROBOT_REPORT_DIR)/log.html; fi; exit $$rc
 
 # Run only frontend HTTP tests (RequestsLibrary-based)
 .PHONY: robot-test-fe
@@ -177,7 +177,7 @@ robot-test-fe: $(ROBOT_VENV)/bin/robot wait-all
 		--loglevel DEBUG \
 		-d $(ROBOT_REPORT_DIR) \
 		$(ROBOT_TEST_DIR)/test_fe.robot; \
-		rc=$$?; open $(ROBOT_REPORT_DIR)/log.html; exit $$rc
+		rc=$$?; if [ -t 1 ]; then open $(ROBOT_REPORT_DIR)/log.html; fi; exit $$rc
 
 # Run browser-based navigation tests (Browser library)
 .PHONY: robot-test-nav
@@ -188,7 +188,7 @@ robot-test-nav: $(ROBOT_VENV)/bin/robot wait-all
 		--loglevel DEBUG \
 		-d $(ROBOT_REPORT_DIR) \
 		$(ROBOT_TEST_DIR)/test_navigation.robot; \
-		rc=$$?; open $(ROBOT_REPORT_DIR)/log.html; exit $$rc
+		rc=$$?; if [ -t 1 ]; then open $(ROBOT_REPORT_DIR)/log.html; fi; exit $$rc
 
 # Run test_hold tests (e.g. field flow end-to-end)
 .PHONY: robot-test-hold
@@ -202,4 +202,4 @@ robot-test-hold: $(ROBOT_VENV)/bin/robot wait-all
 		--loglevel DEBUG \
 		-d $(ROBOT_REPORT_DIR) \
 		$(ROBOT_HOLD_DIR); \
-		rc=$$?; open $(ROBOT_REPORT_DIR)/log.html; exit $$rc
+		rc=$$?; if [ -t 1 ]; then open $(ROBOT_REPORT_DIR)/log.html; fi; exit $$rc

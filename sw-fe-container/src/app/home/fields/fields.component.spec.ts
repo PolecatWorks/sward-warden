@@ -14,15 +14,24 @@ describe('FieldsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [
-        { provide: ActivatedRoute, useValue: { paramMap: of({ get: () => '1' }) } },
         provideRouter([]),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            paramMap: of({
+              get: (key: string) => key === 'farmId' ? '1' : null
+            })
+          }
+        },
         {
           provide: FarmManagementService,
           useValue: {
             getFields: () => of([]),
+            getFarms: () => of([{ id: 1, name: 'Sunrise Farm', location: 'Kerry, Ireland' }]),
             addField: () => of({}),
             deleteEntity: () => of({}),
-            updateField: () => of({})
+            updateField: () => of({}),
+            updateFarm: () => of({ id: 1, name: 'Updated Farm', location: 'New Location' })
           }
         }
       ],
@@ -37,6 +46,37 @@ describe('FieldsComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should load farm details on init', () => {
+    expect(component.farm).toBeDefined();
+    expect(component.farm!.name).toBe('Sunrise Farm');
+  });
+
+  it('should initialize farm editing form when opening edit modal', () => {
+    component.openEditFarmModal();
+    expect(component.showEditFarmModal).toBeTrue();
+    expect(component.editFarmName).toBe('Sunrise Farm');
+    expect(component.editFarmLocation).toBe('Kerry, Ireland');
+  });
+
+  it('should call updateFarm and refresh farm details on submit', () => {
+    const farmService = TestBed.inject(FarmManagementService);
+    spyOn(farmService, 'updateFarm').and.callThrough();
+    spyOn(component, 'loadFarm').and.callThrough();
+
+    component.openEditFarmModal();
+    component.editFarmName = 'New Sunrise Farm';
+    component.editFarmLocation = 'Cork, Ireland';
+
+    component.editFarm();
+
+    expect(farmService.updateFarm).toHaveBeenCalledWith(1, {
+      name: 'New Sunrise Farm',
+      location: 'Cork, Ireland'
+    });
+    expect(component.loadFarm).toHaveBeenCalled();
+    expect(component.showEditFarmModal).toBeFalse();
   });
 
   it('should start inline editing with field details', () => {

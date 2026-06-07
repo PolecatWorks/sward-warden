@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FarmManagementService } from '../../services/farm-management.service';
 import { Field } from '../../models/field';
+import { Farm } from '../../models/farm';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -23,6 +24,13 @@ export class FieldsComponent implements OnInit {
   editFieldName: string = '';
   editFieldArea: string = '';
 
+  farm: Farm | undefined;
+  showEditFarmModal: boolean = false;
+  editFarmName: string = '';
+  editFarmLocation: string = '';
+  isSaving: boolean = false;
+  errorMessage: string | null = null;
+
   get totalArea(): number {
     return this.fields.reduce((acc, field) => acc + (field.area_hectares || 0), 0);
   }
@@ -37,8 +45,15 @@ export class FieldsComponent implements OnInit {
       const id = params.get('farmId');
       if (id) {
         this.farmId = +id;
+        this.loadFarm();
         this.loadFields();
       }
+    });
+  }
+
+  loadFarm(): void {
+    this.farmService.getFarms().subscribe(farms => {
+      this.farm = farms.find(f => f.id === this.farmId);
     });
   }
 
@@ -103,6 +118,46 @@ export class FieldsComponent implements OnInit {
     this.farmService.updateField(field.id, updatedField).subscribe(() => {
       this.loadFields();
       this.cancelEdit();
+    });
+  }
+
+  openEditFarmModal(): void {
+    if (!this.farm) return;
+    this.editFarmName = this.farm.name;
+    this.editFarmLocation = this.farm.location;
+    this.errorMessage = null;
+    this.showEditFarmModal = true;
+  }
+
+  closeEditFarmModal(): void {
+    this.showEditFarmModal = false;
+    this.editFarmName = '';
+    this.editFarmLocation = '';
+    this.errorMessage = null;
+  }
+
+  editFarm(): void {
+    if (!this.farm || !this.editFarmName || !this.editFarmLocation) {
+      return;
+    }
+
+    const updatedData: Partial<Farm> = {
+      name: this.editFarmName,
+      location: this.editFarmLocation
+    };
+
+    this.isSaving = true;
+    this.farmService.updateFarm(this.farmId, updatedData).subscribe({
+      next: () => {
+        this.closeEditFarmModal();
+        this.isSaving = false;
+        this.loadFarm();
+      },
+      error: (err) => {
+        this.errorMessage = 'Failed to update farm. Please try again.';
+        this.isSaving = false;
+        console.error('Error updating farm:', err);
+      }
     });
   }
 }

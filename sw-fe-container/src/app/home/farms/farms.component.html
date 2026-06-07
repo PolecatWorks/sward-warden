@@ -2,8 +2,19 @@
 <!-- Hero Section / Statistics Overview -->
 <section class="space-y-4">
 <div class="flex flex-col gap-1">
-<p class="text-on-surface-variant font-medium text-sm tracking-wide uppercase">Operational Overview</p>
-<h1 class="text-4xl font-extrabold text-primary tracking-tighter">Your Portfolio</h1>
+  <p class="text-on-surface-variant font-medium text-sm tracking-wide uppercase">Operational Overview</p>
+  <div class="flex items-center gap-2">
+    <h1 class="text-4xl font-extrabold text-primary tracking-tighter" id="portfolio-heading">
+      {{ farms.length === 1 ? farms[0].name : 'Your Portfolio' }}
+    </h1>
+    <button *ngIf="farms.length === 1" (click)="openEditFarmModal(farms[0], $event)" class="text-on-surface-variant hover:text-primary transition-colors" id="edit-single-farm-btn" aria-label="Edit Farm">
+      <span class="material-symbols-outlined text-[24px]">edit</span>
+    </button>
+  </div>
+  <p *ngIf="farms.length === 1" class="text-xs text-on-surface-variant flex items-center gap-1" id="single-farm-location">
+    <span class="material-symbols-outlined text-xs">location_on</span>
+    {{ farms[0].location }}
+  </p>
 </div>
 <div class="grid" [ngClass]="farms.length > 1 ? 'grid-cols-2 gap-3' : 'grid-cols-1'">
   <!-- Fields Summary Card -->

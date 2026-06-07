@@ -364,5 +364,54 @@ describe('FarmsComponent', () => {
       const farmIndicator = fieldCards[0].querySelector('[data-testid="field-farm"]');
       expect(farmIndicator).toBeNull();
     });
+
+    it('should display single farm name, location, and edit button in header when user has exactly 1 farm', () => {
+      const singleFarm: Farm[] = [
+        { id: 1, user_id: 1, name: 'Solo Pasture', location: 'Antrim, UK' }
+      ];
+      farmServiceSpy.getFarms.and.returnValue(of(singleFarm));
+      fixture.detectChanges();
+
+      const portfolioHeading = fixture.nativeElement.querySelector('#portfolio-heading');
+      expect(portfolioHeading.textContent.trim()).toBe('Solo Pasture');
+
+      const farmLocation = fixture.nativeElement.querySelector('#single-farm-location');
+      expect(farmLocation).toBeTruthy();
+      expect(farmLocation.textContent.trim()).toContain('Antrim, UK');
+
+      const editBtn = fixture.nativeElement.querySelector('#edit-single-farm-btn');
+      expect(editBtn).toBeTruthy();
+    });
+
+    it('should open edit modal when single farm edit button is clicked', () => {
+      const singleFarm: Farm[] = [
+        { id: 1, user_id: 1, name: 'Solo Pasture', location: 'Antrim, UK' }
+      ];
+      farmServiceSpy.getFarms.and.returnValue(of(singleFarm));
+      fixture.detectChanges();
+
+      const editBtn = fixture.nativeElement.querySelector('#edit-single-farm-btn');
+      editBtn.click();
+      fixture.detectChanges();
+
+      expect(component.showEditFarmModal).toBeTrue();
+      expect(component.editingFarm).toEqual(singleFarm[0]);
+      expect(component.editFarmName).toBe('Solo Pasture');
+      expect(component.editFarmLocation).toBe('Antrim, UK');
+    });
+
+    it('should display "Your Portfolio" and hide single farm edit elements when user has >1 farm', () => {
+      farmServiceSpy.getFarms.and.returnValue(of(mockFarms));
+      fixture.detectChanges();
+
+      const portfolioHeading = fixture.nativeElement.querySelector('#portfolio-heading');
+      expect(portfolioHeading.textContent.trim()).toBe('Your Portfolio');
+
+      const farmLocation = fixture.nativeElement.querySelector('#single-farm-location');
+      expect(farmLocation).toBeNull();
+
+      const editBtn = fixture.nativeElement.querySelector('#edit-single-farm-btn');
+      expect(editBtn).toBeNull();
+    });
   });
 });

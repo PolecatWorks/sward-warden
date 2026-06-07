@@ -40,6 +40,9 @@ Verify REST Fallback and Warning Banner on Database Failure
     # 6. Wait for the add farm modal to close
     Wait For Elements State    \#save-farm-btn    detached    timeout=5s
 
+    # Switch to Farms tab to see the list of farms
+    Click With Options    [data-testid="farms-tab"]    button=left    force=${True}
+
     # 7. Verify the farm card appears in the UI list
     Wait For Elements State    div[data-testid^="farm-card-"] h3 >> text=${farm_name}    visible    timeout=10s
 
