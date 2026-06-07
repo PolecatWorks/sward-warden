@@ -16,7 +16,10 @@
         <span class="material-symbols-outlined text-[24px]">edit</span>
       </button>
     </div>
-    <p class="text-on-surface-variant font-medium">Total Managed Area: <span class="text-primary">{{ totalArea }} Hectares</span></p>
+    <p class="text-on-surface-variant font-medium">
+      {{ fields.length }} {{ fields.length === 1 ? 'Field' : 'Fields' }} &bull;
+      Total Managed Area: <span class="text-primary">{{ totalArea }} Hectares</span>
+    </p>
   </section>
 
   <!-- Search & Filter (Glassmorphism Context) -->
