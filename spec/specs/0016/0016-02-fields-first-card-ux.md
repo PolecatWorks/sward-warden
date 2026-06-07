@@ -1,6 +1,6 @@
 # Specification 0016-02: Fields-First UX Redesigned Field Cards
 
-**State**: Open
+**State**: Complete
 
 ## Overview
 This specification details the UI/UX enhancement to align the look and feel of the Field cards within the "Fields" view on the "Farms and Fields" page with the Farm cards. The goal is to provide a more intuitive, visually appealing, and consistent card layout where clicking anywhere on the card navigates directly to the field details page, and where a fallback image is used when no field-specific image is provided.
