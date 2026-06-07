@@ -1,6 +1,6 @@
 # Technical Specification: Header User Switcher (Dev Tools)
 
-**State**: Open
+**State**: Complete
 
 ## 1. Overview
 This specification details the frontend changes required to implement a Header User Switcher. This switcher enables developers to quickly change the active user directly from the top navigation bar during local development and testing, without having to log out or return to the `/login` page.
