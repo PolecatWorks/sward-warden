@@ -326,3 +326,61 @@ async fn test_put_field_route_exists() {
 
     assert_ne!(response.status(), StatusCode::NOT_FOUND);
 }
+
+#[tokio::test]
+async fn test_post_user_route_exists() {
+    let state = get_test_state();
+    let app = app_router(state);
+
+    let user_json = serde_json::json!({
+        "id": 0,
+        "name": "Test User",
+        "email": "test@example.com",
+        "role": "admin",
+        "phone": null,
+        "description": null
+    });
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .method("POST")
+                .uri("/v0/users")
+                .header("Content-Type", "application/json")
+                .body(Body::from(user_json.to_string()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_ne!(response.status(), StatusCode::NOT_FOUND);
+}
+
+#[tokio::test]
+async fn test_put_user_route_exists() {
+    let state = get_test_state();
+    let app = app_router(state);
+
+    let user_json = serde_json::json!({
+        "id": 999,
+        "name": "Updated User",
+        "email": "updated@example.com",
+        "role": "support",
+        "phone": "123456",
+        "description": "Some description"
+    });
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .method("PUT")
+                .uri("/v0/users/999")
+                .header("Content-Type", "application/json")
+                .body(Body::from(user_json.to_string()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_ne!(response.status(), StatusCode::NOT_FOUND);
+}
