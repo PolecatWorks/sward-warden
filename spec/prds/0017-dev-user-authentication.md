@@ -50,5 +50,6 @@ Replace the automatic `default-user` fallback with an explicit development-only 
 
 ## 5. Technical Considerations
 - **Environment:** The new login page and switcher are primarily dev tools, but they should be implemented in a way that is easily disabled or replaced when real authentication is added for production later.
+- **User Directory Privacy & API Restrictions**: Listing all users (`GET /users`) is strictly blocked on the backend in production/non-development environments. The user-switcher and user list dropdown features must be restricted (e.g. via environment flags or middleware) so they are only enabled in the local development/testing context.
 - **State Management:** When a user switches identity, the frontend state (including RxDB local databases if they are partitioned by user, or at least the active queries) needs to reset or re-query to prevent data leakage between user sessions in the UI. A simple page reload (`window.location.reload()`) upon switching users is acceptable for this development-tier feature.
 - **Backend Compatibility:** The backend currently trusts the `X-User-ID` header (as seen in `chat.service.ts` or auth middleware). The updated `AuthService` must ensure it passes the numeric ID of the selected seeded user correctly.

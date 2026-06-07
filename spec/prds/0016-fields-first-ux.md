@@ -35,6 +35,11 @@ The objective of this project is to optimize the Sward Warden user interface for
     *   The "Farms" summary card/toggle must be visible and selectable.
     *   The Fields list view must display a "Farm" column to show which farm each field belongs to.
     *   Selecting the "Farms" card must switch the view to display a list of all farms.
+*   **REQ-5 (Navigation Order)**: The primary navigation bar (desktop sidebar and mobile bottom navigation) must list "Fields" before "Farms" (e.g. Dashboard, Fields, Farms, Compliance, Profile).
+*   **REQ-6 (Empty States)**: When lists (fields or farms) are empty, display a prominent, center-aligned empty state card with an icon, welcoming description, and a large, inviting "Add Field" / "Add Farm" button.
+*   **REQ-7 (Unified Add Action Layout)**: When lists are populated, the "Add Field" and "Add Farm" buttons must have similar styling, size, and layout positions on their respective pages to ensure experience consistency.
+*   **REQ-8 (Auto-Farm Creation for Beginners)**: If a user creates their first field but has not yet created a farm, the system must automatically create a farm named `"My Farm"` in the backend and assign the field to it.
+*   **REQ-9 (Field Deletion Flow)**: No delete buttons may be shown on the fields list view. Field deletion is only available inside the field detail view (`/fields/:fieldId`), and when clicked, must show an inline "Are you sure?" confirmation button directly below.
 
 ### 4.2. Non-Functional Requirements
 *   **NFR-1 (Usability)**: The toggle between Fields and Farms must be smooth and reactive.

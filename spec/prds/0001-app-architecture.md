@@ -55,3 +55,6 @@ This document defines the overarching application architecture for the sward man
   - Runs must be grouped by the target pull request or reference (e.g. branch) to prevent global queuing across different PRs.
   - On new pushes to an existing PR, the active in-progress integration test run for that PR must be automatically cancelled.
   - Cancelled runs must cleanly teardown their Garden environment and delete their specific Kubernetes namespace to avoid resource leaks.
+- **Skip Integration Tests for Unrelated Changes**:
+  - If a pull request contains no changes to the backend (`sw-be-container/`), frontend (`sw-fe-container/`), Helm charts (`charts/`), integration tests (`integration-tests/`), or the integration test workflow file itself (`.github/workflows/integration-test.yaml`), the integration test workflow must not be required to run and should automatically report completion/success.
+  - This must be achieved by using a path-filtering mechanism and a coordinating final success status job (similar to the pattern used in the Docker frontend/backend build workflows) to ensure the PR status check passes when skipped.
