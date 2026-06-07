@@ -53,6 +53,8 @@ interface SyncResponse {
 export class SyncEngineService implements OnDestroy {
   private subscription: Subscription;
   private syncInProgress = false;
+  private syncNeededAgain = false;
+
 
   constructor(
     private rxdbService: RxdbService,
@@ -93,14 +95,24 @@ export class SyncEngineService implements OnDestroy {
    * 2. Pull: fetch delta changes from the be
    */
   async fullSync(): Promise<void> {
-    if (this.syncInProgress || this.rxdbService.fallbackToRest$.value) return;
+    if (this.syncInProgress || this.rxdbService.fallbackToRest$.value) {
+      this.syncNeededAgain = true;
+      return;
+    }
     this.syncInProgress = true;
 
     try {
-      await this.processOutbox();
-      await this.pullSync();
+      while (true) {
+        this.syncNeededAgain = false;
+        await this.processOutbox();
+        await this.pullSync();
+        if (!this.syncNeededAgain) {
+          break;
+        }
+      }
     } finally {
       this.syncInProgress = false;
+      this.syncNeededAgain = false;
     }
   }
 
@@ -121,6 +133,8 @@ export class SyncEngineService implements OnDestroy {
     if (pendingEntries.length === 0) {
       return;
     }
+    console.log('SYNC ENGINE: Found pending entries:', pendingEntries.map(e => ({ id: e.id, action: e.actionType, entity: e.entityType, payload: e.payload })));
+
 
     const now = Date.now();
     let hasValidEntries = false;
@@ -152,6 +166,7 @@ export class SyncEngineService implements OnDestroy {
         await this.processEntry(entry, apiUrl, headers, db);
         await entry.remove();
       } catch (error: any) {
+        console.error(`SYNC ENGINE: Error processing entry ${entry.id}:`, error);
         const newRetryCount = (entry.retryCount || 0) + 1;
         const isClientError = error && (error.status === 400 || error.status === 422);
 
@@ -182,6 +197,7 @@ export class SyncEngineService implements OnDestroy {
     db: SwardDatabase,
   ): Promise<void> {
     const payload = JSON.parse(entry.payload);
+    console.log(`SYNC ENGINE: processEntry action=${entry.actionType} entity=${entry.entityType} payload:`, payload);
 
     const endpointMap: Record<string, string> = {
       compliance_breaches: 'compliance-breaches',
@@ -191,9 +207,11 @@ export class SyncEngineService implements OnDestroy {
 
     switch (entry.actionType) {
       case 'POST': {
+        console.log(`SYNC ENGINE: Sending POST to ${apiUrl}/${endpoint}`);
         const response = await firstValueFrom(
           this.http.post<any>(`${apiUrl}/${endpoint}`, payload, { headers })
         );
+        console.log(`SYNC ENGINE: POST response:`, response);
         if (response?.id) {
           await this.updateLocalDocServerId(db, entry.entityType, entry.localDocId, response.id);
         }
@@ -201,19 +219,27 @@ export class SyncEngineService implements OnDestroy {
       }
       case 'DELETE': {
         const serverId = payload.id;
+        console.log(`SYNC ENGINE: Sending DELETE to ${apiUrl}/${endpoint}/${serverId}`);
         if (serverId) {
           await firstValueFrom(
             this.http.delete(`${apiUrl}/${endpoint}/${serverId}`, { headers })
           );
+          console.log(`SYNC ENGINE: DELETE successful`);
+        } else {
+          console.warn(`SYNC ENGINE: DELETE skipped, no serverId`);
         }
         break;
       }
       case 'PUT': {
         const serverId = payload.id;
+        console.log(`SYNC ENGINE: Sending PUT to ${apiUrl}/${endpoint}/${serverId}`);
         if (serverId) {
           await firstValueFrom(
             this.http.put(`${apiUrl}/${endpoint}/${serverId}`, payload, { headers })
           );
+          console.log(`SYNC ENGINE: PUT successful`);
+        } else {
+          console.warn(`SYNC ENGINE: PUT skipped, no serverId`);
         }
         break;
       }
@@ -730,7 +756,7 @@ export class SyncEngineService implements OnDestroy {
         });
       } else {
         toUpsert.push({
-          id: generateLocalId(),
+          id: `server-${sRecord.id}`,
           serverId: sRecord.id,
           farm_id: sRecord.farm_id,
           agricultural_area: sRecord.agricultural_area,
@@ -784,7 +810,7 @@ export class SyncEngineService implements OnDestroy {
         });
       } else {
         toUpsert.push({
-          id: generateLocalId(),
+          id: `server-${sApp.id}`,
           serverId: sApp.id,
           event_id: sApp.event_id,
           manure_type: sApp.manure_type,
@@ -840,7 +866,7 @@ export class SyncEngineService implements OnDestroy {
         });
       } else {
         toUpsert.push({
-          id: generateLocalId(),
+          id: `server-${sBreach.id}`,
           serverId: sBreach.id,
           farm_id: sBreach.farm_id,
           breach_type: sBreach.breach_type,
@@ -897,7 +923,7 @@ export class SyncEngineService implements OnDestroy {
         });
       } else {
         toUpsert.push({
-          id: generateLocalId(),
+          id: `server-${sMove.id}`,
           serverId: sMove.id,
           farm_id: sMove.farm_id,
           movement_type: sMove.movement_type,

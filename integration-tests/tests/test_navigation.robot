@@ -18,5 +18,7 @@ Navigate Through App
     Get Url    ==    ${EXTERNAL_DNS_URL}/farms
     Go To    ${EXTERNAL_DNS_URL}/farms/1/fields
     Get Url    ==    ${EXTERNAL_DNS_URL}/farms/1/fields
+    Go To    ${EXTERNAL_DNS_URL}/fields
+    Get Url    ==    ${EXTERNAL_DNS_URL}/fields
     Go To    ${EXTERNAL_DNS_URL}/profile
     Get Url    ==    ${EXTERNAL_DNS_URL}/profile

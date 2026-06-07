@@ -12,11 +12,20 @@ This document defines the requirements for user profiles and the management of f
 
 2. **Farm Management**
    - Once joined, users must be able to create and manage multiple farms within their account.
+   - **Risky Delete Protection**: A farm cannot be deleted from the list view. Deletion is only accessible from a dedicated Farm Details page (`/farms/:farmId`), requiring explicit inline confirmation (not a modal).
+   - **Safe Farm Deletion**: Farm deletion must block if there are any active (non-deleted) fields belonging to the farm. Users must migrate or delete the fields first. Enforced on both frontend (disabled state + warning) and backend (HTTP 400 rejection).
 
 3. **Field Management**
    - Within each farm, users must be able to create and manage multiple fields.
+   - **Field Migration/Moving**: Users must be able to edit field details and migrate a field to another farm in their portfolio.
+   - **Separate Navigation**: Split Farms and Fields into separate main menu items. The top-level Fields view (`/fields`) displays all fields in the portfolio.
 
-4. **Event Tracking**
+4. **Security & Ownership Enforcement**
+   - **Backend Verification**: The backend must enforce that users can only list, view, create, update, or delete farms, fields, and related agricultural entities (events, records, soil analyses, plans, applications, compliance breaches, sward movements) that they own.
+   - User identity must be extracted dynamically from the `X-User-ID` header on the backend.
+
+
+5. **Event Tracking**
    - Users must be able to describe and record events for each field.
    - **Supported Event Types**:
      - **Planting**: Crop type and variety.

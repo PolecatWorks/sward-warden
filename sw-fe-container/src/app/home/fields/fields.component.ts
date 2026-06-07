@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FarmManagementService } from '../../services/farm-management.service';
+import { RxdbService } from '../../services/rxdb/rxdb.service';
 import { Field } from '../../models/field';
 import { Farm } from '../../models/farm';
 import { FormsModule } from '@angular/forms';
@@ -15,7 +16,9 @@ import { FormsModule } from '@angular/forms';
 })
 export class FieldsComponent implements OnInit {
   fields: Field[] = [];
+  farms: Farm[] = [];
   farmId: number = 0;
+  selectedFarmId: number = 0;
   newFieldName: string = '';
   newFieldArea: string = '';
   showAddForm: boolean = false;
@@ -37,16 +40,42 @@ export class FieldsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private farmService: FarmManagementService
+    private farmService: FarmManagementService,
+    private rxdbService: RxdbService
   ) {}
 
   ngOnInit(): void {
+    this.loadFarms();
     this.route.paramMap.subscribe(params => {
       const id = params.get('farmId');
       if (id) {
         this.farmId = +id;
         this.loadFarm();
         this.loadFields();
+      } else {
+        this.farmId = 0;
+        this.farm = undefined;
+        this.loadAllFields();
+      }
+    });
+
+    // Automatically reload fields when local DB fallback status changes
+    this.rxdbService.fallbackToRest$.subscribe(() => {
+      this.loadFarms();
+      if (this.farmId) {
+        this.loadFarm();
+        this.loadFields();
+      } else {
+        this.loadAllFields();
+      }
+    });
+  }
+
+  loadFarms(): void {
+    this.farmService.getFarms().subscribe(farms => {
+      this.farms = farms;
+      if (this.farms.length > 0 && !this.selectedFarmId) {
+        this.selectedFarmId = this.farms[0].id || 0;
       }
     });
   }
@@ -63,21 +92,45 @@ export class FieldsComponent implements OnInit {
     });
   }
 
+  loadAllFields(): void {
+    this.farmService.getFields().subscribe(allFields => {
+      this.fields = allFields;
+    });
+  }
+
+  getFarmName(farmId: number | string | undefined): string {
+    if (!farmId) return 'Unknown Farm';
+    const farm = this.farms.find(f => f.id === Number(farmId));
+    return farm ? farm.name : 'Unknown Farm';
+  }
+
   addField(): void {
     if (this.newFieldName && this.newFieldArea) {
       const area = parseFloat(this.newFieldArea);
       if (isNaN(area)) return;
+
+      const targetFarmId = this.farmId || this.selectedFarmId;
+      if (!targetFarmId) {
+        this.errorMessage = 'Please select a farm.';
+        return;
+      }
+
       const newField: Field = {
-        farm_id: this.farmId,
+        farm_id: targetFarmId,
         name: this.newFieldName,
         area_hectares: area
       };
 
       this.farmService.addField(newField).subscribe(() => {
-        this.loadFields();
+        if (this.farmId) {
+          this.loadFields();
+        } else {
+          this.loadAllFields();
+        }
         this.newFieldName = '';
         this.newFieldArea = '';
         this.showAddForm = false;
+        this.errorMessage = null;
       });
     }
   }
@@ -88,7 +141,11 @@ export class FieldsComponent implements OnInit {
 
   deleteField(id: number): void {
     this.farmService.deleteEntity('fields', id).subscribe(() => {
-      this.loadFields();
+      if (this.farmId) {
+        this.loadFields();
+      } else {
+        this.loadAllFields();
+      }
     });
   }
 
@@ -116,7 +173,11 @@ export class FieldsComponent implements OnInit {
     };
 
     this.farmService.updateField(field.id, updatedField).subscribe(() => {
-      this.loadFields();
+      if (this.farmId) {
+        this.loadFields();
+      } else {
+        this.loadAllFields();
+      }
       this.cancelEdit();
     });
   }

@@ -48,3 +48,26 @@ where
         }
     }
 }
+
+pub struct UserId(pub i64);
+
+impl<S> FromRequestParts<S> for UserId
+where
+    S: Send + Sync,
+{
+    type Rejection = AppError;
+
+    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
+        let user_id_str = parts
+            .headers
+            .get("X-User-ID")
+            .and_then(|v| v.to_str().ok())
+            .unwrap_or("1");
+
+        let user_id = user_id_str
+            .parse::<i64>()
+            .map_err(|_| AppError::BadRequest("Invalid X-User-ID header".to_string()))?;
+
+        Ok(UserId(user_id))
+    }
+}

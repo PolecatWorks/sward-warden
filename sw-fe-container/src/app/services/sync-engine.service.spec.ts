@@ -58,6 +58,7 @@ describe('SyncEngineService', () => {
   });
 
   afterEach(async () => {
+    service.ngOnDestroy();
     httpMock.verify();
     const db = await firstValueFrom(rxdbService.db$);
     await db.remove();
@@ -480,9 +481,6 @@ describe('SyncEngineService', () => {
     const db = await firstValueFrom(rxdbService.db$);
     const states: string[] = [];
 
-    mockOnline$.next(true);
-    await new Promise(resolve => setTimeout(resolve, 50));
-
     const sub = syncStateService.syncState$.subscribe(s => states.push(s));
 
     await db.outbox.insert({
@@ -504,17 +502,35 @@ describe('SyncEngineService', () => {
       updatedAt: new Date().toISOString(),
     });
 
-    const processPromise = service.processOutbox();
+    // Trigger the automatic sync by going online
+    mockOnline$.next(true);
     await new Promise(resolve => setTimeout(resolve, 50));
-
-    // Handle the background sync pull request triggered by going online
-    const syncReq = httpMock.expectOne('/v0/sync');
-    syncReq.flush({ checkpoint: 'test', farms: [], fields: [], events: [], farm_records: [] });
 
     const farmReq = httpMock.expectOne('/v0/farms');
     farmReq.flush({ id: 100, name: 'State Farm', location: 'Test' });
 
-    await processPromise;
+    // Handle any background sync pull requests triggered by going online
+    const syncReqs1 = httpMock.match(req => req.url.includes('/v0/sync'));
+    for (const req of syncReqs1) {
+      req.flush({ checkpoint: 'test', farms: [], fields: [], events: [], farm_records: [] });
+    }
+
+    // Wait for the outbox trigger debounce (500ms) to fire and flush the trailing sync request
+    await new Promise(resolve => setTimeout(resolve, 550));
+    const syncReqs2 = httpMock.match(req => req.url.includes('/v0/sync'));
+    for (const req of syncReqs2) {
+      req.flush({ checkpoint: 'test-done', farms: [], fields: [], events: [], farm_records: [] });
+    }
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    // Flush any further loop requests if syncNeededAgain was set
+    const syncReqs3 = httpMock.match(req => req.url.includes('/v0/sync'));
+    for (const req of syncReqs3) {
+      req.flush({ checkpoint: 'test-done-2', farms: [], fields: [], events: [], farm_records: [] });
+    }
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    console.log('TEST STATES LOG:', states);
 
     sub.unsubscribe();
 
