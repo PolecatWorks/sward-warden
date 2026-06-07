@@ -16,10 +16,11 @@ pub async fn create_user(
     Json(user): Json<User>,
 ) -> Result<Json<User>, AppError> {
     let new_user = sqlx::query_as::<_, User>(
-        "INSERT INTO users (name, email, phone, description) VALUES ($1, $2, $3, $4) RETURNING id, name, email, role, phone, description",
+        "INSERT INTO users (name, email, role, phone, description) VALUES ($1, $2, $3, $4, $5) RETURNING id, name, email, role, phone, description",
     )
     .bind(&user.name)
     .bind(&user.email)
+    .bind(&user.role)
     .bind(&user.phone)
     .bind(&user.description)
     .fetch_one(&state.db_pool)
@@ -46,10 +47,11 @@ pub async fn update_user(
     Json(user): Json<User>,
 ) -> Result<Json<User>, AppError> {
     let updated_user = sqlx::query_as::<_, User>(
-        "UPDATE users SET name = $1, email = $2, phone = $3, description = $4 WHERE id = $5 RETURNING id, name, email, role, phone, description",
+        "UPDATE users SET name = $1, email = $2, role = $3, phone = $4, description = $5 WHERE id = $6 RETURNING id, name, email, role, phone, description",
     )
     .bind(&user.name)
     .bind(&user.email)
+    .bind(&user.role)
     .bind(&user.phone)
     .bind(&user.description)
     .bind(id)
