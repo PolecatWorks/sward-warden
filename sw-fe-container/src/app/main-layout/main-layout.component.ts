@@ -6,7 +6,7 @@ import { RxdbService } from '../services/rxdb/rxdb.service';
 import { AuthService } from '../services/auth.service';
 import { FarmManagementService } from '../services/farm-management.service';
 import { User } from '../models/user';
-import { Observable } from 'rxjs';
+import { Observable, shareReplay } from 'rxjs';
 
 @Component({
   selector: 'app-main-layout',
@@ -32,9 +32,9 @@ export class MainLayoutComponent implements OnInit {
   ngOnInit(): void {
     const userId = this.authService.getUserId();
     if (userId) {
-      this.currentUser$ = this.farmManagementService.getUser(userId);
+      this.currentUser$ = this.farmManagementService.getUser(userId).pipe(shareReplay(1));
     }
-    this.users$ = this.farmManagementService.getUsers();
+    this.users$ = this.farmManagementService.getUsers().pipe(shareReplay(1));
   }
 
   logout(): void {

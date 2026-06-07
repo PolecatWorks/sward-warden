@@ -2,10 +2,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
+import { of, BehaviorSubject } from 'rxjs';
 
 import { FieldsComponent } from './fields.component';
 import { FarmManagementService } from '../../services/farm-management.service';
+import { RxdbService } from '../../services/rxdb/rxdb.service';
 
 describe('FieldsComponent', () => {
   let component: FieldsComponent;
@@ -21,6 +22,12 @@ describe('FieldsComponent', () => {
             paramMap: of({
               get: (key: string) => key === 'farmId' ? '1' : null
             })
+          }
+        },
+        {
+          provide: RxdbService,
+          useValue: {
+            fallbackToRest$: new BehaviorSubject<boolean>(false)
           }
         },
         {
