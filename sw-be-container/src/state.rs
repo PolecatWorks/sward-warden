@@ -10,7 +10,7 @@ pub struct AppState {
     pub config: AppConfig,
     pub prometheus_handle: Arc<PrometheusHandle>,
     pub db_pool: sqlx::PgPool,
-    pub farms_cache: Arc<RwLock<Option<Vec<Farm>>>>,
+    pub farms_cache: Arc<RwLock<std::collections::HashMap<i64, Vec<Farm>>>>,
 }
 
 impl AppState {
@@ -23,7 +23,7 @@ impl AppState {
             config,
             prometheus_handle: Arc::new(prometheus_handle),
             db_pool,
-            farms_cache: Arc::new(RwLock::new(None)),
+            farms_cache: Arc::new(RwLock::new(std::collections::HashMap::new())),
         }
     }
 }
