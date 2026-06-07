@@ -1,7 +1,11 @@
 # PRD 0006: Inventory and Equipment Tracking
 
 ## Overview
-This document outlines the requirements for tracking inventory and equipment on farms. Maintaining an accurate inventory of storage capacities, chemical products, and equipment types is critical for compliance with environmental regulations (e.g., Farm Sustainability Standards).
+This document outlines the requirements for tracking inventory and equipment. Maintaining an accurate inventory of storage capacities, chemical products, and equipment types is critical for compliance with environmental regulations (e.g., Farm Sustainability Standards).
+
+## Inventory Scope & Ownership
+- **Portfolio-Level Ownership**: Inventory and equipment records are independent of a single farm. They belong to the user's overall portfolio/account.
+- **Farm Association**: Although owned at the portfolio level, individual inventory items (e.g., equipment, chemical batches, or storage facilities) can be associated with specific farms or shared across multiple farms as needed.
 
 ## Key Requirements
 
