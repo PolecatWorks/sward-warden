@@ -30,6 +30,7 @@ jobs:
       backend: ${{ steps.filter.outputs.backend }}
       frontend: ${{ steps.filter.outputs.frontend }}
       spec: ${{ steps.filter.outputs.spec }}
+      run_tests: ${{ steps.filter.outputs.run_tests }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3.0.2
@@ -44,9 +45,20 @@ jobs:
               - '.github/workflows/sw-fe-docker-publish.yml'
             spec:
               - 'spec/**'
+            run_tests:
+              - 'sw-be-container/**'
+              - '.github/workflows/sw-be-docker-publish.yml'
+              - 'sw-fe-container/**'
+              - '.github/workflows/sw-fe-docker-publish.yml'
+              - 'charts/**'
+              - '.github/workflows/helm-ci-pr.yaml'
+              - '.github/workflows/helm-ci-main.yaml'
+              - 'integration-tests/**'
+              - '.github/workflows/integration-test.yaml'
 
-  integration:
+  run-tests:
     needs: check-paths
+    if: needs.check-paths.outputs.run_tests == 'true'
     runs-on: polecatworks-runner
     steps:
       - uses: actions/checkout@v4
@@ -333,3 +345,19 @@ jobs:
           NAMESPACE="sward-warden-pr-${{ env.PR_NUMBER }}"
           echo "Decommissioning namespace: $NAMESPACE"
           kubectl delete namespace $NAMESPACE --ignore-not-found
+
+  integration:
+    name: integration
+    needs: [check-paths, run-tests]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Status
+        run: |
+          if [[ "${{ needs.check-paths.outputs.run_tests }}" == 'true' ]]; then
+            if [[ "${{ needs.run-tests.result }}" != 'success' ]]; then
+               echo "Integration tests failed!"
+               exit 1
+            fi
+          fi
+          echo "Success!"

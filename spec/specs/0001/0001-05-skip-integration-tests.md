@@ -1,6 +1,6 @@
 # 0001-05 Skip Integration Tests Specification
 
-**State**: Open
+**State**: Complete
 
 ## Scope
 This specification defines the behavior and implementation details for optimizing the CI integration test workflow (`.github/workflows/integration-test.yaml`). The goal is to skip executing integration tests on Kubernetes when a pull request does not contain any code or deployment changes, reducing resource utilization and test execution times while ensuring required status checks always pass.
