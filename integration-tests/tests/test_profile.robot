@@ -8,7 +8,7 @@ ${BE_BASE_URL}
 
 *** Test Cases ***
 Edit Profile
-    [Documentation]    Test to navigate to profile page, edit the profile, and verify the changes.
+    [Documentation]    Test to navigate to profile page, edit the profile via pencil icon modal, and verify the changes.
     [Teardown]    Teardown With Video
     New Browser    chromium    headless=True
     New Context    recordVideo={"dir": "${OUTPUT_DIR}/videos"}
@@ -18,27 +18,43 @@ Edit Profile
     # Verify we are on the profile page
     Get Url    ==    ${EXTERNAL_DNS_URL}/profile
 
-    # Wait for the edit profile form to be visible and data to load
-    Wait For Elements State    id=edit-name    visible
+    # Wait for the profile to load
+    Wait For Elements State    id=edit-profile-btn    visible    timeout=10s
     Sleep    2s
 
-    # Fill in the edit profile form
+    # Click the pencil icon to open the edit modal
+    Click With Options    id=edit-profile-btn    button=left    force=${True}
+
+    # Wait for the modal to appear
+    Wait For Elements State    id=edit-name    visible    timeout=5s
+    Sleep    1s
+
+    # Fill in the edit profile form in the modal
     Fill Text    id=edit-name    Test Name
     Fill Text    id=edit-email    test@test.com
     Fill Text    id=edit-phone    +44 7700 900077
     Fill Text    id=edit-description    This is a test description
 
     # Submit the form
-    Click With Options    text=Save Changes    button=left    force=${True}
+    Click With Options    id=save-edit-profile-btn    button=left    force=${True}
 
-    # Wait for the API call to complete by reloading the page and verifying persistence
+    # Wait for the modal to close
+    Wait For Elements State    id=save-edit-profile-btn    detached    timeout=5s
     Sleep    1s
+
+    # Reload and re-open the modal to verify persistence
     Reload
-    Wait For Elements State    id=edit-name    visible
+    Wait For Elements State    id=edit-profile-btn    visible    timeout=10s
     Sleep    2s
+    Click With Options    id=edit-profile-btn    button=left    force=${True}
+    Wait For Elements State    id=edit-name    visible    timeout=5s
+    Sleep    1s
 
     # Verify the changes persisted
     Get Property    id=edit-name    value    ==    Test Name
     Get Property    id=edit-email    value    ==    test@test.com
     Get Property    id=edit-phone    value    ==    +44 7700 900077
     Get Property    id=edit-description    value    ==    This is a test description
+
+    # Close the modal
+    Click With Options    id=cancel-edit-profile-btn    button=left    force=${True}

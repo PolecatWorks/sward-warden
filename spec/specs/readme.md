@@ -98,3 +98,5 @@ Specifications under PRD 0008 (Spatial Optimization) require the PostGIS extensi
 | [0017-05 User Directory Privacy](./0017/0017-05-user-directory-privacy.md) | Complete |
 | [0003-08 Ownership & Safe Deletion](./0003/0003-08-ownership-and-safe-deletion.md) | Complete |
 | [0006-06 Portfolio-Level Inventory](./0006/0006-06-portfolio-inventory.md) | Complete |
+| [0016-04 Field Card Layout and Centred Add Button UX](./0016/0016-04-field-card-and-add-button-ux.md) | Complete |
+| [0003-09 Profile Pencil Edit Modal and Trashcan Deletion UI](./0003/0003-09-profile-and-deletion-ux.md) | Complete |

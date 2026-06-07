@@ -65,53 +65,73 @@
     </div>
   </div>
 
-  <!-- Bento-style Field Grid -->
+  <!-- Field Cards Grid (image-header + bottom-drawer layout) -->
   <div class="grid grid-cols-1 gap-6">
-    <!-- Minimalist Field Cards dynamically rendered -->
-    <div *ngFor="let field of fields" class="bg-surface-container-lowest p-6 rounded-xl shadow-sm flex flex-col gap-4" [attr.data-testid]="'field-card-' + field.id">
-      <!-- Edit Form State -->
-      <ng-container *ngIf="editingFieldId === field.id; else readOnlyState">
-        <div class="flex flex-col gap-4">
-          <div class="flex flex-col gap-1">
-            <label class="text-xs font-semibold text-on-surface-variant" [attr.for]="'editName-' + field.id">Field Name</label>
-            <input [attr.id]="'editName-' + field.id" type="text" [(ngModel)]="editFieldName" class="w-full px-4 py-2 bg-surface-container-low border border-surface-container-high rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm">
+    <!-- Image-header Field Cards -->
+    <div *ngFor="let field of fields"
+      class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm group hover:shadow-md transition-shadow cursor-pointer"
+      [attr.data-testid]="'field-card-' + field.id"
+      [routerLink]="['/fields', field.id]">
+      <!-- Image Header -->
+      <div class="h-40 relative">
+        <img [alt]="field.name" class="w-full h-full object-cover"
+          [src]="field.image_url || 'https://lh3.googleusercontent.com/aida-public/AB6AXuA7EvfTSsCw8OGvjryP0rv1kkjm5LiiMnI95khqUCyK_rCgHYbzOQtA0UvTb0mqdhGrD7fqXjSr7mGxhxBTbg83OlwRVfczJS08yqnGBP7ZnL40wdU6vn2nuP8TrjtTrk7M0gwseY0p3EG-e3Y7bmAS8b93iwes2nN5wyKmf6UXrGO6EKG5oOPjUkN8EsKXXkjWnRRduaBbG3qfRv15jMsmqXw2k8sA-LcZu5ho-092GoItC8gBbOQXwV6XnG8XBUI_Pdl3TEpofQ'"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+        <div class="absolute bottom-4 left-4 text-white">
+          <h2 class="text-xl font-bold" [attr.data-testid]="'field-name'">{{ field.name }}</h2>
+          <p class="text-xs opacity-90 flex items-center gap-1" *ngIf="farmId === 0" [attr.data-testid]="'field-farm-' + field.id">
+            <span class="material-symbols-outlined text-xs">agriculture</span>
+            {{ getFarmName(field.farm_id) }}
+          </p>
+        </div>
+      </div>
+      <!-- Bottom Drawer -->
+      <div class="p-4 flex justify-between items-center bg-surface-container-low">
+        <div class="flex gap-4">
+          <div class="flex flex-col">
+            <span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Area</span>
+            <span class="text-lg font-bold text-primary" [attr.data-testid]="'field-area'">{{ field.area_hectares }}</span>
           </div>
-          <div class="flex flex-col gap-1">
-            <label class="text-xs font-semibold text-on-surface-variant" [attr.for]="'editArea-' + field.id">Area (Hectares)</label>
-            <input [attr.id]="'editArea-' + field.id" type="text" [(ngModel)]="editFieldArea" class="w-full px-4 py-2 bg-surface-container-low border border-surface-container-high rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm">
-          </div>
-          <div class="flex justify-end gap-2 border-t border-surface-container-low pt-4">
-            <button (click)="cancelEdit()" class="px-4 py-2 text-sm font-semibold text-on-surface-variant bg-surface-container-high rounded-lg hover:bg-surface-variant transition-colors">Cancel</button>
-            <button (click)="saveField(field)" [disabled]="!editFieldName || !editFieldArea" class="px-4 py-2 text-sm font-semibold text-on-primary bg-primary rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50">Save</button>
+          <div class="flex flex-col">
+            <span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Unit</span>
+            <span class="text-sm font-semibold text-tertiary">Hectares</span>
           </div>
         </div>
-      </ng-container>
+        <div class="flex items-center gap-2">
+          <button *ngIf="field.id" class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-full transition-colors flex items-center justify-center"
+            (click)="startEdit(field); $event.stopPropagation()"
+            [attr.aria-label]="'Edit ' + field.name">
+            <span class="material-symbols-outlined text-sm">edit</span>
+          </button>
+          <span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+        </div>
+      </div>
+    </div>
 
-      <!-- Read Only State -->
-      <ng-template #readOnlyState>
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <div class="w-12 h-12 bg-tertiary-container rounded-lg flex items-center justify-center text-white">
-              <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">agriculture</span>
-            </div>
-            <div>
-              <h2 class="text-lg font-bold text-on-surface" [attr.data-testid]="'field-name'">{{ field.name }}</h2>
-              <p class="text-xs text-primary font-bold" *ngIf="farmId === 0" [attr.data-testid]="'field-farm-' + field.id">
-                <span class="opacity-60 text-on-surface-variant font-medium">Farm: </span>{{ getFarmName(field.farm_id) }}
-              </p>
-              <p class="text-xs text-on-surface-variant">ID: {{ field.id }}</p>
-            </div>
+    <!-- Inline edit form overlay when editing a field from the list -->
+    <div *ngIf="editingFieldId !== null" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div class="bg-surface rounded-2xl w-full max-w-md shadow-2xl overflow-hidden border border-outline-variant">
+        <div class="px-6 py-4 border-b border-surface-variant flex justify-between items-center">
+          <h3 class="text-xl font-bold text-on-surface">Edit Field</h3>
+          <button (click)="cancelEdit()" class="text-on-surface-variant hover:text-on-surface rounded-full p-1 transition-colors">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <div class="p-6 space-y-4">
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-on-surface-variant">Field Name</label>
+            <input type="text" [(ngModel)]="editFieldName" class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
           </div>
-          <div class="text-right">
-            <p class="text-xl font-black text-on-surface" [attr.data-testid]="'field-area'">{{ field.area_hectares }}</p>
-            <p class="text-[10px] uppercase font-bold text-outline">Hectares</p>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-on-surface-variant">Area (Hectares)</label>
+            <input type="text" [(ngModel)]="editFieldArea" class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
           </div>
         </div>
-        <div class="flex justify-end gap-2 border-t border-surface-container-low pt-4">
-          <button class="px-4 py-2 text-sm font-semibold text-primary bg-primary-container/10 hover:bg-primary-container/20 rounded-lg transition-colors" [routerLink]="['/fields', field.id]" [attr.aria-label]="'View details for ' + field.name">View Details</button>
-          <button *ngIf="field.id" class="p-2 text-primary hover:bg-primary/10 rounded-full transition-colors flex items-center justify-center" (click)="startEdit(field)" [attr.aria-label]="'Edit ' + field.name"><span class="material-symbols-outlined text-sm">edit</span></button>
+        <div class="px-6 py-4 bg-surface-container-low flex justify-end gap-3">
+          <button (click)="cancelEdit()" class="px-5 py-2.5 rounded-full text-on-surface-variant font-medium hover:bg-surface-variant transition-colors">Cancel</button>
+          <button (click)="saveFieldFromList()" [disabled]="!editFieldName || !editFieldArea" class="px-5 py-2.5 rounded-full bg-primary text-on-primary font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors">Save</button>
         </div>
-      </ng-template>
+      </div>
     </div>
 
     <div *ngIf="fields.length === 0" class="flex flex-col items-center justify-center py-16 text-center space-y-4" data-testid="empty-state">
@@ -124,6 +144,16 @@
         Add Field
       </button>
     </div>
+  </div>
+
+  <!-- Large Centred Add Button (shown when fields exist) -->
+  <div *ngIf="fields.length > 0" class="flex justify-center mt-8 mb-4">
+    <button (click)="toggleAddForm()" id="add-field-fab" data-testid="add-field-fab"
+      class="px-8 py-3 rounded-full bg-primary text-on-primary font-semibold text-base hover:bg-primary/90 transition-colors shadow-md flex items-center gap-2"
+      aria-label="Add Field">
+      <span class="material-symbols-outlined">add</span>
+      Add Field
+    </button>
   </div>
 
   <!-- Add Field Modal -->
@@ -168,24 +198,9 @@
   </div>
 </div>
 
-<!-- FABs (FABs are only shown if lists are populated) -->
-<ng-container *ngIf="fields.length > 0">
-  <button (click)="toggleAddForm()" id="add-field-fab" data-testid="add-field-fab" class="fixed right-6 bottom-24 lg:bottom-8 w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center z-40 active:scale-90 transition-transform" aria-label="Add Field">
-    <span class="material-symbols-outlined text-2xl">add</span>
+<!-- Map FAB (always shown) -->
+<div class="fixed bottom-24 lg:bottom-8 right-6 flex flex-col items-center justify-center z-40">
+  <button class="w-14 h-14 bg-primary-container text-white rounded-full shadow-2xl flex items-center justify-center active:scale-90 transition-transform" routerLink="/topology" aria-label="View map">
+    <span class="material-symbols-outlined text-2xl">map</span>
   </button>
-
-  <div class="fixed bottom-44 lg:bottom-28 right-6 flex flex-col items-center justify-center z-40">
-    <button class="w-14 h-14 bg-primary-container text-white rounded-full shadow-2xl flex items-center justify-center active:scale-90 transition-transform" routerLink="/topology" aria-label="View map">
-      <span class="material-symbols-outlined text-2xl">map</span>
-    </button>
-  </div>
-</ng-container>
-
-<ng-container *ngIf="fields.length === 0">
-  <!-- Still show Map FAB if empty -->
-  <div class="fixed bottom-24 lg:bottom-8 right-6 flex flex-col items-center justify-center z-40">
-    <button class="w-14 h-14 bg-primary-container text-white rounded-full shadow-2xl flex items-center justify-center active:scale-90 transition-transform" routerLink="/topology" aria-label="View map">
-      <span class="material-symbols-outlined text-2xl">map</span>
-    </button>
-  </div>
-</ng-container>
+</div>

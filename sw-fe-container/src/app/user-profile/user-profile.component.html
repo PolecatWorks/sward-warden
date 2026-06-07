@@ -6,9 +6,17 @@
       src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpUbw8FgRlO8hU7OQviIeaedg3jVkQ8wC6LKAEVOnCcX1wzdAoKSDSZ-2aT3zxALtCjIZtoZ3bbldW5pbPGC3SucmOI9BjylgN-qDtBsbn0DqWwEnlfzqZSo9wZ1shUzv3WaW8ncD6u3ZYkZCdHSMWH8SnUow1fi98v4iNPMFo3d3cMIK3GfE4KsKOV86idIulWp2BQdMwQ2FwlcpzD0mL7cKf8n8-TmsT9jUEeSRy02IBFf_NITf3ZMX9ZN9fr5Sk9IMNPIY-rQ"
       alt="Farm landscape">
     <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-    <div class="absolute bottom-4 left-6">
-      <p class="text-[10px] uppercase tracking-[0.2em] font-bold text-white/70 mb-1">Operator Profile</p>
-      <h1 id="profile-name" class="text-3xl font-black text-white font-['Work_Sans'] tracking-tight" *ngIf="currentUser$ | async as currentUser">{{ currentUser.name }}</h1>
+    <div class="absolute bottom-4 left-6 flex items-center gap-3">
+      <div>
+        <p class="text-[10px] uppercase tracking-[0.2em] font-bold text-white/70 mb-1">Operator Profile</p>
+        <div class="flex items-center gap-2">
+          <h1 id="profile-name" class="text-3xl font-black text-white font-['Work_Sans'] tracking-tight" *ngIf="currentUser$ | async as currentUser">{{ currentUser.name }}</h1>
+          <button (click)="openEditProfileModal()" id="edit-profile-btn" aria-label="Edit Profile"
+            class="text-white/70 hover:text-white transition-colors">
+            <span class="material-symbols-outlined text-[22px]">edit</span>
+          </button>
+        </div>
+      </div>
     </div>
     <div class="absolute top-4 right-4">
       <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-white/30">
@@ -128,39 +136,6 @@
     </a>
   </div>
 
-
-  <!-- Edit Profile Form -->
-  <div class="bg-surface-container-lowest p-6 rounded-xl mb-6">
-    <h2 class="text-lg font-bold text-on-surface mb-4">Edit Profile</h2>
-    <form [formGroup]="editProfileForm" (ngSubmit)="onEditProfileSubmit()" class="space-y-4">
-      <div class="space-y-2">
-        <label class="text-sm font-medium text-on-surface-variant" for="edit-name">Name</label>
-        <input id="edit-name" formControlName="name" type="text"
-          class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
-      </div>
-      <div class="space-y-2">
-        <label class="text-sm font-medium text-on-surface-variant" for="edit-email">Email</label>
-        <input id="edit-email" formControlName="email" type="email"
-          class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
-      </div>
-      <div class="space-y-2">
-        <label class="text-sm font-medium text-on-surface-variant" for="edit-phone">Phone Number</label>
-        <input id="edit-phone" formControlName="phone" type="text" placeholder="e.g. +44 7700 900077"
-          class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
-      </div>
-      <div class="space-y-2">
-        <label class="text-sm font-medium text-on-surface-variant" for="edit-description">Description</label>
-        <textarea id="edit-description" formControlName="description" rows="3" placeholder="Tell us about your farming operation..."
-          class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"></textarea>
-      </div>
-      <button type="submit" [disabled]="!editProfileForm.valid"
-        class="w-full py-3 bg-primary text-on-primary rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary/90 disabled:opacity-50 transition-all">
-        <span class="material-symbols-outlined text-lg">save</span>
-        Save Changes
-      </button>
-    </form>
-  </div>
-
   <!-- User Management Form -->
   <div class="bg-surface-container-lowest p-6 rounded-xl">
     <h2 class="text-lg font-bold text-on-surface mb-4">Add Team Member</h2>
@@ -205,4 +180,48 @@
     </ng-template>
   </div>
 
+</div>
+
+<!-- Edit Profile Modal -->
+<div *ngIf="showEditProfileModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-labelledby="edit-profile-modal-title">
+  <div class="bg-surface rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+    <div class="px-6 py-4 border-b border-surface-variant flex justify-between items-center">
+      <h3 id="edit-profile-modal-title" class="text-xl font-bold text-on-surface">Edit Profile</h3>
+      <button (click)="closeEditProfileModal()" id="close-edit-profile-modal-btn" class="text-on-surface-variant hover:text-on-surface rounded-full p-1 transition-colors" aria-label="Close dialog">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="p-6 space-y-4" [formGroup]="editProfileForm">
+      <div class="space-y-2">
+        <label class="text-sm font-medium text-on-surface-variant" for="edit-name">Name</label>
+        <input id="edit-name" formControlName="name" type="text"
+          class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+      </div>
+      <div class="space-y-2">
+        <label class="text-sm font-medium text-on-surface-variant" for="edit-email">Email</label>
+        <input id="edit-email" formControlName="email" type="email"
+          class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+      </div>
+      <div class="space-y-2">
+        <label class="text-sm font-medium text-on-surface-variant" for="edit-phone">Phone Number</label>
+        <input id="edit-phone" formControlName="phone" type="text" placeholder="e.g. +44 7700 900077"
+          class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+      </div>
+      <div class="space-y-2">
+        <label class="text-sm font-medium text-on-surface-variant" for="edit-description">Description</label>
+        <textarea id="edit-description" formControlName="description" rows="3" placeholder="Tell us about your farming operation..."
+          class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"></textarea>
+      </div>
+    </div>
+    <div class="px-6 py-4 bg-surface-container-low flex justify-end gap-3">
+      <button (click)="closeEditProfileModal()" id="cancel-edit-profile-btn" class="px-5 py-2.5 rounded-full text-on-surface-variant font-medium hover:bg-surface-variant transition-colors">
+        Cancel
+      </button>
+      <button (click)="onEditProfileSubmit()" id="save-edit-profile-btn" [disabled]="!editProfileForm.valid || isSaving"
+        class="px-5 py-2.5 rounded-full bg-primary text-on-primary font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors flex items-center gap-2">
+        <span *ngIf="isSaving" class="material-symbols-outlined text-sm animate-spin">progress_activity</span>
+        {{ isSaving ? 'Saving...' : 'Save Changes' }}
+      </button>
+    </div>
+  </div>
 </div>

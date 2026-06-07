@@ -20,6 +20,8 @@ export class UserProfileComponent implements OnInit {
   userForm: FormGroup; // For adding team members
   editProfileForm: FormGroup; // For editing the current user
   currentUserData?: User; // Store the user data
+  showEditProfileModal: boolean = false;
+  isSaving: boolean = false;
 
   // A local variable to store current user id for updates
   currentUserId!: string;
@@ -87,10 +89,21 @@ export class UserProfileComponent implements OnInit {
               description: this.editProfileForm.value.description
           };
 
+          this.isSaving = true;
           this.farmManagementService.updateUser(this.currentUserId, updatedUser).subscribe(() => {
+              this.isSaving = false;
+              this.closeEditProfileModal();
               this.loadCurrentUser();
           });
       }
+  }
+
+  openEditProfileModal(): void {
+    this.showEditProfileModal = true;
+  }
+
+  closeEditProfileModal(): void {
+    this.showEditProfileModal = false;
   }
 
   onSubmitUser(): void {
