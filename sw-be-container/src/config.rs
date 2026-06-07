@@ -53,6 +53,7 @@ where
 pub struct DebuggingConfig {
     #[serde(with = "humantime_serde")]
     pub fail_debug_delay: Option<Duration>,
+    pub environment: Option<String>,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]

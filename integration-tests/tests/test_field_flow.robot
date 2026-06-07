@@ -61,12 +61,18 @@ Field Creation and Deletion Flow
     END
     Should Be True    ${found_field}    Field not found in API response
 
-    # 7. Delete field via UI
-    # Re-evaluating the locator for delete button to avoid xpath complexity.
-    # We look for the delete button matching the specific field ID.
-    Click With Options    button[aria-label="Delete ${field_name}"]    button=left    force=${True}
+    # 7. Go to field details page for deletion
+    Go To    ${EXTERNAL_DNS_URL}/fields/${field_id}
+    Wait For Elements State    text=${field_name}    visible    timeout=5s
 
-    # 8. Confirm deleted in UI
+    # 8. Click Delete Field to reveal confirmation panel
+    Click With Options    \#delete-field-btn    button=left    force=${True}
+    Wait For Elements State    id=delete-confirm-panel    visible    timeout=5s
+
+    # 9. Click Confirm Delete
+    Click With Options    \#confirm-delete-field-btn    button=left    force=${True}
+
+    # 10. Confirm deleted and navigated away
     Wait For Elements State    text=${field_name}    detached    timeout=10s
 
     # Wait for sync
@@ -87,3 +93,57 @@ Field Creation and Deletion Flow
 
     # 10. Clean up farm via API
     ${delete_farm_response}=    DELETE    ${BE_BASE_URL}/v0/farms/${farm_id}    expected_status=204
+
+Auto Farm Creation Flow
+    [Documentation]    Test that adding a field when no farms exist automatically creates "My Farm" in the backend.
+    [Teardown]    Teardown With Video
+    New Browser    chromium    headless=True
+    New Context    recordVideo={"dir": "${OUTPUT_DIR}/videos"}
+
+    # 1. Create a brand new user via API
+    ${random_str}=    Evaluate    str(random.randint(1000, 9999))    modules=random
+    ${username}=    Set Variable    Auto User ${random_str}
+    ${email}=    Set Variable    autouser${random_str}@example.com
+    &{user_data}=    Create Dictionary    id=${0}    name=${username}    email=${email}    role=user
+    ${user_response}=    POST    ${BE_BASE_URL}/v0/users    json=${user_data}    expected_status=200
+    ${new_user_id}=    Convert To String    ${user_response.json()['id']}
+
+    # 2. Login as this brand new user
+    New Page    ${EXTERNAL_DNS_URL}/login
+    Wait For Elements State    id=user-card-${new_user_id}    visible    timeout=10s
+    Click    id=user-card-${new_user_id}
+    Wait For Elements State    css=app-home    visible    timeout=10s
+
+    # 3. Navigate to fields page (should show empty state)
+    Go To    ${EXTERNAL_DNS_URL}/fields
+    Wait For Elements State    id=add-field-empty-btn    visible    timeout=10s
+
+    # 4. Click Add Field empty state button
+    Click With Options    \#add-field-empty-btn    button=left    force=${True}
+    Wait For Elements State    id=add-field-modal    visible    timeout=5s
+
+    # 5. Fill field details and save
+    ${field_name}=    Set Variable    Auto Farm Field ${random_str}
+    Fill Text    \#newFieldName    ${field_name}
+    Fill Text    \#newFieldArea    10.5
+    Click With Options    \#save-field-btn    button=left    force=${True}
+
+    # 6. Wait for modal to close and field to appear in the UI
+    Wait For Elements State    id=add-field-modal    detached    timeout=5s
+    Wait For Elements State    text=${field_name}    visible    timeout=10s
+
+    # Wait for sync
+    Sleep    5s
+
+    # 7. Check that "My Farm" was created via API for this user
+    &{headers}=    Create Dictionary    X-User-ID=${new_user_id}
+    ${farms_response}=    GET    ${BE_BASE_URL}/v0/farms    headers=${headers}    expected_status=200
+    ${farms}=    Set Variable    ${farms_response.json()}
+    Length Should Be    ${farms}    1
+    Should Be Equal As Strings    ${farms[0]['name']}    My Farm
+
+    # Clean up field and farm via API
+    ${fields_response}=    GET    ${BE_BASE_URL}/v0/fields    headers=${headers}    expected_status=200
+    ${fields}=    Set Variable    ${fields_response.json()}
+    DELETE    ${BE_BASE_URL}/v0/fields/${fields[0]['id']}    headers=${headers}    expected_status=204
+    DELETE    ${BE_BASE_URL}/v0/farms/${farms[0]['id']}    headers=${headers}    expected_status=204
