@@ -6,4 +6,5 @@ export interface Field {
   land_use?: string;
   updated_at?: string;
   is_deleted?: boolean;
+  image_url?: string;
 }
