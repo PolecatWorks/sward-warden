@@ -8,6 +8,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0001-02 Be Specification](./0001/0001-02-be.md) | Complete |
 | [0001-03 Deployment Specification](./0001/0001-03-deployment.md) | Complete |
 | [0001-04 Integration Tests Ports Specification](./0001/0001-04-integration-tests-ports.md) | Complete |
+| [0001-05 Skip Integration Tests Specification](./0001/0001-05-skip-integration-tests.md) | Complete |
 | [0002-02 Dashboard Specification](./0002/0002-01-dashboard.md) | Complete |
 | [0002-03 Compliance Tracking Specification](./0002/0002-02-compliance-tracking.md) | Complete |
 | [0002-04 Optimization Engine Specification](./0002/0002-03-optimization-engine.md) | Complete |
