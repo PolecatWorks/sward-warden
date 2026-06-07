@@ -10,6 +10,8 @@ import { FarmsComponent } from './farms.component';
 import { FarmManagementService } from '../../services/farm-management.service';
 import { LoggerService } from '../../services/logger.service';
 import { Farm } from '../../models/farm';
+import { Field } from '../../models/field';
+import { Event as FarmEvent } from '../../models/event';
 
 const mockFarms: Farm[] = [
   { id: 1, user_id: 1, name: 'Sunrise Farm', location: 'Kerry, Ireland' },
@@ -27,12 +29,14 @@ describe('FarmsComponent', () => {
     const spy = jasmine.createSpyObj('FarmManagementService', [
       'getFarms',
       'getFields',
+      'getEvents',
       'addFarm',
       'updateFarm',
       'deleteEntity',
     ]);
     spy.getFarms.and.returnValue(of(mockFarms));
     spy.getFields.and.returnValue(of([]));
+    spy.getEvents.and.returnValue(of([]));
     spy.addFarm.and.returnValue(of({ id: 3, name: 'New Farm', location: 'Galway, Ireland' }));
     spy.updateFarm.and.returnValue(of({ id: 1, name: 'Updated Farm', location: 'Kerry, Ireland' }));
     spy.deleteEntity.and.returnValue(of(undefined));
@@ -74,6 +78,7 @@ describe('FarmsComponent', () => {
     });
 
     it('should display farm cards for each farm returned', () => {
+      component.selectedView = 'farms';
       fixture.detectChanges();
       const cards = fixture.nativeElement.querySelectorAll('[data-testid^="farm-card-"]');
       expect(cards.length).toBe(2);
@@ -267,6 +272,97 @@ describe('FarmsComponent', () => {
 
       expect(component.errorMessage).toContain('Failed to update farm');
       expect(component.isSaving).toBeFalse();
+    });
+  });
+
+  // ── Fields-First UX ──────────────────────────────────────────
+  describe('Fields-First UX', () => {
+    const mockFields: Field[] = [
+      { id: 10, farm_id: 1, name: 'North Meadow', area_hectares: 15.5, land_use: 'Silage' },
+      { id: 20, farm_id: 2, name: 'South Slope', area_hectares: 10.0, land_use: 'Barley' }
+    ];
+    const mockEvents: FarmEvent[] = [
+      { id: 100, field_id: 10, event_type: 'Planting', description: 'Planted grass silage', date: '2026-05-01' },
+      { id: 200, field_id: 20, event_type: 'Spraying', description: 'Sprayed herbicides', date: '2026-05-15' }
+    ];
+
+    beforeEach(() => {
+      farmServiceSpy.getFarms.and.returnValue(of(mockFarms));
+      farmServiceSpy.getFields.and.returnValue(of(mockFields));
+      farmServiceSpy.getEvents.and.returnValue(of(mockEvents));
+    });
+
+    it('should default to fields view on init', () => {
+      fixture.detectChanges();
+      expect(component.selectedView).toBe('fields');
+      const fieldsList = fixture.nativeElement.querySelector('[data-testid="fields-list"]');
+      const farmsList = fixture.nativeElement.querySelector('[data-testid="farms-list"]');
+      expect(fieldsList).toBeTruthy();
+      expect(farmsList).toBeFalsy();
+    });
+
+    it('should render all fields in a flat list with correct details', () => {
+      fixture.detectChanges();
+      const fieldCards = fixture.nativeElement.querySelectorAll('[data-testid^="field-card-"]');
+      expect(fieldCards.length).toBe(2);
+
+      const firstCardName = fieldCards[0].querySelector('[data-testid="field-name"]').textContent.trim();
+      expect(firstCardName).toContain('North Meadow');
+
+      const firstCardArea = fieldCards[0].querySelector('[data-testid="field-area"]').textContent.trim();
+      expect(firstCardArea).toContain('15.5');
+
+      const firstCardLanduse = fieldCards[0].querySelector('[data-testid="field-landuse"]').textContent.trim();
+      expect(firstCardLanduse).toContain('Crop: Silage');
+
+      const firstCardActivity = fieldCards[0].querySelector('[data-testid="field-activity"]').textContent.trim();
+      expect(firstCardActivity).toBe('2026-05-01');
+    });
+
+    it('should show the associated farm name for multi-farm users', () => {
+      fixture.detectChanges();
+      const fieldCards = fixture.nativeElement.querySelectorAll('[data-testid^="field-card-"]');
+      const firstCardFarm = fieldCards[0].querySelector('[data-testid="field-farm"]').textContent.trim();
+      expect(firstCardFarm).toContain('Farm: Sunrise Farm');
+    });
+
+    it('should toggle view to farms when farms tab is clicked', () => {
+      fixture.detectChanges();
+      const farmsTab = fixture.nativeElement.querySelector('[data-testid="farms-tab"]');
+      expect(farmsTab).toBeTruthy();
+
+      farmsTab.click();
+      fixture.detectChanges();
+
+      expect(component.selectedView).toBe('farms');
+      const fieldsList = fixture.nativeElement.querySelector('[data-testid="fields-list"]');
+      const farmsList = fixture.nativeElement.querySelector('[data-testid="farms-list"]');
+      expect(fieldsList).toBeFalsy();
+      expect(farmsList).toBeTruthy();
+    });
+
+    it('should apply single farm optimization when user has exactly 1 farm', () => {
+      const singleFarm: Farm[] = [
+        { id: 1, user_id: 1, name: 'Solo Pasture', location: 'Antrim, UK' }
+      ];
+      const singleFarmFields: Field[] = [
+        { id: 10, farm_id: 1, name: 'Lone Acre', area_hectares: 5.0, land_use: 'Wheat' }
+      ];
+
+      farmServiceSpy.getFarms.and.returnValue(of(singleFarm));
+      farmServiceSpy.getFields.and.returnValue(of(singleFarmFields));
+
+      fixture.detectChanges();
+
+      // Farms tab should be hidden
+      const farmsTab = fixture.nativeElement.querySelector('[data-testid="farms-tab"]');
+      expect(farmsTab).toBeNull();
+
+      // Farm column/indicator should be hidden
+      const fieldCards = fixture.nativeElement.querySelectorAll('[data-testid^="field-card-"]');
+      expect(fieldCards.length).toBe(1);
+      const farmIndicator = fieldCards[0].querySelector('[data-testid="field-farm"]');
+      expect(farmIndicator).toBeNull();
     });
   });
 });
