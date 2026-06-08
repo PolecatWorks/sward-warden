@@ -71,3 +71,14 @@ where
         Ok(UserId(user_id))
     }
 }
+
+pub async fn check_is_admin(pool: &sqlx::PgPool, user_id: i64) -> bool {
+    sqlx::query_scalar::<_, String>("SELECT role FROM users WHERE id = $1")
+        .bind(user_id)
+        .fetch_optional(pool)
+        .await
+        .ok()
+        .flatten()
+        .map(|role| role == "admin")
+        .unwrap_or(false)
+}

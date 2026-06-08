@@ -43,10 +43,10 @@
       <div class="p-6 rounded-2xl bg-white/40 dark:bg-black/20 border border-black/5 dark:border-white/10 backdrop-blur-xl space-y-4">
         <h3 class="text-lg font-bold text-on-surface">Overview</h3>
         <div class="grid grid-cols-2 gap-4">
-          <div class="p-4 rounded-xl bg-surface-container-low flex flex-col">
+          <a [routerLink]="['/farms', farm.id, 'fields']" class="p-4 rounded-xl bg-surface-container-low flex flex-col hover:bg-surface-container-high transition-colors cursor-pointer" id="farm-fields-count-link">
             <span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Fields Count</span>
             <span class="text-2xl font-black text-primary" id="farm-fields-count">{{ fields.length }}</span>
-          </div>
+          </a>
           <div class="p-4 rounded-xl bg-surface-container-low flex flex-col">
             <span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Derogation Status</span>
             <span class="text-sm font-bold text-tertiary" id="farm-derogation">{{ farm.has_derogation ? 'Enabled' : 'Disabled' }}</span>

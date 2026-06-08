@@ -39,6 +39,9 @@ export interface EventDocType {
   event_type: string;
   description: string;
   date: string;
+  mapp_number?: string;
+  eppo_code?: string;
+  bbch_growth_stage?: string;
   syncStatus: SyncStatus;
   updatedAt: string;
 }
@@ -167,6 +170,9 @@ export const eventSchema: RxJsonSchema<EventDocType> = {
     event_type: { type: 'string' },
     description: { type: 'string' },
     date: { type: 'string' },
+    mapp_number: { type: 'string' },
+    eppo_code: { type: 'string' },
+    bbch_growth_stage: { type: 'string' },
     syncStatus: { type: 'string', maxLength: 16, enum: ['synced', 'pending', 'failed'], default: 'pending' },
     updatedAt: { type: 'string', maxLength: 32 },
   },

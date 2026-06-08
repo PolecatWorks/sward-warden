@@ -75,6 +75,21 @@ export class FieldViewComponent implements OnInit {
   };
   organicManureApplications: OrganicManureApplication[] = [];
 
+  showPlantingForm: boolean = false;
+  newPlanting = {
+    date: new Date().toISOString().split('T')[0],
+    crop: '',
+    variety: '',
+    description: ''
+  };
+
+  showGeneralEventForm: boolean = false;
+  generalEvent = {
+    event_type: '',
+    date: new Date().toISOString().split('T')[0],
+    description: ''
+  };
+
 
   constructor(
     private route: ActivatedRoute,
@@ -208,6 +223,15 @@ export class FieldViewComponent implements OnInit {
       if (oma) {
         this.editFormData.organicManureApplication = { ...oma };
       }
+    } else if (event.event_type === 'Planting') {
+      if (!this.editFormData.mapp_number || !this.editFormData.eppo_code) {
+        const match = (event.description || '').match(/Planted\s+(.*?)\s+\(Variety:\s+(.*?)\)/);
+        if (match) {
+          this.editFormData.mapp_number = match[1];
+          this.editFormData.eppo_code = match[2];
+          this.editFormData.description = ''; // Revert auto-generated description to empty notes
+        }
+      }
     }
   }
 
@@ -218,7 +242,7 @@ export class FieldViewComponent implements OnInit {
 
   saveEdit(event: Event): void {
     if (!event.id) return;
-    const localId = event.id.toString(); // Assuming id is localId, wait let's use the object id
+    const localId = event.id.toString();
 
     const eventUpdates = {
       description: this.editFormData.description,
@@ -317,7 +341,7 @@ export class FieldViewComponent implements OnInit {
   }
 
   submitSprayingRecord(): void {
-    if (!this.newSpraying.date || !this.newSpraying.mapp_number) return;
+    if (!this.newSpraying.date || !this.newSpraying.mapp_number || !this.newSpraying.eppo_code || !this.newSpraying.bbch_growth_stage) return;
 
     const event: Omit<Event, 'id'> = {
       field_id: this.fieldId,
@@ -414,6 +438,75 @@ export class FieldViewComponent implements OnInit {
          // Error handled by interceptor or shown via alert
          alert("Validation failed: " + (error.error?.message || error.message || "Unknown error"));
       });
+    });
+  }
+
+  togglePlantingForm(): void {
+    this.showPlantingForm = !this.showPlantingForm;
+  }
+
+  toggleGeneralEventForm(): void {
+    this.showGeneralEventForm = !this.showGeneralEventForm;
+  }
+
+  onGeneralEventTypeChange(type: string): void {
+    if (type === 'Planting') {
+      this.showGeneralEventForm = false;
+      this.showPlantingForm = true;
+    } else if (type === 'Fertiliser') {
+      this.showGeneralEventForm = false;
+      this.showFertiliserForm = true;
+    } else if (type === 'Spraying') {
+      this.showGeneralEventForm = false;
+      this.showSprayingForm = true;
+    } else if (type === 'Organic Manure') {
+      this.showGeneralEventForm = false;
+      this.showOrganicManureForm = true;
+    }
+  }
+
+  submitPlantingRecord(): void {
+    if (!this.newPlanting.crop || !this.newPlanting.variety || !this.newPlanting.date) return;
+
+    const event: Omit<Event, 'id'> = {
+      field_id: this.fieldId,
+      event_type: 'Planting',
+      description: this.newPlanting.description || '',
+      date: this.newPlanting.date,
+      mapp_number: this.newPlanting.crop,
+      eppo_code: this.newPlanting.variety
+    };
+
+    this.farmService.addEvent(event as Event).subscribe(() => {
+      this.loadEvents();
+      this.showPlantingForm = false;
+      this.newPlanting = {
+        date: new Date().toISOString().split('T')[0],
+        crop: '',
+        variety: '',
+        description: ''
+      };
+    });
+  }
+
+  submitGeneralEvent(): void {
+    if (!this.generalEvent.event_type || !this.generalEvent.date || !this.generalEvent.description) return;
+
+    const event: Omit<Event, 'id'> = {
+      field_id: this.fieldId,
+      event_type: this.generalEvent.event_type,
+      description: this.generalEvent.description,
+      date: this.generalEvent.date
+    };
+
+    this.farmService.addEvent(event as Event).subscribe(() => {
+      this.loadEvents();
+      this.showGeneralEventForm = false;
+      this.generalEvent = {
+        event_type: '',
+        date: new Date().toISOString().split('T')[0],
+        description: ''
+      };
     });
   }
 }

@@ -85,7 +85,15 @@ export class RxdbService implements OnDestroy {
     @Optional() @Inject(RXDB_DB_NAME) dbName: string | null,
   ) {
     this.storage = storage || getRxStorageDexie();
-    this.dbName = dbName || 'swarddb';
+    let userId: string | null = null;
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        userId = window.localStorage.getItem('agent-user-id');
+      }
+    } catch (e) {
+      // ignore localStorage errors in non-browser envs
+    }
+    this.dbName = dbName || (userId ? `swarddb_${userId}` : 'swarddb');
     this.db$ = from(this.createDatabase()).pipe(shareReplay(1));
   }
 

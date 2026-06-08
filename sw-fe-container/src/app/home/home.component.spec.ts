@@ -38,8 +38,8 @@ describe('HomeComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display the operator profile section', () => {
+  it('should display the user profile section', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Operator Profile');
+    expect(compiled.textContent).toContain('User Profile');
   });
 });
