@@ -16,7 +16,7 @@ This document defines the requirements for user profiles and the management of f
    - **Risky Delete Protection**: A farm cannot be deleted from the list view. Deletion is only accessible from a dedicated Farm Details page (`/farms/:farmId`).
    - **Farm Deletion UI**: Replace the large, noisy "Danger Zone" block with a simple red trash can icon button placed next to the edit pencil icon in the page header. Clicking this icon reveals an inline "Are you sure?" confirmation panel directly below the header actions.
    - **Safe Farm Deletion**: Farm deletion must block if there are any active (non-deleted) fields belonging to the farm. Users must migrate or delete the fields first. Enforced on both frontend (disabled state + warning) and backend (HTTP 400 rejection).
-   - **List Layout & Experience**: The farms list view must offer a prominent, big "Add Farm" button similar to the fields list view.
+   - **List Layout & Experience**: The farms list view must offer a prominent, big "Add Farm" button similar to the fields list view. Each farm card must feature an edit pencil icon in the bottom drawer (matching the field card edit button pattern) which stops click propagation and opens a modal dialog allowing the user to update the farm's name and location.
    - **Empty State**: When no farms exist, display a prominent, center-aligned empty state card with an icon, welcoming description, and a large "Add Farm" button.
 
 3. **Field Management**
