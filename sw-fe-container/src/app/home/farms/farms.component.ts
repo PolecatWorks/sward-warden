@@ -84,6 +84,10 @@ export class FarmsComponent implements OnInit {
     });
   }
 
+  editingFarmId: number | null = null;
+  editFarmName: string = '';
+  editFarmLocation: string = '';
+
   openAddFarmModal(): void {
     this.newFarmName = '';
     this.newFarmLocation = '';
@@ -95,5 +99,42 @@ export class FarmsComponent implements OnInit {
     this.showAddFarmModal = false;
     this.newFarmName = '';
     this.newFarmLocation = '';
+  }
+
+  startEdit(farm: Farm): void {
+    this.editingFarmId = farm.id || null;
+    this.editFarmName = farm.name;
+    this.editFarmLocation = farm.location;
+  }
+
+  cancelEdit(): void {
+    this.editingFarmId = null;
+    this.editFarmName = '';
+    this.editFarmLocation = '';
+  }
+
+  saveFarmFromList(): void {
+    if (!this.editingFarmId || !this.editFarmName || !this.editFarmLocation) {
+      return;
+    }
+
+    const updatedData: Partial<Farm> = {
+      name: this.editFarmName,
+      location: this.editFarmLocation
+    };
+
+    this.isSaving = true;
+    this.farmService.updateFarm(this.editingFarmId, updatedData).subscribe({
+      next: () => {
+        this.cancelEdit();
+        this.isSaving = false;
+        this.loadFarms();
+      },
+      error: (err) => {
+        this.errorMessage = 'Failed to update farm. Please try again.';
+        this.isSaving = false;
+        this.logger.error('Error updating farm:', err);
+      }
+    });
   }
 }
