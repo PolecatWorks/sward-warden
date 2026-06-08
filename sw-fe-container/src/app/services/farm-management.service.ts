@@ -350,8 +350,25 @@ export class FarmManagementService {
     }
     return this.insertEntity<EventDocType, Event>(
       'events',
-      { serverId: typeof event.id === 'number' ? event.id : undefined, field_id: event.field_id, event_type: event.event_type, description: event.description, date: event.date },
-      { field_id: event.field_id, event_type: event.event_type, description: event.description, date: event.date },
+      {
+        serverId: typeof event.id === 'number' ? event.id : undefined,
+        field_id: event.field_id,
+        event_type: event.event_type,
+        description: event.description,
+        date: event.date,
+        mapp_number: event.mapp_number,
+        eppo_code: event.eppo_code,
+        bbch_growth_stage: event.bbch_growth_stage
+      },
+      {
+        field_id: event.field_id,
+        event_type: event.event_type,
+        description: event.description,
+        date: event.date,
+        mapp_number: event.mapp_number,
+        eppo_code: event.eppo_code,
+        bbch_growth_stage: event.bbch_growth_stage
+      },
       (doc) => this.eventDocToModel(doc)
     );
   }
@@ -594,6 +611,9 @@ export class FarmManagementService {
       event_type: doc.event_type,
       description: doc.description,
       date: doc.date,
+      mapp_number: doc.mapp_number,
+      eppo_code: doc.eppo_code,
+      bbch_growth_stage: doc.bbch_growth_stage,
     };
   }
 

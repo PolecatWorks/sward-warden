@@ -23,3 +23,5 @@ PRDs dictate the high-level features and requirements of the project. Every PRD 
 - [0015 Security CORS Policy Hardening](./0015-security-cors.md)
 - [0016 Fields-First UX for Farm Management](./0016-fields-first-ux.md)
 - [0017 Dev User Authentication & Multi-User Testing](./0017-dev-user-authentication.md)
+- [0018 Multi-User Data Isolation and Admin Visibility](./0018-multi-user-data-isolation-and-admin-visibility.md)
+- [0019 Field Event Logging UX and Validation](./0019-field-event-logging-ux-and-validation.md)

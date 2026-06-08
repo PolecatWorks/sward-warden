@@ -51,6 +51,6 @@ describe('UserProfileComponent', () => {
 
   it('should render the profile heading', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Operator Profile');
+    expect(compiled.textContent).toContain('User Profile');
   });
 });

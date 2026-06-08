@@ -100,3 +100,6 @@ Specifications under PRD 0008 (Spatial Optimization) require the PostGIS extensi
 | [0006-06 Portfolio-Level Inventory](./0006/0006-06-portfolio-inventory.md) | Complete |
 | [0016-04 Field Card Layout and Centred Add Button UX](./0016/0016-04-field-card-and-add-button-ux.md) | Complete |
 | [0003-09 Profile Pencil Edit Modal and Trashcan Deletion UI](./0003/0003-09-profile-and-deletion-ux.md) | Complete |
+| [0018-01 Multi-User Data Isolation and Admin Visibility](./0018/0018-01-multi-user-data-isolation-and-admin-visibility.md) | Complete |
+| [0019-01 Field Event Logging UX and Validation](./0019/0019-01-field-event-logging-ux-and-validation.md) | Complete |
+| [0019-02 Immediate Validation Highlighting](./0019/0019-02-immediate-validation-highlighting.md) | Complete |
