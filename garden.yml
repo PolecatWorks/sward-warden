@@ -130,6 +130,7 @@ spec:
         name: "default"
       debugging:
         fail_debug_delay: null
+        environment: "testing"
 
     initContainer:
       env:
