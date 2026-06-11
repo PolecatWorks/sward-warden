@@ -119,7 +119,8 @@ describe('FieldsComponent', () => {
       id: 42,
       farm_id: 1,
       name: 'Updated Paddock',
-      area_hectares: 9.2
+      area_hectares: 9.2,
+      geometry_wkt: undefined
     });
     expect(component.loadFields).toHaveBeenCalled();
     expect(component.editingFieldId).toBeNull();
