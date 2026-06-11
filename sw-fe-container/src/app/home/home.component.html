@@ -24,24 +24,84 @@
       </div>
     </div>
   </section>
-  <!-- Daily Insights Section -->
+  <!-- Contact Section - Tonal Layering -->
   <section class="mt-8 px-6">
-    <div class="flex items-baseline justify-between mb-6">
-      <h3 class="editorial-headline text-2xl font-bold text-primary">Daily Insights</h3>
-    </div>
-    <div class="grid grid-cols-2 gap-4">
-      <div class="bg-surface-container p-6 rounded-xl flex flex-col justify-between aspect-square">
-        <span class="material-symbols-outlined text-primary mb-4" style="font-variation-settings: 'FILL' 1;">water_drop</span>
+    <div class="bg-surface-container p-6 rounded-xl space-y-6">
+      <div class="flex items-center gap-4">
+        <div class="bg-surface-container-lowest p-3 rounded-full">
+          <span class="material-symbols-outlined text-secondary">mail</span>
+        </div>
         <div>
-          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Last Rainfall</p>
-          <p class="text-xl font-bold editorial-headline text-primary">2 Days ago</p>
+          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Email Address</p>
+          <p class="font-semibold text-primary">{{ (currentUser$ | async)?.email }}</p>
         </div>
       </div>
-      <div class="bg-surface-container p-6 rounded-xl flex flex-col justify-between aspect-square">
-        <span class="material-symbols-outlined text-primary mb-4" style="font-variation-settings: 'FILL' 1;">eco</span>
+      <div class="flex items-center gap-4">
+        <div class="bg-surface-container-lowest p-3 rounded-full">
+          <span class="material-symbols-outlined text-secondary">call</span>
+        </div>
         <div>
-          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Carbon Credits</p>
-          <p class="text-xl font-bold editorial-headline text-primary">12.4 t</p>
+          <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Contact Phone</p>
+          <p class="font-semibold text-primary">{{ (currentUser$ | async)?.phone || 'Not provided' }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Active Farms Section -->
+  <section class="mt-12 px-6">
+    <div class="flex items-baseline justify-between mb-6">
+      <h3 class="editorial-headline text-2xl font-bold text-primary">Active Operations</h3>
+      <span class="text-[10px] font-bold uppercase tracking-widest text-secondary">3 Units</span>
+    </div>
+    <div class="space-y-4">
+      <!-- Farm Card 1 -->
+      <div class="group relative overflow-hidden rounded-xl bg-surface-container-lowest transition-all hover:scale-[1.01] cursor-pointer" routerLink="/farms">
+        <div class="h-32 w-full overflow-hidden">
+          <img alt="Ballymena Farm" class="w-full h-full object-cover transition-transform group-hover:scale-105" data-alt="Rolling green drumlins of Northern Ireland, lush grass pasture with sheep grazing, overcast dramatic sky, Irish agricultural landscape" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIfIcSySI_FHIy9u39HAwanLwmgTBhVVmBOkLIYefnP2WG0ulJzcxM3QAn81SVCTSCH_4u_U9MXdy5lnQJx8ey1uxPobO_SmRv3qwkzObd5Y6h4tGV3xFKQcuCO847Cv-b71nKMTLtYlEkJxxHUCyg3j5B4TdU45F-sQxFJPUNOI_HZ8eTd7sK_y4tjov51Yr5BrMbjNys5oXB1kcrXSE6C16g-sVWWHPk0a8KNQ2POYVOY-Ke9iqOY_dV_FQLPn2DAlKz_pxKNA"/>
+        </div>
+        <div class="p-6">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h4 class="editorial-headline text-xl font-bold text-primary">Ballymena Estate</h4>
+              <p class="text-sm text-on-surface-variant">170 Hectares • Silage &amp; Grazing</p>
+            </div>
+            <span class="bg-tertiary-container text-on-tertiary-container px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Active</span>
+          </div>
+          <div class="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-surface-variant/30">
+            <div>
+              <p class="text-[10px] uppercase font-bold text-on-surface-variant">Soil Health</p>
+              <p class="text-lg font-bold text-primary">88%</p>
+            </div>
+            <div>
+              <p class="text-[10px] uppercase font-bold text-on-surface-variant">Yield Projection</p>
+              <p class="text-lg font-bold text-primary">Optimum</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Farm Card 2 -->
+      <div class="group relative overflow-hidden rounded-xl bg-surface-container-lowest transition-all hover:scale-[1.01] cursor-pointer" routerLink="/farms">
+        <div class="h-32 w-full overflow-hidden">
+          <img alt="Coleraine North" class="w-full h-full object-cover transition-transform group-hover:scale-105" data-alt="Aerial view of lush green dairy pasture in County Antrim, small stone walls dividing fields, morning mist, high angle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpUbw8FgRlO8hU7OQviIeaedg3jVkQ8wC6LKAEVOnCcX1wzdAoKSDSZ-2aT3zxALtCjIZtoZ3bbldW5pbPGC3SucmOI9BjylgN-qDtBsbn0DqWwEnlfzqZSo9wZ1shUzv3WaW8ncD6u3ZYkZCdHSMWH8SnUow1fi98v4iNPMFo3d3cMIK3GfE4KsKOV86idIulWp2BQdMwQ2FwlcpzD0mL7cKf8n8-TmsT9jUEeSRy02IBFf_NITf3ZMX9ZN9fr5Sk9IMNPIY-rQ"/>
+        </div>
+        <div class="p-6">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h4 class="editorial-headline text-xl font-bold text-primary">Coleraine North</h4>
+              <p class="text-sm text-on-surface-variant">75 Hectares • Barley</p>
+            </div>
+            <span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">In Rotation</span>
+          </div>
+          <div class="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-surface-variant/30">
+            <div>
+              <p class="text-[10px] uppercase font-bold text-on-surface-variant">Last Rainfall</p>
+              <p class="text-lg font-bold text-primary">2 Days ago</p>
+            </div>
+            <div>
+              <p class="text-[10px] uppercase font-bold text-on-surface-variant">Carbon Credits</p>
+              <p class="text-lg font-bold text-primary">12.4 t</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
