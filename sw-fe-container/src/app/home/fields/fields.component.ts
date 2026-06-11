@@ -21,11 +21,13 @@ export class FieldsComponent implements OnInit {
   selectedFarmId: number = 0;
   newFieldName: string = '';
   newFieldArea: string = '';
+  newFieldGeometry_wkt: string = '';
   showAddForm: boolean = false;
 
   editingFieldId: number | null = null;
   editFieldName: string = '';
   editFieldArea: string = '';
+  editFieldGeometry_wkt: string = '';
 
   farm: Farm | undefined;
   showEditFarmModal: boolean = false;
@@ -118,7 +120,8 @@ export class FieldsComponent implements OnInit {
       const newField: Field = {
         farm_id: targetFarmId || 0,
         name: this.newFieldName,
-        area_hectares: area
+        area_hectares: area,
+        geometry_wkt: this.newFieldGeometry_wkt.trim() || undefined
       };
 
       this.farmService.addField(newField).subscribe(() => {
@@ -129,6 +132,7 @@ export class FieldsComponent implements OnInit {
         }
         this.newFieldName = '';
         this.newFieldArea = '';
+        this.newFieldGeometry_wkt = '';
         this.showAddForm = false;
         this.errorMessage = null;
       });
@@ -153,12 +157,14 @@ export class FieldsComponent implements OnInit {
     this.editingFieldId = field.id || null;
     this.editFieldName = field.name;
     this.editFieldArea = String(field.area_hectares);
+    this.editFieldGeometry_wkt = field.geometry_wkt || '';
   }
 
   cancelEdit(): void {
     this.editingFieldId = null;
     this.editFieldName = '';
     this.editFieldArea = '';
+    this.editFieldGeometry_wkt = '';
   }
 
   saveField(field: Field): void {
@@ -169,7 +175,8 @@ export class FieldsComponent implements OnInit {
     const updatedField: Partial<Field> = {
       ...field,
       name: this.editFieldName,
-      area_hectares: area
+      area_hectares: area,
+      geometry_wkt: this.editFieldGeometry_wkt.trim() || undefined
     };
 
     this.farmService.updateField(field.id, updatedField).subscribe(() => {

@@ -22,6 +22,7 @@ mod tests {
             name: "Test Field".to_string(),
             area_hectares: 10.0,
             land_use: Some("grassland".to_string()),
+            geometry_wkt: None,
             updated_at: None,
             is_deleted: Some(false),
         }

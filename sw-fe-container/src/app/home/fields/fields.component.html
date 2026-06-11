@@ -126,6 +126,10 @@
             <label class="text-sm font-medium text-on-surface-variant">Area (Hectares)</label>
             <input type="text" [(ngModel)]="editFieldArea" class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
           </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium text-on-surface-variant">Geometry (WKT)</label>
+            <input type="text" [(ngModel)]="editFieldGeometry_wkt" placeholder="e.g. POLYGON((...))" class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+          </div>
         </div>
         <div class="px-6 py-4 bg-surface-container-low flex justify-end gap-3">
           <button (click)="cancelEdit()" class="px-5 py-2.5 rounded-full text-on-surface-variant font-medium hover:bg-surface-variant transition-colors">Cancel</button>
@@ -182,6 +186,11 @@
         <div class="space-y-2">
           <label for="newFieldArea" class="text-sm font-medium text-on-surface-variant">Area (Hectares)</label>
           <input id="newFieldArea" type="text" [(ngModel)]="newFieldArea" placeholder="e.g. 12.5"
+            class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+        </div>
+        <div class="space-y-2">
+          <label for="newFieldGeometry" class="text-sm font-medium text-on-surface-variant">Geometry (WKT)</label>
+          <input id="newFieldGeometry" type="text" [(ngModel)]="newFieldGeometry_wkt" placeholder="e.g. POLYGON((...))"
             class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
         </div>
       </div>

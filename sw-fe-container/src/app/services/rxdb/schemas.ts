@@ -28,6 +28,7 @@ export interface FieldDocType {
   name: string;
   area_hectares: number;
   land_use?: string;
+  geometry_wkt?: string;
   syncStatus: SyncStatus;
   updatedAt: string;
 }
@@ -152,6 +153,7 @@ export const fieldSchema: RxJsonSchema<FieldDocType> = {
     name: { type: 'string' },
     area_hectares: { type: 'number' },
     land_use: { type: 'string', default: 'grassland' },
+    geometry_wkt: { type: 'string' },
     syncStatus: { type: 'string', maxLength: 16, enum: ['synced', 'pending', 'failed'], default: 'pending' },
     updatedAt: { type: 'string', maxLength: 32 },
   },
