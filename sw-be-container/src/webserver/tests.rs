@@ -328,6 +328,25 @@ async fn test_put_field_route_exists() {
 }
 
 #[tokio::test]
+async fn test_delete_event_route_exists() {
+    let state = get_test_state();
+    let app = app_router(state);
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .method("DELETE")
+                .uri("/v0/events/999")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_ne!(response.status(), StatusCode::NOT_FOUND);
+}
+
+#[tokio::test]
 async fn test_post_user_route_exists() {
     let state = get_test_state();
     let app = app_router(state);
