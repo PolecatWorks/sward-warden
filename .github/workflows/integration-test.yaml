@@ -335,7 +335,7 @@ jobs:
           PR_NUMBER: ${{ env.PR_NUMBER }}
           GARDEN_KUBECONTEXT: local
         run: |
-          garden delete environment --env pr --force \
+          garden cleanup namespace --env pr --force \
             --var sw-be-image="$SW_BE_IMAGE" \
             --var sw-be-tag="$SW_BE_TAG" \
             --var sw-fe-image="$SW_FE_IMAGE" \
