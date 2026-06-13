@@ -326,7 +326,9 @@ spec:
     - "-c"
     - |
       BACKEND_SHA=$(git log -1 --format=%H -- sw-be-container/ .github/workflows/sw-be-docker-publish.yml)
-      MAIN_SHA=$(git log -1 --format=%H origin/main -- sw-be-container/ .github/workflows/sw-be-docker-publish.yml 2>/dev/null || true)
+      if ! MAIN_SHA=$(git log -1 --format=%H origin/main -- sw-be-container/ .github/workflows/sw-be-docker-publish.yml 2>/dev/null); then
+          MAIN_SHA=""
+      fi
       if [ "$BACKEND_SHA" = "$MAIN_SHA" ] || [ -z "$MAIN_SHA" ]; then
         IMAGE="ghcr.io/polecatworks/sward-warden-be"
         TAG="main"
@@ -353,7 +355,9 @@ spec:
     - "-c"
     - |
       FRONTEND_SHA=$(git log -1 --format=%H -- sw-fe-container/ .github/workflows/sw-fe-docker-publish.yml)
-      MAIN_SHA=$(git log -1 --format=%H origin/main -- sw-fe-container/ .github/workflows/sw-fe-docker-publish.yml 2>/dev/null || true)
+      if ! MAIN_SHA=$(git log -1 --format=%H origin/main -- sw-fe-container/ .github/workflows/sw-fe-docker-publish.yml 2>/dev/null); then
+          MAIN_SHA=""
+      fi
       if [ "$FRONTEND_SHA" = "$MAIN_SHA" ] || [ -z "$MAIN_SHA" ]; then
         IMAGE="ghcr.io/polecatworks/sward-warden-fe"
         TAG="main"
