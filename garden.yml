@@ -325,8 +325,22 @@ spec:
     - "/bin/bash"
     - "-c"
     - |
-      env
-      exit 1
+      BACKEND_SHA=$(git log -1 --format=%H -- sw-be-container/ .github/workflows/sw-be-docker-publish.yml)
+      MAIN_SHA=$(git log -1 --format=%H origin/main -- sw-be-container/ .github/workflows/sw-be-docker-publish.yml 2>/dev/null || echo "")
+      if [ "$BACKEND_SHA" = "$MAIN_SHA" ] || [ -z "$MAIN_SHA" ]; then
+        IMAGE="ghcr.io/polecatworks/sward-warden-be"
+        TAG="main"
+      else
+        IMAGE="ghcr.io/polecatworks/sward-warden-be/dev"
+        TAG="sha-$BACKEND_SHA"
+      fi
+      if [ -n "$GARDEN_ACTION_OUTPUTS_JSON_PATH" ]; then
+        echo "{\"image\": \"$IMAGE\", \"tag\": \"$TAG\"}" > "$GARDEN_ACTION_OUTPUTS_JSON_PATH"
+      elif [ -n "$GARDEN_ACTION_JSON_OUTPUTS_PATH" ]; then
+        echo "{\"image\": \"$IMAGE\", \"tag\": \"$TAG\"}" > "$GARDEN_ACTION_JSON_OUTPUTS_PATH"
+      else
+        echo "Outputs path not defined by Garden, skipping writing outputs file"
+      fi
 ---
 kind: Build
 type: exec
@@ -347,7 +361,13 @@ spec:
         IMAGE="ghcr.io/polecatworks/sward-warden-fe/dev"
         TAG="sha-$FRONTEND_SHA"
       fi
-      echo "{\"image\": \"$IMAGE\", \"tag\": \"$TAG\"}" > "$GARDEN_ACTION_OUTPUTS_JSON_PATH"
+      if [ -n "$GARDEN_ACTION_OUTPUTS_JSON_PATH" ]; then
+        echo "{\"image\": \"$IMAGE\", \"tag\": \"$TAG\"}" > "$GARDEN_ACTION_OUTPUTS_JSON_PATH"
+      elif [ -n "$GARDEN_ACTION_JSON_OUTPUTS_PATH" ]; then
+        echo "{\"image\": \"$IMAGE\", \"tag\": \"$TAG\"}" > "$GARDEN_ACTION_JSON_OUTPUTS_PATH"
+      else
+        echo "Outputs path not defined by Garden, skipping writing outputs file"
+      fi
 ---
 kind: Deploy
 type: kubernetes
