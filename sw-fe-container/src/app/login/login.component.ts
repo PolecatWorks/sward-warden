@@ -60,6 +60,23 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  deleteUser(event: Event, user: User): void {
+    event.stopPropagation();
+    const confirmed = confirm(`Are you sure you want to delete the user "${user.name}"? This will delete all of their farms, fields, and records.`);
+    if (!confirmed) {
+      return;
+    }
+    this.farmManagementService.deleteUser(user.id).subscribe({
+      next: () => {
+        this.refreshUsers$.next();
+      },
+      error: (err) => {
+        this.errorMsg = 'Failed to delete user. Please try again.';
+        console.error('Error deleting user:', err);
+      }
+    });
+  }
+
   toggleCreateForm(): void {
     this.showCreateForm = !this.showCreateForm;
     if (!this.showCreateForm) {

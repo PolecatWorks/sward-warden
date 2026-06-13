@@ -71,3 +71,32 @@ pub async fn update_user(
     .await;
     Ok(Json(updated_user?))
 }
+
+pub async fn delete_user(
+    State(state): State<AppState>,
+    axum::extract::Path(id): axum::extract::Path<i64>,
+) -> Result<axum::http::StatusCode, AppError> {
+    let env = state
+        .config
+        .debugging
+        .environment
+        .as_deref()
+        .unwrap_or("production");
+    if env != "development" && env != "testing" {
+        return Err(AppError::Forbidden(
+            "User deletion is disabled in this environment".to_string(),
+        ));
+    }
+
+    let result = sqlx::query("DELETE FROM users WHERE id = $1")
+        .bind(id)
+        .execute(&state.db_pool)
+        .await?;
+
+    if result.rows_affected() == 0 {
+        return Err(AppError::NotFound("User not found".to_string()));
+    }
+
+    state.farms_cache.write().await.remove(&id);
+    Ok(axum::http::StatusCode::NO_CONTENT)
+}

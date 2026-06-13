@@ -53,3 +53,11 @@ Replace the automatic `default-user` fallback with an explicit development-only 
 - **User Directory Privacy & API Restrictions**: Listing all users (`GET /users`) is strictly blocked on the backend in production/non-development environments. The user-switcher and user list dropdown features must be restricted (e.g. via environment flags or middleware) so they are only enabled in the local development/testing context.
 - **State Management:** When a user switches identity, the frontend state (including RxDB local databases if they are partitioned by user, or at least the active queries) needs to reset or re-query to prevent data leakage between user sessions in the UI. A simple page reload (`window.location.reload()`) upon switching users is acceptable for this development-tier feature.
 - **Backend Compatibility:** The backend currently trusts the `X-User-ID` header (as seen in `chat.service.ts` or auth middleware). The updated `AuthService` must ensure it passes the numeric ID of the selected seeded user correctly.
+
+### 3.6. User Deletion
+- Provide a delete button (represented by a trashcan icon) for each user account card on the dev login page.
+- Clicking the delete button must trigger a confirmation dialog (e.g., standard browser confirm) asking: "Are you sure you want to delete the user \"{user.name}\"? This will delete all of their farms, fields, and records."
+- Clicking delete must not trigger login (event propagation must be stopped).
+- On confirmation, the frontend calls the backend to delete the user.
+- The backend must expose a `DELETE /v0/users/{id}` endpoint, which will perform a database `DELETE` on the user (triggering cascade deletion of related entities) and clear the backend farms cache for that user.
+- User deletion is restricted to local development and testing environments, returning `403 Forbidden` in production.

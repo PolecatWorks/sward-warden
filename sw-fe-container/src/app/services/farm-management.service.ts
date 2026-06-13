@@ -82,6 +82,12 @@ export class FarmManagementService {
     );
   }
 
+  deleteUser(id: number | string): Observable<void> {
+    return this.apiUrl$.pipe(
+      switchMap(apiUrl => this.http.delete<void>(`${apiUrl}/users/${id}`, { headers: this.getHeaders() }))
+    );
+  }
+
   // ──────────────────────────────────────────────────────────
   // Local-First CRUD Logic
   // ──────────────────────────────────────────────────────────

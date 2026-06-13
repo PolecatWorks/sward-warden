@@ -15,7 +15,7 @@ describe('LoginComponent', () => {
   let mockRouter: jasmine.SpyObj<Router>;
 
   beforeEach(async () => {
-    mockFarmService = jasmine.createSpyObj('FarmManagementService', ['getUsers', 'addUser']);
+    mockFarmService = jasmine.createSpyObj('FarmManagementService', ['getUsers', 'addUser', 'deleteUser']);
     mockAuthService = jasmine.createSpyObj('AuthService', ['login']);
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
 
@@ -163,4 +163,36 @@ describe('LoginComponent', () => {
     expect(component.errorMsg).toContain('Failed to create user');
     expect(component.showCreateForm).toBeTrue(); // Keeps form open
   }));
+
+  it('should prompt confirmation, delete user, and refresh user list on delete button click', fakeAsync(() => {
+    spyOn(window, 'confirm').and.returnValue(true);
+    mockFarmService.deleteUser.and.returnValue(of(undefined));
+
+    const event = jasmine.createSpyObj('Event', ['stopPropagation']);
+    const userToDelete = { id: 1, name: 'Alice', email: 'alice@example.com', role: 'user' };
+
+    component.deleteUser(event, userToDelete);
+
+    expect(event.stopPropagation).toHaveBeenCalled();
+    expect(window.confirm).toHaveBeenCalledWith(jasmine.stringContaining('delete the user "Alice"'));
+    expect(mockFarmService.deleteUser).toHaveBeenCalledWith(1);
+
+    fixture.detectChanges();
+    tick();
+
+    expect(mockFarmService.getUsers).toHaveBeenCalledTimes(2); // Initial + reload after delete
+  }));
+
+  it('should not delete user if confirmation is cancelled', () => {
+    spyOn(window, 'confirm').and.returnValue(false);
+
+    const event = jasmine.createSpyObj('Event', ['stopPropagation']);
+    const userToDelete = { id: 1, name: 'Alice', email: 'alice@example.com', role: 'user' };
+
+    component.deleteUser(event, userToDelete);
+
+    expect(event.stopPropagation).toHaveBeenCalled();
+    expect(window.confirm).toHaveBeenCalled();
+    expect(mockFarmService.deleteUser).not.toHaveBeenCalled();
+  });
 });

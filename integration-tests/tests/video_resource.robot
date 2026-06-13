@@ -22,6 +22,6 @@ Teardown With Video
 Login As Demo User
     [Documentation]    Logs in as the default Demo User (ID 1) via the development login page
     New Page    ${EXTERNAL_DNS_URL}/login
-    Wait For Elements State    id=user-card-1    visible    timeout=10s
-    Click    id=user-card-1
+    Wait For Elements State    data-testid=user-login-1    visible    timeout=10s
+    Click    data-testid=user-login-1
     Wait For Elements State    css=app-home    visible    timeout=10s
