@@ -59,11 +59,25 @@ pub async fn delete_event(
     UserId(user_id): UserId,
     Path(id): Path<i64>,
 ) -> Result<StatusCode, AppError> {
-    sqlx::query("UPDATE events SET is_deleted = TRUE, updated_at = NOW() WHERE id = $1 AND field_id IN (SELECT f.id FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = $2)")
-        .bind(id)
-        .bind(user_id)
-        .execute(&state.db_pool)
-        .await?;
+    let is_admin = crate::webserver::auth::check_is_admin(&state.db_pool, user_id).await;
+
+    let result = if is_admin {
+        sqlx::query("UPDATE events SET is_deleted = TRUE, updated_at = NOW() WHERE id = $1")
+            .bind(id)
+            .execute(&state.db_pool)
+            .await?
+    } else {
+        sqlx::query("UPDATE events SET is_deleted = TRUE, updated_at = NOW() WHERE id = $1 AND field_id IN (SELECT f.id FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = $2)")
+            .bind(id)
+            .bind(user_id)
+            .execute(&state.db_pool)
+            .await?
+    };
+
+    if result.rows_affected() == 0 {
+        return Err(AppError::NotFound("Event not found".to_string()));
+    }
+
     Ok(StatusCode::NO_CONTENT)
 }
 
