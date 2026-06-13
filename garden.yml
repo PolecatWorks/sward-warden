@@ -334,7 +334,7 @@ spec:
         IMAGE="ghcr.io/polecatworks/sward-warden-be/dev"
         TAG="sha-$BACKEND_SHA"
       fi
-      echo "{\"image\": \"$IMAGE\", \"tag\": \"$TAG\"}" > "$GARDEN_ACTION_JSON_OUTPUTS_PATH"
+      echo "{\"image\": \"$IMAGE\", \"tag\": \"$TAG\"}" > "$GARDEN_ACTION_OUTPUTS_JSON_PATH"
 ---
 kind: Build
 type: exec
@@ -355,7 +355,7 @@ spec:
         IMAGE="ghcr.io/polecatworks/sward-warden-fe/dev"
         TAG="sha-$FRONTEND_SHA"
       fi
-      echo "{\"image\": \"$IMAGE\", \"tag\": \"$TAG\"}" > "$GARDEN_ACTION_JSON_OUTPUTS_PATH"
+      echo "{\"image\": \"$IMAGE\", \"tag\": \"$TAG\"}" > "$GARDEN_ACTION_OUTPUTS_JSON_PATH"
 ---
 kind: Deploy
 type: kubernetes

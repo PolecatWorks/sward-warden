@@ -335,11 +335,7 @@ jobs:
           PR_NUMBER: ${{ env.PR_NUMBER }}
           GARDEN_KUBECONTEXT: local
         run: |
-          garden cleanup namespace --env pr --force \
-            --var sw-be-image="$SW_BE_IMAGE" \
-            --var sw-be-tag="$SW_BE_TAG" \
-            --var sw-fe-image="$SW_FE_IMAGE" \
-            --var sw-fe-tag="$SW_FE_TAG"
+          garden cleanup namespace --env pr --force
 
           # Delete the manually created namespace to completely decommission the environment
           NAMESPACE="sward-warden-pr-${{ env.PR_NUMBER }}"
