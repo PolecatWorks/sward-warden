@@ -72,6 +72,7 @@ pub fn app_router(state: AppState) -> Router {
             "/v0/events",
             get(events::list_events).post(events::create_event),
         )
+        .route("/v0/events/{id}", delete(events::delete_event))
         .route(
             "/v0/fertiliser-applications",
             get(applications::list_fertiliser_applications)
