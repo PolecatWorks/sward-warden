@@ -384,3 +384,22 @@ async fn test_put_user_route_exists() {
 
     assert_ne!(response.status(), StatusCode::NOT_FOUND);
 }
+
+#[tokio::test]
+async fn test_delete_user_route_exists() {
+    let state = get_test_state();
+    let app = app_router(state);
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .method("DELETE")
+                .uri("/v0/users/999")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_ne!(response.status(), StatusCode::NOT_FOUND);
+}

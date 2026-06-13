@@ -43,7 +43,9 @@ pub fn app_router(state: AppState) -> Router {
         .route("/v0/users", get(users::list_users).post(users::create_user))
         .route(
             "/v0/users/{id}",
-            get(users::get_user).put(users::update_user),
+            get(users::get_user)
+                .put(users::update_user)
+                .delete(users::delete_user),
         )
         .route("/v0/farms", get(farms::list_farms).post(farms::create_farm))
         .route(

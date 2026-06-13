@@ -96,6 +96,7 @@ Specifications under PRD 0008 (Spatial Optimization) require the PostGIS extensi
 | [0017-03 Header User Switcher](./0017/0017-03-header-user-switcher.md) | Complete |
 | [0017-04 Dev User Role Creation Support](./0017/0017-04-dev-user-role-creation-support.md) | Complete |
 | [0017-05 User Directory Privacy](./0017/0017-05-user-directory-privacy.md) | Complete |
+| [0017-06 Dev User Deletion](./0017/0017-06-dev-user-deletion.md) | Complete |
 | [0003-08 Ownership & Safe Deletion](./0003/0003-08-ownership-and-safe-deletion.md) | Complete |
 | [0006-06 Portfolio-Level Inventory](./0006/0006-06-portfolio-inventory.md) | Complete |
 | [0016-04 Field Card Layout and Centred Add Button UX](./0016/0016-04-field-card-and-add-button-ux.md) | Complete |
