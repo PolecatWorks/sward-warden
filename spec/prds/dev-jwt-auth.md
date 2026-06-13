@@ -19,6 +19,9 @@ This PRD outlines the changes required across the backend container (`sw-be-cont
 
 ## Backend Requirements (`sw-be-container`)
 
+### Production Security Constraint
+- **Critical Requirement:** The endpoints described below (`/dev/auth/token` and `/.well-known/jwks.json`) and the associated key-generation logic MUST be explicitly disabled when the application is running in production mode. Production environments must exclusively rely on the external Identity Provider (e.g., Keycloak) for JWT issuance and validation.
+
 ### Key Generation and Management
 - The backend will utilize the [`jwt_simple`](https://crates.io/crates/jwt-simple) Rust crate for key generation, JWT signing, and verification.
 - On backend startup (when running in local/dev mode), an RSA keypair (RS256) will be generated in-memory.
