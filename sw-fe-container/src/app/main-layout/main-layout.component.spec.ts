@@ -3,6 +3,7 @@ import { MainLayoutComponent } from './main-layout.component';
 import { RxdbService } from '../services/rxdb/rxdb.service';
 import { AuthService } from '../services/auth.service';
 import { FarmManagementService } from '../services/farm-management.service';
+import { SyncEngineService } from '../services/sync-engine.service';
 import { Router } from '@angular/router';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
@@ -14,6 +15,7 @@ describe('MainLayoutComponent', () => {
   let rxdbServiceSpy: jasmine.SpyObj<RxdbService>;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
   let farmServiceSpy: jasmine.SpyObj<FarmManagementService>;
+  let syncEngineServiceSpy: jasmine.SpyObj<SyncEngineService>;
   let router: Router;
 
   const mockUser = { id: 1, name: 'Seamus O\'Neill', email: 'seamus@example.com', role: 'admin' };
@@ -32,6 +34,7 @@ describe('MainLayoutComponent', () => {
     authServiceSpy.getUserId.and.returnValue('1');
     farmServiceSpy.getUser.and.returnValue(of(mockUser));
     farmServiceSpy.getUsers.and.returnValue(of(mockUsers));
+    syncEngineServiceSpy = jasmine.createSpyObj('SyncEngineService', ['forcePullSync']);
 
     await TestBed.configureTestingModule({
       imports: [MainLayoutComponent],
@@ -39,7 +42,8 @@ describe('MainLayoutComponent', () => {
         provideRouter([]),
         { provide: RxdbService, useValue: rxdbServiceSpy },
         { provide: AuthService, useValue: authServiceSpy },
-        { provide: FarmManagementService, useValue: farmServiceSpy }
+        { provide: FarmManagementService, useValue: farmServiceSpy },
+        { provide: SyncEngineService, useValue: syncEngineServiceSpy }
       ]
     }).compileComponents();
 

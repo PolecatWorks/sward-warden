@@ -311,6 +311,32 @@ export class SyncEngineService implements OnDestroy {
     });
   }
 
+  /** Clear the sync checkpoint in the metadata collection to force a full fetch. */
+  async clearCheckpoint(db: SwardDatabase): Promise<void> {
+    const doc = await (db as any).metadata.findOne(CHECKPOINT_KEY).exec();
+    if (doc) {
+      await doc.remove();
+    }
+  }
+
+  /** Force a sync by clearing the checkpoint and pulling all data from the server. */
+  async forcePullSync(): Promise<void> {
+    if (this.syncInProgress || this.rxdbService.fallbackToRest$.value) {
+      this.syncNeededAgain = true;
+      return;
+    }
+
+    this.syncInProgress = true;
+    try {
+      const db = await firstValueFrom(this.rxdbService.db$);
+      await this.clearCheckpoint(db);
+      await this.pullSync();
+    } finally {
+      this.syncInProgress = false;
+      this.syncNeededAgain = false;
+    }
+  }
+
   // ──────────────────────────────────────────────────────────
   // Upsert Logic with LWW Conflict Resolution (Optimized)
   // ──────────────────────────────────────────────────────────

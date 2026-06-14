@@ -270,6 +270,31 @@ describe('SyncEngineService', () => {
   // Pull Sync (Delta Fetch)
   // ──────────────────────────────────────────────────────────
 
+  it('should force pull sync and clear checkpoint', async () => {
+    const db = await firstValueFrom(rxdbService.db$);
+    await service.setCheckpoint(db, '2026-04-25T12:00:00Z');
+
+    const pullPromise = service.forcePullSync();
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    // Force sync should clear checkpoint, so it shouldn't send `?since=`
+    const syncReq = httpMock.expectOne('/v0/sync');
+    expect(syncReq.request.method).toBe('GET');
+    expect(syncReq.request.urlWithParams).not.toContain('since=');
+
+    syncReq.flush({
+      checkpoint: '2026-04-26T12:00:00Z',
+      farms: [],
+      fields: [],
+      events: [],
+      farm_records: [],
+    });
+
+    await pullPromise;
+    const checkpoint = await service.getCheckpoint(db);
+    expect(checkpoint).toBe('2026-04-26T12:00:00Z');
+  });
+
   it('should pull new farms from the be', async () => {
     const db = await firstValueFrom(rxdbService.db$);
 
