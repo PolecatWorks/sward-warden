@@ -64,8 +64,13 @@ jobs:
     runs-on: polecatworks-runner
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+
+      - name: Fetch History without gh-pages
+        run: |
+          git config --add remote.origin.fetch ^refs/heads/gh-pages
+          if [ -f .git/shallow ]; then
+            git fetch --unshallow
+          fi
 
       - name: Prepare Image Variables
         run: |
