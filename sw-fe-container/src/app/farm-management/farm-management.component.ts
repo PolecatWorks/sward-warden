@@ -7,7 +7,7 @@ import { User } from '../models/user';
 import { Farm } from '../models/farm';
 import { Field } from '../models/field';
 import { Event } from '../models/event';
-import { Observable, Subscription, of } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
 @Component({
