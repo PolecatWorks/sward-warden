@@ -8,7 +8,7 @@ This document defines the requirements for user profiles and the management of f
 1. **User Profile Management**
    - **Profile Edit Interaction**: The profile page must not feature always-visible editable inputs or an inline "Edit Profile" form section. Instead, a pencil icon button must be displayed next to the user's name in the hero banner. Clicking this pencil icon opens a modal dialog (matching the farm/field edit modal pattern) allowing the user to update their name, email, phone, and description.
    - **Profile Content Restrictions**: Do not include navigation links to manage farms on the profile page itself (these are managed in other dedicated app areas). Navigation links to reports and inventory are permitted.
-   - **Top Bar Avatar Navigation**: The top bar avatar displaying user initials must be clickable and directly navigate the user to their profile page.
+   - **Top Bar Avatar Navigation**: The top bar avatar displaying user initials must be clickable and directly navigate the user to their profile page. On all device sizes (mobile and desktop), the avatar icon must be located on the top right.
    - **User Directory Privacy**: The backend API must block general users from listing all users in the system (`GET /users` must be rejected/restricted in non-dev environments). The profile page must not display list views of other users.
    - **Team Members (TODO)**: Team member management has not yet been fully discussed or defined, and is marked as a future TODO.
 
