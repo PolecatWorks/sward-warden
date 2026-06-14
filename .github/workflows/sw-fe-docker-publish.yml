@@ -84,7 +84,7 @@ jobs:
         run: |
           platform=${{ matrix.platform }}
           repo_name="${{ github.repository }}"
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          if [[ "${{ github.event_name }}" == "merge_group" ]]; then
             echo "IMAGE_NAME_LOWERCASE=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')-fe/dev" >> $GITHUB_ENV
           else
             echo "IMAGE_NAME_LOWERCASE=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')-fe" >> $GITHUB_ENV
@@ -179,7 +179,7 @@ jobs:
       - name: Prepare environment
         run: |
           repo_name="${{ github.repository }}"
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          if [[ "${{ github.event_name }}" == "merge_group" ]]; then
             echo "IMAGE_NAME_LOWERCASE=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')-fe/dev" >> $GITHUB_ENV
           else
             echo "IMAGE_NAME_LOWERCASE=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')-fe" >> $GITHUB_ENV
