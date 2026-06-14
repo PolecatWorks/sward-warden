@@ -81,6 +81,14 @@
             </div>
             <span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
           </a>
+
+          <a [routerLink]="['/farms', farm.id, 'topology']" class="flex items-center justify-between p-4 rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors group">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-tertiary">map</span>
+              <span class="font-bold text-sm text-on-surface">Topology View</span>
+            </div>
+            <span class="material-symbols-outlined text-on-surface-variant group-hover:translate-x-1 transition-transform">chevron_right</span>
+          </a>
         </div>
       </div>
     </div>

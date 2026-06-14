@@ -61,3 +61,7 @@ This approach stores the raw, detailed topographical data.
 *   **Cons:** Requires more complex database queries, heavier payloads to the frontend, and significantly more disk space.
 
 **Recommendation:** Start with **Approach 1 (Summary Storage)** for immediate regulatory and reporting needs. If advanced mapping or precision agriculture features are prioritized, transition to or supplement with **Approach 2** at a later stage.
+
+## 4. UI/UX Integration
+
+To ensure users can easily access topographical analysis for a specific farm, a "Topology View" button is provided in the "Quick Actions" section of the Farm Detail view. This navigates the user directly to the topology mapping interface for that farm.
