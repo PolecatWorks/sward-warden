@@ -46,6 +46,6 @@ This document defines the requirements for user profiles and the management of f
      - **Soil Analysis**: pH, P-index, K-index, and Magnesium levels.
 
 ## FE Requirements
-- **User Profile**: Must be transitioned from the basic form to a premium "Hero-style" profile view as demonstrated in the prototype `HomeComponent`, utilizing the toggleable edit mode. The home dashboard specifically must not contain contact details (like email and phone number) or the update profile action.
+- **User Profile**: Must be transitioned from the basic form to a premium "Hero-style" profile view as demonstrated in the prototype `HomeComponent`, utilizing the toggleable edit mode.
 - **Farm/Field Cards**: Must utilize high-quality imagery (where available) and Bento-style layouts for displaying operational stats.
 - **Timeline**: The field event tracking must use the standardized high-quality activity timeline identified in the FE review.

@@ -33,12 +33,12 @@ Field Creation and Deletion Flow
     ${field_area}=    Set Variable    15.5
 
     # 3. Click "Add Field"
-    Click    button >> text=Add Field    button=left    force=${True}
+    Click    button >> text=Add Field    button=left
 
     # 4. Fill in field details and save
     Fill Text    \#newFieldName    ${field_name}
     Fill Text    \#newFieldArea    ${field_area}
-    Click    button >> text=Save Field    button=left    force=${True}
+    Click    button >> text=Save Field    button=left
 
     # 5. Wait for field to appear in the UI
     Wait For Elements State    text=${field_name}    visible    timeout=10s
@@ -66,11 +66,11 @@ Field Creation and Deletion Flow
     Wait For Elements State    text=${field_name}    visible    timeout=5s
 
     # 8. Click Delete Field to reveal confirmation panel
-    Click    \#delete-field-btn    button=left    force=${True}
+    Click    \#delete-field-btn    button=left
     Wait For Elements State    id=delete-confirm-panel    visible    timeout=5s
 
     # 9. Click Confirm Delete
-    Click    \#confirm-delete-field-btn    button=left    force=${True}
+    Click    \#confirm-delete-field-btn    button=left
 
     # 10. Confirm deleted and navigated away
     Wait For Elements State    text=${field_name}    detached    timeout=10s
@@ -119,14 +119,14 @@ Auto Farm Creation Flow
     Wait For Elements State    id=add-field-empty-btn    visible    timeout=10s
 
     # 4. Click Add Field empty state button
-    Click    \#add-field-empty-btn    button=left    force=${True}
+    Click    \#add-field-empty-btn    button=left
     Wait For Elements State    id=add-field-modal    visible    timeout=5s
 
     # 5. Fill field details and save
     ${field_name}=    Set Variable    Auto Farm Field ${random_str}
     Fill Text    \#newFieldName    ${field_name}
     Fill Text    \#newFieldArea    10.5
-    Click    \#save-field-btn    button=left    force=${True}
+    Click    \#save-field-btn    button=left
 
     # 6. Wait for modal to close and field to appear in the UI
     Wait For Elements State    id=add-field-modal    detached    timeout=5s
