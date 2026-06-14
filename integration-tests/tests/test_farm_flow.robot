@@ -25,12 +25,12 @@ Farm Creation and Deletion Flow
     ${farm_location}=    Set Variable    E2E Test Location
 
     # 1. Click Add Farm FAB using UI
-    Click With Options    \#add-farm-fab    button=left    force=${True}
+    Click    \#add-farm-fab    button=left    force=${True}
 
     # 2. Fill farm details in Modal
     Fill Text    \#farm-name-input    ${farm_name}
     Fill Text    \#farm-location-input    ${farm_location}
-    Click With Options    \#save-farm-btn    button=left    force=${True}
+    Click    \#save-farm-btn    button=left    force=${True}
 
     # Wait for the add farm modal to close
     Wait For Elements State    \#save-farm-btn    detached    timeout=5s
@@ -62,11 +62,11 @@ Farm Creation and Deletion Flow
     Wait For Elements State    id=farm-name-heading    visible    timeout=5s
 
     # 6. Click Delete Farm button to reveal confirmation panel
-    Click With Options    button[data-testid="delete-farm-btn"]    button=left    force=${True}
+    Click    button[data-testid="delete-farm-btn"]    button=left    force=${True}
     Wait For Elements State    id=delete-confirm-panel    visible    timeout=5s
 
     # 7. Click Confirm Delete
-    Click With Options    button[data-testid="confirm-delete-farm-btn"]    button=left    force=${True}
+    Click    button[data-testid="confirm-delete-farm-btn"]    button=left    force=${True}
 
     # 8. Confirm deleted in UI (wait until text is not present)
     Wait For Elements State    text=${farm_name}    detached    timeout=10s
@@ -131,12 +131,12 @@ Farm Deletion Blocking and Field Migration Flow
     Wait For Elements State    text=${field_name}    visible    timeout=5s
 
     # 6. Click Edit Field and select Farm B
-    Click With Options    \#edit-field-btn    button=left    force=${True}
+    Click    \#edit-field-btn    button=left    force=${True}
     Wait For Elements State    id=edit-field-modal    visible    timeout=5s
 
     # Select Farm B from dropdown
     Select Options By    id=edit-field-farm-input    value    ${farm_b_id}
-    Click With Options    \#save-edit-field-btn    button=left    force=${True}
+    Click    \#save-edit-field-btn    button=left    force=${True}
     Wait For Elements State    id=edit-field-modal    detached    timeout=5s
 
     # Wait for sync
@@ -151,9 +151,9 @@ Farm Deletion Blocking and Field Migration Flow
     Get Element States    id=delete-farm-btn    not contains    disabled
 
     # 9. Click Delete Farm, Confirm
-    Click With Options    button[data-testid="delete-farm-btn"]    button=left    force=${True}
+    Click    button[data-testid="delete-farm-btn"]    button=left    force=${True}
     Wait For Elements State    id=delete-confirm-panel    visible    timeout=5s
-    Click With Options    button[data-testid="confirm-delete-farm-btn"]    button=left    force=${True}
+    Click    button[data-testid="confirm-delete-farm-btn"]    button=left    force=${True}
 
     # 10. Verify Farm A is deleted
     Wait For Elements State    text=${farm_a_name}    detached    timeout=10s
