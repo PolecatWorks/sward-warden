@@ -39,6 +39,11 @@ pub struct Field {
     pub name: String,
     pub area_hectares: f64,
     pub land_use: Option<String>,
+    pub min_elevation: Option<f64>,
+    pub max_elevation: Option<f64>,
+    pub mean_elevation: Option<f64>,
+    pub average_slope: Option<f64>,
+    pub max_slope: Option<f64>,
     #[sqlx(default)]
     pub geometry_wkt: Option<String>,
     pub updated_at: Option<DateTime<Utc>>,

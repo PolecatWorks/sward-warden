@@ -4,6 +4,11 @@ export interface Field {
   name: string;
   area_hectares: number;
   land_use?: string;
+  min_elevation?: number;
+  max_elevation?: number;
+  mean_elevation?: number;
+  average_slope?: number;
+  max_slope?: number;
   geometry_wkt?: string;
   updated_at?: string;
   is_deleted?: boolean;

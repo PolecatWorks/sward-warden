@@ -265,6 +265,11 @@ export class FarmManagementService {
             if (field.name !== undefined) updates.name = outboxPayload.name = field.name;
             if (field.area_hectares !== undefined) updates.area_hectares = outboxPayload.area_hectares = field.area_hectares;
             if (field.land_use !== undefined) updates.land_use = outboxPayload.land_use = field.land_use;
+            if (field.min_elevation !== undefined) updates.min_elevation = outboxPayload.min_elevation = field.min_elevation;
+            if (field.max_elevation !== undefined) updates.max_elevation = outboxPayload.max_elevation = field.max_elevation;
+            if (field.mean_elevation !== undefined) updates.mean_elevation = outboxPayload.mean_elevation = field.mean_elevation;
+            if (field.average_slope !== undefined) updates.average_slope = outboxPayload.average_slope = field.average_slope;
+            if (field.max_slope !== undefined) updates.max_slope = outboxPayload.max_slope = field.max_slope;
 
             const updateData = {
               ...updates,
@@ -328,8 +333,8 @@ export class FarmManagementService {
     }
     return this.insertEntity<FieldDocType, Field>(
       'fields',
-      { serverId: typeof field.id === 'number' ? field.id : undefined, farm_id: field.farm_id, name: field.name, area_hectares: field.area_hectares, land_use: field.land_use },
-      { farm_id: field.farm_id, name: field.name, area_hectares: field.area_hectares, land_use: field.land_use },
+      { serverId: typeof field.id === 'number' ? field.id : undefined, farm_id: field.farm_id, name: field.name, area_hectares: field.area_hectares, land_use: field.land_use, min_elevation: field.min_elevation, max_elevation: field.max_elevation, mean_elevation: field.mean_elevation, average_slope: field.average_slope, max_slope: field.max_slope },
+      { farm_id: field.farm_id, name: field.name, area_hectares: field.area_hectares, land_use: field.land_use, min_elevation: field.min_elevation, max_elevation: field.max_elevation, mean_elevation: field.mean_elevation, average_slope: field.average_slope, max_slope: field.max_slope },
       (doc) => this.fieldDocToModel(doc)
     );
   }
@@ -607,6 +612,11 @@ export class FarmManagementService {
       name: doc.name,
       area_hectares: doc.area_hectares,
       land_use: doc.land_use,
+      min_elevation: doc.min_elevation,
+      max_elevation: doc.max_elevation,
+      mean_elevation: doc.mean_elevation,
+      average_slope: doc.average_slope,
+      max_slope: doc.max_slope,
     };
   }
 

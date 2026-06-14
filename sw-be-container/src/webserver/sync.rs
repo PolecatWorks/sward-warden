@@ -41,14 +41,14 @@ pub async fn delta_sync(
 
     let fields = if is_admin {
         sqlx::query_as::<_, Field>(
-            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, ST_AsText(f.geom) as geometry_wkt, f.updated_at, f.is_deleted FROM fields f WHERE f.updated_at > $1"
+            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, f.min_elevation, f.max_elevation, f.mean_elevation, f.average_slope, f.max_slope, ST_AsText(f.geom) as geometry_wkt, f.updated_at, f.is_deleted FROM fields f WHERE f.updated_at > $1"
         )
         .bind(since)
         .fetch_all(&state.db_pool)
         .await?
     } else {
         sqlx::query_as::<_, Field>(
-            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, ST_AsText(f.geom) as geometry_wkt, f.updated_at, f.is_deleted FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = $1 AND f.updated_at > $2"
+            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, f.min_elevation, f.max_elevation, f.mean_elevation, f.average_slope, f.max_slope, ST_AsText(f.geom) as geometry_wkt, f.updated_at, f.is_deleted FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = $1 AND f.updated_at > $2"
         )
         .bind(user_id)
         .bind(since)

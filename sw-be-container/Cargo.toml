@@ -41,6 +41,10 @@ ffi-log2 = { git = "https://github.com/PolecatWorks/hams.git" }
 sqlx = { version = "0.8", features = ["postgres", "runtime-tokio-rustls", "chrono"] }
 tower = { version = "0.5", features = ["limit", "timeout"] }
 
+geo = "^0.28"
+geos = "^11.1"
+geozero = "^0.13"
+
 [dev-dependencies]
 tower = { version = "0.5", features = ["util"] }
 http-body-util = "0.1.3"

@@ -28,6 +28,11 @@ export interface FieldDocType {
   name: string;
   area_hectares: number;
   land_use?: string;
+  min_elevation?: number;
+  max_elevation?: number;
+  mean_elevation?: number;
+  average_slope?: number;
+  max_slope?: number;
   geometry_wkt?: string;
   syncStatus: SyncStatus;
   updatedAt: string;
@@ -153,6 +158,11 @@ export const fieldSchema: RxJsonSchema<FieldDocType> = {
     name: { type: 'string' },
     area_hectares: { type: 'number' },
     land_use: { type: 'string', default: 'grassland' },
+    min_elevation: { type: 'number' },
+    max_elevation: { type: 'number' },
+    mean_elevation: { type: 'number' },
+    average_slope: { type: 'number' },
+    max_slope: { type: 'number' },
     geometry_wkt: { type: 'string' },
     syncStatus: { type: 'string', maxLength: 16, enum: ['synced', 'pending', 'failed'], default: 'pending' },
     updatedAt: { type: 'string', maxLength: 32 },
