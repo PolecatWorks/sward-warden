@@ -1,5 +1,5 @@
 *** Settings ***
-Library    RequestsLibrary
+Library    AuthRequests.py
 
 *** Variables ***
 ${BE_POD_IP}

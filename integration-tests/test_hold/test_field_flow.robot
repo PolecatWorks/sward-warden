@@ -1,6 +1,6 @@
 *** Settings ***
 Library    Browser
-Library    RequestsLibrary
+Library    ../tests/AuthRequests.py
 Resource    video_resource.robot
 
 *** Variables ***
