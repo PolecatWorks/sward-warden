@@ -1,5 +1,7 @@
 name: Integration Tests
 on:
+  pull_request:
+    branches: [main]
   merge_group:
     branches: [main]
   workflow_dispatch:
@@ -58,7 +60,7 @@ jobs:
 
   run-tests:
     needs: check-paths
-    if: needs.check-paths.outputs.run_tests == 'true'
+    if: needs.check-paths.outputs.run_tests == 'true' && github.event_name == 'merge_group'
     runs-on: polecatworks-runner
     steps:
       - uses: actions/checkout@v4
@@ -347,7 +349,7 @@ jobs:
   integration:
     name: integration
     needs: [check-paths, run-tests]
-    if: always()
+    if: always() && github.event_name == 'merge_group'
     runs-on: ubuntu-latest
     steps:
       - name: Check Status
