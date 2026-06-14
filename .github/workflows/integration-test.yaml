@@ -93,6 +93,13 @@ jobs:
 
       - name: Install GitHub CLI
         run: |
+          ARCH=$(uname -m)
+          if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
+            GH_ARCH="arm64"
+          else
+            GH_ARCH="amd64"
+          fi
+
           # Fetch the latest GH version using github api, with auth to prevent rate limits
           GH_VERSION=$(curl -sL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/cli/cli/releases/latest | jq -r .tag_name | sed 's/v//' || echo "")
           if [ -z "$GH_VERSION" ] || [ "$GH_VERSION" == "null" ]; then
@@ -102,7 +109,7 @@ jobs:
 
           # Retry download up to 5 times
           for i in 1 2 3 4 5; do
-            if curl -sSL -f "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz" -o gh.tar.gz; then
+            if curl -sSL -f "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${GH_ARCH}.tar.gz" -o gh.tar.gz; then
               break
             else
               echo "Download failed, retrying in 10s..."
@@ -115,11 +122,11 @@ jobs:
           else
             tar xzf gh.tar.gz
             # Add it to GITHUB_PATH so subsequent steps can use it
-            echo "$(pwd)/gh_${GH_VERSION}_linux_amd64/bin" >> $GITHUB_PATH
-            chmod +x $(pwd)/gh_${GH_VERSION}_linux_amd64/bin/gh
+            echo "$(pwd)/gh_${GH_VERSION}_linux_${GH_ARCH}/bin" >> $GITHUB_PATH
+            chmod +x $(pwd)/gh_${GH_VERSION}_linux_${GH_ARCH}/bin/gh
             # Also move to a directory already in PATH just in case
             mkdir -p $HOME/.local/bin
-            mv gh_${GH_VERSION}_linux_amd64/bin/gh $HOME/.local/bin/ || true
+            mv gh_${GH_VERSION}_linux_${GH_ARCH}/bin/gh $HOME/.local/bin/ || true
             echo "$HOME/.local/bin" >> $GITHUB_PATH
             chmod +x $HOME/.local/bin/gh
             $HOME/.local/bin/gh --version
@@ -127,6 +134,13 @@ jobs:
 
       - name: Install Garden
         run: |
+          ARCH=$(uname -m)
+          if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
+            GARDEN_ARCH="arm64"
+          else
+            GARDEN_ARCH="amd64"
+          fi
+
           GARDEN_VERSION="0.13.35"
           # Try to get latest version but fall back if API is unreachable
           LATEST_VERSION=$(curl -sL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/garden-io/garden/releases/latest | jq -r .tag_name | sed 's/v//' || echo "")
@@ -136,7 +150,7 @@ jobs:
           echo "Using Garden version $GARDEN_VERSION"
 
           for i in 1 2 3 4 5; do
-            if curl -sSL -f "https://github.com/garden-io/garden/releases/download/${GARDEN_VERSION}/garden-${GARDEN_VERSION}-linux-amd64.tar.gz" -o garden.tar.gz; then
+            if curl -sSL -f "https://github.com/garden-io/garden/releases/download/${GARDEN_VERSION}/garden-${GARDEN_VERSION}-linux-${GARDEN_ARCH}.tar.gz" -o garden.tar.gz; then
               break
             else
               echo "Download failed, retrying in 10s..."
@@ -149,9 +163,9 @@ jobs:
             exit 1
           fi
           tar xzf garden.tar.gz
-          echo "$(pwd)/linux-amd64" >> $GITHUB_PATH
-          chmod +x $(pwd)/linux-amd64/garden
-          ./linux-amd64/garden version
+          echo "$(pwd)/linux-${GARDEN_ARCH}" >> $GITHUB_PATH
+          chmod +x $(pwd)/linux-${GARDEN_ARCH}/garden
+          ./linux-${GARDEN_ARCH}/garden version
 
       - name: Set up kubectl
         uses: azure/setup-kubectl@v4
