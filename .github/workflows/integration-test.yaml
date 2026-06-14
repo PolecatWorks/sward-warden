@@ -237,6 +237,8 @@ jobs:
           GHCR_READER_TOKEN: ${{ secrets.GHCR_READER_TOKEN }}
         run: |
           garden test --env pr \
+            --log-level verbose \
+            --show-timestamps \
             --var sw-be-image="$SW_BE_IMAGE" \
             --var sw-be-tag="$SW_BE_TAG" \
             --var sw-fe-image="$SW_FE_IMAGE" \
