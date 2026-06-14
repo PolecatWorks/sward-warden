@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient, withInterceptors, HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { AuthService } from './auth.service';
 
 import { devAuthInterceptor } from './dev-auth.interceptor';
 
@@ -9,15 +10,19 @@ describe('devAuthInterceptor', () => {
   let httpMock: HttpTestingController;
   let httpClient: HttpClient;
   let routerSpy: jasmine.SpyObj<Router>;
+  let authServiceSpy: jasmine.SpyObj<AuthService>;
 
   beforeEach(() => {
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    authServiceSpy = jasmine.createSpyObj('AuthService', ['getToken']);
+    authServiceSpy.getToken.and.returnValue('real-test-token');
 
     TestBed.configureTestingModule({
       providers: [
         provideHttpClient(withInterceptors([devAuthInterceptor])),
         provideHttpClientTesting(),
-        { provide: Router, useValue: routerSpy }
+        { provide: Router, useValue: routerSpy },
+        { provide: AuthService, useValue: authServiceSpy }
       ]
     });
 
@@ -34,16 +39,9 @@ describe('devAuthInterceptor', () => {
 
     const req = httpMock.expectOne('/test-endpoint');
     expect(req.request.headers.has('Authorization')).toBeTrue();
-    expect(req.request.headers.get('Authorization')).toMatch(/^Bearer .+\..+\.$/);
+    expect(req.request.headers.get('Authorization')).toBe('Bearer real-test-token');
 
-    // Check specific payload contents if needed
-    const token = req.request.headers.get('Authorization')?.split(' ')[1];
-    if (token) {
-        const parts = token.split('.');
-        const payload = JSON.parse(atob(parts[1]));
-        expect(payload.sub).toBe('default-user');
-        expect(payload.name).toBe('Dev User');
-    }
+
 
     req.flush({});
   });

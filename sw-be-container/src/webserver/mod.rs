@@ -11,6 +11,7 @@ pub mod spatial;
 pub mod sync;
 pub mod users;
 pub mod weather;
+pub mod dev_auth;
 
 use axum::{
     Json, Router,
@@ -33,7 +34,7 @@ pub async fn hello_handler() -> Result<Json<serde_json::Value>, AppError> {
 
 // Central API Router
 pub fn app_router(state: AppState) -> Router {
-    Router::new()
+    let mut router = Router::new()
         .route("/v0/admin/health", get(admin::admin_health))
         .route("/v0/admin/farms", get(admin::admin_list_farms))
         .route("/v0/admin/fields", get(admin::admin_list_fields))
@@ -131,8 +132,15 @@ pub fn app_router(state: AppState) -> Router {
             get(applications::list_fertiliser_applications)
                 .post(applications::create_fertiliser_application),
         )
-        .route("/v0/sync", get(sync::delta_sync))
-        .with_state(state)
+        .route("/v0/sync", get(sync::delta_sync));
+
+    if state.config.debugging.enable_dev_auth {
+        router = router
+            .route("/dev/auth/token", axum::routing::post(dev_auth::generate_token))
+            .route("/.well-known/jwks.json", get(dev_auth::get_jwks));
+    }
+
+    router.with_state(state)
 }
 
 pub async fn start_app_api(state: AppState, ct: CancellationToken) -> Result<(), AppError> {

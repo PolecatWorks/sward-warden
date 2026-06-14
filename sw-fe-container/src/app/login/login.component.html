@@ -34,7 +34,7 @@
              <!-- Login click area: avatar + name/email -->
              <div class="flex-1 flex items-center gap-4 cursor-pointer p-4"
                   [attr.data-testid]="'user-login-' + user.id"
-                  (click)="loginAs(user.id)">
+                  (click)="loginAs(user)">
                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0">
                  {{ user.name.charAt(0) }}
                </div>

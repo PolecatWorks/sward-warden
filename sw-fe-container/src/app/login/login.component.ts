@@ -4,9 +4,10 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { FarmManagementService } from '../services/farm-management.service';
 import { AuthService } from '../services/auth.service';
+import { DevAuthApiService } from '../services/dev-auth-api.service';
 import { User } from '../models/user';
 import { Observable, BehaviorSubject, of } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { catchError, switchMap, finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -26,6 +27,7 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private farmManagementService: FarmManagementService,
+    private devAuthApi: DevAuthApiService,
     private authService: AuthService,
     private router: Router,
     private fb: FormBuilder
@@ -53,10 +55,18 @@ export class LoginComponent implements OnInit {
     );
   }
 
-  loginAs(userId: number | undefined): void {
-    if (userId !== undefined) {
-      this.authService.login(userId.toString());
-      this.router.navigate(['/home']);
+  loginAs(user: User): void {
+    if (user && user.id !== undefined) {
+      this.devAuthApi.getToken(user.id, user.role || 'user').subscribe({
+        next: (response) => {
+          this.authService.login(user.id.toString(), response.access_token);
+          this.router.navigate(['/home']);
+        },
+        error: (err) => {
+          console.error('Failed to get Dev JWT token:', err);
+          this.errorMsg = 'Failed to get dev authentication token. Is dev auth enabled in backend?';
+        }
+      });
     }
   }
 

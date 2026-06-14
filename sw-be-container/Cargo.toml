@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+jwt-simple = "0.12"
 axum = { version ="^0.8", features = ["macros"] }
 url = { version = "^2.5", features = ["serde"] }
 log = "^0.4"
@@ -40,6 +41,7 @@ hams = { git = "https://github.com/PolecatWorks/hams.git" }
 ffi-log2 = { git = "https://github.com/PolecatWorks/hams.git" }
 sqlx = { version = "0.8", features = ["postgres", "runtime-tokio-rustls", "chrono"] }
 tower = { version = "0.5", features = ["limit", "timeout"] }
+base64 = "0.22.1"
 
 geo = "^0.28"
 geos = "^11.1"
