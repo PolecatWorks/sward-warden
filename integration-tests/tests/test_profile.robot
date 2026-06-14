@@ -23,7 +23,7 @@ Edit Profile
     Sleep    2s
 
     # Click the pencil icon to open the edit modal
-    Click    id=edit-profile-btn    button=left    force=${True}
+    Click    id=edit-profile-btn    button=left
 
     # Wait for the modal to appear
     Wait For Elements State    id=edit-name    visible    timeout=5s
@@ -36,7 +36,7 @@ Edit Profile
     Fill Text    id=edit-description    This is a test description
 
     # Submit the form
-    Click    id=save-edit-profile-btn    button=left    force=${True}
+    Click    id=save-edit-profile-btn    button=left
 
     # Wait for the modal to close
     Wait For Elements State    id=save-edit-profile-btn    detached    timeout=5s
@@ -46,7 +46,7 @@ Edit Profile
     Reload
     Wait For Elements State    id=edit-profile-btn    visible    timeout=10s
     Sleep    2s
-    Click    id=edit-profile-btn    button=left    force=${True}
+    Click    id=edit-profile-btn    button=left
     Wait For Elements State    id=edit-name    visible    timeout=5s
     Sleep    1s
 
@@ -57,4 +57,4 @@ Edit Profile
     Get Property    id=edit-description    value    ==    This is a test description
 
     # Close the modal
-    Click    id=cancel-edit-profile-btn    button=left    force=${True}
+    Click    id=cancel-edit-profile-btn    button=left

@@ -12,7 +12,7 @@ describe('TopologyMappingComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [
-        { provide: ActivatedRoute, useValue: { paramMap: of({ get: () => '1' }) } },
+        { provide: ActivatedRoute, useValue: {} },
         provideRouter([]),
         {
           provide: SpatialService,
