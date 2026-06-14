@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { SyncStateService, SyncState } from '../services/sync-state.service';
+import { SyncEngineService } from '../services/sync-engine.service';
 import { Observable } from 'rxjs';
 
 /**
@@ -17,7 +18,7 @@ import { Observable } from 'rxjs';
   imports: [AsyncPipe],
   template: `
     @if (syncState$ | async; as state) {
-      <div class="sync-indicator" [attr.data-testid]="'sync-status-' + state">
+      <div class="sync-indicator" [attr.data-testid]="'sync-status-' + state" (click)="forceSync()" title="Force Sync" [class.cursor-pointer]="state !== 'offline'">
         <!-- Offline -->
         @if (state === 'offline') {
           <span class="material-symbols-outlined sync-icon sync-icon--offline"
@@ -44,7 +45,17 @@ import { Observable } from 'rxjs';
 export class SyncStatusComponent {
   syncState$: Observable<SyncState>;
 
-  constructor(private syncStateService: SyncStateService) {
+  constructor(
+    private syncStateService: SyncStateService,
+    private syncEngineService: SyncEngineService
+  ) {
     this.syncState$ = this.syncStateService.syncState$;
+  }
+
+  forceSync(): void {
+    // Attempting a force pull sync on click
+    this.syncEngineService.forcePullSync().catch(err => {
+      console.error('Failed to force sync', err);
+    });
   }
 }

@@ -4,6 +4,10 @@
   gap: 4px;
 }
 
+.sync-indicator.cursor-pointer {
+  cursor: pointer;
+}
+
 .sync-icon {
   font-size: 20px;
   transition: color 0.3s ease;

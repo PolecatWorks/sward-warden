@@ -2,14 +2,18 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BehaviorSubject } from 'rxjs';
 import { SyncStatusComponent } from './sync-status.component';
 import { SyncStateService, SyncState } from '../services/sync-state.service';
+import { SyncEngineService } from '../services/sync-engine.service';
 
 describe('SyncStatusComponent', () => {
   let component: SyncStatusComponent;
   let fixture: ComponentFixture<SyncStatusComponent>;
   let syncState$: BehaviorSubject<SyncState>;
+  let syncEngineServiceSpy: jasmine.SpyObj<SyncEngineService>;
 
   beforeEach(async () => {
     syncState$ = new BehaviorSubject<SyncState>('synced');
+    syncEngineServiceSpy = jasmine.createSpyObj('SyncEngineService', ['forcePullSync']);
+    syncEngineServiceSpy.forcePullSync.and.returnValue(Promise.resolve());
 
     await TestBed.configureTestingModule({
       imports: [SyncStatusComponent],
@@ -18,6 +22,10 @@ describe('SyncStatusComponent', () => {
           provide: SyncStateService,
           useValue: { syncState$: syncState$.asObservable() },
         },
+        {
+          provide: SyncEngineService,
+          useValue: syncEngineServiceSpy,
+        }
       ],
     }).compileComponents();
 
@@ -65,5 +73,13 @@ describe('SyncStatusComponent', () => {
     const el = fixture.nativeElement as HTMLElement;
     const label = el.querySelector('.sync-label--offline');
     expect(label).toBeNull();
+  });
+
+  it('should call forcePullSync on click', () => {
+    const el = fixture.nativeElement as HTMLElement;
+    const indicator = el.querySelector('.sync-indicator') as HTMLElement;
+    expect(indicator).toBeTruthy();
+    indicator.click();
+    expect(syncEngineServiceSpy.forcePullSync).toHaveBeenCalled();
   });
 });
