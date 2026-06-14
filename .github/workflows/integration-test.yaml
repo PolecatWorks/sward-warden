@@ -72,6 +72,7 @@ jobs:
           REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           PR_NUMBER="${{ github.event.pull_request.number || github.event.inputs.pr_number || github.run_id }}"
           echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+          echo "ARCH=$(uname -m)" >> $GITHUB_ENV
 
           if [[ "${{ needs.check-paths.outputs.backend }}" == "true" ]]; then
             BACKEND_SHA=$(git log -1 --format=%H -- sw-be-container/ .github/workflows/sw-be-docker-publish.yml)
@@ -93,7 +94,6 @@ jobs:
 
       - name: Install GitHub CLI
         run: |
-          ARCH=$(uname -m)
           if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
             GH_ARCH="arm64"
           else
@@ -134,7 +134,6 @@ jobs:
 
       - name: Install Garden
         run: |
-          ARCH=$(uname -m)
           if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
             GARDEN_ARCH="arm64"
           else
