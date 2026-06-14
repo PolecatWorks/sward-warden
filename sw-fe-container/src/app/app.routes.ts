@@ -57,6 +57,7 @@ export const routes: Routes = [
       { path: 'farms/:farmId', component: FarmDetailComponent },
       { path: 'farms/:farmId/fields', component: FieldsComponent },
       { path: 'farms/:farmId/compliance', component: ComplianceReportComponent },
+      { path: 'farms/:farmId/topology', component: TopologyMappingComponent },
       { path: 'farms/:id/movements', component: SwardMovementsComponent },
       { path: 'fields', component: FieldsComponent },
       { path: 'fields/:fieldId', component: FieldViewComponent },
