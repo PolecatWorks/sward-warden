@@ -1,5 +1,5 @@
 *** Settings ***
-Library    RequestsLibrary
+Library    AuthRequests.py
 
 *** Variables ***
 ${FE_BASE_URL}
