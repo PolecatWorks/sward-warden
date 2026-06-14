@@ -54,6 +54,8 @@ pub struct DebuggingConfig {
     #[serde(with = "humantime_serde")]
     pub fail_debug_delay: Option<Duration>,
     pub environment: Option<String>,
+    #[serde(default)]
+    pub enable_dev_auth: bool,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -198,6 +200,7 @@ mod tests {
         writeln!(file, "  name: default").unwrap();
         writeln!(file, "debugging:").unwrap();
         writeln!(file, "  fail_debug_delay: null").unwrap();
+        writeln!(file, "  enable_dev_auth: false").unwrap();
 
         let config = AppConfig::load(&test_config_path, &test_dir).unwrap();
 

@@ -14,8 +14,10 @@ pub mod webserver;
 
 use axum_prometheus::metrics_exporter_prometheus::PrometheusBuilder;
 use std::ffi::c_void;
+use std::sync::Arc;
 use tokio_util::sync::CancellationToken;
 use tracing::info;
+use jwt_simple::algorithms::{RS256KeyPair};
 
 use ::hams::hams::Hams;
 use ::hams::probe::AsyncHealthProbe;
@@ -55,7 +57,44 @@ pub async fn service_cancellable(
         .await
         .map_err(|e| AppError::Message(format!("Failed to run database migrations: {e}")))?;
 
-    let state = AppState::new(config.clone(), metric_handle, db_pool.clone());
+    let mut dev_jwt_keypair = None;
+    let mut dev_jwks_json = None;
+
+    if config.debugging.enable_dev_auth {
+        info!("Dev auth is enabled. Generating in-memory RS256 keypair for JWT...");
+        let keypair = RS256KeyPair::generate(2048)
+            .map_err(|e| AppError::Message(format!("Failed to generate RS256 keypair: {e}")))?
+            .with_key_id("dev-key-1");
+
+        let public_key = keypair.public_key();
+        let jwk_components = public_key.to_components();
+        let e = base64::Engine::encode(
+            &base64::engine::general_purpose::URL_SAFE_NO_PAD,
+            &jwk_components.e,
+        );
+        let n = base64::Engine::encode(
+            &base64::engine::general_purpose::URL_SAFE_NO_PAD,
+            &jwk_components.n,
+        );
+
+        let jwks = serde_json::json!({
+            "keys": [
+                {
+                    "kty": "RSA",
+                    "alg": "RS256",
+                    "use": "sig",
+                    "kid": "dev-key-1",
+                    "n": n,
+                    "e": e,
+                }
+            ]
+        });
+
+        dev_jwt_keypair = Some(Arc::new(keypair));
+        dev_jwks_json = Some(jwks.to_string());
+    }
+
+    let state = AppState::new(config.clone(), metric_handle, db_pool.clone(), dev_jwt_keypair, dev_jwks_json);
 
     if config.startup_checks.enabled {
         startup_tools::run_startup_checks(&config, &db_pool).await?;

@@ -1,6 +1,8 @@
 use crate::error::AppError;
 use crate::state::AppState;
 use axum::{extract::FromRequestParts, http::request::Parts};
+use jwt_simple::prelude::*;
+use crate::webserver::dev_auth::CustomClaims;
 
 pub struct AdminOnly;
 
@@ -11,24 +13,15 @@ impl FromRequestParts<AppState> for AdminOnly {
         parts: &mut Parts,
         state: &AppState,
     ) -> Result<Self, Self::Rejection> {
-        let mut role = None;
+        let (user_id, mut role) = extract_jwt_claims(parts, state).await?;
 
-        if let Some(user_id_header) = parts.headers.get("X-User-ID") {
-            if let Ok(user_id_str) = user_id_header.to_str() {
-                let user_id = user_id_str
-                    .parse::<i64>()
-                    .map_err(|_| AppError::BadRequest("Invalid X-User-ID header".to_string()))?;
-                role = get_user_role(&state.db_pool, user_id).await;
-            }
-        }
-
-        // Fallback to X-User-Role header if not found in DB (for test compatibility)
+        // Fallback to DB role if JWT doesn't explicitly have it or just to ensure syncing
+        // Actually, we should probably trust the JWT claims.
+        // Let's use the DB role if we have the user ID to ensure it matches up,
+        // or just use the JWT custom claim. Since PRD says "extract the sub and custom role claims",
+        // we'll primarily use the JWT claim, but we could also check DB if JWT doesn't have it.
         if role.is_none() {
-            role = parts
-                .headers
-                .get("X-User-Role")
-                .and_then(|v| v.to_str().ok())
-                .map(|s| s.to_string());
+             role = get_user_role(&state.db_pool, user_id).await;
         }
 
         let role_str = role.unwrap_or_else(|| "user".to_string());
@@ -50,24 +43,10 @@ impl FromRequestParts<AppState> for SupportOnly {
         parts: &mut Parts,
         state: &AppState,
     ) -> Result<Self, Self::Rejection> {
-        let mut role = None;
+        let (user_id, mut role) = extract_jwt_claims(parts, state).await?;
 
-        if let Some(user_id_header) = parts.headers.get("X-User-ID") {
-            if let Ok(user_id_str) = user_id_header.to_str() {
-                let user_id = user_id_str
-                    .parse::<i64>()
-                    .map_err(|_| AppError::BadRequest("Invalid X-User-ID header".to_string()))?;
-                role = get_user_role(&state.db_pool, user_id).await;
-            }
-        }
-
-        // Fallback to X-User-Role header if not found in DB (for test compatibility)
         if role.is_none() {
-            role = parts
-                .headers
-                .get("X-User-Role")
-                .and_then(|v| v.to_str().ok())
-                .map(|s| s.to_string());
+             role = get_user_role(&state.db_pool, user_id).await;
         }
 
         let role_str = role.unwrap_or_else(|| "user".to_string());
@@ -84,25 +63,46 @@ impl FromRequestParts<AppState> for SupportOnly {
 
 pub struct UserId(pub i64);
 
-impl<S> FromRequestParts<S> for UserId
-where
-    S: Send + Sync,
+impl FromRequestParts<AppState> for UserId
 {
     type Rejection = AppError;
 
-    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
-        let user_id_str = parts
-            .headers
-            .get("X-User-ID")
-            .and_then(|v| v.to_str().ok())
-            .unwrap_or("1");
-
-        let user_id = user_id_str
-            .parse::<i64>()
-            .map_err(|_| AppError::BadRequest("Invalid X-User-ID header".to_string()))?;
-
+    async fn from_request_parts(parts: &mut Parts, state: &AppState) -> Result<Self, Self::Rejection> {
+        let (user_id, _) = extract_jwt_claims(parts, state).await?;
         Ok(UserId(user_id))
     }
+}
+
+async fn extract_jwt_claims(parts: &mut Parts, state: &AppState) -> Result<(i64, Option<String>), AppError> {
+    let auth_header = parts.headers.get(axum::http::header::AUTHORIZATION)
+        .and_then(|h| h.to_str().ok())
+        .ok_or_else(|| AppError::Unauthorized("Missing Authorization header".to_string()))?;
+
+    if !auth_header.starts_with("Bearer ") {
+        return Err(AppError::Unauthorized("Invalid Authorization header format".to_string()));
+    }
+
+    let token = &auth_header["Bearer ".len()..];
+
+    let public_key = if let Some(keypair) = &state.dev_jwt_keypair {
+        keypair.public_key()
+    } else {
+        return Err(AppError::Unauthorized("Dev auth is not enabled, missing public key".to_string()));
+    };
+
+    let mut verification_options = VerificationOptions::default();
+    verification_options.allowed_audiences = Some(std::collections::HashSet::from(["sward-api".to_string()]));
+    verification_options.allowed_issuers = Some(std::collections::HashSet::from(["http://localhost:8080".to_string()]));
+
+    let claims = public_key.verify_token::<CustomClaims>(token, Some(verification_options))
+        .map_err(|e| AppError::Unauthorized(format!("Invalid token: {e}")))?;
+
+    let user_id_str = claims.subject.ok_or_else(|| AppError::Unauthorized("Missing subject claim".to_string()))?;
+    let user_id = user_id_str.parse::<i64>().map_err(|_| AppError::Unauthorized("Invalid subject claim format".to_string()))?;
+
+    let role = claims.custom.sward_roles.first().cloned();
+
+    Ok((user_id, role))
 }
 
 pub async fn get_user_role(pool: &sqlx::PgPool, user_id: i64) -> Option<String> {

@@ -6,6 +6,7 @@ import { AuthService } from '../services/auth.service';
 import { of, throwError, timer } from 'rxjs';
 import { delay, switchMap } from 'rxjs/operators';
 import { ReactiveFormsModule } from '@angular/forms';
+import { DevAuthApiService } from '../services/dev-auth-api.service';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -13,11 +14,14 @@ describe('LoginComponent', () => {
   let mockFarmService: jasmine.SpyObj<FarmManagementService>;
   let mockAuthService: jasmine.SpyObj<AuthService>;
   let mockRouter: jasmine.SpyObj<Router>;
+  let mockDevAuthApi: jasmine.SpyObj<DevAuthApiService>;
 
   beforeEach(async () => {
     mockFarmService = jasmine.createSpyObj('FarmManagementService', ['getUsers', 'addUser', 'deleteUser']);
     mockAuthService = jasmine.createSpyObj('AuthService', ['login']);
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
+    mockDevAuthApi = jasmine.createSpyObj('DevAuthApiService', ['getToken']);
+    mockDevAuthApi.getToken.and.returnValue(of({ access_token: 'fake-token' }));
 
     mockFarmService.getUsers.and.returnValue(of([
       { id: 1, name: 'Alice', email: 'alice@example.com', role: 'user' },
@@ -29,7 +33,8 @@ describe('LoginComponent', () => {
       providers: [
         { provide: FarmManagementService, useValue: mockFarmService },
         { provide: AuthService, useValue: mockAuthService },
-        { provide: Router, useValue: mockRouter }
+        { provide: Router, useValue: mockRouter },
+        { provide: DevAuthApiService, useValue: mockDevAuthApi }
       ]
     }).compileComponents();
 
@@ -70,8 +75,9 @@ describe('LoginComponent', () => {
   }));
 
   it('should login and navigate when loginAs is called', () => {
-    component.loginAs(1);
-    expect(mockAuthService.login).toHaveBeenCalledWith('1');
+    component.loginAs({ id: 1, name: 'Test', email: 'test@example.com', role: 'user' });
+    expect(mockDevAuthApi.getToken).toHaveBeenCalledWith(1, 'user');
+    expect(mockAuthService.login).toHaveBeenCalledWith('1', 'fake-token');
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
   });
 

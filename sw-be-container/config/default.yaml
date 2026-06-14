@@ -25,5 +25,6 @@ runtime:
   stack_size: 3000000
   name: "default"
 debugging:
+  enable_dev_auth: false
   fail_debug_delay: null
   environment: "development"

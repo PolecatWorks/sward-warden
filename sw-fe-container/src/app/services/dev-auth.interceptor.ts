@@ -2,22 +2,23 @@ import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
+import { AuthService } from './auth.service';
 
 export const devAuthInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
+  const authService = inject(AuthService);
 
   let newReq = req;
 
-  // Add fake JWT for dev mode if Authorization header is missing
+  // Add JWT for dev mode if Authorization header is missing
   if (!req.headers.has('Authorization')) {
-    // Generate a simple base64 encoded JWT. We only need the payload for 'name' claim.
-    const header = btoa(JSON.stringify({ alg: 'none', typ: 'JWT' }));
-    const payload = btoa(JSON.stringify({ sub: 'default-user', name: 'Dev User' }));
-    const fakeJwt = `${header}.${payload}.`;
+    const token = authService.getToken();
 
-    newReq = req.clone({
-      headers: req.headers.set('Authorization', `Bearer ${fakeJwt}`)
-    });
+    if (token) {
+      newReq = req.clone({
+        headers: req.headers.set('Authorization', `Bearer ${token}`)
+      });
+    }
   }
 
   return next(newReq).pipe(

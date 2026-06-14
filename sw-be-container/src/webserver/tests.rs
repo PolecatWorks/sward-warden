@@ -63,7 +63,25 @@ fn get_test_state() -> AppState {
         .connect_lazy("postgres://localhost:5432/db")
         .unwrap();
 
-    AppState::new(config, metric_handle, db_pool)
+
+    let keypair = jwt_simple::algorithms::RS256KeyPair::generate(2048).unwrap().with_key_id("dev-key-1");
+    let dev_jwt_keypair = Some(std::sync::Arc::new(keypair));
+
+    AppState::new(config, metric_handle, db_pool, dev_jwt_keypair, None)
+}
+
+
+fn generate_test_jwt(state: &AppState, user_id: i64, role: &str) -> String {
+    use jwt_simple::prelude::*;
+    let keypair = state.dev_jwt_keypair.as_ref().unwrap();
+    let custom_claims = crate::webserver::dev_auth::CustomClaims {
+        sward_roles: vec![role.to_string()],
+    };
+    let claims = Claims::with_custom_claims(custom_claims, Duration::from_hours(1))
+        .with_issuer("http://localhost:8080")
+        .with_audience("sward-api")
+        .with_subject(user_id.to_string());
+    keypair.sign(claims).unwrap()
 }
 
 #[tokio::test]
@@ -103,19 +121,21 @@ async fn test_admin_health_unauthorized() {
         .unwrap();
 
     // No header -> Default role "user" -> Forbidden
-    assert_eq!(response.status(), StatusCode::FORBIDDEN);
+    assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
 }
 
 #[tokio::test]
 async fn test_admin_health_authorized_support() {
     let state = get_test_state();
+
+    let token = generate_test_jwt(&state, 1, "support");
     let app = app_router(state);
 
     let response = app
         .oneshot(
             Request::builder()
                 .uri("/v0/admin/health")
-                .header("X-User-Role", "support")
+                .header("Authorization", format!("Bearer {}", token))
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -131,13 +151,15 @@ async fn test_admin_health_authorized_support() {
 #[tokio::test]
 async fn test_admin_health_authorized_admin() {
     let state = get_test_state();
+
+    let token = generate_test_jwt(&state, 1, "admin");
     let app = app_router(state);
 
     let response = app
         .oneshot(
             Request::builder()
                 .uri("/v0/admin/health")
-                .header("X-User-Role", "admin")
+                .header("Authorization", format!("Bearer {}", token))
                 .body(Body::empty())
                 .unwrap(),
         )
