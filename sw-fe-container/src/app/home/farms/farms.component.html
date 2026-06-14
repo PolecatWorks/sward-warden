@@ -79,6 +79,13 @@
             </div>
             <div class="flex items-center gap-2">
               <button *ngIf="farm.id" class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-full transition-colors flex items-center justify-center"
+                [routerLink]="['/farms', farm.id, 'topology']"
+                (click)="$event.stopPropagation()"
+                [attr.aria-label]="'Topology Map for ' + farm.name"
+                [attr.data-testid]="'topology-farm-card-btn-' + farm.id">
+                <span class="material-symbols-outlined text-sm">map</span>
+              </button>
+              <button *ngIf="farm.id" class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-full transition-colors flex items-center justify-center"
                 (click)="startEdit(farm); $event.stopPropagation()"
                 [attr.aria-label]="'Edit ' + farm.name"
                 [attr.data-testid]="'edit-farm-card-btn-' + farm.id">

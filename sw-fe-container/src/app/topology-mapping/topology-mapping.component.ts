@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
+import { ActivatedRoute } from '@angular/router';
 import * as L from 'leaflet';
 import { SpatialService } from '../services/spatial.service';
 
@@ -15,15 +16,23 @@ import { SpatialService } from '../services/spatial.service';
 })
 export class TopologyMappingComponent implements OnInit, AfterViewInit {
   private map!: L.Map;
+  farmId: string | null = null;
   fields = [
     { name: 'North Field', slope: 'Gentle (2%)', riskLevel: 'Low' },
     { name: 'South Field', slope: 'Moderate (8%)', riskLevel: 'Medium' },
     { name: 'River Bend Field', slope: 'Steep (15%)', riskLevel: 'High' }
   ];
 
-  constructor(private spatialService: SpatialService) {}
+  constructor(
+    private spatialService: SpatialService,
+    private route: ActivatedRoute
+  ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.route.paramMap.subscribe(params => {
+      this.farmId = params.get('farmId');
+    });
+  }
 
   ngAfterViewInit() {
     this.initMap();
@@ -31,6 +40,8 @@ export class TopologyMappingComponent implements OnInit, AfterViewInit {
   }
 
   private initMap(): void {
+    // TODO: In the future, when PRDs add farm locations, fetch the farm by `this.farmId`
+    // and use its specific coordinates to center the map instead of the hardcoded default.
     this.map = L.map('map', {
       center: [54.5, -6.5], // Northern Ireland center approx
       zoom: 13
