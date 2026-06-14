@@ -40,9 +40,57 @@ jobs:
               - 'sw-be-container/**'
               - '.github/workflows/sw-be-docker-publish.yml'
 
-  build:
+  check-image:
     needs: check-paths
     if: needs.check-paths.outputs.backend == 'true' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    outputs:
+      exists: ${{ steps.check.outputs.exists }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine Backend Content SHA
+        id: backend-content
+        run: |
+          BACKEND_SHA=$(git log -1 --format=%H -- sw-be-container/ .github/workflows/sw-be-docker-publish.yml)
+          echo "BACKEND_SHA=$BACKEND_SHA" >> $GITHUB_OUTPUT
+
+      - name: Determine Image Name
+        id: image-name
+        run: |
+          repo_name="${{ github.repository }}"
+          if [[ "${{ github.event_name }}" == "merge_group" ]]; then
+            echo "IMAGE_NAME_LOWERCASE=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')-be/dev" >> $GITHUB_OUTPUT
+          else
+            echo "IMAGE_NAME_LOWERCASE=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')-be" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check if image exists
+        id: check
+        run: |
+          IMAGE_REF="${{ env.REGISTRY }}/${{ steps.image-name.outputs.IMAGE_NAME_LOWERCASE }}:sha-${{ steps.backend-content.outputs.BACKEND_SHA }}"
+          echo "Checking if image exists: $IMAGE_REF"
+          if docker manifest inspect $IMAGE_REF >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Image exists!"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Image does not exist."
+          fi
+
+  build:
+    needs: [check-paths, check-image]
+    if: needs.check-paths.outputs.backend == 'true' && github.event_name != 'pull_request' && needs.check-image.outputs.exists != 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -135,9 +183,8 @@ jobs:
           secrets: |
             "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}"
           cache-from: |
-            type=gha,scope=${{ github.repository }}-sw-be-${{ github.ref_name }}-${{ matrix.platform }}
             type=gha,scope=${{ github.repository }}-sw-be-main-${{ matrix.platform }}
-          cache-to: type=gha,mode=max,scope=${{ github.repository }}-sw-be-${{ github.ref_name }}-${{ matrix.platform }}
+          cache-to: ${{ github.ref_name == 'main' && format('type=gha,mode=max,scope={0}-sw-be-main-{1}', github.repository, matrix.platform) || '' }}
 
       - name: Export digest
         run: |
@@ -272,14 +319,14 @@ jobs:
 
   ci-success:
     name: SW-BE CI Success
-    needs: [check-paths, merge]
+    needs: [check-paths, check-image, merge]
     if: always() && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Check Status
         run: |
           if [[ "${{ needs.check-paths.outputs.backend }}" == 'true' ]]; then
-            if [[ "${{ needs.merge.result }}" != 'success' ]]; then
+            if [[ "${{ needs.check-image.outputs.exists }}" != 'true' && "${{ needs.merge.result }}" != 'success' ]]; then
                echo "Build/Merge failed!"
                exit 1
             fi
