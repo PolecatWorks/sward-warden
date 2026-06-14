@@ -36,7 +36,7 @@ Immediate Validation and Form UX Flow
     Sleep    2s
 
     # 3. Click the "Planting" quick action button
-    Click With Options    text=Planting    button=left    force=${True}
+    Click    text=Planting    button=left    force=${True}
 
     # 4. Verify the "Log Planting" modal is visible
     Wait For Elements State    text=Log Planting    visible    timeout=5s
@@ -61,7 +61,7 @@ Immediate Validation and Form UX Flow
     Get Element States    button[type="submit"] >> text=Save Record    not contains    disabled
 
     # 10. Click Save Record to submit the form
-    Click With Options    button[type="submit"] >> text=Save Record    button=left    force=${True}
+    Click    button[type="submit"] >> text=Save Record    button=left    force=${True}
 
     # 11. Verify that the modal closes and the event appears in the timeline
     Wait For Elements State    text=Log Planting    detached    timeout=5s
