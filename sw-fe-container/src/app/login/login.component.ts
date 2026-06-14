@@ -7,7 +7,7 @@ import { AuthService } from '../services/auth.service';
 import { DevAuthApiService } from '../services/dev-auth-api.service';
 import { User } from '../models/user';
 import { Observable, BehaviorSubject, of } from 'rxjs';
-import { catchError, switchMap, finalize } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
