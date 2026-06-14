@@ -1,5 +1,5 @@
 FROM lukemathwalker/cargo-chef:latest-rust-1 AS chef
-RUN apt-get update && apt-get install -y libgeos-dev pkg-config && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y libgeos-dev pkg-config cmake clang && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 FROM chef AS planner
