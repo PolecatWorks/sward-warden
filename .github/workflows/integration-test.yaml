@@ -1,6 +1,6 @@
 name: Integration Tests
 on:
-  pull_request:
+  merge_group:
     branches: [main]
   workflow_dispatch:
     inputs:
@@ -68,7 +68,7 @@ jobs:
       - name: Prepare Image Variables
         run: |
           REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          PR_NUMBER="${{ github.event.pull_request.number || github.event.inputs.pr_number || 'local' }}"
+          PR_NUMBER="${{ github.event.pull_request.number || github.event.inputs.pr_number || github.run_id }}"
           echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
 
           if [[ "${{ needs.check-paths.outputs.backend }}" == "true" ]]; then
@@ -257,6 +257,8 @@ jobs:
 
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             TARGET_DIR="pr/${{ github.event.pull_request.number }}"
+          elif [ "${{ github.event_name }}" == "merge_group" ]; then
+            TARGET_DIR="merge-group/${{ github.run_id }}"
           else
             TARGET_DIR="main"
           fi

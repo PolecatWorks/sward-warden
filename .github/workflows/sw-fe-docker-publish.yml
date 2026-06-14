@@ -8,7 +8,7 @@ name: SW-FE Docker
 on:
   push:
     branches: [ "main" ]
-  pull_request:
+  merge_group:
     branches: [ "main" ]
 
 env:
