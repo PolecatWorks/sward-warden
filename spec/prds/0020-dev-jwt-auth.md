@@ -1,4 +1,4 @@
-# Product Requirements Document: Dev JWT Authentication
+# PRD 0020: Dev JWT Authentication
 
 ## Objective
 To bring the local development experience closer to the production environment by replacing simple HTTP dev headers (`X-User-ID` and `X-User-Role`) with a fully functional JSON Web Token (JWT) authentication flow. This will be achieved without requiring developers to spin up a full external authentication system (e.g., Keycloak), reducing friction while maintaining architectural parity.
