@@ -16,8 +16,27 @@
         </div>
         <span class="px-3 py-1 bg-tertiary-container text-white text-[10px] font-bold uppercase tracking-widest rounded-full mb-1 text-center leading-tight">ACTIVE<br>CYCLE</span>
       </div>
-      <p class="text-on-surface-variant font-medium">Tracking events for Spring Barley '24 ({{ field.area_hectares }} ha)</p>
+      <p class="text-on-surface-variant font-medium mb-2">Tracking events for Spring Barley '24 ({{ field.area_hectares }} ha)</p>
 
+      <!-- Topographical Data -->
+      <div class="grid grid-cols-2 gap-4 mt-4 bg-surface-container-low p-4 rounded-xl border border-outline-variant" *ngIf="field.min_elevation !== undefined">
+        <div class="flex flex-col">
+          <span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-1 flex items-center gap-1">
+             <span class="material-symbols-outlined text-[14px]">landscape</span> Elevation
+          </span>
+          <span class="text-sm text-on-surface font-medium">
+            Min: {{ field.min_elevation }}m | Max: {{ field.max_elevation }}m
+          </span>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-1 flex items-center gap-1">
+             <span class="material-symbols-outlined text-[14px]">moving</span> Slope
+          </span>
+          <span class="text-sm text-on-surface font-medium">
+            Avg: {{ field.average_slope }}% | Max: {{ field.max_slope }}%
+          </span>
+        </div>
+      </div>
 
     </section>
 

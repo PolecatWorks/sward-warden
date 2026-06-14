@@ -121,12 +121,17 @@ pub async fn create_field(
     let parsed_wkt = field.geometry_wkt.as_deref().filter(|s| !s.trim().is_empty());
 
     let new_field = sqlx::query_as::<_, Field>(
-        "INSERT INTO fields (farm_id, name, area_hectares, land_use, geom) VALUES ($1, $2, $3, $4, ST_GeomFromText($5, 4326)) RETURNING id, farm_id, name, area_hectares, land_use, ST_AsText(geom) as geometry_wkt, updated_at, is_deleted"
+        "INSERT INTO fields (farm_id, name, area_hectares, land_use, min_elevation, max_elevation, mean_elevation, average_slope, max_slope, geom) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, ST_GeomFromText($10, 4326)) RETURNING id, farm_id, name, area_hectares, land_use, min_elevation, max_elevation, mean_elevation, average_slope, max_slope, ST_AsText(geom) as geometry_wkt, updated_at, is_deleted"
     )
     .bind(field.farm_id)
     .bind(&field.name)
     .bind(field.area_hectares)
     .bind(&field.land_use)
+    .bind(field.min_elevation)
+    .bind(field.max_elevation)
+    .bind(field.mean_elevation)
+    .bind(field.average_slope)
+    .bind(field.max_slope)
     .bind(parsed_wkt)
     .fetch_one(&state.db_pool)
     .await?;
@@ -201,24 +206,34 @@ pub async fn update_field(
     // 2. Perform the update
     let updated_field = if is_admin {
         sqlx::query_as::<_, Field>(
-            "UPDATE fields SET farm_id = $1, name = $2, area_hectares = $3, land_use = $4, geom = ST_GeomFromText($6, 4326), updated_at = NOW() WHERE id = $5 AND is_deleted = FALSE RETURNING id, farm_id, name, area_hectares, land_use, ST_AsText(geom) as geometry_wkt, updated_at, is_deleted"
+            "UPDATE fields SET farm_id = $1, name = $2, area_hectares = $3, land_use = $4, min_elevation = $5, max_elevation = $6, mean_elevation = $7, average_slope = $8, max_slope = $9, geom = ST_GeomFromText($11, 4326), updated_at = NOW() WHERE id = $10 AND is_deleted = FALSE RETURNING id, farm_id, name, area_hectares, land_use, min_elevation, max_elevation, mean_elevation, average_slope, max_slope, ST_AsText(geom) as geometry_wkt, updated_at, is_deleted"
         )
         .bind(field.farm_id)
         .bind(&field.name)
         .bind(field.area_hectares)
         .bind(&field.land_use)
+        .bind(field.min_elevation)
+        .bind(field.max_elevation)
+        .bind(field.mean_elevation)
+        .bind(field.average_slope)
+        .bind(field.max_slope)
         .bind(id)
         .bind(parsed_wkt)
         .fetch_one(&state.db_pool)
         .await?
     } else {
         sqlx::query_as::<_, Field>(
-            "UPDATE fields SET farm_id = $1, name = $2, area_hectares = $3, land_use = $4, geom = ST_GeomFromText($7, 4326), updated_at = NOW() WHERE id = $5 AND farm_id IN (SELECT id FROM farms WHERE user_id = $6) AND is_deleted = FALSE RETURNING id, farm_id, name, area_hectares, land_use, ST_AsText(geom) as geometry_wkt, updated_at, is_deleted"
+            "UPDATE fields SET farm_id = $1, name = $2, area_hectares = $3, land_use = $4, min_elevation = $5, max_elevation = $6, mean_elevation = $7, average_slope = $8, max_slope = $9, geom = ST_GeomFromText($12, 4326), updated_at = NOW() WHERE id = $10 AND farm_id IN (SELECT id FROM farms WHERE user_id = $11) AND is_deleted = FALSE RETURNING id, farm_id, name, area_hectares, land_use, min_elevation, max_elevation, mean_elevation, average_slope, max_slope, ST_AsText(geom) as geometry_wkt, updated_at, is_deleted"
         )
         .bind(field.farm_id)
         .bind(&field.name)
         .bind(field.area_hectares)
         .bind(&field.land_use)
+        .bind(field.min_elevation)
+        .bind(field.max_elevation)
+        .bind(field.mean_elevation)
+        .bind(field.average_slope)
+        .bind(field.max_slope)
         .bind(id)
         .bind(user_id)
         .bind(parsed_wkt)
