@@ -670,7 +670,6 @@ checksum = "9f1f227452a390804cdb637b74a86990f2a7d7ba4b7d5693aac9b4dd6defd8d6"
 [[package]]
 name = "ffi-log2"
 version = "0.1.0"
-source = "git+https://github.com/PolecatWorks/hams.git#c71b9d8bc81694ddbe455fa8596a5e23d9253957"
 dependencies = [
  "cbindgen",
  "log",
@@ -1012,7 +1011,6 @@ dependencies = [
 [[package]]
 name = "hams"
 version = "0.3.0"
-source = "git+https://github.com/PolecatWorks/hams.git#c71b9d8bc81694ddbe455fa8596a5e23d9253957"
 dependencies = [
  "aquamarine",
  "async-trait",
