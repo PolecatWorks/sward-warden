@@ -1,4 +1,5 @@
 FROM lukemathwalker/cargo-chef:latest-rust-1 AS chef
+RUN apt-get update && apt-get install -y libgeos-dev pkg-config && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 FROM chef AS planner
@@ -34,6 +35,7 @@ FROM debian:bookworm-slim AS runtime
 RUN apt-get update && apt-get install -y \
     libssl3 \
     ca-certificates \
+    libgeos-c1v5 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
