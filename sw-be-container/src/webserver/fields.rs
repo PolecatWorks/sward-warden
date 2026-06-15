@@ -16,13 +16,13 @@ pub async fn list_fields(
 
     let fields = if is_admin {
         sqlx::query_as::<_, Field>(
-            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, ST_AsText(f.geom) as geometry_wkt, f.updated_at, f.is_deleted FROM fields f WHERE f.is_deleted = FALSE"
+            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, f.min_elevation, f.max_elevation, f.mean_elevation, f.average_slope, f.max_slope, ST_AsText(f.geom) as geometry_wkt, f.updated_at, f.is_deleted FROM fields f WHERE f.is_deleted = FALSE"
         )
         .fetch_all(&state.db_pool)
         .await?
     } else {
         sqlx::query_as::<_, Field>(
-            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, ST_AsText(f.geom) as geometry_wkt, f.updated_at, f.is_deleted FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = $1 AND f.is_deleted = FALSE"
+            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, f.min_elevation, f.max_elevation, f.mean_elevation, f.average_slope, f.max_slope, ST_AsText(f.geom) as geometry_wkt, f.updated_at, f.is_deleted FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = $1 AND f.is_deleted = FALSE"
         )
         .bind(user_id)
         .fetch_all(&state.db_pool)
@@ -40,14 +40,14 @@ pub async fn get_field(
 
     let field = if is_admin {
         sqlx::query_as::<_, Field>(
-            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, ST_AsText(f.geom) as geometry_wkt, f.updated_at, f.is_deleted FROM fields f WHERE f.id = $1 AND f.is_deleted = FALSE"
+            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, f.min_elevation, f.max_elevation, f.mean_elevation, f.average_slope, f.max_slope, ST_AsText(f.geom) as geometry_wkt, f.updated_at, f.is_deleted FROM fields f WHERE f.id = $1 AND f.is_deleted = FALSE"
         )
         .bind(id)
         .fetch_one(&state.db_pool)
         .await?
     } else {
         sqlx::query_as::<_, Field>(
-            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, ST_AsText(f.geom) as geometry_wkt, f.updated_at, f.is_deleted FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE f.id = $1 AND fa.user_id = $2 AND f.is_deleted = FALSE"
+            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, f.min_elevation, f.max_elevation, f.mean_elevation, f.average_slope, f.max_slope, ST_AsText(f.geom) as geometry_wkt, f.updated_at, f.is_deleted FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE f.id = $1 AND fa.user_id = $2 AND f.is_deleted = FALSE"
         )
         .bind(id)
         .bind(user_id)
@@ -118,7 +118,10 @@ pub async fn create_field(
         }
     }
 
-    let parsed_wkt = field.geometry_wkt.as_deref().filter(|s| !s.trim().is_empty());
+    let parsed_wkt = field
+        .geometry_wkt
+        .as_deref()
+        .filter(|s| !s.trim().is_empty());
 
     let new_field = sqlx::query_as::<_, Field>(
         "INSERT INTO fields (farm_id, name, area_hectares, land_use, min_elevation, max_elevation, mean_elevation, average_slope, max_slope, geom) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, ST_GeomFromText($10, 4326)) RETURNING id, farm_id, name, area_hectares, land_use, min_elevation, max_elevation, mean_elevation, average_slope, max_slope, ST_AsText(geom) as geometry_wkt, updated_at, is_deleted"
@@ -201,7 +204,10 @@ pub async fn update_field(
         }
     }
 
-    let parsed_wkt = field.geometry_wkt.as_deref().filter(|s| !s.trim().is_empty());
+    let parsed_wkt = field
+        .geometry_wkt
+        .as_deref()
+        .filter(|s| !s.trim().is_empty());
 
     // 2. Perform the update
     let updated_field = if is_admin {
