@@ -106,3 +106,4 @@ Specifications under PRD 0008 (Spatial Optimization) require the PostGIS extensi
 | [0019-02 Immediate Validation Highlighting](./0019/0019-02-immediate-validation-highlighting.md) | Complete |
 | [0020-01 Dev JWT Authentication](./0020/0020-01-dev-jwt-auth.md) | Open |
 | [0021-01 Topographical Data Integration](./0021/0021-01-topographical-data-integration.md) | Open |
+| [0022-01 Home View Consolidation](./0022/0022-01-home-view-consolidation.md) | Open |
