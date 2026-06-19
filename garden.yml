@@ -131,6 +131,7 @@ spec:
       debugging:
         fail_debug_delay: null
         environment: "testing"
+        enable_dev_auth: true
 
     initContainer:
       env:
