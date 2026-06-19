@@ -13,10 +13,10 @@
       </a>
 
       <nav class="space-y-2">
-        <a routerLink="/dashboard" routerLinkActive="sidebar-active"
+        <a routerLink="/home" routerLinkActive="sidebar-active"
            class="sidebar-item flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 hover:bg-black/5 dark:hover:bg-white/5 group">
-          <span class="material-symbols-outlined text-2xl opacity-60 group-hover:opacity-100 transition-opacity">dashboard</span>
-          <span class="font-['Work_Sans'] font-bold text-sm tracking-tight">Dashboard</span>
+          <span class="material-symbols-outlined text-2xl opacity-60 group-hover:opacity-100 transition-opacity">home</span>
+          <span class="font-['Work_Sans'] font-bold text-sm tracking-tight">Home</span>
         </a>
 
         <a routerLink="/fields" routerLinkActive="sidebar-active"
@@ -31,16 +31,16 @@
           <span class="font-['Work_Sans'] font-bold text-sm tracking-tight">Farms</span>
         </a>
 
-        <a routerLink="/compliance" routerLinkActive="sidebar-active"
-           class="sidebar-item flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 hover:bg-black/5 dark:hover:bg-white/5 group">
-          <span class="material-symbols-outlined text-2xl opacity-60 group-hover:opacity-100 transition-opacity">event_note</span>
-          <span class="font-['Work_Sans'] font-bold text-sm tracking-tight">Compliance</span>
-        </a>
-
         <a routerLink="/inventory" routerLinkActive="sidebar-active"
            class="sidebar-item flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 hover:bg-black/5 dark:hover:bg-white/5 group">
           <span class="material-symbols-outlined text-2xl opacity-60 group-hover:opacity-100 transition-opacity">inventory_2</span>
           <span class="font-['Work_Sans'] font-bold text-sm tracking-tight">Inventory</span>
+        </a>
+
+        <a routerLink="/reporting" routerLinkActive="sidebar-active"
+           class="sidebar-item flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 hover:bg-black/5 dark:hover:bg-white/5 group">
+          <span class="material-symbols-outlined text-2xl opacity-60 group-hover:opacity-100 transition-opacity">summarize</span>
+          <span class="font-['Work_Sans'] font-bold text-sm tracking-tight">Reporting</span>
         </a>
       </nav>
 
@@ -110,10 +110,10 @@
     <!-- Bottom Navigation (Mobile Only) -->
     <nav class="fixed bottom-0 left-0 w-full z-50 bg-[#faf9f5]/80 dark:bg-[#1a1c1a]/80 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,0,0,0.06)] rounded-t-2xl lg:hidden">
       <div class="flex justify-around items-center px-4 py-3 pb-safe max-w-2xl mx-auto">
-        <a routerLink="/dashboard" routerLinkActive="nav-active"
+        <a routerLink="/home" routerLinkActive="nav-active"
            class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
-          <span class="material-symbols-outlined nav-icon">dashboard</span>
-          <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Dashboard</span>
+          <span class="material-symbols-outlined nav-icon">home</span>
+          <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Home</span>
         </a>
         <a routerLink="/fields" routerLinkActive="nav-active"
            class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
@@ -125,15 +125,15 @@
           <span class="material-symbols-outlined nav-icon">agriculture</span>
           <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Farms</span>
         </a>
-        <a routerLink="/compliance" routerLinkActive="nav-active"
-           class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
-          <span class="material-symbols-outlined nav-icon">event_note</span>
-          <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Compliance</span>
-        </a>
         <a routerLink="/inventory" routerLinkActive="nav-active"
            class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
           <span class="material-symbols-outlined nav-icon">inventory_2</span>
           <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Inventory</span>
+        </a>
+        <a routerLink="/reporting" routerLinkActive="nav-active"
+           class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
+          <span class="material-symbols-outlined nav-icon">summarize</span>
+          <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Reporting</span>
         </a>
       </div>
     </nav>

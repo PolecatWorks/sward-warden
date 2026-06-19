@@ -12,8 +12,9 @@ describe('HomeComponent', () => {
   let mockAuthService: jasmine.SpyObj<AuthService>;
 
   beforeEach(async () => {
-    mockFarmService = jasmine.createSpyObj('FarmManagementService', ['getUser']);
+    mockFarmService = jasmine.createSpyObj('FarmManagementService', ['getUser', 'getFarms']);
     mockFarmService.getUser.and.returnValue(of({ id: 1, name: 'Test User', email: 'test@example.com' }));
+    mockFarmService.getFarms.and.returnValue(of([]));
 
     mockAuthService = jasmine.createSpyObj('AuthService', ['getUserId']);
     mockAuthService.getUserId.and.returnValue('1');
@@ -40,6 +41,6 @@ describe('HomeComponent', () => {
 
   it('should display the user profile section', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('User Profile');
+    expect(compiled.textContent).toContain('Command Center');
   });
 });
