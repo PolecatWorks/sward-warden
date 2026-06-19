@@ -21,8 +21,14 @@ This document outlines the record-keeping requirements to maintain compliance wi
    - If the farm operates under an approved derogation (allowing up to 250 kg N/ha/year from grazing livestock), an annual fertilisation account must be submitted online to the Northern Ireland Environment Agency (NIEA) by 1 March for the previous calendar year.
 
 5. **Import and Export Records**
-   - Moving sward onto or off the farm requires recording the quantity, date, type of organic manure, names, and addresses of the consignee, consignor, and transporter.
-   - Written contractual agreements are required for manure movement, stating parties involved, origin, final destination, volume, and length of contract.
+   - Moving organic material onto or off the farm requires recording the quantity, date, type of organic manure/material, names, and addresses of the consignee, consignor, and transporter.
+   - **Supported Organic Materials**: The system must track various types of organic materials including, but not limited to:
+     - Standard liquid slurry (cattle, pig)
+     - Solid dung/farmyard manure
+     - Poultry litter
+     - Abattoir blood
+     - Anaerobic digestate
+   - Written contractual agreements are required for manure/material movement, stating parties involved, origin, final destination, volume, and length of contract.
    - Export records must be submitted to the NIEA annually by 31 January (or 1 March for derogated farms).
 
 6. **Soil Analysis Results**
@@ -33,6 +39,6 @@ This document outlines the record-keeping requirements to maintain compliance wi
    - Must keep a specific record of the field number and the reason for using the splash plate for inspection purposes.
 
 ## FE Requirements
-- **Record Entry UX**: Forms for recording sward spreading must be optimized for speed and clarity, utilizing the "Record Event" pattern from the FE review (large touch targets, clear iconography).
+- **Record Entry UX**: Forms for recording spreading events must be optimized for speed and clarity, utilizing the "Record Event" pattern from the FE review (large touch targets, clear iconography). It must easily support selecting between different material types (liquid slurry, solid dung, abattoir blood, etc.) as they may have different spreading implications or unit measurements (e.g., cubic meters vs. tonnes).
 - **Import/Export Dashboard**: Use a dedicated Bento-style overview to track manure movements and deadlines.
 - **Exemption Logging**: A specific high-quality FE component should be provided to quickly log splash plate exemptions, ensuring compliance data is captured with minimal friction.
