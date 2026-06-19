@@ -1,91 +1,127 @@
 <div class="pb-4">
-  <!-- Profile Hero Section -->
-  <section class="px-6 pt-8 pb-12 overflow-hidden">
+  <!-- Top Section: Immediate Actions -->
+  <section class="px-6 pt-8 pb-8 overflow-hidden">
     <div class="relative">
-      <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-secondary mb-2 block">User Profile</span>
-      <h2 class="editorial-headline text-5xl font-black text-primary leading-[0.9] tracking-tighter mb-4">{{ (currentUser$ | async)?.name }}</h2>
-      <p class="text-on-surface-variant font-medium text-lg leading-relaxed max-w-[80%]">Dedicated to sustainable dairy and beef farming across County Antrim.</p>
-    </div>
-  </section>
-  <!-- Quick Stats Bento -->
-  <section class="px-6 grid grid-cols-2 gap-4">
-    <div class="bg-surface-container-low p-6 rounded-xl flex flex-col justify-between aspect-square">
-      <span class="material-symbols-outlined text-primary mb-4" style="font-variation-settings: 'FILL' 1;">location_on</span>
-      <div>
-        <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Region</p>
-        <p class="text-xl font-bold editorial-headline text-primary">Ulster</p>
+      <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-secondary mb-2 block">Command Center</span>
+      <h2 class="editorial-headline text-5xl font-black text-primary leading-[0.9] tracking-tighter mb-6">Hello<span *ngIf="(currentUser$ | async)?.name as name">, {{ name.split(' ')[0] }}</span></h2>
+
+      <!-- Daily Action Traffic Light Widget -->
+      <div class="rounded-2xl p-6 mb-6 flex items-start gap-4 shadow-sm border border-black/5"
+           [ngClass]="{
+             'bg-green-50 dark:bg-green-900/20 text-green-900 dark:text-green-100 border-green-200 dark:border-green-800': trafficLightStatus === 'green',
+             'bg-amber-50 dark:bg-amber-900/20 text-amber-900 dark:text-amber-100 border-amber-200 dark:border-amber-800': trafficLightStatus === 'yellow',
+             'bg-red-50 dark:bg-red-900/20 text-red-900 dark:text-red-100 border-red-200 dark:border-red-800': trafficLightStatus === 'red'
+           }">
+        <span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;"
+              [ngClass]="{
+                'text-green-600 dark:text-green-400': trafficLightStatus === 'green',
+                'text-amber-600 dark:text-amber-400': trafficLightStatus === 'yellow',
+                'text-red-600 dark:text-red-400': trafficLightStatus === 'red'
+              }">
+          {{ trafficLightStatus === 'green' ? 'check_circle' : trafficLightStatus === 'yellow' ? 'warning' : 'cancel' }}
+        </span>
+        <div>
+          <h3 class="editorial-headline text-xl font-bold mb-1">
+            {{ trafficLightStatus === 'green' ? 'Good to Spread' : trafficLightStatus === 'yellow' ? 'Proceed with Caution' : 'Spreading Prohibited' }}
+          </h3>
+          <p class="text-sm opacity-90">{{ trafficLightMessage }}</p>
+        </div>
+      </div>
+
+      <!-- Global Alerts -->
+      <div class="space-y-3 mb-6" *ngIf="(globalAlerts$ | async)?.length">
+         <div *ngFor="let alert of globalAlerts$ | async"
+              class="flex items-center gap-3 p-4 rounded-xl bg-error/10 border border-error/20 text-error">
+             <span class="material-symbols-outlined">gavel</span>
+             <p class="font-bold text-sm">{{ alert.message }}</p>
+         </div>
       </div>
     </div>
-    <div class="bg-primary text-white p-6 rounded-xl flex flex-col justify-between aspect-square">
-      <span class="material-symbols-outlined text-primary-fixed-dim mb-4" style="font-variation-settings: 'FILL' 1;">verified</span>
-      <div>
-        <p class="text-[10px] uppercase tracking-widest opacity-70 font-bold">Member Since</p>
-        <p class="text-xl font-bold editorial-headline">March 2018</p>
-      </div>
-    </div>
   </section>
-  <!-- Active Farms Section -->
-  <section class="mt-12 px-6">
+
+  <!-- Middle Section: Contextual Context (Single vs Multi-Farm) -->
+  <section class="px-6 mb-12">
     <div class="flex items-baseline justify-between mb-6">
-      <h3 class="editorial-headline text-2xl font-bold text-primary">Active Operations</h3>
-      <span class="text-[10px] font-bold uppercase tracking-widest text-secondary">3 Units</span>
+      <h3 class="editorial-headline text-2xl font-bold text-primary">Action Required</h3>
     </div>
-    <div class="space-y-4">
-      <!-- Farm Card 1 -->
-      <div class="group relative overflow-hidden rounded-xl bg-surface-container-lowest transition-all hover:scale-[1.01] cursor-pointer" routerLink="/farms">
-        <div class="h-32 w-full overflow-hidden">
-          <img alt="Ballymena Farm" class="w-full h-full object-cover transition-transform group-hover:scale-105" data-alt="Rolling green drumlins of Northern Ireland, lush grass pasture with sheep grazing, overcast dramatic sky, Irish agricultural landscape" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIfIcSySI_FHIy9u39HAwanLwmgTBhVVmBOkLIYefnP2WG0ulJzcxM3QAn81SVCTSCH_4u_U9MXdy5lnQJx8ey1uxPobO_SmRv3qwkzObd5Y6h4tGV3xFKQcuCO847Cv-b71nKMTLtYlEkJxxHUCyg3j5B4TdU45F-sQxFJPUNOI_HZ8eTd7sK_y4tjov51Yr5BrMbjNys5oXB1kcrXSE6C16g-sVWWHPk0a8KNQ2POYVOY-Ke9iqOY_dV_FQLPn2DAlKz_pxKNA"/>
+
+    <!-- Multi-Farm View -->
+    <div *ngIf="isMultiFarm$ | async; else singleFarmView" class="space-y-4">
+      <div *ngFor="let group of groupedAlerts$ | async" class="bg-surface-container-lowest rounded-xl p-5 shadow-sm border border-surface-variant/30 transition-all hover:scale-[1.01] cursor-pointer" [routerLink]="['/farms', group.farmId]">
+        <div class="flex justify-between items-center mb-3">
+           <h4 class="editorial-headline text-lg font-bold text-primary">{{ group.farmName }}</h4>
+           <span class="bg-error/10 text-error px-2 py-1 rounded-md text-xs font-bold">{{ group.alerts.length }} Issues</span>
         </div>
-        <div class="p-6">
-          <div class="flex justify-between items-start mb-4">
-            <div>
-              <h4 class="editorial-headline text-xl font-bold text-primary">Ballymena Estate</h4>
-              <p class="text-sm text-on-surface-variant">170 Hectares • Silage &amp; Grazing</p>
-            </div>
-            <span class="bg-tertiary-container text-on-tertiary-container px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Active</span>
-          </div>
-          <div class="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-surface-variant/30">
-            <div>
-              <p class="text-[10px] uppercase font-bold text-on-surface-variant">Soil Health</p>
-              <p class="text-lg font-bold text-primary">88%</p>
-            </div>
-            <div>
-              <p class="text-[10px] uppercase font-bold text-on-surface-variant">Yield Projection</p>
-              <p class="text-lg font-bold text-primary">Optimum</p>
-            </div>
-          </div>
-        </div>
+        <ul class="space-y-2">
+          <li *ngFor="let alert of group.alerts" class="flex items-start gap-2 text-sm text-on-surface-variant">
+             <span class="material-symbols-outlined text-[16px] mt-0.5"
+                   [class.text-error]="alert.type === 'critical'"
+                   [class.text-amber-500]="alert.type === 'warning'">
+                {{ alert.type === 'critical' ? 'error' : 'warning' }}
+             </span>
+             <span><strong *ngIf="alert.fieldName">{{ alert.fieldName }}:</strong> {{ alert.message }}</span>
+          </li>
+        </ul>
       </div>
-      <!-- Farm Card 2 -->
-      <div class="group relative overflow-hidden rounded-xl bg-surface-container-lowest transition-all hover:scale-[1.01] cursor-pointer" routerLink="/farms">
-        <div class="h-32 w-full overflow-hidden">
-          <img alt="Coleraine North" class="w-full h-full object-cover transition-transform group-hover:scale-105" data-alt="Aerial view of lush green dairy pasture in County Antrim, small stone walls dividing fields, morning mist, high angle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpUbw8FgRlO8hU7OQviIeaedg3jVkQ8wC6LKAEVOnCcX1wzdAoKSDSZ-2aT3zxALtCjIZtoZ3bbldW5pbPGC3SucmOI9BjylgN-qDtBsbn0DqWwEnlfzqZSo9wZ1shUzv3WaW8ncD6u3ZYkZCdHSMWH8SnUow1fi98v4iNPMFo3d3cMIK3GfE4KsKOV86idIulWp2BQdMwQ2FwlcpzD0mL7cKf8n8-TmsT9jUEeSRy02IBFf_NITf3ZMX9ZN9fr5Sk9IMNPIY-rQ"/>
-        </div>
-        <div class="p-6">
-          <div class="flex justify-between items-start mb-4">
-            <div>
-              <h4 class="editorial-headline text-xl font-bold text-primary">Coleraine North</h4>
-              <p class="text-sm text-on-surface-variant">75 Hectares • Barley</p>
-            </div>
-            <span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">In Rotation</span>
-          </div>
-          <div class="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-surface-variant/30">
-            <div>
-              <p class="text-[10px] uppercase font-bold text-on-surface-variant">Last Rainfall</p>
-              <p class="text-lg font-bold text-primary">2 Days ago</p>
-            </div>
-            <div>
-              <p class="text-[10px] uppercase font-bold text-on-surface-variant">Carbon Credits</p>
-              <p class="text-lg font-bold text-primary">12.4 t</p>
-            </div>
-          </div>
-        </div>
+      <div *ngIf="(groupedAlerts$ | async)?.length === 0" class="text-center p-8 bg-surface-container-lowest rounded-xl border border-surface-variant/30">
+        <span class="material-symbols-outlined text-4xl text-green-500 mb-2">task_alt</span>
+        <p class="text-on-surface-variant font-medium">All farms are compliant and operating normally.</p>
+      </div>
+    </div>
+
+    <!-- Single-Farm View -->
+    <ng-template #singleFarmView>
+       <div class="space-y-3">
+         <ng-container *ngIf="groupedAlerts$ | async as groups">
+           <ng-container *ngIf="groups.length > 0; else noAlerts">
+             <div *ngFor="let alert of groups[0]?.alerts"
+                  class="flex items-start gap-3 p-4 rounded-xl shadow-sm border border-surface-variant/30"
+                  [ngClass]="{'bg-error/5 border-error/20': alert.type === 'critical', 'bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800': alert.type === 'warning'}">
+                 <span class="material-symbols-outlined shrink-0"
+                       [class.text-error]="alert.type === 'critical'"
+                       [class.text-amber-500]="alert.type === 'warning'">
+                    {{ alert.type === 'critical' ? 'error' : 'warning' }}
+                 </span>
+                 <div>
+                    <h5 *ngIf="alert.fieldName" class="font-bold text-sm text-on-surface mb-0.5">{{ alert.fieldName }}</h5>
+                    <p class="text-sm text-on-surface-variant">{{ alert.message }}</p>
+                 </div>
+             </div>
+           </ng-container>
+           <ng-template #noAlerts>
+              <div class="text-center p-8 bg-surface-container-lowest rounded-xl border border-surface-variant/30">
+                <span class="material-symbols-outlined text-4xl text-green-500 mb-2">task_alt</span>
+                <p class="text-on-surface-variant font-medium">No critical alerts for your fields.</p>
+              </div>
+           </ng-template>
+         </ng-container>
+       </div>
+    </ng-template>
+  </section>
+
+  <!-- Bottom Section: Quick Links & Summaries (Bento Grid) -->
+  <section class="px-6 grid grid-cols-2 gap-4 mb-6">
+    <!-- Inventory Summary -->
+    <div class="bg-surface-container-low p-6 rounded-xl flex flex-col justify-between aspect-square cursor-pointer hover:bg-surface-container transition-colors" routerLink="/inventory/storage">
+      <span class="material-symbols-outlined text-primary mb-4" style="font-variation-settings: 'FILL' 1;">water_drop</span>
+      <div>
+        <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Slurry Storage</p>
+        <p class="text-xl font-bold editorial-headline text-primary">65% Full</p>
+      </div>
+    </div>
+    <!-- Upcoming Events -->
+    <div class="bg-primary text-white p-6 rounded-xl flex flex-col justify-between aspect-square cursor-pointer hover:opacity-90 transition-opacity" routerLink="/fields">
+      <span class="material-symbols-outlined text-primary-fixed-dim mb-4" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+      <div>
+        <p class="text-[10px] uppercase tracking-widest opacity-70 font-bold">Upcoming</p>
+        <p class="text-lg font-bold editorial-headline leading-tight mt-1">2 Planned Applications</p>
       </div>
     </div>
   </section>
-  <!-- Profile Actions -->
-  <section class="mt-12 px-6 space-y-3">
-    <button class="w-full py-4 bg-surface-container-high text-on-surface font-bold editorial-headline tracking-wide active:scale-95 transition-transform"
+
+  <!-- Profile Actions / Quick Links -->
+  <section class="px-6 space-y-3">
+    <button class="w-full py-4 bg-surface-container-high text-on-surface font-bold editorial-headline tracking-wide active:scale-95 transition-transform rounded-xl"
       routerLink="/reporting">
       Export Annual Report
     </button>
