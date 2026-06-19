@@ -6,7 +6,7 @@ import { FarmManagementService } from '../services/farm-management.service';
 import { User } from '../models/user';
 import { Farm } from '../models/farm';
 import { Observable, BehaviorSubject, of, combineLatest } from 'rxjs';
-import { map, switchMap, catchError } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 
 export interface Alert {
   id: string;
