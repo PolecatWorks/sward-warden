@@ -1,43 +1,41 @@
-# Technical Specification: Topographical Data Integration
-
-**State**: Open
+# Specification 0021-01: Topographical Data Integration
 
 ## 1. Overview
-This specification details the implementation of topographical data fetching and storage for agricultural fields. Relying on high-resolution commercial APIs (e.g., Google Maps Elevation API or Mapbox Elevation API), the application will retrieve elevation profiles, compute terrain slope metrics, and persist the summarized scalar values directly on the `fields` table to enable regulatory compliance checks (e.g., runoff risks near waterways).
+This specification details the technical approach for fetching, storing, and analyzing topographical data (elevation, slope, terrain features) for farms and fields.
 
-## 2. Proposed Changes
+## 2. External API Integration (Option B: Commercial APIs)
 
-### Database Migration (`sw-be-container/migrations`)
-- Create a new migration file adding the following columns to the `fields` table:
-  - `min_elevation` (double precision, nullable)
-  - `max_elevation` (double precision, nullable)
-  - `mean_elevation` (double precision, nullable)
-  - `average_slope` (double precision, nullable)
-  - `max_slope` (double precision, nullable)
+To ensure the high accuracy (1m - 10m resolution) required for regulatory compliance regarding slopes (e.g., runoff risks near waterways), the system will integrate with a commercial API for elevation data.
 
-### Backend Services (`sw-be-container`)
-- **API Client**:
-  - Implement a client for a commercial elevation service (such as Google Maps or Mapbox Elevation API) using the `reqwest` HTTP client.
-  - Allow configuring the API key and service base URL via environment variables and backend configurations (`config/default.yaml`).
-- **Processing Logic**:
-  - Create a service to fetch elevation points for a field's polygon boundary.
-  - Calculate slope statistics (average and maximum slope) based on the fetched elevation points and spatial distances.
-  - Automatically trigger the topographical data fetch and computation when a field is created or when its boundary is modified.
-- **REST API / Models**:
-  - Update field database models and REST API response payloads to expose the new topographical columns.
+### 2.1 Provider Selection
+- The system will abstract the elevation API provider behind a common interface, allowing integration with services like Google Maps Elevation API or Mapbox Elevation API.
+- **Cost Minimization:** API calls will only be made when field boundaries are created or modified. The data will be stored permanently to minimize ongoing costs.
 
-### Frontend (`sw-fe-container`)
-- **Models / Services**:
-  - Update the Angular field interface/model to include the new topographical fields.
-- **UI Components**:
-  - Display elevation range (min, max, mean) and slope metrics on the Field detail cards/views.
-  - Highlight fields with steep slopes that exceed regulatory limits for spreading.
+### 2.2 Data Fetching Strategy
+- Upon creation or modification of a field's polygon (boundary), an asynchronous background task will be triggered.
+- The task will calculate an appropriate grid or sample points within the field boundary based on the required resolution.
+- A batch API request will be sent to the commercial elevation provider to retrieve elevation data for the calculated points.
 
-## 3. Testing & Verification
+## 3. Backend Storage Strategy (Approach 1: Summary Storage)
 
-- **Unit Tests**:
-  - Mock external elevation API requests using `wiremock` or mock traits to verify resilient handling of API rate limits, timeouts, and failures.
-  - Unit test the calculation formulas for slope and elevation summaries (min, max, mean) given mock coordinate inputs.
-- **Integration Tests**:
-  - Verify database migrations run successfully and table definitions match models.
-  - Add tests validating that fields retrieve correct topographical stats upon database insertion.
+For immediate regulatory and reporting needs, we will implement **Approach 1 (Summary Storage)**. This provides a low-cost, high-performance solution for basic compliance checks.
+
+### 3.1 Database Schema Updates
+The `fields` table (or an equivalent associated entity) in PostgreSQL will be updated to include the following decimal/float columns:
+- `min_elevation` (meters)
+- `max_elevation` (meters)
+- `mean_elevation` (meters)
+- `average_slope` (percentage)
+- `max_slope` (percentage)
+
+### 3.2 Calculation Logic
+- The background task, upon receiving the elevation grid data from the commercial API, will calculate the summary statistics.
+- **Slope Calculation:** The slope between adjacent sample points will be calculated to determine the maximum and average slopes across the field.
+- The calculated summary metrics will be persisted to the `fields` table.
+
+## 4. Frontend Integration
+
+### 4.1 Topology View
+- Add a "Topology View" button in the "Quick Actions" section of the Farm Detail view.
+- This button will navigate the user to a topology mapping interface for the specific farm.
+- The topology interface will overlay the summary statistics (e.g., highlighting fields with a `max_slope` exceeding regulatory limits) on the map view.
