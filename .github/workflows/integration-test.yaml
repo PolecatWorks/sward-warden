@@ -230,6 +230,36 @@ jobs:
           echo "SW_FE_TAG: $SW_FE_TAG"
           echo "PR_NUMBER: $PR_NUMBER"
 
+      - name: Wait for Docker Images
+        run: |
+          echo "Waiting for backend image $SW_BE_IMAGE:$SW_BE_TAG..."
+          for i in {1..60}; do
+            if docker manifest inspect "$SW_BE_IMAGE:$SW_BE_TAG" >/dev/null 2>&1; then
+              echo "Backend image is available!"
+              break
+            fi
+            echo "Backend image not available yet. Waiting 10s... ($i/60)"
+            sleep 10
+          done
+          if ! docker manifest inspect "$SW_BE_IMAGE:$SW_BE_TAG" >/dev/null 2>&1; then
+            echo "Error: Backend image $SW_BE_IMAGE:$SW_BE_TAG was not built/pushed in time."
+            exit 1
+          fi
+
+          echo "Waiting for frontend image $SW_FE_IMAGE:$SW_FE_TAG..."
+          for i in {1..60}; do
+            if docker manifest inspect "$SW_FE_IMAGE:$SW_FE_TAG" >/dev/null 2>&1; then
+              echo "Frontend image is available!"
+              break
+            fi
+            echo "Frontend image not available yet. Waiting 10s... ($i/60)"
+            sleep 10
+          done
+          if ! docker manifest inspect "$SW_FE_IMAGE:$SW_FE_TAG" >/dev/null 2>&1; then
+            echo "Error: Frontend image $SW_FE_IMAGE:$SW_FE_TAG was not built/pushed in time."
+            exit 1
+          fi
+
       - name: Run Integration Tests with Garden
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
