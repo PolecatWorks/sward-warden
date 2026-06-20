@@ -1,6 +1,17 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Subscription, firstValueFrom, filter, switchMap, from, timer, merge, debounceTime, catchError, of } from 'rxjs';
+import {
+  Subscription,
+  firstValueFrom,
+  filter,
+  switchMap,
+  from,
+  timer,
+  merge,
+  debounceTime,
+  catchError,
+  of,
+} from 'rxjs';
 import { RxdbService, SwardDatabase } from './rxdb/rxdb.service';
 import { NetworkService } from './network.service';
 import { SyncStateService } from './sync-state.service';
@@ -48,13 +59,12 @@ interface SyncResponse {
  * - Periodic timer (every 5 minutes while online)
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SyncEngineService implements OnDestroy {
   private subscription: Subscription;
   private syncInProgress = false;
   private syncNeededAgain = false;
-
 
   constructor(
     private rxdbService: RxdbService,
@@ -65,28 +75,30 @@ export class SyncEngineService implements OnDestroy {
   ) {
     // Sync triggers: online events + periodic timer + pending outbox inserts
     const onlineEvent$ = this.networkService.isOnline$.pipe(
-      filter(online => online),
+      filter((online) => online),
     );
 
     const periodicSync$ = timer(0, SYNC_INTERVAL_MS).pipe(
       switchMap(() => this.networkService.isOnline$),
-      filter(online => online),
+      filter((online) => online),
     );
 
     const outboxTrigger$ = this.rxdbService.db$.pipe(
       catchError(() => of(null)), // avoid app crash on db init failure
-      filter(db => db !== null),
-      switchMap(db => db!.outbox.find({ selector: { status: 'pending' } }).$),
-      filter(entries => entries.length > 0),
+      filter((db) => db !== null),
+      switchMap((db) => db!.outbox.find({ selector: { status: 'pending' } }).$),
+      filter((entries) => entries.length > 0),
       debounceTime(500),
       switchMap(() => this.networkService.isOnline$),
-      filter(online => online),
+      filter((online) => online),
     );
 
-    this.subscription = merge(onlineEvent$, periodicSync$, outboxTrigger$).pipe(
-      filter(() => !this.rxdbService.fallbackToRest$.value),
-      switchMap(() => from(this.fullSync())),
-    ).subscribe();
+    this.subscription = merge(onlineEvent$, periodicSync$, outboxTrigger$)
+      .pipe(
+        filter(() => !this.rxdbService.fallbackToRest$.value),
+        switchMap(() => from(this.fullSync())),
+      )
+      .subscribe();
   }
 
   /**
@@ -125,22 +137,31 @@ export class SyncEngineService implements OnDestroy {
     if (this.rxdbService.fallbackToRest$.value) return;
 
     const db = await firstValueFrom(this.rxdbService.db$);
-    const pendingEntries = await db.outbox.find({
-      selector: { status: 'pending' },
-      sort: [{ timestamp: 'asc' }],
-    }).exec();
+    const pendingEntries = await db.outbox
+      .find({
+        selector: { status: 'pending' },
+        sort: [{ timestamp: 'asc' }],
+      })
+      .exec();
 
     if (pendingEntries.length === 0) {
       return;
     }
-    console.log('SYNC ENGINE: Found pending entries:', pendingEntries.map(e => ({ id: e.id, action: e.actionType, entity: e.entityType, payload: e.payload })));
-
+    console.log(
+      'SYNC ENGINE: Found pending entries:',
+      pendingEntries.map((e) => ({
+        id: e.id,
+        action: e.actionType,
+        entity: e.entityType,
+        payload: e.payload,
+      })),
+    );
 
     const now = Date.now();
     let hasValidEntries = false;
 
     // Filter out entries still in backoff
-    const entriesToProcess = pendingEntries.filter(entry => {
+    const entriesToProcess = pendingEntries.filter((entry) => {
       if (entry.retryCount > 0) {
         const lastAttemptTime = new Date(entry.timestamp).getTime();
         const backoffMs = Math.pow(2, entry.retryCount - 1) * 30 * 1000; // 30s, 60s, 120s...
@@ -166,21 +187,30 @@ export class SyncEngineService implements OnDestroy {
         await this.processEntry(entry, apiUrl, headers, db);
         await entry.remove();
       } catch (error: any) {
-        console.error(`SYNC ENGINE: Error processing entry ${entry.id}:`, error);
+        console.error(
+          `SYNC ENGINE: Error processing entry ${entry.id}:`,
+          error,
+        );
         const newRetryCount = (entry.retryCount || 0) + 1;
-        const isClientError = error && (error.status === 400 || error.status === 422);
+        const isClientError =
+          error && (error.status === 400 || error.status === 422);
 
         if (isClientError || newRetryCount >= MAX_RETRIES) {
           await entry.patch({
             status: 'failed',
             retryCount: newRetryCount,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           });
-          await this.updateLocalDocStatus(db, entry.entityType, entry.localDocId, 'failed');
+          await this.updateLocalDocStatus(
+            db,
+            entry.entityType,
+            entry.localDocId,
+            'failed',
+          );
         } else {
           await entry.patch({
             retryCount: newRetryCount,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           });
         }
       }
@@ -197,7 +227,10 @@ export class SyncEngineService implements OnDestroy {
     db: SwardDatabase,
   ): Promise<void> {
     const payload = JSON.parse(entry.payload);
-    console.log(`SYNC ENGINE: processEntry action=${entry.actionType} entity=${entry.entityType} payload:`, payload);
+    console.log(
+      `SYNC ENGINE: processEntry action=${entry.actionType} entity=${entry.entityType} payload:`,
+      payload,
+    );
 
     const endpointMap: Record<string, string> = {
       compliance_breaches: 'compliance-breaches',
@@ -209,20 +242,27 @@ export class SyncEngineService implements OnDestroy {
       case 'POST': {
         console.log(`SYNC ENGINE: Sending POST to ${apiUrl}/${endpoint}`);
         const response = await firstValueFrom(
-          this.http.post<any>(`${apiUrl}/${endpoint}`, payload, { headers })
+          this.http.post<any>(`${apiUrl}/${endpoint}`, payload, { headers }),
         );
         console.log(`SYNC ENGINE: POST response:`, response);
         if (response?.id) {
-          await this.updateLocalDocServerId(db, entry.entityType, entry.localDocId, response.id);
+          await this.updateLocalDocServerId(
+            db,
+            entry.entityType,
+            entry.localDocId,
+            response.id,
+          );
         }
         break;
       }
       case 'DELETE': {
         const serverId = payload.id;
-        console.log(`SYNC ENGINE: Sending DELETE to ${apiUrl}/${endpoint}/${serverId}`);
+        console.log(
+          `SYNC ENGINE: Sending DELETE to ${apiUrl}/${endpoint}/${serverId}`,
+        );
         if (serverId) {
           await firstValueFrom(
-            this.http.delete(`${apiUrl}/${endpoint}/${serverId}`, { headers })
+            this.http.delete(`${apiUrl}/${endpoint}/${serverId}`, { headers }),
           );
           console.log(`SYNC ENGINE: DELETE successful`);
         } else {
@@ -232,10 +272,14 @@ export class SyncEngineService implements OnDestroy {
       }
       case 'PUT': {
         const serverId = payload.id;
-        console.log(`SYNC ENGINE: Sending PUT to ${apiUrl}/${endpoint}/${serverId}`);
+        console.log(
+          `SYNC ENGINE: Sending PUT to ${apiUrl}/${endpoint}/${serverId}`,
+        );
         if (serverId) {
           await firstValueFrom(
-            this.http.put(`${apiUrl}/${endpoint}/${serverId}`, payload, { headers })
+            this.http.put(`${apiUrl}/${endpoint}/${serverId}`, payload, {
+              headers,
+            }),
           );
           console.log(`SYNC ENGINE: PUT successful`);
         } else {
@@ -270,7 +314,7 @@ export class SyncEngineService implements OnDestroy {
 
     try {
       const response = await firstValueFrom(
-        this.http.get<SyncResponse>(syncUrl, { headers })
+        this.http.get<SyncResponse>(syncUrl, { headers }),
       );
 
       // Process each entity type
@@ -278,10 +322,19 @@ export class SyncEngineService implements OnDestroy {
       await this.upsertFields(db, response.fields || []);
       await this.upsertEvents(db, response.events || []);
       await this.upsertSoilAnalyses(db, response.soil_analyses || []);
-      await this.upsertFertilisationPlans(db, response.fertilisation_plans || []);
+      await this.upsertFertilisationPlans(
+        db,
+        response.fertilisation_plans || [],
+      );
       await this.upsertFarmRecords(db, response.farm_records || []);
-      await this.upsertOrganicManureApplications(db, response.organic_manure_applications || []);
-      await this.upsertComplianceBreaches(db, response.compliance_breaches || []);
+      await this.upsertOrganicManureApplications(
+        db,
+        response.organic_manure_applications || [],
+      );
+      await this.upsertComplianceBreaches(
+        db,
+        response.compliance_breaches || [],
+      );
       await this.upsertSwardMovements(db, response.sward_movements || []);
 
       // Update checkpoint
@@ -342,11 +395,16 @@ export class SyncEngineService implements OnDestroy {
   // ──────────────────────────────────────────────────────────
 
   /** Upsert farms from the server into local RxDB. */
-  private async upsertFarms(db: SwardDatabase, serverFarms: any[]): Promise<void> {
+  private async upsertFarms(
+    db: SwardDatabase,
+    serverFarms: any[],
+  ): Promise<void> {
     if (serverFarms.length === 0) return;
 
-    const serverIds = serverFarms.map(f => f.id);
-    const existingDocs = await db.farms.find({ selector: { serverId: { $in: serverIds } } }).exec();
+    const serverIds = serverFarms.map((f) => f.id);
+    const existingDocs = await db.farms
+      .find({ selector: { serverId: { $in: serverIds } } })
+      .exec();
     const localDocsByServerId = new Map<number, any[]>();
     for (const doc of existingDocs) {
       if (doc.serverId !== undefined) {
@@ -357,7 +415,7 @@ export class SyncEngineService implements OnDestroy {
     }
 
     const potentialConflictDocIds = serverFarms
-      .map(sf => {
+      .map((sf) => {
         const localDocs = localDocsByServerId.get(sf.id);
         if (!localDocs || localDocs.length === 0 || sf.is_deleted) return null;
         const localDoc = localDocs[0];
@@ -369,10 +427,15 @@ export class SyncEngineService implements OnDestroy {
 
     const pendingOutboxSet = new Set<string>();
     if (potentialConflictDocIds.length > 0) {
-      const pendingEntries = await db.outbox.find({
-        selector: { localDocId: { $in: potentialConflictDocIds }, status: 'pending' }
-      }).exec();
-      pendingEntries.forEach(e => pendingOutboxSet.add(e.localDocId));
+      const pendingEntries = await db.outbox
+        .find({
+          selector: {
+            localDocId: { $in: potentialConflictDocIds },
+            status: 'pending',
+          },
+        })
+        .exec();
+      pendingEntries.forEach((e) => pendingOutboxSet.add(e.localDocId));
     }
 
     const toUpsert: any[] = [];
@@ -388,11 +451,18 @@ export class SyncEngineService implements OnDestroy {
       if (localDocs.length > 0) {
         const localDoc = localDocs[0];
         const hasPending = pendingOutboxSet.has(localDoc.id);
-        if (this.shouldOverwriteLocal(localDoc.updatedAt, serverFarm.updated_at, hasPending)) {
+        if (
+          this.shouldOverwriteLocal(
+            localDoc.updatedAt,
+            serverFarm.updated_at,
+            hasPending,
+          )
+        ) {
           toUpsert.push({
             ...localDoc.toJSON(),
             name: serverFarm.name,
             location: serverFarm.location,
+            has_derogation: serverFarm.has_derogation,
             updatedAt: serverFarm.updated_at,
             syncStatus: 'synced' as any,
           });
@@ -404,6 +474,7 @@ export class SyncEngineService implements OnDestroy {
           user_id: serverFarm.user_id,
           name: serverFarm.name,
           location: serverFarm.location,
+          has_derogation: serverFarm.has_derogation,
           syncStatus: 'synced' as any,
           updatedAt: serverFarm.updated_at,
         });
@@ -415,11 +486,16 @@ export class SyncEngineService implements OnDestroy {
   }
 
   /** Upsert fields from the server into local RxDB. */
-  private async upsertFields(db: SwardDatabase, serverFields: any[]): Promise<void> {
+  private async upsertFields(
+    db: SwardDatabase,
+    serverFields: any[],
+  ): Promise<void> {
     if (serverFields.length === 0) return;
 
-    const serverIds = serverFields.map(f => f.id);
-    const existingDocs = await db.fields.find({ selector: { serverId: { $in: serverIds } } }).exec();
+    const serverIds = serverFields.map((f) => f.id);
+    const existingDocs = await db.fields
+      .find({ selector: { serverId: { $in: serverIds } } })
+      .exec();
     const localDocsByServerId = new Map<number, any[]>();
     for (const doc of existingDocs) {
       if (doc.serverId !== undefined) {
@@ -430,7 +506,7 @@ export class SyncEngineService implements OnDestroy {
     }
 
     const potentialConflictDocIds = serverFields
-      .map(sf => {
+      .map((sf) => {
         const localDocs = localDocsByServerId.get(sf.id);
         if (!localDocs || localDocs.length === 0 || sf.is_deleted) return null;
         const localDoc = localDocs[0];
@@ -442,10 +518,15 @@ export class SyncEngineService implements OnDestroy {
 
     const pendingOutboxSet = new Set<string>();
     if (potentialConflictDocIds.length > 0) {
-      const pendingEntries = await db.outbox.find({
-        selector: { localDocId: { $in: potentialConflictDocIds }, status: 'pending' }
-      }).exec();
-      pendingEntries.forEach(e => pendingOutboxSet.add(e.localDocId));
+      const pendingEntries = await db.outbox
+        .find({
+          selector: {
+            localDocId: { $in: potentialConflictDocIds },
+            status: 'pending',
+          },
+        })
+        .exec();
+      pendingEntries.forEach((e) => pendingOutboxSet.add(e.localDocId));
     }
 
     const toUpsert: any[] = [];
@@ -461,11 +542,25 @@ export class SyncEngineService implements OnDestroy {
       if (localDocs.length > 0) {
         const localDoc = localDocs[0];
         const hasPending = pendingOutboxSet.has(localDoc.id);
-        if (this.shouldOverwriteLocal(localDoc.updatedAt, serverField.updated_at, hasPending)) {
+        if (
+          this.shouldOverwriteLocal(
+            localDoc.updatedAt,
+            serverField.updated_at,
+            hasPending,
+          )
+        ) {
           toUpsert.push({
             ...localDoc.toJSON(),
+            farm_id: serverField.farm_id,
             name: serverField.name,
             area_hectares: serverField.area_hectares,
+            land_use: serverField.land_use,
+            min_elevation: serverField.min_elevation,
+            max_elevation: serverField.max_elevation,
+            mean_elevation: serverField.mean_elevation,
+            average_slope: serverField.average_slope,
+            max_slope: serverField.max_slope,
+            geometry_wkt: serverField.geometry_wkt,
             updatedAt: serverField.updated_at,
             syncStatus: 'synced' as any,
           });
@@ -477,6 +572,13 @@ export class SyncEngineService implements OnDestroy {
           farm_id: serverField.farm_id,
           name: serverField.name,
           area_hectares: serverField.area_hectares,
+          land_use: serverField.land_use,
+          min_elevation: serverField.min_elevation,
+          max_elevation: serverField.max_elevation,
+          mean_elevation: serverField.mean_elevation,
+          average_slope: serverField.average_slope,
+          max_slope: serverField.max_slope,
+          geometry_wkt: serverField.geometry_wkt,
           syncStatus: 'synced' as any,
           updatedAt: serverField.updated_at,
         });
@@ -488,11 +590,16 @@ export class SyncEngineService implements OnDestroy {
   }
 
   /** Upsert events from the server into local RxDB. */
-  private async upsertEvents(db: SwardDatabase, serverEvents: any[]): Promise<void> {
+  private async upsertEvents(
+    db: SwardDatabase,
+    serverEvents: any[],
+  ): Promise<void> {
     if (serverEvents.length === 0) return;
 
-    const serverIds = serverEvents.map(e => e.id);
-    const existingDocs = await db.events.find({ selector: { serverId: { $in: serverIds } } }).exec();
+    const serverIds = serverEvents.map((e) => e.id);
+    const existingDocs = await db.events
+      .find({ selector: { serverId: { $in: serverIds } } })
+      .exec();
     const localDocsByServerId = new Map<number, any[]>();
     for (const doc of existingDocs) {
       if (doc.serverId !== undefined) {
@@ -503,7 +610,7 @@ export class SyncEngineService implements OnDestroy {
     }
 
     const potentialConflictDocIds = serverEvents
-      .map(se => {
+      .map((se) => {
         const localDocs = localDocsByServerId.get(se.id);
         if (!localDocs || localDocs.length === 0 || se.is_deleted) return null;
         const localDoc = localDocs[0];
@@ -515,10 +622,15 @@ export class SyncEngineService implements OnDestroy {
 
     const pendingOutboxSet = new Set<string>();
     if (potentialConflictDocIds.length > 0) {
-      const pendingEntries = await db.outbox.find({
-        selector: { localDocId: { $in: potentialConflictDocIds }, status: 'pending' }
-      }).exec();
-      pendingEntries.forEach(e => pendingOutboxSet.add(e.localDocId));
+      const pendingEntries = await db.outbox
+        .find({
+          selector: {
+            localDocId: { $in: potentialConflictDocIds },
+            status: 'pending',
+          },
+        })
+        .exec();
+      pendingEntries.forEach((e) => pendingOutboxSet.add(e.localDocId));
     }
 
     const toUpsert: any[] = [];
@@ -534,12 +646,21 @@ export class SyncEngineService implements OnDestroy {
       if (localDocs.length > 0) {
         const localDoc = localDocs[0];
         const hasPending = pendingOutboxSet.has(localDoc.id);
-        if (this.shouldOverwriteLocal(localDoc.updatedAt, serverEvent.updated_at, hasPending)) {
+        if (
+          this.shouldOverwriteLocal(
+            localDoc.updatedAt,
+            serverEvent.updated_at,
+            hasPending,
+          )
+        ) {
           toUpsert.push({
             ...localDoc.toJSON(),
             event_type: serverEvent.event_type,
             description: serverEvent.description,
             date: serverEvent.date,
+            mapp_number: serverEvent.mapp_number,
+            eppo_code: serverEvent.eppo_code,
+            bbch_growth_stage: serverEvent.bbch_growth_stage,
             updatedAt: serverEvent.updated_at,
             syncStatus: 'synced' as any,
           });
@@ -552,6 +673,9 @@ export class SyncEngineService implements OnDestroy {
           event_type: serverEvent.event_type,
           description: serverEvent.description,
           date: serverEvent.date,
+          mapp_number: serverEvent.mapp_number,
+          eppo_code: serverEvent.eppo_code,
+          bbch_growth_stage: serverEvent.bbch_growth_stage,
           syncStatus: 'synced' as any,
           updatedAt: serverEvent.updated_at,
         });
@@ -563,14 +687,19 @@ export class SyncEngineService implements OnDestroy {
   }
 
   /** Upsert soil analyses from the server into local RxDB. */
-  private async upsertSoilAnalyses(db: SwardDatabase, serverAnalyses: any[]): Promise<void> {
+  private async upsertSoilAnalyses(
+    db: SwardDatabase,
+    serverAnalyses: any[],
+  ): Promise<void> {
     if (serverAnalyses.length === 0) return;
 
     // 1. Bulk lookup existing local records by serverId
-    const serverIds = serverAnalyses.map(a => a.id);
-    const existingDocs = await db.soil_analyses.find({
-      selector: { serverId: { $in: serverIds } }
-    }).exec();
+    const serverIds = serverAnalyses.map((a) => a.id);
+    const existingDocs = await db.soil_analyses
+      .find({
+        selector: { serverId: { $in: serverIds } },
+      })
+      .exec();
 
     // Group local docs by serverId
     const localDocsByServerId = new Map<number, any[]>();
@@ -584,7 +713,7 @@ export class SyncEngineService implements OnDestroy {
 
     // 2. Pre-fetch pending outbox entries to avoid N+1
     const potentialConflictDocIds = serverAnalyses
-      .map(sa => {
+      .map((sa) => {
         const localDocs = localDocsByServerId.get(sa.id);
         if (!localDocs || localDocs.length === 0 || sa.is_deleted) return null;
         const localDoc = localDocs[0];
@@ -596,13 +725,15 @@ export class SyncEngineService implements OnDestroy {
 
     const pendingOutboxSet = new Set<string>();
     if (potentialConflictDocIds.length > 0) {
-      const pendingEntries = await db.outbox.find({
-        selector: {
-          localDocId: { $in: potentialConflictDocIds },
-          status: 'pending'
-        }
-      }).exec();
-      pendingEntries.forEach(e => pendingOutboxSet.add(e.localDocId));
+      const pendingEntries = await db.outbox
+        .find({
+          selector: {
+            localDocId: { $in: potentialConflictDocIds },
+            status: 'pending',
+          },
+        })
+        .exec();
+      pendingEntries.forEach((e) => pendingOutboxSet.add(e.localDocId));
     }
 
     const toUpsert: any[] = [];
@@ -622,7 +753,13 @@ export class SyncEngineService implements OnDestroy {
       if (localDocs.length > 0) {
         const localDoc = localDocs[0];
         const hasPending = pendingOutboxSet.has(localDoc.id);
-        if (this.shouldOverwriteLocal(localDoc.updatedAt, serverAnalysis.updated_at, hasPending)) {
+        if (
+          this.shouldOverwriteLocal(
+            localDoc.updatedAt,
+            serverAnalysis.updated_at,
+            hasPending,
+          )
+        ) {
           toUpsert.push({
             ...localDoc.toJSON(),
             ph_level: serverAnalysis.ph_level,
@@ -659,11 +796,16 @@ export class SyncEngineService implements OnDestroy {
   }
 
   /** Upsert fertilisation plans from the server into local RxDB. */
-  private async upsertFertilisationPlans(db: SwardDatabase, serverPlans: any[]): Promise<void> {
+  private async upsertFertilisationPlans(
+    db: SwardDatabase,
+    serverPlans: any[],
+  ): Promise<void> {
     if (serverPlans.length === 0) return;
 
-    const serverIds = serverPlans.map(p => p.id);
-    const existingDocs = await db.fertilisation_plans.find({ selector: { serverId: { $in: serverIds } } }).exec();
+    const serverIds = serverPlans.map((p) => p.id);
+    const existingDocs = await db.fertilisation_plans
+      .find({ selector: { serverId: { $in: serverIds } } })
+      .exec();
     const localDocsByServerId = new Map<number, any[]>();
     for (const doc of existingDocs) {
       if (doc.serverId !== undefined) {
@@ -674,7 +816,7 @@ export class SyncEngineService implements OnDestroy {
     }
 
     const potentialConflictDocIds = serverPlans
-      .map(sp => {
+      .map((sp) => {
         const localDocs = localDocsByServerId.get(sp.id);
         if (!localDocs || localDocs.length === 0 || sp.is_deleted) return null;
         const localDoc = localDocs[0];
@@ -686,10 +828,15 @@ export class SyncEngineService implements OnDestroy {
 
     const pendingOutboxSet = new Set<string>();
     if (potentialConflictDocIds.length > 0) {
-      const pendingEntries = await db.outbox.find({
-        selector: { localDocId: { $in: potentialConflictDocIds }, status: 'pending' }
-      }).exec();
-      pendingEntries.forEach(e => pendingOutboxSet.add(e.localDocId));
+      const pendingEntries = await db.outbox
+        .find({
+          selector: {
+            localDocId: { $in: potentialConflictDocIds },
+            status: 'pending',
+          },
+        })
+        .exec();
+      pendingEntries.forEach((e) => pendingOutboxSet.add(e.localDocId));
     }
 
     const toUpsert: any[] = [];
@@ -705,7 +852,13 @@ export class SyncEngineService implements OnDestroy {
       if (localDocs.length > 0) {
         const localDoc = localDocs[0];
         const hasPending = pendingOutboxSet.has(localDoc.id);
-        if (this.shouldOverwriteLocal(localDoc.updatedAt, serverPlan.updated_at, hasPending)) {
+        if (
+          this.shouldOverwriteLocal(
+            localDoc.updatedAt,
+            serverPlan.updated_at,
+            hasPending,
+          )
+        ) {
           toUpsert.push({
             ...localDoc.toJSON(),
             crop_type: serverPlan.crop_type,
@@ -735,7 +888,8 @@ export class SyncEngineService implements OnDestroy {
       }
     }
 
-    if (idsToRemove.length > 0) await db.fertilisation_plans.bulkRemove(idsToRemove);
+    if (idsToRemove.length > 0)
+      await db.fertilisation_plans.bulkRemove(idsToRemove);
     if (toUpsert.length > 0) await db.fertilisation_plans.bulkUpsert(toUpsert);
   }
 
@@ -745,11 +899,16 @@ export class SyncEngineService implements OnDestroy {
 
   /** Update a local RxDB document's syncStatus. */
 
-  private async upsertFarmRecords(db: SwardDatabase, serverRecords: any[]): Promise<void> {
+  private async upsertFarmRecords(
+    db: SwardDatabase,
+    serverRecords: any[],
+  ): Promise<void> {
     if (!serverRecords || serverRecords.length === 0) return;
-    const serverIds = serverRecords.map(r => r.id);
-    const existingDocs = await db.farm_records.find({ selector: { serverId: { $in: serverIds } } }).exec();
-    const existingMap = new Map(existingDocs.map(d => [d.serverId, d]));
+    const serverIds = serverRecords.map((r) => r.id);
+    const existingDocs = await db.farm_records
+      .find({ selector: { serverId: { $in: serverIds } } })
+      .exec();
+    const existingMap = new Map(existingDocs.map((d) => [d.serverId, d]));
 
     const toUpsert: any[] = [];
     const idsToRemove: string[] = [];
@@ -766,8 +925,13 @@ export class SyncEngineService implements OnDestroy {
 
       if (localDoc) {
         const localUpdatedAt = new Date(localDoc.updatedAt).getTime();
-        const serverUpdatedAt = sRecord.updated_at ? new Date(sRecord.updated_at).getTime() : 0;
-        if (localDoc.syncStatus === 'pending' && localUpdatedAt > serverUpdatedAt) {
+        const serverUpdatedAt = sRecord.updated_at
+          ? new Date(sRecord.updated_at).getTime()
+          : 0;
+        if (
+          localDoc.syncStatus === 'pending' &&
+          localUpdatedAt > serverUpdatedAt
+        ) {
           continue;
         }
         toUpsert.push({
@@ -799,11 +963,16 @@ export class SyncEngineService implements OnDestroy {
     if (toUpsert.length > 0) await db.farm_records.bulkUpsert(toUpsert);
   }
 
-  private async upsertOrganicManureApplications(db: SwardDatabase, serverApps: any[]): Promise<void> {
+  private async upsertOrganicManureApplications(
+    db: SwardDatabase,
+    serverApps: any[],
+  ): Promise<void> {
     if (!serverApps || serverApps.length === 0) return;
-    const serverIds = serverApps.map(a => a.id);
-    const existingDocs = await db.organic_manure_applications.find({ selector: { serverId: { $in: serverIds } } }).exec();
-    const existingMap = new Map(existingDocs.map(d => [d.serverId, d]));
+    const serverIds = serverApps.map((a) => a.id);
+    const existingDocs = await db.organic_manure_applications
+      .find({ selector: { serverId: { $in: serverIds } } })
+      .exec();
+    const existingMap = new Map(existingDocs.map((d) => [d.serverId, d]));
 
     const toUpsert: any[] = [];
     const idsToRemove: string[] = [];
@@ -811,14 +980,21 @@ export class SyncEngineService implements OnDestroy {
     for (const sApp of serverApps) {
       const localDoc = existingMap.get(sApp.id);
       if (sApp.is_deleted) {
-        if (localDoc && localDoc.syncStatus !== 'pending') idsToRemove.push(localDoc.id);
+        if (localDoc && localDoc.syncStatus !== 'pending')
+          idsToRemove.push(localDoc.id);
         continue;
       }
 
       if (localDoc) {
         const localUpdatedAt = new Date(localDoc.updatedAt).getTime();
-        const serverUpdatedAt = sApp.updated_at ? new Date(sApp.updated_at).getTime() : 0;
-        if (localDoc.syncStatus === 'pending' && localUpdatedAt > serverUpdatedAt) continue;
+        const serverUpdatedAt = sApp.updated_at
+          ? new Date(sApp.updated_at).getTime()
+          : 0;
+        if (
+          localDoc.syncStatus === 'pending' &&
+          localUpdatedAt > serverUpdatedAt
+        )
+          continue;
         toUpsert.push({
           ...localDoc.toJSON(),
           event_id: sApp.event_id,
@@ -853,15 +1029,22 @@ export class SyncEngineService implements OnDestroy {
         });
       }
     }
-    if (idsToRemove.length > 0) await db.organic_manure_applications.bulkRemove(idsToRemove);
-    if (toUpsert.length > 0) await db.organic_manure_applications.bulkUpsert(toUpsert);
+    if (idsToRemove.length > 0)
+      await db.organic_manure_applications.bulkRemove(idsToRemove);
+    if (toUpsert.length > 0)
+      await db.organic_manure_applications.bulkUpsert(toUpsert);
   }
 
-  private async upsertComplianceBreaches(db: SwardDatabase, serverBreaches: any[]): Promise<void> {
+  private async upsertComplianceBreaches(
+    db: SwardDatabase,
+    serverBreaches: any[],
+  ): Promise<void> {
     if (!serverBreaches || serverBreaches.length === 0) return;
-    const serverIds = serverBreaches.map(b => b.id);
-    const existingDocs = await db.compliance_breaches.find({ selector: { serverId: { $in: serverIds } } }).exec();
-    const existingMap = new Map(existingDocs.map(d => [d.serverId, d]));
+    const serverIds = serverBreaches.map((b) => b.id);
+    const existingDocs = await db.compliance_breaches
+      .find({ selector: { serverId: { $in: serverIds } } })
+      .exec();
+    const existingMap = new Map(existingDocs.map((d) => [d.serverId, d]));
 
     const toUpsert: any[] = [];
     const idsToRemove: string[] = [];
@@ -869,14 +1052,21 @@ export class SyncEngineService implements OnDestroy {
     for (const sBreach of serverBreaches) {
       const localDoc = existingMap.get(sBreach.id);
       if (sBreach.is_deleted) {
-        if (localDoc && localDoc.syncStatus !== 'pending') idsToRemove.push(localDoc.id);
+        if (localDoc && localDoc.syncStatus !== 'pending')
+          idsToRemove.push(localDoc.id);
         continue;
       }
 
       if (localDoc) {
         const localUpdatedAt = new Date(localDoc.updatedAt).getTime();
-        const serverUpdatedAt = sBreach.updated_at ? new Date(sBreach.updated_at).getTime() : 0;
-        if (localDoc.syncStatus === 'pending' && localUpdatedAt > serverUpdatedAt) continue;
+        const serverUpdatedAt = sBreach.updated_at
+          ? new Date(sBreach.updated_at).getTime()
+          : 0;
+        if (
+          localDoc.syncStatus === 'pending' &&
+          localUpdatedAt > serverUpdatedAt
+        )
+          continue;
         toUpsert.push({
           ...localDoc.toJSON(),
           farm_id: sBreach.farm_id,
@@ -907,15 +1097,21 @@ export class SyncEngineService implements OnDestroy {
         });
       }
     }
-    if (idsToRemove.length > 0) await db.compliance_breaches.bulkRemove(idsToRemove);
+    if (idsToRemove.length > 0)
+      await db.compliance_breaches.bulkRemove(idsToRemove);
     if (toUpsert.length > 0) await db.compliance_breaches.bulkUpsert(toUpsert);
   }
 
-  private async upsertSwardMovements(db: SwardDatabase, serverMovements: any[]): Promise<void> {
+  private async upsertSwardMovements(
+    db: SwardDatabase,
+    serverMovements: any[],
+  ): Promise<void> {
     if (!serverMovements || serverMovements.length === 0) return;
-    const serverIds = serverMovements.map(m => m.id);
-    const existingDocs = await db.sward_movements.find({ selector: { serverId: { $in: serverIds } } }).exec();
-    const existingMap = new Map(existingDocs.map(d => [d.serverId, d]));
+    const serverIds = serverMovements.map((m) => m.id);
+    const existingDocs = await db.sward_movements
+      .find({ selector: { serverId: { $in: serverIds } } })
+      .exec();
+    const existingMap = new Map(existingDocs.map((d) => [d.serverId, d]));
 
     const toUpsert: any[] = [];
     const idsToRemove: string[] = [];
@@ -923,14 +1119,21 @@ export class SyncEngineService implements OnDestroy {
     for (const sMove of serverMovements) {
       const localDoc = existingMap.get(sMove.id);
       if (sMove.is_deleted) {
-        if (localDoc && localDoc.syncStatus !== 'pending') idsToRemove.push(localDoc.id);
+        if (localDoc && localDoc.syncStatus !== 'pending')
+          idsToRemove.push(localDoc.id);
         continue;
       }
 
       if (localDoc) {
         const localUpdatedAt = new Date(localDoc.updatedAt).getTime();
-        const serverUpdatedAt = sMove.updated_at ? new Date(sMove.updated_at).getTime() : 0;
-        if (localDoc.syncStatus === 'pending' && localUpdatedAt > serverUpdatedAt) continue;
+        const serverUpdatedAt = sMove.updated_at
+          ? new Date(sMove.updated_at).getTime()
+          : 0;
+        if (
+          localDoc.syncStatus === 'pending' &&
+          localUpdatedAt > serverUpdatedAt
+        )
+          continue;
         toUpsert.push({
           ...localDoc.toJSON(),
           farm_id: sMove.farm_id,
@@ -967,10 +1170,10 @@ export class SyncEngineService implements OnDestroy {
         });
       }
     }
-    if (idsToRemove.length > 0) await db.sward_movements.bulkRemove(idsToRemove);
+    if (idsToRemove.length > 0)
+      await db.sward_movements.bulkRemove(idsToRemove);
     if (toUpsert.length > 0) await db.sward_movements.bulkUpsert(toUpsert);
   }
-
 
   private async updateLocalDocStatus(
     db: SwardDatabase,
@@ -1006,7 +1209,11 @@ export class SyncEngineService implements OnDestroy {
    * Uses Last-Write-Wins (LWW) conflict resolution logic, but respects local
    * pending changes in the outbox.
    */
-  private shouldOverwriteLocal(localUpdatedAt: string, serverUpdatedAt: string, hasPending: boolean): boolean {
+  private shouldOverwriteLocal(
+    localUpdatedAt: string,
+    serverUpdatedAt: string,
+    hasPending: boolean,
+  ): boolean {
     const localTime = new Date(localUpdatedAt).getTime();
     const serverTime = new Date(serverUpdatedAt).getTime();
     return serverTime >= localTime || !hasPending;
