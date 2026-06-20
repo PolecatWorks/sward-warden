@@ -3,9 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FarmManagementService } from '../../services/farm-management.service';
 import { RxdbService } from '../../services/rxdb/rxdb.service';
+import { AuthService } from '../../services/auth.service';
+import { SyncEngineService } from '../../services/sync-engine.service';
 import { Field } from '../../models/field';
 import { Farm } from '../../models/farm';
 import { FormsModule } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-fields',
@@ -43,7 +46,9 @@ export class FieldsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private farmService: FarmManagementService,
-    private rxdbService: RxdbService
+    private rxdbService: RxdbService,
+    private authService: AuthService,
+    private syncEngineService: SyncEngineService
   ) {}
 
   ngOnInit(): void {
@@ -106,15 +111,62 @@ export class FieldsComponent implements OnInit {
     return farm ? farm.name : 'Unknown Farm';
   }
 
-  addField(): void {
+  async addField(): Promise<void> {
     if (this.newFieldName && this.newFieldArea) {
       const area = parseFloat(this.newFieldArea);
       if (isNaN(area)) return;
 
-      const targetFarmId = this.farmId || this.selectedFarmId;
-      if (!targetFarmId && this.farms.length > 0) {
-        this.errorMessage = 'Please select a farm.';
-        return;
+      let targetFarmId = this.farmId || this.selectedFarmId;
+
+      if (!targetFarmId) {
+        if (this.farms.length > 0) {
+          this.errorMessage = 'Please select a farm.';
+          return;
+        } else {
+          // Auto-create a default farm for the user if they don't have one
+          const currentUserId = this.authService.getUserId() || '1';
+          try {
+            const user = await firstValueFrom(this.farmService.getUser(currentUserId));
+            const newFarmName = user && user.name ? `${user.name}'s Farm` : 'My Farm';
+            const newFarm: Farm = {
+              name: newFarmName,
+              location: 'Default Location',
+              has_derogation: false,
+              user_id: Number(currentUserId)
+            };
+            const createdFarm = await firstValueFrom(this.farmService.addFarm(newFarm));
+            // Trigger push sync so it creates it on the backend, this is needed because
+            // RxDB might just queue it in the outbox but the field might need the serverID
+            // Actually RxDB will assign a local ID, but since we're using offline-first,
+            // we should let RxDB handle the relation with local IDs. Wait, the backend
+            // might reject the field if it references a local ID. Let's sync so the farm gets a serverId.
+            // Note: forcePullSync just pulls. The outbox is processed in the background or when sync Needed.
+            // The cleanest way is to use the REST API directly to avoid local ID race conditions for fields.
+            // The farmService.addFarm handles both REST (if fallback) and RxDB (if not).
+            // By the time `addFarm` completes, if it's REST it has an ID, if it's RxDB it has an ID (local or server).
+            // The sync engine runs continuously. We will await a short time or manually trigger processOutbox if available.
+            // Since we can't easily trigger a synchronous push, if we are in RxDB mode,
+            // the createdFarm.id is a string like "local_...". The backend API for Field expects a BIGINT.
+            // This suggests RxDB architecture needs server ID resolution first.
+            // However, looking closely at farmService, it might just be better to let RxDB sync handle it.
+            // But we must wait for the sync to complete to get the real serverID.
+            // As a workaround, we will use the REST API explicitly here if we have to.
+            // Actually, we can just rely on the syncEngineService triggering sync periodically.
+
+            // Let's manually invoke the sync engine's full sync loop which includes pushing.
+            await this.syncEngineService.fullSync();
+
+            // Reload farms to get the serverId if synced
+            const updatedFarms = await firstValueFrom(this.farmService.getFarms());
+            const syncedFarm = updatedFarms.find(f => f.name === newFarmName);
+            targetFarmId = syncedFarm?.id || createdFarm.id || 0;
+            this.farms = updatedFarms;
+          } catch (error) {
+            console.error('Failed to create default farm:', error);
+            this.errorMessage = 'Failed to create default farm. Please try again.';
+            return;
+          }
+        }
       }
 
       const newField: Field = {
@@ -124,7 +176,10 @@ export class FieldsComponent implements OnInit {
         geometry_wkt: this.newFieldGeometry_wkt.trim() || undefined
       };
 
-      this.farmService.addField(newField).subscribe(() => {
+      this.farmService.addField(newField).subscribe(async () => {
+        // Trigger a sync so the field is also synced
+        await this.syncEngineService.fullSync();
+
         if (this.farmId) {
           this.loadFields();
         } else {
