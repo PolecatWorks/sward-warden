@@ -12,8 +12,8 @@ Navigate Through App
     New Browser    chromium    headless=True
     New Context    recordVideo={"dir": "${OUTPUT_DIR}/videos"}
     Login As Demo User
-    Go To    ${EXTERNAL_DNS_URL}/dashboard
-    Get Url    ==    ${EXTERNAL_DNS_URL}/dashboard
+    Go To    ${EXTERNAL_DNS_URL}/home
+    Get Url    ==    ${EXTERNAL_DNS_URL}/home
     Go To    ${EXTERNAL_DNS_URL}/farms
     Get Url    ==    ${EXTERNAL_DNS_URL}/farms
     Go To    ${EXTERNAL_DNS_URL}/farms/1/fields
