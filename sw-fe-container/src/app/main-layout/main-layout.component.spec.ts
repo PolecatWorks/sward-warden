@@ -3,6 +3,7 @@ import { MainLayoutComponent } from './main-layout.component';
 import { RxdbService } from '../services/rxdb/rxdb.service';
 import { AuthService } from '../services/auth.service';
 import { FarmManagementService } from '../services/farm-management.service';
+import { DevAuthApiService } from '../services/dev-auth-api.service';
 import { SyncEngineService } from '../services/sync-engine.service';
 import { Router } from '@angular/router';
 import { provideRouter } from '@angular/router';
@@ -15,6 +16,7 @@ describe('MainLayoutComponent', () => {
   let rxdbServiceSpy: jasmine.SpyObj<RxdbService>;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
   let farmServiceSpy: jasmine.SpyObj<FarmManagementService>;
+  let devAuthApiSpy: jasmine.SpyObj<DevAuthApiService>;
   let syncEngineServiceSpy: jasmine.SpyObj<SyncEngineService>;
   let router: Router;
 
@@ -30,10 +32,12 @@ describe('MainLayoutComponent', () => {
     });
     authServiceSpy = jasmine.createSpyObj('AuthService', ['getUserId', 'login', 'logout']);
     farmServiceSpy = jasmine.createSpyObj('FarmManagementService', ['getUser', 'getUsers']);
+    devAuthApiSpy = jasmine.createSpyObj('DevAuthApiService', ['getToken']);
 
     authServiceSpy.getUserId.and.returnValue('1');
     farmServiceSpy.getUser.and.returnValue(of(mockUser));
     farmServiceSpy.getUsers.and.returnValue(of(mockUsers));
+    devAuthApiSpy.getToken.and.returnValue(of({ access_token: 'new-fake-token' }));
     syncEngineServiceSpy = jasmine.createSpyObj('SyncEngineService', ['forcePullSync']);
 
     await TestBed.configureTestingModule({
@@ -43,6 +47,7 @@ describe('MainLayoutComponent', () => {
         { provide: RxdbService, useValue: rxdbServiceSpy },
         { provide: AuthService, useValue: authServiceSpy },
         { provide: FarmManagementService, useValue: farmServiceSpy },
+        { provide: DevAuthApiService, useValue: devAuthApiSpy },
         { provide: SyncEngineService, useValue: syncEngineServiceSpy }
       ]
     }).compileComponents();
@@ -72,12 +77,13 @@ describe('MainLayoutComponent', () => {
     expect(options[1].textContent.trim()).toBe("John Doe (user)");
   });
 
-  it('should call authService.login and reload on switchUser', () => {
+  it('should call devAuthApi.getToken, authService.login and reload on switchUser', () => {
     spyOn(component, 'reloadPage');
     fixture.detectChanges();
 
     component.switchUser('2');
-    expect(authServiceSpy.login).toHaveBeenCalledWith('2');
+    expect(devAuthApiSpy.getToken).toHaveBeenCalledWith(2, 'user');
+    expect(authServiceSpy.login).toHaveBeenCalledWith('2', 'new-fake-token');
     expect(component.reloadPage).toHaveBeenCalled();
   });
 

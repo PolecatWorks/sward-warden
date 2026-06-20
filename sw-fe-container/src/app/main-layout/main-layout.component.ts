@@ -5,6 +5,7 @@ import { SyncStatusComponent } from '../sync-status/sync-status.component';
 import { RxdbService } from '../services/rxdb/rxdb.service';
 import { AuthService } from '../services/auth.service';
 import { FarmManagementService } from '../services/farm-management.service';
+import { DevAuthApiService } from '../services/dev-auth-api.service';
 import { User } from '../models/user';
 import { Observable, shareReplay } from 'rxjs';
 
@@ -24,6 +25,7 @@ export class MainLayoutComponent implements OnInit {
     private rxdbService: RxdbService,
     private authService: AuthService,
     private farmManagementService: FarmManagementService,
+    private devAuthApi: DevAuthApiService,
     private router: Router
   ) {
     this.fallbackToRest$ = this.rxdbService.fallbackToRest$;
@@ -43,8 +45,33 @@ export class MainLayoutComponent implements OnInit {
   }
 
   switchUser(userId: string | number): void {
-    this.authService.login(userId.toString());
-    this.reloadPage();
+    const userIdStr = userId.toString();
+    this.users$?.subscribe({
+      next: (users) => {
+        const selectedUser = users.find(u => u.id?.toString() === userIdStr);
+        if (selectedUser && selectedUser.id !== undefined) {
+          this.devAuthApi.getToken(selectedUser.id, selectedUser.role || 'user').subscribe({
+            next: (response) => {
+              this.authService.login(selectedUser.id!.toString(), response.access_token);
+              this.reloadPage();
+            },
+            error: (err) => {
+              console.error('Failed to get Dev JWT token on user switch:', err);
+              this.authService.login(selectedUser.id!.toString());
+              this.reloadPage();
+            }
+          });
+        } else {
+          this.authService.login(userIdStr);
+          this.reloadPage();
+        }
+      },
+      error: (err) => {
+        console.error('Failed to fetch user list during switch:', err);
+        this.authService.login(userIdStr);
+        this.reloadPage();
+      }
+    });
   }
 
   reloadPage(): void {

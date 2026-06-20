@@ -15,6 +15,7 @@ import {
 import { RxdbService, SwardDatabase } from './rxdb/rxdb.service';
 import { NetworkService } from './network.service';
 import { SyncStateService } from './sync-state.service';
+import { AuthService } from './auth.service';
 
 let localIdCounter = 0;
 function generateLocalId(): string {
@@ -71,6 +72,7 @@ export class SyncEngineService implements OnDestroy {
     private networkService: NetworkService,
     private syncStateService: SyncStateService,
     private farmService: FarmManagementService,
+    private authService: AuthService,
     private http: HttpClient,
   ) {
     // Sync triggers: online events + periodic timer + pending outbox inserts
@@ -300,9 +302,21 @@ export class SyncEngineService implements OnDestroy {
     const db = await firstValueFrom(this.rxdbService.db$);
     const apiUrl = await firstValueFrom(this.farmService.apiUrl$);
     const headers = this.farmService.getHeaders();
+    const currentUserId = this.authService.getUserId() || '';
 
-    // Read checkpoint
-    const checkpoint = await this.getCheckpoint(db);
+    // Check if the user changed in between
+    const lastSyncUserId = await this.getLastSyncUserId(db);
+    let checkpoint = await this.getCheckpoint(db);
+
+    if (lastSyncUserId && lastSyncUserId !== currentUserId) {
+      console.warn(`SYNC ENGINE: User changed from ${lastSyncUserId} to ${currentUserId}. Invaliding checkpoint and performing full refresh.`);
+      await this.clearCheckpoint(db);
+      checkpoint = null;
+      if (typeof window !== 'undefined' && window.location) {
+        window.location.reload();
+        return;
+      }
+    }
 
     // Build the sync URL
     let syncUrl = `${apiUrl}/sync`;
@@ -337,9 +351,9 @@ export class SyncEngineService implements OnDestroy {
       );
       await this.upsertSwardMovements(db, response.sward_movements || []);
 
-      // Update checkpoint
+      // Update checkpoint and last sync user ID
       if (response.checkpoint) {
-        await this.setCheckpoint(db, response.checkpoint);
+        await this.setCheckpoint(db, response.checkpoint, currentUserId);
       }
     } finally {
       this.syncStateService.setSynced();
@@ -356,11 +370,21 @@ export class SyncEngineService implements OnDestroy {
     return doc?.value ?? null;
   }
 
-  /** Set the sync checkpoint in the metadata collection. */
-  async setCheckpoint(db: SwardDatabase, checkpoint: string): Promise<void> {
+  /** Get the user ID associated with the last successful sync. */
+  async getLastSyncUserId(db: SwardDatabase): Promise<string | null> {
+    const doc = await (db as any).metadata.findOne('lastSyncUserId').exec();
+    return doc?.value ?? null;
+  }
+
+  /** Set the sync checkpoint and user ID in the metadata collection. */
+  async setCheckpoint(db: SwardDatabase, checkpoint: string, userId: string = ''): Promise<void> {
     await (db as any).metadata.upsert({
       key: CHECKPOINT_KEY,
       value: checkpoint,
+    });
+    await (db as any).metadata.upsert({
+      key: 'lastSyncUserId',
+      value: userId,
     });
   }
 
@@ -369,6 +393,10 @@ export class SyncEngineService implements OnDestroy {
     const doc = await (db as any).metadata.findOne(CHECKPOINT_KEY).exec();
     if (doc) {
       await doc.remove();
+    }
+    const userDoc = await (db as any).metadata.findOne('lastSyncUserId').exec();
+    if (userDoc) {
+      await userDoc.remove();
     }
   }
 
@@ -382,6 +410,16 @@ export class SyncEngineService implements OnDestroy {
     this.syncInProgress = true;
     try {
       const db = await firstValueFrom(this.rxdbService.db$);
+      const currentUserId = this.authService.getUserId() || '';
+      const lastSyncUserId = await this.getLastSyncUserId(db);
+      if (lastSyncUserId && lastSyncUserId !== currentUserId) {
+        console.warn(`SYNC ENGINE (Force): User changed from ${lastSyncUserId} to ${currentUserId}. Invaliding checkpoint and reloading page.`);
+        await this.clearCheckpoint(db);
+        if (typeof window !== 'undefined' && window.location) {
+          window.location.reload();
+          return;
+        }
+      }
       await this.clearCheckpoint(db);
       await this.pullSync();
     } finally {
