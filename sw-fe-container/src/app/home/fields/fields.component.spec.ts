@@ -7,6 +7,8 @@ import { of, BehaviorSubject } from 'rxjs';
 import { FieldsComponent } from './fields.component';
 import { FarmManagementService } from '../../services/farm-management.service';
 import { RxdbService } from '../../services/rxdb/rxdb.service';
+import { AuthService } from '../../services/auth.service';
+import { SyncEngineService } from '../../services/sync-engine.service';
 
 describe('FieldsComponent', () => {
   let component: FieldsComponent;
@@ -35,10 +37,25 @@ describe('FieldsComponent', () => {
           useValue: {
             getFields: () => of([]),
             getFarms: () => of([{ id: 1, name: 'Sunrise Farm', location: 'Kerry, Ireland' }]),
+            getUser: () => of({ id: 1, name: 'Test User' }),
+            addFarm: () => of({ id: 2 }),
             addField: () => of({}),
             deleteEntity: () => of({}),
             updateField: () => of({}),
             updateFarm: () => of({ id: 1, name: 'Updated Farm', location: 'New Location' })
+          }
+        },
+        {
+          provide: AuthService,
+          useValue: {
+            getUserId: () => '1'
+          }
+        },
+        {
+          provide: SyncEngineService,
+          useValue: {
+            forcePullSync: () => Promise.resolve(),
+            fullSync: () => Promise.resolve()
           }
         }
       ],

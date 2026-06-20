@@ -95,7 +95,7 @@ Field Creation and Deletion Flow
     ${delete_farm_response}=    DELETE    ${BE_BASE_URL}/v0/farms/${farm_id}    expected_status=204
 
 Auto Farm Creation Flow
-    [Documentation]    Test that adding a field when no farms exist automatically creates "My Farm" in the backend.
+    [Documentation]    Test that adding a field when no farms exist automatically creates the default farm in the frontend.
     [Teardown]    Teardown With Video
     New Browser    chromium    headless=True
     New Context    recordVideo={"dir": "${OUTPUT_DIR}/videos"}
@@ -135,12 +135,12 @@ Auto Farm Creation Flow
     # Wait for sync
     Sleep    5s
 
-    # 7. Check that "My Farm" was created via API for this user
+    # 7. Check that "Auto User [random]'s Farm" was created via API for this user
     &{headers}=    Create Dictionary    X-User-ID=${new_user_id}
     ${farms_response}=    GET    ${BE_BASE_URL}/v0/farms    headers=${headers}    expected_status=200
     ${farms}=    Set Variable    ${farms_response.json()}
     Length Should Be    ${farms}    1
-    Should Be Equal As Strings    ${farms[0]['name']}    My Farm
+    Should Be Equal As Strings    ${farms[0]['name']}    ${username}'s Farm
 
     # Clean up field and farm via API
     ${fields_response}=    GET    ${BE_BASE_URL}/v0/fields    headers=${headers}    expected_status=200

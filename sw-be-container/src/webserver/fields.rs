@@ -60,7 +60,7 @@ pub async fn get_field(
 pub async fn create_field(
     State(state): State<AppState>,
     UserId(user_id): UserId,
-    Json(mut field): Json<Field>,
+    Json(field): Json<Field>,
 ) -> Result<Json<Field>, AppError> {
     let is_admin = crate::webserver::auth::check_is_admin(&state.db_pool, user_id).await;
 
@@ -79,42 +79,19 @@ pub async fn create_field(
             ));
         }
     } else {
-        // Check if the user has any active farms
-        let has_farms = sqlx::query_scalar::<_, bool>(
-            "SELECT EXISTS(SELECT 1 FROM farms WHERE user_id = $1 AND is_deleted = FALSE)",
+        // Verify the target farm belongs to the user
+        let farm_belongs = sqlx::query_scalar::<_, bool>(
+            "SELECT EXISTS(SELECT 1 FROM farms WHERE id = $1 AND user_id = $2 AND is_deleted = FALSE)",
         )
+        .bind(field.farm_id)
         .bind(user_id)
         .fetch_one(&state.db_pool)
         .await?;
 
-        if !has_farms {
-            // Create "My Farm" automatically
-            let new_farm = sqlx::query_as::<_, crate::models::Farm>(
-                "INSERT INTO farms (user_id, name, location, has_derogation) VALUES ($1, $2, $3, $4) RETURNING id, user_id, name, location, has_derogation, updated_at, is_deleted"
-            )
-            .bind(user_id)
-            .bind("My Farm")
-            .bind("Default Location")
-            .bind(false)
-            .fetch_one(&state.db_pool)
-            .await?;
-            state.farms_cache.write().await.remove(&user_id);
-            field.farm_id = new_farm.id.unwrap();
-        } else {
-            // Verify the target farm belongs to the user
-            let farm_belongs = sqlx::query_scalar::<_, bool>(
-                "SELECT EXISTS(SELECT 1 FROM farms WHERE id = $1 AND user_id = $2 AND is_deleted = FALSE)",
-            )
-            .bind(field.farm_id)
-            .bind(user_id)
-            .fetch_one(&state.db_pool)
-            .await?;
-
-            if !farm_belongs {
-                return Err(AppError::Forbidden(
-                    "Target farm is invalid or unauthorized".to_string(),
-                ));
-            }
+        if !farm_belongs {
+            return Err(AppError::Forbidden(
+                "Target farm is invalid or unauthorized".to_string(),
+            ));
         }
     }
 
