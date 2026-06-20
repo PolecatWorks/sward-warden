@@ -11,8 +11,6 @@ import { ComplianceReportComponent } from './home/compliance-report/compliance-r
 import { SwardMovementsComponent } from './home/sward-movements/sward-movements.component';
 import { FarmDetailComponent } from './home/farm-detail/farm-detail.component';
 
-import { SlurryDashboardComponent } from './slurry-dashboard/slurry-dashboard.component';
-import { ComplianceTrackingComponent } from './compliance-tracking/compliance-tracking.component';
 import { OptimizationEngineComponent } from './optimization-engine/optimization-engine.component';
 import { WeatherIntegrationComponent } from './weather-integration/weather-integration.component';
 import { TopologyMappingComponent } from './topology-mapping/topology-mapping.component';
@@ -48,8 +46,6 @@ export const routes: Routes = [
     children: [
       // ── Core Navigation ──
       { path: 'home', component: HomeComponent },
-      { path: 'dashboard', component: SlurryDashboardComponent },
-      { path: 'compliance', component: ComplianceTrackingComponent },
       { path: 'profile', component: UserProfileComponent },
 
       // ── Farm Hierarchy ──
