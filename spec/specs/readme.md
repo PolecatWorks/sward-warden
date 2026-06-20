@@ -10,6 +10,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0001-04 Integration Tests Ports Specification](./0001/0001-04-integration-tests-ports.md) | Complete |
 | [0001-05 Skip Integration Tests Specification](./0001/0001-05-skip-integration-tests.md) | Complete |
 | [0001-06 Wait for Images Specification](./0001/0001-06-wait-for-images.md) | Complete |
+| [0001-07 Backend Container GLIBC and Runtime Verification Specification](./0001/0001-07-be-container-glibc-fix.md) | Complete |
 | [0002-02 Dashboard Specification](./0002/0002-01-dashboard.md) | Complete |
 | [0002-03 Compliance Tracking Specification](./0002/0002-02-compliance-tracking.md) | Complete |
 | [0002-04 Optimization Engine Specification](./0002/0002-03-optimization-engine.md) | Complete |
