@@ -36,6 +36,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0004-07 Soil Analysis Results Specification](./0004/0004-06-soil-analysis-results.md) | Complete |
 | [0004-07 Spreading Equipment Exemptions Specification](./0004/0004-07-spreading-equipment-exemptions.md) | Complete |
 | [0004-08 Spreading Records Front-End Components](./0004/0004-08-spreading-records-fe.md) | Complete |
+| [0004-09 Organic Materials Tracking and Record Entry UX](./0004/0004-09-organic-materials-tracking.md) | Complete |
 | [0005-02 Spraying (Pesticide Use) Records Specification](./0005/0005-01-spraying-records.md) | Complete |
 | [0005-03 Chemical Fertiliser Management Specification](./0005/0005-02-chemical-fertiliser-management.md) | Complete |
 | [0005-04 Sward and Organic Manure Management Specification](./0005/0005-03-slurry-and-organic-manure-management.md) | Complete |
@@ -46,6 +47,9 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0006-03 Equipment Tracking Specification](./0006/0006-03-equipment-tracking.md) | Complete |
 | [0006-04 Import and Export Contracts Specification](./0006/0006-04-import-export-contracts.md) | Complete |
 | [0006-05 Inventory and Equipment Tracking Front-End](./0006/0006-05-inventory-tracking-fe.md) | Complete |
+| [0006-06 Portfolio-Level Inventory](./0006/0006-06-portfolio-inventory.md) | Complete |
+| [0006-07 Storage Volume Prediction Model](./0006/0006-07-storage-volume-prediction.md) | Complete |
+| [0006-08 Inventory Database Schema Design](./0006/0006-08-inventory-schema-design.md) | Complete |
 | [0007-01 Digital Pesticide Records Export Specification](./0007/0007-01-digital-pesticide-records-export.md) | Complete |
 | [0007-02 Annual Fertilisation Accounts Specification](./0007/0007-02-annual-fertilisation-accounts.md) | Complete |
 | [0007-03 General Farm Records Export Specification](./0007/0007-03-general-farm-records-export.md) | Complete |
@@ -98,12 +102,12 @@ Specifications under PRD 0008 (Spatial Optimization) require the PostGIS extensi
 | [0017-05 User Directory Privacy](./0017/0017-05-user-directory-privacy.md) | Complete |
 | [0017-06 Dev User Deletion](./0017/0017-06-dev-user-deletion.md) | Complete |
 | [0003-08 Ownership & Safe Deletion](./0003/0003-08-ownership-and-safe-deletion.md) | Complete |
-| [0006-06 Portfolio-Level Inventory](./0006/0006-06-portfolio-inventory.md) | Complete |
 | [0016-04 Field Card Layout and Centred Add Button UX](./0016/0016-04-field-card-and-add-button-ux.md) | Complete |
 | [0003-09 Profile Pencil Edit Modal and Trashcan Deletion UI](./0003/0003-09-profile-and-deletion-ux.md) | Complete |
 | [0018-01 Multi-User Data Isolation and Admin Visibility](./0018/0018-01-multi-user-data-isolation-and-admin-visibility.md) | Complete |
 | [0019-01 Field Event Logging UX and Validation](./0019/0019-01-field-event-logging-ux-and-validation.md) | Complete |
 | [0019-02 Immediate Validation Highlighting](./0019/0019-02-immediate-validation-highlighting.md) | Complete |
-| [0020-01 Dev JWT Authentication](./0020/0020-01-dev-jwt-auth.md) | Open |
-| [0021-01 Topographical Data Integration](./0021/0021-01-topographical-data-integration.md) | Open |
-| [0022-01 Home View Consolidation](./0022/0022-01-home-view-consolidation.md) | Open |
+| [0020-01 Dev JWT Authentication Backend](./0020/0020-01-be-dev-jwt.md) | Complete |
+| [0020-02 Dev JWT Authentication Frontend](./0020/0020-02-fe-dev-jwt.md) | Complete |
+| [0021-01 Topographical Data Integration](./0021/0021-01-topographical-data-integration.md) | Complete |
+| [0022-01 Home View Consolidation](./0022/0022-01-home-view-consolidation.md) | Complete |
