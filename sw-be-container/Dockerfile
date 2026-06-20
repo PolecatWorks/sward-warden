@@ -1,4 +1,4 @@
-FROM lukemathwalker/cargo-chef:latest-rust-1 AS chef
+FROM lukemathwalker/cargo-chef:latest-rust-1-bookworm AS chef
 RUN apt-get update && apt-get install -y libgeos-dev pkg-config cmake clang && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
@@ -40,6 +40,9 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 COPY --from=build /app/target/release/sw-be-container /usr/local/bin/
+
+# Verify that the binary can run in this environment (e.g. check version or help)
+RUN /usr/local/bin/sw-be-container --help
 
 EXPOSE 8080 8079
 
