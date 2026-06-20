@@ -13,6 +13,8 @@ export class AuthService {
     localStorage.setItem(this.USER_KEY, userId);
     if (token) {
       localStorage.setItem(this.JWT_KEY, token);
+    } else {
+      localStorage.removeItem(this.JWT_KEY);
     }
   }
 
