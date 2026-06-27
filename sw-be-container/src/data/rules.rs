@@ -6,6 +6,7 @@ pub enum ValidationResult {
     Invalid(String),
 }
 
+// References more than 3 PRDs
 pub fn validate_fertiliser_application(
     event: &Event,
     app: &FertiliserApplication,
@@ -50,6 +51,7 @@ pub fn validate_fertiliser_application(
     ValidationResult::Valid
 }
 
+// References more than 3 PRDs
 pub fn validate_organic_manure_application(
     event: &Event,
     app: &OrganicManureApplication,

@@ -22,6 +22,7 @@ pub struct Checks {
 }
 
 impl Checks {
+    // PRD Reference: 0015
     pub async fn preflight(&self, client: &Client) -> Result<u32, AppError> {
         let futures = self.preflights.iter().map(|preflight| async move {
             let mut fails = self.fails;
@@ -58,6 +59,7 @@ impl Checks {
         Ok(min_fails)
     }
 
+    // PRD Reference: 0001, 0009
     pub async fn shutdown(&self, client: &Client) -> Result<u32, AppError> {
         let futures = self.shutdowns.iter().map(|shutdown| async move {
             let mut fails = self.fails;

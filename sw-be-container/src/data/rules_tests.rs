@@ -3,6 +3,7 @@ mod tests {
     use crate::data::rules::{ValidationResult, validate_organic_manure_application};
     use crate::models::{Event, Farm, Field, OrganicManureApplication};
 
+    // References more than 3 PRDs
     fn get_test_farm() -> Farm {
         Farm {
             id: Some(1),
@@ -15,6 +16,7 @@ mod tests {
         }
     }
 
+    // References more than 3 PRDs
     fn get_test_field() -> Field {
         Field {
             id: Some(1),
@@ -33,6 +35,7 @@ mod tests {
         }
     }
 
+    // PRD Reference: 0001, 0009
     #[test]
     fn test_validate_organic_manure_lesse_required_pig_slurry() {
         let farm = get_test_farm();
@@ -73,6 +76,7 @@ mod tests {
         }
     }
 
+    // PRD Reference: 0001, 0009
     #[test]
     fn test_validate_organic_manure_lesse_exemption_valid() {
         let farm = get_test_farm();
@@ -110,6 +114,7 @@ mod tests {
         assert!(matches!(result, ValidationResult::Valid));
     }
 
+    // PRD Reference: 0001, 0009
     #[test]
     fn test_validate_organic_manure_lesse_required_2026() {
         let farm = get_test_farm();

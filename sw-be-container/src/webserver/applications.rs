@@ -7,6 +7,7 @@ use crate::state::AppState;
 use crate::webserver::auth::UserId;
 use axum::{Json, extract::State};
 
+// References more than 3 PRDs
 pub async fn list_fertiliser_applications(
     State(state): State<AppState>,
     UserId(user_id): UserId,
@@ -20,6 +21,7 @@ pub async fn list_fertiliser_applications(
     Ok(Json(apps))
 }
 
+// References more than 3 PRDs
 pub async fn create_fertiliser_application(
     State(state): State<AppState>,
     UserId(user_id): UserId,
@@ -93,6 +95,7 @@ pub async fn create_fertiliser_application(
     Ok(Json(new_app))
 }
 
+// References more than 3 PRDs
 pub async fn list_organic_manure_applications(
     State(state): State<AppState>,
     UserId(user_id): UserId,
@@ -106,6 +109,7 @@ pub async fn list_organic_manure_applications(
     Ok(Json(apps))
 }
 
+// References more than 3 PRDs
 pub async fn create_organic_manure_application(
     State(state): State<AppState>,
     UserId(user_id): UserId,

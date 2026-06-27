@@ -63,6 +63,7 @@ pub enum AppError {
 }
 
 impl axum::response::IntoResponse for AppError {
+    // PRD Reference: 0001, 0009
     fn into_response(self) -> axum::response::Response {
         #[derive(serde::Serialize)]
         struct ErrorResponse {

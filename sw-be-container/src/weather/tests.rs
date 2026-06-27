@@ -3,6 +3,7 @@ mod tests {
     use super::super::WeatherService;
     use chrono::{Duration, Utc};
 
+    // References more than 3 PRDs
     #[tokio::test]
     async fn test_weather_validation_blocks_heavy_rain() {
         let now = Utc::now();
@@ -15,6 +16,7 @@ mod tests {
         assert!(err_msg.contains("Application blocked: Heavy rain forecast"));
     }
 
+    // References more than 3 PRDs
     #[tokio::test]
     async fn test_weather_validation_allows_clear_weather() {
         let now = Utc::now();
