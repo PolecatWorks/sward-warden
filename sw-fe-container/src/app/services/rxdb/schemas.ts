@@ -10,6 +10,19 @@ import { RxJsonSchema } from 'rxdb';
 export type SyncStatus = 'synced' | 'pending' | 'failed';
 
 /** Document types matching the RxDB schemas */
+export interface InventoryStorageDocType {
+  id: string; // Local uuid
+  serverId?: number;
+  uuid?: string;
+  farm_id?: number | null;
+  name: string;
+  storage_type: string;
+  capacity_volume: number;
+  is_covered: boolean;
+  syncStatus: SyncStatus;
+  updatedAt: string;
+}
+
 export interface FarmDocType {
   id: string;
   serverId?: number;
@@ -128,6 +141,26 @@ export interface SwardMovementDocType {
   syncStatus: SyncStatus;
   updatedAt: string;
 }
+
+export const inventoryStorageSchema: RxJsonSchema<InventoryStorageDocType> = {
+  title: 'inventory storage schema',
+  version: 0,
+  primaryKey: 'id',
+  type: 'object',
+  properties: {
+    id: { type: 'string', maxLength: 100 },
+    serverId: { type: 'number' },
+    uuid: { type: 'string' },
+    farm_id: { type: ['number', 'null'] },
+    name: { type: 'string' },
+    storage_type: { type: 'string' },
+    capacity_volume: { type: 'number' },
+    is_covered: { type: 'boolean' },
+    syncStatus: { type: 'string', default: 'synced' },
+    updatedAt: { type: 'string' },
+  },
+  required: ['id', 'name', 'storage_type', 'capacity_volume', 'is_covered', 'syncStatus', 'updatedAt'],
+};
 
 export const farmSchema: RxJsonSchema<FarmDocType> = {
   version: 0,
@@ -338,7 +371,7 @@ export const farmRecordSchema: RxJsonSchema<FarmRecordDocType> = {
 
 /** Outbox entry for queuing offline writes. */
 export type OutboxActionType = 'POST' | 'PUT' | 'DELETE';
-export type OutboxEntityType = 'farms' | 'fields' | 'events' | 'soil_analyses' | 'fertilisation_plans' | 'farm_records' | 'fertiliser_applications' | 'organic_manure_applications' | 'compliance_breaches' | 'sward_movements';
+export type OutboxEntityType = 'farms' | 'fields' | 'events' | 'soil_analyses' | 'fertilisation_plans' | 'farm_records' | 'fertiliser_applications' | 'organic_manure_applications' | 'compliance_breaches' | 'sward_movements' | 'inventory_storage';
 export type OutboxStatus = 'pending' | 'failed';
 
 export interface OutboxDocType {

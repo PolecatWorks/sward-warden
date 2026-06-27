@@ -10,9 +10,8 @@ describe('StorageCapacityComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
-      imports: [StorageCapacityComponent]
-    })
-    .compileComponents();
+      imports: [StorageCapacityComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(StorageCapacityComponent);
     component = fixture.componentInstance;

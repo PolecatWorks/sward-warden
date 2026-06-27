@@ -30,9 +30,11 @@ import {
   FarmDocType, FieldDocType, EventDocType, OutboxDocType, MetadataDocType,
   SoilAnalysisDocType, FertilisationPlanDocType, FarmRecordDocType,
   OrganicManureApplicationDocType, ComplianceBreachDocType, SwardMovementDocType,
+  InventoryStorageDocType,
   farmSchema, fieldSchema, eventSchema, outboxSchema, metadataSchema,
   soilAnalysisSchema, fertilisationPlanSchema, farmRecordSchema,
-  organicManureApplicationSchema, complianceBreachSchema, swardMovementSchema
+  organicManureApplicationSchema, complianceBreachSchema, swardMovementSchema,
+  inventoryStorageSchema
 } from './schemas';
 
 /** Injection token for providing an alternative RxStorage (e.g. memory for tests). */
@@ -52,6 +54,7 @@ export type SwardCollections = {
   organic_manure_applications: RxCollection<OrganicManureApplicationDocType>;
   compliance_breaches: RxCollection<ComplianceBreachDocType>;
   sward_movements: RxCollection<SwardMovementDocType>;
+  inventory_storage: RxCollection<InventoryStorageDocType>;
   outbox: RxCollection<OutboxDocType>;
   metadata: RxCollection<MetadataDocType>;
 };
@@ -156,6 +159,7 @@ export class RxdbService implements OnDestroy {
         organic_manure_applications: { schema: organicManureApplicationSchema },
         compliance_breaches: { schema: complianceBreachSchema },
         sward_movements: { schema: swardMovementSchema },
+        inventory_storage: { schema: inventoryStorageSchema },
         outbox: { schema: outboxSchema },
         metadata: { schema: metadataSchema },
       });
