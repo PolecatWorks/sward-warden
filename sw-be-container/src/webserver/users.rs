@@ -3,6 +3,7 @@ use crate::models::User;
 use crate::state::AppState;
 use axum::{Json, extract::State};
 
+// References more than 3 PRDs
 pub async fn list_users(State(state): State<AppState>) -> Result<Json<Vec<User>>, AppError> {
     let env = state
         .config
@@ -23,6 +24,7 @@ pub async fn list_users(State(state): State<AppState>) -> Result<Json<Vec<User>>
     Ok(Json(users?))
 }
 
+// References more than 3 PRDs
 pub async fn create_user(
     State(state): State<AppState>,
     Json(user): Json<User>,
@@ -40,6 +42,7 @@ pub async fn create_user(
     Ok(Json(new_user?))
 }
 
+// References more than 3 PRDs
 pub async fn get_user(
     State(state): State<AppState>,
     axum::extract::Path(id): axum::extract::Path<i64>,
@@ -53,6 +56,7 @@ pub async fn get_user(
     Ok(Json(user?))
 }
 
+// References more than 3 PRDs
 pub async fn update_user(
     State(state): State<AppState>,
     axum::extract::Path(id): axum::extract::Path<i64>,
@@ -72,6 +76,7 @@ pub async fn update_user(
     Ok(Json(updated_user?))
 }
 
+// References more than 3 PRDs
 pub async fn delete_user(
     State(state): State<AppState>,
     axum::extract::Path(id): axum::extract::Path<i64>,

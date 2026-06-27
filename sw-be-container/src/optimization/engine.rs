@@ -6,6 +6,7 @@ use sqlx::PgPool;
 pub struct OptimizationEngine;
 
 impl OptimizationEngine {
+    // PRD Reference: 0001, 0009
     pub async fn get_suggestions(
         pool: &PgPool,
         farm_id: i64,

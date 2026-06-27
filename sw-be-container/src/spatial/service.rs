@@ -4,6 +4,7 @@ use sqlx::PgPool;
 pub struct SpatialService;
 
 impl SpatialService {
+    // References more than 3 PRDs
     pub async fn validate_application_area(
         pool: &PgPool,
         field_id: i64,
@@ -52,6 +53,7 @@ impl SpatialService {
         Ok(())
     }
 
+    // PRD Reference: 0001, 0009
     pub async fn get_buffer_geometries_geojson(
         pool: &PgPool,
         distance_meters: f64,

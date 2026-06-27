@@ -1,7 +1,7 @@
 use axum_prometheus::metrics_exporter_prometheus::PrometheusHandle;
+use jwt_simple::algorithms::RS256KeyPair;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use jwt_simple::algorithms::RS256KeyPair;
 
 use crate::config::AppConfig;
 use crate::models::Farm;
@@ -17,6 +17,7 @@ pub struct AppState {
 }
 
 impl AppState {
+    // References more than 3 PRDs
     pub fn new(
         config: AppConfig,
         prometheus_handle: PrometheusHandle,

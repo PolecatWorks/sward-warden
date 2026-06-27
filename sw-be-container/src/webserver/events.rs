@@ -6,6 +6,7 @@ use axum::extract::Path;
 use axum::{Json, extract::State};
 use reqwest::StatusCode;
 
+// References more than 3 PRDs
 pub async fn list_events(
     State(state): State<AppState>,
     UserId(user_id): UserId,
@@ -19,6 +20,7 @@ pub async fn list_events(
     Ok(Json(events))
 }
 
+// References more than 3 PRDs
 pub async fn create_event(
     State(state): State<AppState>,
     UserId(user_id): UserId,
@@ -54,6 +56,7 @@ pub async fn create_event(
     Ok(Json(new_event))
 }
 
+// References more than 3 PRDs
 pub async fn delete_event(
     State(state): State<AppState>,
     UserId(user_id): UserId,
@@ -81,6 +84,7 @@ pub async fn delete_event(
     Ok(StatusCode::NO_CONTENT)
 }
 
+// References more than 3 PRDs
 pub async fn list_farm_records(
     State(state): State<AppState>,
     UserId(user_id): UserId,
@@ -94,6 +98,7 @@ pub async fn list_farm_records(
     Ok(Json(records))
 }
 
+// References more than 3 PRDs
 pub async fn create_farm_record(
     State(state): State<AppState>,
     UserId(user_id): UserId,
@@ -127,6 +132,7 @@ pub async fn create_farm_record(
     Ok(Json(new_record))
 }
 
+// References more than 3 PRDs
 pub async fn list_soil_analyses(
     State(state): State<AppState>,
     UserId(user_id): UserId,
@@ -140,6 +146,7 @@ pub async fn list_soil_analyses(
     Ok(Json(analyses))
 }
 
+// References more than 3 PRDs
 pub async fn create_soil_analysis(
     State(state): State<AppState>,
     UserId(user_id): UserId,
@@ -174,6 +181,7 @@ pub async fn create_soil_analysis(
     Ok(Json(new_analysis))
 }
 
+// References more than 3 PRDs
 pub async fn delete_soil_analysis(
     State(state): State<AppState>,
     UserId(user_id): UserId,
@@ -187,6 +195,7 @@ pub async fn delete_soil_analysis(
     Ok(StatusCode::NO_CONTENT)
 }
 
+// References more than 3 PRDs
 pub async fn list_fertilisation_plans(
     State(state): State<AppState>,
     UserId(user_id): UserId,
@@ -200,6 +209,7 @@ pub async fn list_fertilisation_plans(
     Ok(Json(plans))
 }
 
+// References more than 3 PRDs
 pub async fn create_fertilisation_plan(
     State(state): State<AppState>,
     UserId(user_id): UserId,
@@ -235,6 +245,7 @@ pub async fn create_fertilisation_plan(
     Ok(Json(new_plan))
 }
 
+// References more than 3 PRDs
 pub async fn delete_fertilisation_plan(
     State(state): State<AppState>,
     UserId(user_id): UserId,

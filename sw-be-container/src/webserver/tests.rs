@@ -15,12 +15,14 @@ use url::Url;
 static PROMETHEUS_HANDLE: OnceLock<axum_prometheus::metrics_exporter_prometheus::PrometheusHandle> =
     OnceLock::new();
 
+// PRD Reference: 0001, 0009
 fn init_prometheus() -> axum_prometheus::metrics_exporter_prometheus::PrometheusHandle {
     PROMETHEUS_HANDLE
         .get_or_init(|| PrometheusBuilder::new().install_recorder().unwrap())
         .clone()
 }
 
+// PRD Reference: 0001, 0009
 fn get_test_state() -> AppState {
     let metric_handle = init_prometheus();
     let config = AppConfig {
@@ -63,14 +65,15 @@ fn get_test_state() -> AppState {
         .connect_lazy("postgres://localhost:5432/db")
         .unwrap();
 
-
-    let keypair = jwt_simple::algorithms::RS256KeyPair::generate(2048).unwrap().with_key_id("dev-key-1");
+    let keypair = jwt_simple::algorithms::RS256KeyPair::generate(2048)
+        .unwrap()
+        .with_key_id("dev-key-1");
     let dev_jwt_keypair = Some(std::sync::Arc::new(keypair));
 
     AppState::new(config, metric_handle, db_pool, dev_jwt_keypair, None)
 }
 
-
+// PRD Reference: 0001, 0010, 0020
 fn generate_test_jwt(state: &AppState, user_id: i64, role: &str) -> String {
     use jwt_simple::prelude::*;
     let keypair = state.dev_jwt_keypair.as_ref().unwrap();
@@ -84,6 +87,7 @@ fn generate_test_jwt(state: &AppState, user_id: i64, role: &str) -> String {
     keypair.sign(claims).unwrap()
 }
 
+// PRD Reference: 0001, 0009
 #[tokio::test]
 async fn test_app_router_hello() {
     let state = get_test_state();
@@ -105,6 +109,7 @@ async fn test_app_router_hello() {
     assert_eq!(body_str, r#"{"message":"hello"}"#);
 }
 
+// References more than 3 PRDs
 #[tokio::test]
 async fn test_admin_health_unauthorized() {
     let state = get_test_state();
@@ -124,6 +129,7 @@ async fn test_admin_health_unauthorized() {
     assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
 }
 
+// References more than 3 PRDs
 #[tokio::test]
 async fn test_admin_health_authorized_support() {
     let state = get_test_state();
@@ -148,6 +154,7 @@ async fn test_admin_health_authorized_support() {
     assert!(body_str.contains(r#""admin":true"#));
 }
 
+// References more than 3 PRDs
 #[tokio::test]
 async fn test_admin_health_authorized_admin() {
     let state = get_test_state();
@@ -169,6 +176,7 @@ async fn test_admin_health_authorized_admin() {
     assert_eq!(response.status(), StatusCode::OK);
 }
 
+// References more than 3 PRDs
 /// Test that the /v0/sync route exists and is reachable.
 #[tokio::test]
 async fn test_sync_route_exists() {
@@ -188,6 +196,7 @@ async fn test_sync_route_exists() {
     assert_ne!(response.status(), StatusCode::NOT_FOUND);
 }
 
+// References more than 3 PRDs
 /// Test that the /v0/sync route accepts a since query parameter.
 #[tokio::test]
 async fn test_sync_route_with_since_param() {
@@ -208,6 +217,7 @@ async fn test_sync_route_with_since_param() {
     assert_ne!(response.status(), StatusCode::BAD_REQUEST);
 }
 
+// PRD Reference: 0001, 0009
 #[tokio::test]
 async fn test_cors_headers_present() {
     use tower_http::cors::CorsLayer;
@@ -276,6 +286,7 @@ async fn test_cors_headers_present() {
     assert!(methods.contains("POST"));
 }
 
+// References more than 3 PRDs
 #[tokio::test]
 async fn test_get_farm_route_exists() {
     let state = get_test_state();
@@ -297,6 +308,7 @@ async fn test_get_farm_route_exists() {
     assert_ne!(response.status(), StatusCode::NOT_FOUND);
 }
 
+// References more than 3 PRDs
 #[tokio::test]
 async fn test_put_farm_route_exists() {
     let state = get_test_state();
@@ -322,6 +334,7 @@ async fn test_put_farm_route_exists() {
     assert_ne!(response.status(), StatusCode::NOT_FOUND);
 }
 
+// References more than 3 PRDs
 #[tokio::test]
 async fn test_put_field_route_exists() {
     let state = get_test_state();
@@ -349,6 +362,7 @@ async fn test_put_field_route_exists() {
     assert_ne!(response.status(), StatusCode::NOT_FOUND);
 }
 
+// References more than 3 PRDs
 #[tokio::test]
 async fn test_delete_event_route_exists() {
     let state = get_test_state();
@@ -368,6 +382,7 @@ async fn test_delete_event_route_exists() {
     assert_ne!(response.status(), StatusCode::NOT_FOUND);
 }
 
+// References more than 3 PRDs
 #[tokio::test]
 async fn test_post_user_route_exists() {
     let state = get_test_state();
@@ -397,6 +412,7 @@ async fn test_post_user_route_exists() {
     assert_ne!(response.status(), StatusCode::NOT_FOUND);
 }
 
+// References more than 3 PRDs
 #[tokio::test]
 async fn test_put_user_route_exists() {
     let state = get_test_state();
@@ -426,6 +442,7 @@ async fn test_put_user_route_exists() {
     assert_ne!(response.status(), StatusCode::NOT_FOUND);
 }
 
+// References more than 3 PRDs
 #[tokio::test]
 async fn test_delete_user_route_exists() {
     let state = get_test_state();

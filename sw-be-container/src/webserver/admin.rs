@@ -4,10 +4,12 @@ use crate::state::AppState;
 use crate::webserver::auth;
 use axum::{Json, extract::State};
 
+// References more than 3 PRDs
 pub async fn admin_health(_: auth::SupportOnly) -> Result<Json<serde_json::Value>, AppError> {
     Ok(Json(serde_json::json!({ "status": "ok", "admin": true })))
 }
 
+// References more than 3 PRDs
 pub async fn admin_list_farms(
     _: auth::SupportOnly,
     State(state): State<AppState>,
@@ -28,6 +30,7 @@ pub async fn admin_list_farms(
     Ok(Json(farms))
 }
 
+// References more than 3 PRDs
 pub async fn admin_list_fields(
     _: auth::SupportOnly,
     State(state): State<AppState>,
@@ -38,6 +41,7 @@ pub async fn admin_list_fields(
     Ok(Json(fields))
 }
 
+// References more than 3 PRDs
 pub async fn admin_list_events(
     _: auth::SupportOnly,
     State(state): State<AppState>,
@@ -48,6 +52,7 @@ pub async fn admin_list_events(
     Ok(Json(events))
 }
 
+// PRD Reference: 0013, 0018
 pub async fn admin_list_audit_logs(
     _: auth::SupportOnly,
     State(state): State<AppState>,
@@ -58,6 +63,7 @@ pub async fn admin_list_audit_logs(
     Ok(Json(logs))
 }
 
+// PRD Reference: 0013, 0018
 pub async fn log_admin_action(
     pool: &sqlx::PgPool,
     user_id: Option<i64>,

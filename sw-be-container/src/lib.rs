@@ -13,11 +13,11 @@ pub mod weather;
 pub mod webserver;
 
 use axum_prometheus::metrics_exporter_prometheus::PrometheusBuilder;
+use jwt_simple::algorithms::RS256KeyPair;
 use std::ffi::c_void;
 use std::sync::Arc;
 use tokio_util::sync::CancellationToken;
 use tracing::info;
-use jwt_simple::algorithms::{RS256KeyPair};
 
 use ::hams::hams::Hams;
 use ::hams::probe::AsyncHealthProbe;
@@ -33,6 +33,7 @@ use crate::webserver::start_app_api;
 pub const NAME: &str = env!("CARGO_PKG_NAME");
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
+// PRD Reference: 0001, 0009
 pub async fn service_cancellable(
     ct: CancellationToken,
     config: AppConfig,
@@ -94,7 +95,13 @@ pub async fn service_cancellable(
         dev_jwks_json = Some(jwks.to_string());
     }
 
-    let state = AppState::new(config.clone(), metric_handle, db_pool.clone(), dev_jwt_keypair, dev_jwks_json);
+    let state = AppState::new(
+        config.clone(),
+        metric_handle,
+        db_pool.clone(),
+        dev_jwt_keypair,
+        dev_jwks_json,
+    );
 
     if config.startup_checks.enabled {
         startup_tools::run_startup_checks(&config, &db_pool).await?;

@@ -2,6 +2,7 @@ pub mod admin;
 pub mod applications;
 pub mod auth;
 pub mod compliance;
+pub mod dev_auth;
 pub mod events;
 pub mod farms;
 pub mod fields;
@@ -11,7 +12,6 @@ pub mod spatial;
 pub mod sync;
 pub mod users;
 pub mod weather;
-pub mod dev_auth;
 
 use axum::{
     Json, Router,
@@ -28,10 +28,12 @@ use tracing::{Level, info};
 use crate::error::AppError;
 use crate::state::AppState;
 
+// PRD Reference: 0001, 0009
 pub async fn hello_handler() -> Result<Json<serde_json::Value>, AppError> {
     Ok(Json(serde_json::json!({ "message": "hello" })))
 }
 
+// PRD Reference: 0001, 0009
 // Central API Router
 pub fn app_router(state: AppState) -> Router {
     let mut router = Router::new()
@@ -136,13 +138,17 @@ pub fn app_router(state: AppState) -> Router {
 
     if state.config.debugging.enable_dev_auth {
         router = router
-            .route("/dev/auth/token", axum::routing::post(dev_auth::generate_token))
+            .route(
+                "/dev/auth/token",
+                axum::routing::post(dev_auth::generate_token),
+            )
             .route("/.well-known/jwks.json", get(dev_auth::get_jwks));
     }
 
     router.with_state(state)
 }
 
+// PRD Reference: 0001, 0009
 pub async fn start_app_api(state: AppState, ct: CancellationToken) -> Result<(), AppError> {
     let mut cors_layer = CorsLayer::new();
 
