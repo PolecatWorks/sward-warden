@@ -1,6 +1,7 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
+use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, sqlx::Type)]
 #[sqlx(type_name = "user_role", rename_all = "lowercase")]
@@ -90,6 +91,7 @@ pub struct SyncResponse {
     pub organic_manure_applications: Vec<OrganicManureApplication>,
     pub compliance_breaches: Vec<ComplianceBreach>,
     pub sward_movements: Vec<SwardMovement>,
+    pub inventory_storage: Vec<InventoryStorage>,
 }
 
 /// Query parameters for the delta sync endpoint.
@@ -192,6 +194,24 @@ pub struct SwardMovement {
     pub contract_length_months: Option<i32>,
     pub updated_at: Option<DateTime<Utc>>,
     pub is_deleted: Option<bool>,
+}
+
+#[derive(Debug, Serialize, Deserialize, sqlx::FromRow, Clone)]
+pub struct InventoryStorage {
+    #[serde(skip_deserializing)]
+    pub id: i64,
+    pub uuid: Uuid,
+    #[serde(skip_deserializing)]
+    pub tenant_id: i64,
+    pub farm_id: Option<i64>,
+    pub name: String,
+    pub storage_type: String,
+    pub capacity_volume: f64,
+    pub is_covered: bool,
+    #[serde(skip_deserializing)]
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    #[serde(skip_deserializing)]
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]

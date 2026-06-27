@@ -6,6 +6,7 @@ pub mod dev_auth;
 pub mod events;
 pub mod farms;
 pub mod fields;
+pub mod inventory;
 pub mod movements;
 pub mod optimization;
 pub mod spatial;
@@ -15,7 +16,7 @@ pub mod weather;
 
 use axum::{
     Json, Router,
-    routing::{delete, get},
+    routing::{delete, get, post, put},
 };
 use axum_prometheus::PrometheusMetricLayer;
 use tokio_util::sync::CancellationToken;
@@ -134,7 +135,15 @@ pub fn app_router(state: AppState) -> Router {
             get(applications::list_fertiliser_applications)
                 .post(applications::create_fertiliser_application),
         )
-        .route("/v0/sync", get(sync::delta_sync));
+        .route("/v0/sync", get(sync::delta_sync))
+        .route(
+            "/v0/inventory-storage",
+            get(inventory::list_inventory_storage).post(inventory::create_inventory_storage),
+        )
+        .route(
+            "/v0/inventory-storage/{id}",
+            put(inventory::update_inventory_storage).delete(inventory::delete_inventory_storage),
+        );
 
     if state.config.debugging.enable_dev_auth {
         router = router

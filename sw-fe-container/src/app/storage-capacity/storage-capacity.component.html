@@ -1,56 +1,127 @@
 <div class="px-6 py-8">
   <div class="flex items-center gap-4 mb-6">
     <a routerLink="/inventory" class="material-symbols-outlined text-primary hover:text-primary/80">arrow_back</a>
-    <h2 class="text-3xl font-black text-primary">Storage Capacity</h2>
+    <h2 class="text-3xl font-black text-primary">Storage Capacity Management</h2>
   </div>
 
-  <div class="space-y-6">
-    <div class="bg-surface-container-low p-6 rounded-xl">
-      <h3 class="text-xl font-bold text-on-surface mb-4">Manure Storage Requirements</h3>
+  <div *ngIf="!isAdding && !editingId" class="mb-6 flex justify-between items-center">
+    <p class="text-on-surface-variant">Manage your livestock manure, chemical, and other organic material storage facilities.</p>
+    <button (click)="startAdd()" class="bg-primary text-white px-4 py-2 rounded-lg font-bold hover:bg-primary/90 transition-colors flex items-center gap-2">
+      <span class="material-symbols-outlined text-sm">add</span> Add Storage
+    </button>
+  </div>
 
-      <div class="space-y-4">
-        <div class="p-4 bg-primary/10 rounded-lg border border-primary/20">
-          <div class="flex justify-between items-center mb-2">
-            <span class="font-bold text-primary">General Enterprises</span>
-            <span class="text-sm font-semibold bg-primary text-white px-2 py-1 rounded">22 Weeks Min</span>
-          </div>
-          <div class="w-full bg-surface-variant rounded-full h-2">
-            <div class="bg-primary h-2 rounded-full" style="width: 100%"></div>
-          </div>
-          <p class="text-xs text-on-surface-variant mt-2">Currently at 24 weeks capacity. Requirement met.</p>
+  <!-- Form Area -->
+  <div *ngIf="isAdding || editingId" class="bg-surface-container-low p-6 rounded-xl mb-6 shadow-sm">
+    <h3 class="text-xl font-bold text-on-surface mb-4">{{ isAdding ? 'Add New Storage' : 'Edit Storage' }}</h3>
+
+    <form [formGroup]="storageForm" (ngSubmit)="saveStorage()" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Name -->
+        <div>
+          <label class="block text-sm font-medium text-on-surface-variant mb-1">Facility Name *</label>
+          <input type="text" formControlName="name"
+                 class="w-full bg-surface text-on-surface border border-outline rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:border-transparent"
+                 placeholder="e.g., Main Slurry Lagoon">
         </div>
 
-        <div class="p-4 bg-error/10 rounded-lg border border-error/20">
-          <div class="flex justify-between items-center mb-2">
-            <span class="font-bold text-error">Pig & Poultry</span>
-            <span class="text-sm font-semibold bg-error text-white px-2 py-1 rounded">26 Weeks Min</span>
-          </div>
-          <div class="w-full bg-surface-variant rounded-full h-2">
-            <div class="bg-error h-2 rounded-full" style="width: 80%"></div>
-          </div>
-          <p class="text-xs text-error mt-2">Warning: Currently at 20 weeks capacity. Requirement NOT met.</p>
+        <!-- Farm Association -->
+        <div>
+          <label class="block text-sm font-medium text-on-surface-variant mb-1">Associated Farm (Optional)</label>
+          <select formControlName="farm_id"
+                  class="w-full bg-surface text-on-surface border border-outline rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+            <option [ngValue]="null">Shared / Unassigned</option>
+            <option *ngFor="let farm of farms" [ngValue]="farm.serverId">{{ farm.name }}</option>
+          </select>
+        </div>
+
+        <!-- Storage Type -->
+        <div>
+          <label class="block text-sm font-medium text-on-surface-variant mb-1">Storage Type *</label>
+          <select formControlName="storage_type"
+                  class="w-full bg-surface text-on-surface border border-outline rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:border-transparent">
+            <option value="liquid">Liquid (Slurry, Wash-water)</option>
+            <option value="solid">Solid (Dung heap, Pad)</option>
+            <option value="chemical">Chemical</option>
+          </select>
+        </div>
+
+        <!-- Capacity Volume -->
+        <div>
+          <label class="block text-sm font-medium text-on-surface-variant mb-1">Capacity Volume (m³) *</label>
+          <input type="number" step="0.1" formControlName="capacity_volume"
+                 class="w-full bg-surface text-on-surface border border-outline rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:border-transparent"
+                 placeholder="0.0">
         </div>
       </div>
+
+      <!-- Covered Checkbox -->
+      <div class="flex items-center gap-2 mt-4">
+        <input type="checkbox" id="is_covered" formControlName="is_covered" class="w-4 h-4 text-primary rounded border-outline focus:ring-primary">
+        <label for="is_covered" class="text-sm font-medium text-on-surface">Is this facility covered? (Prevents rainfall accumulation)</label>
+      </div>
+
+      <div class="flex justify-end gap-3 mt-6">
+        <button type="button" (click)="cancelForm()" class="px-4 py-2 rounded-lg font-semibold text-on-surface-variant hover:bg-surface-variant transition-colors">
+          Cancel
+        </button>
+        <button type="submit" [disabled]="storageForm.invalid" class="bg-primary text-white px-6 py-2 rounded-lg font-bold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          Save
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- List Area -->
+  <div *ngIf="!isAdding && !editingId" class="space-y-4">
+    <div *ngIf="storages.length === 0" class="text-center py-12 bg-surface-container-low rounded-xl border border-dashed border-outline/50">
+      <span class="material-symbols-outlined text-4xl text-on-surface-variant mb-2">warehouse</span>
+      <h3 class="text-lg font-bold text-on-surface">No storage facilities found</h3>
+      <p class="text-on-surface-variant mb-4">You haven't added any storage capacities yet.</p>
+      <button (click)="startAdd()" class="text-primary font-bold hover:underline">Add your first facility</button>
     </div>
 
-    <div class="bg-surface-container-low p-6 rounded-xl">
-      <h3 class="text-xl font-bold text-on-surface mb-4">Chemical & Organic Limits</h3>
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="text-sm font-medium text-on-surface-variant">Nitrogen (Chemical)</label>
-          <div class="mt-1 flex items-baseline gap-2">
-            <span class="text-2xl font-bold text-primary">450</span>
-            <span class="text-sm text-on-surface-variant">/ 500 kg</span>
-          </div>
+    <div *ngFor="let storage of storages" class="bg-surface-container-lowest p-5 rounded-xl shadow-sm border border-outline-variant flex flex-col md:flex-row gap-4 items-start md:items-center justify-between hover:border-primary/30 transition-colors">
+
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-full flex items-center justify-center"
+             [ngClass]="{
+               'bg-primary-container text-on-primary-container': storage.storage_type === 'liquid',
+               'bg-tertiary-container text-on-tertiary-container': storage.storage_type === 'solid',
+               'bg-secondary-container text-on-secondary-container': storage.storage_type === 'chemical'
+             }">
+          <span class="material-symbols-outlined">
+            {{ storage.storage_type === 'liquid' ? 'water_drop' : (storage.storage_type === 'solid' ? 'compost' : 'science') }}
+          </span>
         </div>
         <div>
-          <label class="text-sm font-medium text-on-surface-variant">Phosphorus</label>
-          <div class="mt-1 flex items-baseline gap-2">
-            <span class="text-2xl font-bold text-primary">120</span>
-            <span class="text-sm text-on-surface-variant">/ 200 kg</span>
-          </div>
+          <h3 class="text-lg font-bold text-on-surface flex items-center gap-2">
+            {{ storage.name }}
+            <span *ngIf="storage.syncStatus === 'pending'" class="material-symbols-outlined text-sm text-secondary" title="Pending Sync">cloud_sync</span>
+          </h3>
+          <p class="text-sm text-on-surface-variant flex items-center gap-2">
+            <span class="capitalize font-medium">{{ storage.storage_type }}</span>
+            <span>&bull;</span>
+            <span>{{ storage.capacity_volume }} m³</span>
+            <span>&bull;</span>
+            <span class="truncate max-w-[150px]" title="{{ getFarmName(storage.farm_id) }}">{{ getFarmName(storage.farm_id) }}</span>
+          </p>
         </div>
       </div>
+
+      <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+        <span *ngIf="storage.is_covered" class="bg-surface-variant text-on-surface-variant text-xs px-2 py-1 rounded font-semibold flex items-center gap-1">
+          <span class="material-symbols-outlined text-[14px]">roofing</span> Covered
+        </span>
+        <button (click)="startEdit(storage)" class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-variant rounded-full transition-colors tooltip" title="Edit">
+          <span class="material-symbols-outlined">edit</span>
+        </button>
+        <button (click)="deleteStorage(storage.id)" class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container rounded-full transition-colors tooltip" title="Delete">
+          <span class="material-symbols-outlined">delete</span>
+        </button>
+      </div>
+
     </div>
   </div>
+
 </div>
