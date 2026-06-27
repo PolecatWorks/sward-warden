@@ -4,6 +4,8 @@ This directory contains Product Requirements Documents (PRDs).
 
 PRDs dictate the high-level features and requirements of the project. Every PRD added here should be analyzed for ambiguities and contradictions before being broken down into technical specifications.
 
+**Note**: All functions in the backend codebase should include comments referencing the PRDs they support. If a function references more than 3 PRDs, use a generic note instead of listing them all.
+
 ## Current PRDs
 
 - [0001 Application Architecture](./0001-app-architecture.md)
