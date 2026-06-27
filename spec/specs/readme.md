@@ -113,3 +113,4 @@ Specifications under PRD 0008 (Spatial Optimization) require the PostGIS extensi
 | [0020-02 Dev JWT Authentication Frontend](./0020/0020-02-fe-dev-jwt.md) | Complete |
 | [0021-01 Topographical Data Integration](./0021/0021-01-topographical-data-integration.md) | Complete |
 | [0022-01 Home View Consolidation](./0022/0022-01-home-view-consolidation.md) | Complete |
+| [0023-01 Field Creation & Edit Farm Selector enhancements](./0023/0023-01-field-creation-edit-farm-selector.md) | Complete |

@@ -89,7 +89,8 @@ describe('FieldViewComponent', () => {
       name: 'Updated Name',
       area_hectares: 12.5,
       land_use: 'arable',
-      farm_id: 2
+      farm_id: 2,
+      geometry_wkt: undefined
     });
     expect(component.loadFieldDetails).toHaveBeenCalled();
     expect(component.showEditFieldModal).toBeFalse();

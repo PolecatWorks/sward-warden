@@ -129,6 +129,8 @@ describe('FieldsComponent', () => {
     component.startEdit(field);
     component.editFieldName = 'Updated Paddock';
     component.editFieldArea = '9.2';
+    component.editFieldLandUse = 'grassland';
+    component.editFieldFarmId = 1;
 
     component.saveField(field);
 
@@ -137,6 +139,7 @@ describe('FieldsComponent', () => {
       farm_id: 1,
       name: 'Updated Paddock',
       area_hectares: 9.2,
+      land_use: 'grassland',
       geometry_wkt: undefined
     });
     expect(component.loadFields).toHaveBeenCalled();

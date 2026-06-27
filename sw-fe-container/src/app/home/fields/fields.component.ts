@@ -31,6 +31,8 @@ export class FieldsComponent implements OnInit {
   editFieldName: string = '';
   editFieldArea: string = '';
   editFieldGeometry_wkt: string = '';
+  editFieldLandUse: string = 'grassland';
+  editFieldFarmId: number = 0;
 
   farm: Farm | undefined;
   showEditFarmModal: boolean = false;
@@ -81,7 +83,9 @@ export class FieldsComponent implements OnInit {
   loadFarms(): void {
     this.farmService.getFarms().subscribe(farms => {
       this.farms = farms;
-      if (this.farms.length > 0 && !this.selectedFarmId) {
+      if (this.farms.length === 1) {
+        this.selectedFarmId = this.farms[0].id || 0;
+      } else if (this.farms.length > 0 && !this.selectedFarmId) {
         this.selectedFarmId = this.farms[0].id || 0;
       }
     });
@@ -213,6 +217,8 @@ export class FieldsComponent implements OnInit {
     this.editFieldName = field.name;
     this.editFieldArea = String(field.area_hectares);
     this.editFieldGeometry_wkt = field.geometry_wkt || '';
+    this.editFieldLandUse = field.land_use || 'grassland';
+    this.editFieldFarmId = field.farm_id;
   }
 
   cancelEdit(): void {
@@ -220,10 +226,12 @@ export class FieldsComponent implements OnInit {
     this.editFieldName = '';
     this.editFieldArea = '';
     this.editFieldGeometry_wkt = '';
+    this.editFieldLandUse = 'grassland';
+    this.editFieldFarmId = 0;
   }
 
   saveField(field: Field): void {
-    if (!field.id || !this.editFieldName || !this.editFieldArea) return;
+    if (!field.id || !this.editFieldName || !this.editFieldArea || !this.editFieldFarmId) return;
     const area = parseFloat(this.editFieldArea);
     if (isNaN(area)) return;
 
@@ -231,6 +239,8 @@ export class FieldsComponent implements OnInit {
       ...field,
       name: this.editFieldName,
       area_hectares: area,
+      land_use: this.editFieldLandUse,
+      farm_id: +this.editFieldFarmId,
       geometry_wkt: this.editFieldGeometry_wkt.trim() || undefined
     };
 
@@ -245,7 +255,7 @@ export class FieldsComponent implements OnInit {
   }
 
   saveFieldFromList(): void {
-    if (!this.editingFieldId || !this.editFieldName || !this.editFieldArea) return;
+    if (!this.editingFieldId || !this.editFieldName || !this.editFieldArea || !this.editFieldFarmId) return;
     const fieldId = this.editingFieldId;
     const field = this.fields.find(f => f.id === fieldId);
     if (!field) return;
