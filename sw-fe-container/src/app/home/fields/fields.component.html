@@ -1,4 +1,4 @@
-<div class="px-6 pt-4 max-w-2xl mx-auto">
+<main class="px-6 pt-4 space-y-8 pb-4">
   <!-- Back Button (Farm-specific only) -->
   <div class="mb-4" *ngIf="farmId > 0">
     <a [routerLink]="['/farms', farmId]" class="text-primary hover:underline flex items-center gap-1 font-medium text-sm" id="back-to-farm-link" data-testid="back-to-farm-link">
@@ -66,7 +66,7 @@
   </div>
 
   <!-- Field Cards Grid (image-header + bottom-drawer layout) -->
-  <div class="grid grid-cols-1 gap-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <!-- Image-header Field Cards -->
     <div *ngFor="let field of fields"
       class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm group hover:shadow-md transition-shadow cursor-pointer"
@@ -220,7 +220,7 @@
       </div>
     </div>
   </div>
-</div>
+</main>
 
 <!-- Map FAB (always shown) -->
 <div class="fixed bottom-24 lg:bottom-8 right-6 flex flex-col items-center justify-center z-40">
