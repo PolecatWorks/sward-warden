@@ -311,11 +311,8 @@ export class SyncEngineService implements OnDestroy {
     if (lastSyncUserId && lastSyncUserId !== currentUserId) {
       console.warn(`SYNC ENGINE: User changed from ${lastSyncUserId} to ${currentUserId}. Invaliding checkpoint and performing full refresh.`);
       await this.clearCheckpoint(db);
+      await this.clearAllCollections(db);
       checkpoint = null;
-      if (typeof window !== 'undefined' && window.location) {
-        window.location.reload();
-        return;
-      }
     }
 
     // Build the sync URL
@@ -400,6 +397,32 @@ export class SyncEngineService implements OnDestroy {
     }
   }
 
+  /** Clear all local data collections (farms, fields, etc.) to prepare for a different user's sync. */
+  async clearAllCollections(db: SwardDatabase): Promise<void> {
+    const collections = [
+      'farms',
+      'fields',
+      'events',
+      'soil_analyses',
+      'fertilisation_plans',
+      'farm_records',
+      'fertiliser_applications',
+      'organic_manure_applications',
+      'compliance_breaches',
+      'sward_movements',
+      'outbox'
+    ];
+    for (const name of collections) {
+      const col = (db as any)[name];
+      if (col) {
+        const docs = await col.find().exec();
+        if (docs && docs.length > 0) {
+          await col.bulkRemove(docs.map((d: any) => d.id));
+        }
+      }
+    }
+  }
+
   /** Force a sync by clearing the checkpoint and pulling all data from the server. */
   async forcePullSync(): Promise<void> {
     if (this.syncInProgress || this.rxdbService.fallbackToRest$.value) {
@@ -413,12 +436,9 @@ export class SyncEngineService implements OnDestroy {
       const currentUserId = this.authService.getUserId() || '';
       const lastSyncUserId = await this.getLastSyncUserId(db);
       if (lastSyncUserId && lastSyncUserId !== currentUserId) {
-        console.warn(`SYNC ENGINE (Force): User changed from ${lastSyncUserId} to ${currentUserId}. Invaliding checkpoint and reloading page.`);
+        console.warn(`SYNC ENGINE (Force): User changed from ${lastSyncUserId} to ${currentUserId}. Invaliding checkpoint and performing full refresh.`);
         await this.clearCheckpoint(db);
-        if (typeof window !== 'undefined' && window.location) {
-          window.location.reload();
-          return;
-        }
+        await this.clearAllCollections(db);
       }
       await this.clearCheckpoint(db);
       await this.pullSync();
