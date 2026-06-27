@@ -30,6 +30,7 @@ export class FieldViewComponent implements OnInit {
   editFieldArea: number = 0;
   editFieldLandUse: string = 'grassland';
   editFieldFarmId: number = 0;
+  editFieldGeometry_wkt: string = '';
   farms: Farm[] = [];
   isSaving: boolean = false;
   errorMessage: string | null = null;
@@ -150,6 +151,7 @@ export class FieldViewComponent implements OnInit {
     this.editFieldArea = this.field.area_hectares;
     this.editFieldLandUse = this.field.land_use || 'grassland';
     this.editFieldFarmId = this.field.farm_id;
+    this.editFieldGeometry_wkt = this.field.geometry_wkt || '';
     this.errorMessage = null;
     this.showEditFieldModal = true;
   }
@@ -161,6 +163,7 @@ export class FieldViewComponent implements OnInit {
     this.editFieldArea = 0;
     this.editFieldLandUse = 'grassland';
     this.editFieldFarmId = 0;
+    this.editFieldGeometry_wkt = '';
     this.errorMessage = null;
   }
 
@@ -174,7 +177,8 @@ export class FieldViewComponent implements OnInit {
       name: this.editFieldName,
       area_hectares: this.editFieldArea,
       land_use: this.editFieldLandUse,
-      farm_id: +this.editFieldFarmId
+      farm_id: +this.editFieldFarmId,
+      geometry_wkt: this.editFieldGeometry_wkt.trim() || undefined
     };
 
     this.isSaving = true;
