@@ -19,6 +19,7 @@ pub struct UrlWithUsernamePassword {
 }
 
 impl From<UrlWithUsernamePassword> for Url {
+    // References more than 3 PRDs
     fn from(value: UrlWithUsernamePassword) -> Self {
         let mut return_url = value.url;
         if let Some(password) = value.password {
@@ -90,6 +91,7 @@ pub struct StartupCheckConfig {
 }
 
 impl AppConfig {
+    // References more than 3 PRDs
     pub fn load(
         config_path: &std::path::Path,
         secrets_dir: &std::path::Path,
@@ -109,6 +111,7 @@ mod tests {
     use super::*;
     use std::env;
 
+    // PRD Reference: 0001, 0009
     #[test]
     fn test_config_load_without_credentials() {
         // Ensure no env vars are interfering
@@ -132,6 +135,7 @@ mod tests {
         assert!(config.database.url.password.is_none());
     }
 
+    // PRD Reference: 0001, 0009
     #[test]
     fn test_config_load_with_env_vars() {
         unsafe {
@@ -154,6 +158,7 @@ mod tests {
         assert_eq!(config.database.url.password.as_deref(), Some("envpass"));
     }
 
+    // PRD Reference: 0001, 0009
     #[test]
     fn test_config_load_with_file_secrets() {
         use std::fs;

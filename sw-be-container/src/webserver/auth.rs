@@ -1,14 +1,15 @@
 use crate::error::AppError;
 use crate::state::AppState;
+use crate::webserver::dev_auth::CustomClaims;
 use axum::{extract::FromRequestParts, http::request::Parts};
 use jwt_simple::prelude::*;
-use crate::webserver::dev_auth::CustomClaims;
 
 pub struct AdminOnly;
 
 impl FromRequestParts<AppState> for AdminOnly {
     type Rejection = AppError;
 
+    // References more than 3 PRDs
     async fn from_request_parts(
         parts: &mut Parts,
         state: &AppState,
@@ -21,7 +22,7 @@ impl FromRequestParts<AppState> for AdminOnly {
         // or just use the JWT custom claim. Since PRD says "extract the sub and custom role claims",
         // we'll primarily use the JWT claim, but we could also check DB if JWT doesn't have it.
         if role.is_none() {
-             role = get_user_role(&state.db_pool, user_id).await;
+            role = get_user_role(&state.db_pool, user_id).await;
         }
 
         let role_str = role.unwrap_or_else(|| "user".to_string());
@@ -39,6 +40,7 @@ pub struct SupportOnly;
 impl FromRequestParts<AppState> for SupportOnly {
     type Rejection = AppError;
 
+    // References more than 3 PRDs
     async fn from_request_parts(
         parts: &mut Parts,
         state: &AppState,
@@ -46,7 +48,7 @@ impl FromRequestParts<AppState> for SupportOnly {
         let (user_id, mut role) = extract_jwt_claims(parts, state).await?;
 
         if role.is_none() {
-             role = get_user_role(&state.db_pool, user_id).await;
+            role = get_user_role(&state.db_pool, user_id).await;
         }
 
         let role_str = role.unwrap_or_else(|| "user".to_string());
@@ -63,23 +65,34 @@ impl FromRequestParts<AppState> for SupportOnly {
 
 pub struct UserId(pub i64);
 
-impl FromRequestParts<AppState> for UserId
-{
+impl FromRequestParts<AppState> for UserId {
     type Rejection = AppError;
 
-    async fn from_request_parts(parts: &mut Parts, state: &AppState) -> Result<Self, Self::Rejection> {
+    // References more than 3 PRDs
+    async fn from_request_parts(
+        parts: &mut Parts,
+        state: &AppState,
+    ) -> Result<Self, Self::Rejection> {
         let (user_id, _) = extract_jwt_claims(parts, state).await?;
         Ok(UserId(user_id))
     }
 }
 
-async fn extract_jwt_claims(parts: &mut Parts, state: &AppState) -> Result<(i64, Option<String>), AppError> {
-    let auth_header = parts.headers.get(axum::http::header::AUTHORIZATION)
+// PRD Reference: 0001, 0010, 0020
+async fn extract_jwt_claims(
+    parts: &mut Parts,
+    state: &AppState,
+) -> Result<(i64, Option<String>), AppError> {
+    let auth_header = parts
+        .headers
+        .get(axum::http::header::AUTHORIZATION)
         .and_then(|h| h.to_str().ok())
         .ok_or_else(|| AppError::Unauthorized("Missing Authorization header".to_string()))?;
 
     if !auth_header.starts_with("Bearer ") {
-        return Err(AppError::Unauthorized("Invalid Authorization header format".to_string()));
+        return Err(AppError::Unauthorized(
+            "Invalid Authorization header format".to_string(),
+        ));
     }
 
     let token = &auth_header["Bearer ".len()..];
@@ -87,24 +100,35 @@ async fn extract_jwt_claims(parts: &mut Parts, state: &AppState) -> Result<(i64,
     let public_key = if let Some(keypair) = &state.dev_jwt_keypair {
         keypair.public_key()
     } else {
-        return Err(AppError::Unauthorized("Dev auth is not enabled, missing public key".to_string()));
+        return Err(AppError::Unauthorized(
+            "Dev auth is not enabled, missing public key".to_string(),
+        ));
     };
 
     let mut verification_options = VerificationOptions::default();
-    verification_options.allowed_audiences = Some(std::collections::HashSet::from(["sward-api".to_string()]));
-    verification_options.allowed_issuers = Some(std::collections::HashSet::from(["http://localhost:8080".to_string()]));
+    verification_options.allowed_audiences =
+        Some(std::collections::HashSet::from(["sward-api".to_string()]));
+    verification_options.allowed_issuers = Some(std::collections::HashSet::from([
+        "http://localhost:8080".to_string(),
+    ]));
 
-    let claims = public_key.verify_token::<CustomClaims>(token, Some(verification_options))
+    let claims = public_key
+        .verify_token::<CustomClaims>(token, Some(verification_options))
         .map_err(|e| AppError::Unauthorized(format!("Invalid token: {e}")))?;
 
-    let user_id_str = claims.subject.ok_or_else(|| AppError::Unauthorized("Missing subject claim".to_string()))?;
-    let user_id = user_id_str.parse::<i64>().map_err(|_| AppError::Unauthorized("Invalid subject claim format".to_string()))?;
+    let user_id_str = claims
+        .subject
+        .ok_or_else(|| AppError::Unauthorized("Missing subject claim".to_string()))?;
+    let user_id = user_id_str
+        .parse::<i64>()
+        .map_err(|_| AppError::Unauthorized("Invalid subject claim format".to_string()))?;
 
     let role = claims.custom.sward_roles.first().cloned();
 
     Ok((user_id, role))
 }
 
+// References more than 3 PRDs
 pub async fn get_user_role(pool: &sqlx::PgPool, user_id: i64) -> Option<String> {
     sqlx::query_scalar::<_, String>("SELECT role::text FROM users WHERE id = $1")
         .bind(user_id)
@@ -114,6 +138,7 @@ pub async fn get_user_role(pool: &sqlx::PgPool, user_id: i64) -> Option<String> 
         .flatten()
 }
 
+// PRD Reference: 0013, 0018
 pub async fn check_is_admin(pool: &sqlx::PgPool, user_id: i64) -> bool {
     get_user_role(pool, user_id)
         .await
