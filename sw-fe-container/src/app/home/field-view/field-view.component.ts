@@ -32,12 +32,12 @@ export class FieldViewComponent implements OnInit {
   editFieldArea: number = 0;
   editFieldLandUse: string = 'grassland';
   editFieldFarmId: number = 0;
-  editFieldGeometry_wkt: string = '';
+  editFieldGeometry_geojson: string = '';
   originalEditFieldName: string = '';
   originalEditFieldArea: number = 0;
   originalEditFieldLandUse: string = 'grassland';
   originalEditFieldFarmId: number = 0;
-  originalEditFieldGeometry_wkt: string = '';
+  originalEditFieldGeometry_geojson: string = '';
   farms: Farm[] = [];
   isSaving: boolean = false;
   errorMessage: string | null = null;
@@ -176,12 +176,12 @@ export class FieldViewComponent implements OnInit {
     this.editFieldArea = this.field.area_hectares;
     this.editFieldLandUse = this.field.land_use || 'grassland';
     this.editFieldFarmId = this.field.farm_id;
-    this.editFieldGeometry_wkt = this.field.geometry_wkt || '';
+    this.editFieldGeometry_geojson = this.field.geometry_geojson || '';
     this.originalEditFieldName = this.field.name;
     this.originalEditFieldArea = Number(this.field.area_hectares) || 0;
     this.originalEditFieldLandUse = this.field.land_use || 'grassland';
     this.originalEditFieldFarmId = this.field.farm_id;
-    this.originalEditFieldGeometry_wkt = this.field.geometry_wkt || '';
+    this.originalEditFieldGeometry_geojson = this.field.geometry_geojson || '';
     this.errorMessage = null;
     this.showEditFieldModal = true;
   }
@@ -195,7 +195,7 @@ export class FieldViewComponent implements OnInit {
            Number(this.editFieldArea) !== this.originalEditFieldArea ||
            this.editFieldLandUse !== this.originalEditFieldLandUse ||
            this.editFieldFarmId !== this.originalEditFieldFarmId ||
-           this.editFieldGeometry_wkt !== this.originalEditFieldGeometry_wkt;
+           this.editFieldGeometry_geojson !== this.originalEditFieldGeometry_geojson;
   }
 
   // PRD Reference: 0016
@@ -205,7 +205,7 @@ export class FieldViewComponent implements OnInit {
     this.editFieldArea = 0;
     this.editFieldLandUse = 'grassland';
     this.editFieldFarmId = 0;
-    this.editFieldGeometry_wkt = '';
+    this.editFieldGeometry_geojson = '';
     this.errorMessage = null;
   }
 
@@ -221,7 +221,7 @@ export class FieldViewComponent implements OnInit {
       area_hectares: this.editFieldArea,
       land_use: this.editFieldLandUse,
       farm_id: +this.editFieldFarmId,
-      geometry_wkt: this.editFieldGeometry_wkt.trim() || undefined
+      geometry_geojson: this.editFieldGeometry_geojson.trim() || undefined
     };
 
     this.isSaving = true;

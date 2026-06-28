@@ -8,14 +8,14 @@ impl SpatialService {
     pub async fn validate_application_area(
         pool: &PgPool,
         field_id: i64,
-        application_geom_wkt: &str,
+        application_geom_geojson: &str,
         is_organic: bool,
     ) -> Result<(), AppError> {
         // 1. Check if application is within field boundary
         let is_within_field = sqlx::query_scalar::<_, bool>(
-            "SELECT ST_Within(ST_GeomFromText($1, 4326), geom) FROM fields WHERE id = $2",
+            "SELECT ST_Within(ST_SetSRID(ST_GeomFromGeoJSON($1), 4326), geom) FROM fields WHERE id = $2",
         )
-        .bind(application_geom_wkt)
+        .bind(application_geom_geojson)
         .bind(field_id)
         .fetch_optional(pool)
         .await?
@@ -34,11 +34,11 @@ impl SpatialService {
         let intersection_count = sqlx::query_scalar::<_, i64>(
             "SELECT COUNT(*) FROM waterways
              WHERE ST_Intersects(
-                ST_GeomFromText($1, 4326),
+                ST_SetSRID(ST_GeomFromGeoJSON($1), 4326),
                 ST_Buffer(geom::geography, $2)::geometry
              ) AND is_deleted = FALSE",
         )
-        .bind(application_geom_wkt)
+        .bind(application_geom_geojson)
         .bind(buffer_distance)
         .fetch_one(pool)
         .await?;

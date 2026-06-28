@@ -26,7 +26,7 @@ The objective of this PRD is to enhance the Sward Warden user interface for farm
 *   **REQ-1 (Auto-select Farm on Creation)**: When a user creates a new field and there is exactly 1 farm available, this farm must be automatically selected in the Farm dropdown.
 *   **REQ-2 (Hide Farm Selector on Creation if No Farms)**: If no farm exists (0 farms), the Farm selector should not be presented in the "Add Field" modal. The application logic handles auto-creating a default farm and associating it upon submission.
 *   **REQ-3 (Identical Edit Forms)**: The Edit Field form accessed from the Fields List view and the Edit Field form accessed from the Field Detail view must be identical.
-*   **REQ-4 (Edit Form Fields)**: Both edit forms must include inputs for the following properties: Name, Area (Hectares), Land Use, Farm Selector, and Geometry (WKT).
+*   **REQ-4 (Edit Form Fields)**: Both edit forms must include inputs for the following properties: Name, Area (Hectares), Land Use, Farm Selector, and Geometry (GeoJSON).
 *   **REQ-5 (Update Farm Association)**: When editing a field from the List View, the user must be able to change the associated farm via the Farm selector.
 
 ### 4.2. Non-Functional Requirements

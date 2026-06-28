@@ -46,7 +46,7 @@ export interface FieldDocType {
   mean_elevation?: number;
   average_slope?: number;
   max_slope?: number;
-  geometry_wkt?: string;
+  geometry_geojson?: string;
   syncStatus: SyncStatus;
   updatedAt: string;
 }
@@ -201,7 +201,7 @@ export const fieldSchema: RxJsonSchema<FieldDocType> = {
     mean_elevation: { type: 'number' },
     average_slope: { type: 'number' },
     max_slope: { type: 'number' },
-    geometry_wkt: { type: 'string' },
+    geometry_geojson: { type: 'string' },
     syncStatus: {
       type: 'string',
       maxLength: 16,

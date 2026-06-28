@@ -25,13 +25,13 @@ export class FieldsComponent implements OnInit {
   selectedFarmId: number = 0;
   newFieldName: string = '';
   newFieldArea: string = '';
-  newFieldGeometry_wkt: string = '';
+  newFieldGeometry_geojson: string = '';
   showAddForm: boolean = false;
 
   editingFieldId: number | null = null;
   editFieldName: string = '';
   editFieldArea: string = '';
-  editFieldGeometry_wkt: string = '';
+  editFieldGeometry_geojson: string = '';
   editFieldLandUse: string = 'grassland';
   editFieldFarmId: number = 0;
 
@@ -200,7 +200,7 @@ export class FieldsComponent implements OnInit {
         farm_id: targetFarmId || 0,
         name: this.newFieldName,
         area_hectares: area,
-        geometry_wkt: this.newFieldGeometry_wkt.trim() || undefined
+        geometry_geojson: this.newFieldGeometry_geojson.trim() || undefined
       };
 
       this.farmService.addField(newField).subscribe(async () => {
@@ -214,7 +214,7 @@ export class FieldsComponent implements OnInit {
         }
         this.newFieldName = '';
         this.newFieldArea = '';
-        this.newFieldGeometry_wkt = '';
+        this.newFieldGeometry_geojson = '';
         this.showAddForm = false;
         this.errorMessage = null;
       });
@@ -242,7 +242,7 @@ export class FieldsComponent implements OnInit {
     this.editingFieldId = field.id || null;
     this.editFieldName = field.name;
     this.editFieldArea = String(field.area_hectares);
-    this.editFieldGeometry_wkt = field.geometry_wkt || '';
+    this.editFieldGeometry_geojson = field.geometry_geojson || '';
     this.editFieldLandUse = field.land_use || 'grassland';
     this.editFieldFarmId = field.farm_id;
   }
@@ -252,7 +252,7 @@ export class FieldsComponent implements OnInit {
     this.editingFieldId = null;
     this.editFieldName = '';
     this.editFieldArea = '';
-    this.editFieldGeometry_wkt = '';
+    this.editFieldGeometry_geojson = '';
     this.editFieldLandUse = 'grassland';
     this.editFieldFarmId = 0;
   }
@@ -269,7 +269,7 @@ export class FieldsComponent implements OnInit {
       area_hectares: area,
       land_use: this.editFieldLandUse,
       farm_id: +this.editFieldFarmId,
-      geometry_wkt: this.editFieldGeometry_wkt.trim() || undefined
+      geometry_geojson: this.editFieldGeometry_geojson.trim() || undefined
     };
 
     this.farmService.updateField(field.id, updatedField).subscribe(() => {
