@@ -47,6 +47,7 @@ interface SyncResponse {
   organic_manure_applications: any[];
   compliance_breaches: any[];
   sward_movements: any[];
+  inventory_storage?: any[];
 }
 
 /**
@@ -237,6 +238,7 @@ export class SyncEngineService implements OnDestroy {
     const endpointMap: Record<string, string> = {
       compliance_breaches: 'compliance-breaches',
       sward_movements: 'sward-movements',
+      inventory_storage: 'inventory-storage',
     };
     const endpoint = endpointMap[entry.entityType] || entry.entityType;
 
@@ -347,6 +349,7 @@ export class SyncEngineService implements OnDestroy {
         response.compliance_breaches || [],
       );
       await this.upsertSwardMovements(db, response.sward_movements || []);
+      await this.upsertInventoryStorage(db, response.inventory_storage || []);
 
       // Update checkpoint and last sync user ID
       if (response.checkpoint) {
@@ -1231,6 +1234,67 @@ export class SyncEngineService implements OnDestroy {
     if (idsToRemove.length > 0)
       await db.sward_movements.bulkRemove(idsToRemove);
     if (toUpsert.length > 0) await db.sward_movements.bulkUpsert(toUpsert);
+  }
+
+  private async upsertInventoryStorage(
+    db: SwardDatabase,
+    serverStorages: any[],
+  ): Promise<void> {
+    if (!serverStorages || serverStorages.length === 0) return;
+    const serverIds = serverStorages.map((s) => s.id);
+    const existingDocs = await db.inventory_storage
+      .find({ selector: { serverId: { $in: serverIds } } })
+      .exec();
+    const existingMap = new Map(existingDocs.map((d) => [d.serverId, d]));
+
+    const toUpsert: any[] = [];
+    const idsToRemove: string[] = [];
+
+    for (const sStorage of serverStorages) {
+      const localDoc = existingMap.get(sStorage.id);
+      if (sStorage.is_deleted) {
+        if (localDoc && localDoc.syncStatus !== 'pending')
+          idsToRemove.push(localDoc.id);
+        continue;
+      }
+
+      if (localDoc) {
+        const localUpdatedAt = new Date(localDoc.updatedAt).getTime();
+        const serverUpdatedAt = sStorage.updated_at
+          ? new Date(sStorage.updated_at).getTime()
+          : 0;
+        if (
+          localDoc.syncStatus === 'pending' &&
+          localUpdatedAt > serverUpdatedAt
+        )
+          continue;
+        toUpsert.push({
+          ...localDoc.toJSON(),
+          farm_id: sStorage.farm_id,
+          name: sStorage.name,
+          storage_type: sStorage.storage_type,
+          capacity_volume: sStorage.capacity_volume,
+          is_covered: sStorage.is_covered,
+          updatedAt: sStorage.updated_at || new Date().toISOString(),
+          syncStatus: 'synced',
+        });
+      } else {
+        toUpsert.push({
+          id: `server-${sStorage.id}`,
+          serverId: sStorage.id,
+          farm_id: sStorage.farm_id,
+          name: sStorage.name,
+          storage_type: sStorage.storage_type,
+          capacity_volume: sStorage.capacity_volume,
+          is_covered: sStorage.is_covered,
+          syncStatus: 'synced',
+          updatedAt: sStorage.updated_at || new Date().toISOString(),
+        });
+      }
+    }
+    if (idsToRemove.length > 0)
+      await db.inventory_storage.bulkRemove(idsToRemove);
+    if (toUpsert.length > 0) await db.inventory_storage.bulkUpsert(toUpsert);
   }
 
   private async updateLocalDocStatus(
