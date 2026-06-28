@@ -8,12 +8,12 @@ export interface DevAuthTokenResponse {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DevAuthApiService {
   constructor(
     private http: HttpClient,
-    @Inject(APP_CONFIG) private config: AppConfig
+    @Inject(APP_CONFIG) private config: AppConfig,
   ) {}
 
   // PRD Reference: 0020

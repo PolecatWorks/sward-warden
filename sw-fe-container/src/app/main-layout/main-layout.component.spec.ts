@@ -21,26 +21,47 @@ describe('MainLayoutComponent', () => {
   let syncEngineServiceSpy: jasmine.SpyObj<SyncEngineService>;
   let router: Router;
 
-  const mockUser = { id: 1, name: 'Seamus O\'Neill', email: 'seamus@example.com', role: 'admin' };
+  const mockUser = {
+    id: 1,
+    name: "Seamus O'Neill",
+    email: 'seamus@example.com',
+    role: 'admin',
+  };
   const mockUsers = [
-    { id: 1, name: 'Seamus O\'Neill', email: 'seamus@example.com', role: 'admin' },
-    { id: 2, name: 'John Doe', email: 'john@example.com', role: 'user' }
+    {
+      id: 1,
+      name: "Seamus O'Neill",
+      email: 'seamus@example.com',
+      role: 'admin',
+    },
+    { id: 2, name: 'John Doe', email: 'john@example.com', role: 'user' },
   ];
 
   // No obvious PRD requirement
   beforeEach(async () => {
     rxdbServiceSpy = jasmine.createSpyObj('RxdbService', [], {
-      fallbackToRest$: of(false)
+      fallbackToRest$: of(false),
     });
-    authServiceSpy = jasmine.createSpyObj('AuthService', ['getUserId', 'login', 'logout']);
-    farmServiceSpy = jasmine.createSpyObj('FarmManagementService', ['getUser', 'getUsers']);
+    authServiceSpy = jasmine.createSpyObj('AuthService', [
+      'getUserId',
+      'login',
+      'logout',
+    ]);
+    farmServiceSpy = jasmine.createSpyObj('FarmManagementService', [
+      'getUser',
+      'getUsers',
+    ]);
     devAuthApiSpy = jasmine.createSpyObj('DevAuthApiService', ['getToken']);
 
     authServiceSpy.getUserId.and.returnValue('1');
     farmServiceSpy.getUser.and.returnValue(of(mockUser));
     farmServiceSpy.getUsers.and.returnValue(of(mockUsers));
-    devAuthApiSpy.getToken.and.returnValue(of({ access_token: 'new-fake-token' }));
-    syncEngineServiceSpy = jasmine.createSpyObj('SyncEngineService', ['forcePullSync']);
+    devAuthApiSpy.getToken.and.returnValue(
+      of({ access_token: 'new-fake-token' }),
+    );
+    syncEngineServiceSpy = jasmine.createSpyObj('SyncEngineService', [
+      'forcePullSync',
+    ]);
 
     await TestBed.configureTestingModule({
       imports: [MainLayoutComponent],
@@ -51,8 +72,8 @@ describe('MainLayoutComponent', () => {
         { provide: AuthService, useValue: authServiceSpy },
         { provide: FarmManagementService, useValue: farmServiceSpy },
         { provide: DevAuthApiService, useValue: devAuthApiSpy },
-        { provide: SyncEngineService, useValue: syncEngineServiceSpy }
-      ]
+        { provide: SyncEngineService, useValue: syncEngineServiceSpy },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MainLayoutComponent);
@@ -78,7 +99,9 @@ describe('MainLayoutComponent', () => {
   // No obvious PRD requirement
   it('should render switcher options', () => {
     fixture.detectChanges();
-    const selectEl = fixture.debugElement.query(By.css('#user-switcher-dropdown'));
+    const selectEl = fixture.debugElement.query(
+      By.css('#user-switcher-dropdown'),
+    );
     // No obvious PRD requirement
     expect(selectEl).toBeTruthy();
 
@@ -88,7 +111,7 @@ describe('MainLayoutComponent', () => {
     // No obvious PRD requirement
     expect(options[0].textContent.trim()).toBe("Seamus O'Neill (admin)");
     // No obvious PRD requirement
-    expect(options[1].textContent.trim()).toBe("John Doe (user)");
+    expect(options[1].textContent.trim()).toBe('John Doe (user)');
   });
 
   // No obvious PRD requirement
@@ -112,7 +135,9 @@ describe('MainLayoutComponent', () => {
     spyOn(component, 'switchUser');
     fixture.detectChanges();
 
-    const selectEl = fixture.debugElement.query(By.css('#user-switcher-dropdown'));
+    const selectEl = fixture.debugElement.query(
+      By.css('#user-switcher-dropdown'),
+    );
     selectEl.nativeElement.value = '2';
     selectEl.nativeElement.dispatchEvent(new Event('change'));
 

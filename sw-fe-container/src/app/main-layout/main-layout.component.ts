@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import {
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SyncStatusComponent } from '../sync-status/sync-status.component';
 import { RxdbService } from '../services/rxdb/rxdb.service';
@@ -12,9 +17,15 @@ import { Observable, shareReplay } from 'rxjs';
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, SyncStatusComponent],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    CommonModule,
+    SyncStatusComponent,
+  ],
   templateUrl: './main-layout.component.html',
-  styleUrl: './main-layout.component.css'
+  styleUrl: './main-layout.component.css',
 })
 export class MainLayoutComponent implements OnInit {
   readonly fallbackToRest$: Observable<boolean>;
@@ -26,7 +37,7 @@ export class MainLayoutComponent implements OnInit {
     private authService: AuthService,
     private farmManagementService: FarmManagementService,
     private devAuthApi: DevAuthApiService,
-    private router: Router
+    private router: Router,
   ) {
     this.fallbackToRest$ = this.rxdbService.fallbackToRest$;
   }
@@ -35,7 +46,9 @@ export class MainLayoutComponent implements OnInit {
   ngOnInit(): void {
     const userId = this.authService.getUserId();
     if (userId) {
-      this.currentUser$ = this.farmManagementService.getUser(userId).pipe(shareReplay(1));
+      this.currentUser$ = this.farmManagementService
+        .getUser(userId)
+        .pipe(shareReplay(1));
     }
     this.users$ = this.farmManagementService.getUsers().pipe(shareReplay(1));
   }
@@ -51,19 +64,27 @@ export class MainLayoutComponent implements OnInit {
     const userIdStr = userId.toString();
     this.users$?.subscribe({
       next: (users) => {
-        const selectedUser = users.find(u => u.id?.toString() === userIdStr);
+        const selectedUser = users.find((u) => u.id?.toString() === userIdStr);
         if (selectedUser && selectedUser.id !== undefined) {
-          this.devAuthApi.getToken(selectedUser.id, selectedUser.role || 'user').subscribe({
-            next: (response) => {
-              this.authService.login(selectedUser.id!.toString(), response.access_token);
-              this.reloadPage();
-            },
-            error: (err) => {
-              console.error('Failed to get Dev JWT token on user switch:', err);
-              this.authService.login(selectedUser.id!.toString());
-              this.reloadPage();
-            }
-          });
+          this.devAuthApi
+            .getToken(selectedUser.id, selectedUser.role || 'user')
+            .subscribe({
+              next: (response) => {
+                this.authService.login(
+                  selectedUser.id!.toString(),
+                  response.access_token,
+                );
+                this.reloadPage();
+              },
+              error: (err) => {
+                console.error(
+                  'Failed to get Dev JWT token on user switch:',
+                  err,
+                );
+                this.authService.login(selectedUser.id!.toString());
+                this.reloadPage();
+              },
+            });
         } else {
           this.authService.login(userIdStr);
           this.reloadPage();
@@ -73,7 +94,7 @@ export class MainLayoutComponent implements OnInit {
         console.error('Failed to fetch user list during switch:', err);
         this.authService.login(userIdStr);
         this.reloadPage();
-      }
+      },
     });
   }
 

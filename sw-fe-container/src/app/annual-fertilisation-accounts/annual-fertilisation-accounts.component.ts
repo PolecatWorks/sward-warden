@@ -10,7 +10,7 @@ import { FertiliserApplication } from '../models/fertiliser-application';
   selector: 'app-annual-fertilisation-accounts',
   imports: [RouterLink, CommonModule],
   templateUrl: './annual-fertilisation-accounts.component.html',
-  styleUrl: './annual-fertilisation-accounts.component.css'
+  styleUrl: './annual-fertilisation-accounts.component.css',
 })
 export class AnnualFertilisationAccountsComponent implements OnInit {
   farmRecords: FarmRecord[] = [];
@@ -30,12 +30,12 @@ export class AnnualFertilisationAccountsComponent implements OnInit {
 
   // No obvious PRD requirement
   ngOnInit(): void {
-    this.fmService.getFarmRecords().subscribe(records => {
+    this.fmService.getFarmRecords().subscribe((records) => {
       this.farmRecords = records;
       this.calculateAccount();
     });
 
-    this.fmService.getFertiliserApplications().subscribe(apps => {
+    this.fmService.getFertiliserApplications().subscribe((apps) => {
       this.applications = apps;
       this.calculateAccount();
     });
@@ -51,13 +51,13 @@ export class AnnualFertilisationAccountsComponent implements OnInit {
 
     let totalN = 0;
     for (const app of this.applications) {
-        // Calculate applied N in kg. Assuming amount is kg and N content is percentage.
-        // Actually specs say amount applied and nitrogen content (which may be a percentage or total kg).
-        // Let's assume nitrogen_content is total kg of N per application, or amount * nitrogen_content/100
-        // Spec 0004-02: "amount of each type of nitrogen fertiliser applied (including nitrogen content of organic manures)"
-        // If nitrogen_content is not set, fallback to 0. We'll assume nitrogen_content is a percentage.
-        const nContent = app.nitrogen_content || 0;
-        totalN += app.amount_applied * (nContent / 100);
+      // Calculate applied N in kg. Assuming amount is kg and N content is percentage.
+      // Actually specs say amount applied and nitrogen content (which may be a percentage or total kg).
+      // Let's assume nitrogen_content is total kg of N per application, or amount * nitrogen_content/100
+      // Spec 0004-02: "amount of each type of nitrogen fertiliser applied (including nitrogen content of organic manures)"
+      // If nitrogen_content is not set, fallback to 0. We'll assume nitrogen_content is a percentage.
+      const nContent = app.nitrogen_content || 0;
+      totalN += app.amount_applied * (nContent / 100);
     }
 
     const area = record.agricultural_area > 0 ? record.agricultural_area : 1; // Prevent div by 0
@@ -70,7 +70,7 @@ export class AnnualFertilisationAccountsComponent implements OnInit {
       totalN: totalN,
       nPerHa: nPerHa,
       isCompliant: record.has_derogation ? nPerHa <= limit : true, // Only show compliance relative to derogation spec limit if needed, or in general
-      limit: limit
+      limit: limit,
     };
   }
 }

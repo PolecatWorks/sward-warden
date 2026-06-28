@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { OptimizationService, OptimizationSuggestion } from '../services/optimization.service';
+import {
+  OptimizationService,
+  OptimizationSuggestion,
+} from '../services/optimization.service';
 import { WeatherIntegrationComponent } from '../weather-integration/weather-integration.component';
 
 @Component({
@@ -9,7 +12,7 @@ import { WeatherIntegrationComponent } from '../weather-integration/weather-inte
   standalone: true,
   imports: [CommonModule, RouterModule, WeatherIntegrationComponent],
   templateUrl: './optimization-engine.component.html',
-  styleUrl: './optimization-engine.component.css'
+  styleUrl: './optimization-engine.component.css',
 })
 export class OptimizationEngineComponent implements OnInit {
   suggestions: OptimizationSuggestion[] = [];
@@ -28,7 +31,7 @@ export class OptimizationEngineComponent implements OnInit {
       error: (err) => {
         console.error('Failed to load suggestions', err);
         this.isLoading = false;
-      }
+      },
     });
   }
 }

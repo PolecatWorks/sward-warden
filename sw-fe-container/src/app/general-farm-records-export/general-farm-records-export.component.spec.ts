@@ -12,9 +12,8 @@ describe('GeneralFarmRecordsExportComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
-      imports: [GeneralFarmRecordsExportComponent]
-    })
-    .compileComponents();
+      imports: [GeneralFarmRecordsExportComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(GeneralFarmRecordsExportComponent);
     component = fixture.componentInstance;

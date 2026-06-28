@@ -20,13 +20,12 @@ describe('WeatherIntegrationComponent', () => {
         {
           provide: WeatherService,
           useValue: {
-            getForecast: () => of([])
-          }
-        }
+            getForecast: () => of([]),
+          },
+        },
       ],
-      imports: [WeatherIntegrationComponent]
-    })
-    .compileComponents();
+      imports: [WeatherIntegrationComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(WeatherIntegrationComponent);
     component = fixture.componentInstance;

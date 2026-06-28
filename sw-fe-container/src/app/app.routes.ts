@@ -31,12 +31,11 @@ import { GeneralFarmRecordsExportComponent } from './general-farm-records-export
 import { SoilAnalysisReportsComponent } from './soil-analysis-reports/soil-analysis-reports.component';
 import { ImportExportReportingComponent } from './import-export-reporting/import-export-reporting.component';
 
-
-import { authGuard } from "./services/auth.guard";
-import { LoginComponent } from "./login/login.component";
+import { authGuard } from './services/auth.guard';
+import { LoginComponent } from './login/login.component';
 
 export const routes: Routes = [
-  { path: "login", component: LoginComponent },
+  { path: 'login', component: LoginComponent },
   { path: 'fertilisation-plans', component: FertilisationPlansComponent },
   { path: 'soil-analysis-results', component: SoilAnalysisResults },
   {
@@ -52,7 +51,10 @@ export const routes: Routes = [
       { path: 'farms', component: FarmsComponent },
       { path: 'farms/:farmId', component: FarmDetailComponent },
       { path: 'farms/:farmId/fields', component: FieldsComponent },
-      { path: 'farms/:farmId/compliance', component: ComplianceReportComponent },
+      {
+        path: 'farms/:farmId/compliance',
+        component: ComplianceReportComponent,
+      },
       { path: 'farms/:farmId/topology', component: TopologyMappingComponent },
       { path: 'farms/:id/movements', component: SwardMovementsComponent },
       { path: 'fields', component: FieldsComponent },
@@ -70,22 +72,43 @@ export const routes: Routes = [
       // ── Inventory & Equipment (parent + children) ──
       { path: 'inventory', component: InventoryAndEquipmentComponent },
       { path: 'inventory/storage', component: StorageCapacityComponent },
-      { path: 'inventory/chemical', component: ChemicalPesticideInventoryComponent },
+      {
+        path: 'inventory/chemical',
+        component: ChemicalPesticideInventoryComponent,
+      },
       { path: 'inventory/equipment', component: EquipmentTrackingComponent },
-      { path: 'inventory/contracts', component: ImportExportContractsComponent },
+      {
+        path: 'inventory/contracts',
+        component: ImportExportContractsComponent,
+      },
 
       // ── Reporting & Export (parent + children) ──
       { path: 'reporting', component: ReportingAndExportComponent },
-      { path: 'reporting/digital-pesticide', component: DigitalPesticideExportComponent },
-      { path: 'reporting/annual-fertilisation', component: AnnualFertilisationAccountsComponent },
-      { path: 'reporting/general-farm-records', component: GeneralFarmRecordsExportComponent },
-      { path: 'reporting/soil-analysis', component: SoilAnalysisReportsComponent },
-      { path: 'reporting/import-export', component: ImportExportReportingComponent },
+      {
+        path: 'reporting/digital-pesticide',
+        component: DigitalPesticideExportComponent,
+      },
+      {
+        path: 'reporting/annual-fertilisation',
+        component: AnnualFertilisationAccountsComponent,
+      },
+      {
+        path: 'reporting/general-farm-records',
+        component: GeneralFarmRecordsExportComponent,
+      },
+      {
+        path: 'reporting/soil-analysis',
+        component: SoilAnalysisReportsComponent,
+      },
+      {
+        path: 'reporting/import-export',
+        component: ImportExportReportingComponent,
+      },
 
       // ── Default redirect ──
       { path: '', redirectTo: 'home', pathMatch: 'full' },
-    ]
+    ],
   },
   // Catch-all
-  { path: '**', redirectTo: '/home' }
+  { path: '**', redirectTo: '/home' },
 ];

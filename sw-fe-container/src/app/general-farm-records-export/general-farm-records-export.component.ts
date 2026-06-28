@@ -6,8 +6,6 @@ import { RouterLink } from '@angular/router';
   selector: 'app-general-farm-records-export',
   imports: [RouterLink],
   templateUrl: './general-farm-records-export.component.html',
-  styleUrl: './general-farm-records-export.component.css'
+  styleUrl: './general-farm-records-export.component.css',
 })
-export class GeneralFarmRecordsExportComponent {
-
-}
+export class GeneralFarmRecordsExportComponent {}

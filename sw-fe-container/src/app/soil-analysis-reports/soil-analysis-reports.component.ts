@@ -6,8 +6,6 @@ import { RouterLink } from '@angular/router';
   selector: 'app-soil-analysis-reports',
   imports: [RouterLink],
   templateUrl: './soil-analysis-reports.component.html',
-  styleUrl: './soil-analysis-reports.component.css'
+  styleUrl: './soil-analysis-reports.component.css',
 })
-export class SoilAnalysisReportsComponent {
-
-}
+export class SoilAnalysisReportsComponent {}

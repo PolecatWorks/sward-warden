@@ -6,8 +6,6 @@ import { RouterLink } from '@angular/router';
   selector: 'app-digital-pesticide-export',
   imports: [RouterLink],
   templateUrl: './digital-pesticide-export.component.html',
-  styleUrl: './digital-pesticide-export.component.css'
+  styleUrl: './digital-pesticide-export.component.css',
 })
-export class DigitalPesticideExportComponent {
-
-}
+export class DigitalPesticideExportComponent {}

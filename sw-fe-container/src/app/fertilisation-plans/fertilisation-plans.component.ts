@@ -10,7 +10,7 @@ import { FertilisationPlan } from '../models/fertilisation-plan';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './fertilisation-plans.component.html',
-  styleUrls: ['./fertilisation-plans.component.css']
+  styleUrls: ['./fertilisation-plans.component.css'],
 })
 export class FertilisationPlansComponent implements OnInit {
   fields: Field[] = [];
@@ -22,7 +22,7 @@ export class FertilisationPlansComponent implements OnInit {
     nitrogen_requirement: 0,
     phosphorus_requirement: 0,
     potassium_requirement: 0,
-    application_date: new Date().toISOString().split('T')[0]
+    application_date: new Date().toISOString().split('T')[0],
   };
 
   constructor(private farmService: FarmManagementService) {}
@@ -34,13 +34,19 @@ export class FertilisationPlansComponent implements OnInit {
 
   // No obvious PRD requirement
   loadData(): void {
-    this.farmService.getFields().subscribe(fields => this.fields = fields);
-    this.farmService.getFertilisationPlans().subscribe(plans => this.plans = plans);
+    this.farmService.getFields().subscribe((fields) => (this.fields = fields));
+    this.farmService
+      .getFertilisationPlans()
+      .subscribe((plans) => (this.plans = plans));
   }
 
   // No obvious PRD requirement
   addPlan(): void {
-    if (this.newPlan.field_id > 0 && this.newPlan.crop_type && this.newPlan.application_date) {
+    if (
+      this.newPlan.field_id > 0 &&
+      this.newPlan.crop_type &&
+      this.newPlan.application_date
+    ) {
       this.farmService.addFertilisationPlan(this.newPlan).subscribe(() => {
         this.loadData();
         this.newPlan = {
@@ -50,7 +56,7 @@ export class FertilisationPlansComponent implements OnInit {
           nitrogen_requirement: 0,
           phosphorus_requirement: 0,
           potassium_requirement: 0,
-          application_date: new Date().toISOString().split('T')[0]
+          application_date: new Date().toISOString().split('T')[0],
         };
       });
     }
@@ -67,7 +73,7 @@ export class FertilisationPlansComponent implements OnInit {
 
   // No obvious PRD requirement
   getFieldName(fieldId: number): string {
-    const field = this.fields.find(f => f.id === fieldId);
+    const field = this.fields.find((f) => f.id === fieldId);
     return field ? field.name : 'Unknown Field';
   }
 }

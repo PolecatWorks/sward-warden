@@ -32,7 +32,7 @@ describe('NetworkService', () => {
   // No obvious PRD requirement
   it('should emit false when an offline event is dispatched', (done) => {
     const values: boolean[] = [];
-    const sub = service.isOnline$.subscribe(v => {
+    const sub = service.isOnline$.subscribe((v) => {
       values.push(v);
       // After initial + offline event
       if (values.length === 2) {
@@ -49,7 +49,7 @@ describe('NetworkService', () => {
   // No obvious PRD requirement
   it('should emit true when an online event is dispatched', (done) => {
     const values: boolean[] = [];
-    const sub = service.isOnline$.subscribe(v => {
+    const sub = service.isOnline$.subscribe((v) => {
       values.push(v);
       if (values.length === 3) {
         // No obvious PRD requirement

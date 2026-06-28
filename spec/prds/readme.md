@@ -8,7 +8,7 @@ PRDs dictate the high-level features and requirements of the project. Every PRD 
 
 ## Contradictions Identified
 
-- **Authentication Headers vs JWT**: PRD 0010, PRD 0017, and PRD 0018 specify the use of the `X-User-ID` header (and role derivation from it) for identifying users and roles on the backend. PRD 0020 explicitly requires replacing these headers with an `Authorization: Bearer <token>` JWT flow.
+- **Admin Access & Endpoints**: PRD 0010 states admin users access records via "dedicated admin endpoints". PRD 0018 states that standard endpoints (like `GET /farms` and `/sync`) should simply bypass ownership filters for admins. Additionally, PRD 0013 states support/admin views should initially be "read-only", whereas PRD 0018 explicitly grants admins full reading, updating, and deleting rights.
 - **Navigation Menu Layout**: PRD 0002 and PRD 0016 dictate a navigation bar order including "Dashboard" and "Compliance". PRD 0022 (Option A, Recommended) proposes eliminating "Dashboard" and "Compliance" from the navigation menu in favor of a consolidated "Home" view.
 
 ## Current PRDs
@@ -43,7 +43,6 @@ Based on a review of the PRDs, the following features have not yet been implemen
 - **Team Members (PRD 0003)**: Team member management has not yet been fully discussed or defined, and is marked as a future TODO.
 - **Historical Audit Log (PRD 0006)**: Maintain a historical audit log of manual calibrations for storage prediction rates.
 - **Live Weather API Integration (PRD 0008)**: Weather information is currently provided via static datasets for the initial version. The API integration is planned for future phases.
-- **Secure JWT Validation (PRD 0010)**: Fully implement secure JWT validation in the backend and ensure the frontend passes standard `Authorization: Bearer <token>` headers instead of relying on `X-User-ID` before the application moves to production.
 - **Account Suspension (PRD 0013)**: Ability to suspend or deactivate user accounts from the Administration Console.
 - **High-Density Grid/Point Cloud Topography (PRD 0021)**: Storage of raw, detailed topographical data (Approach 2) is a future consideration for advanced agronomic features.
 - **Modal Keyboard Accessibility (PRD 0023)**: The escape and enter to submit functions in modals are not universally applied or not fully compliant with the "disabled submit button without changes" requirement.

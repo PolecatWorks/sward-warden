@@ -1,4 +1,9 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { HttpTestingController } from '@angular/common/http/testing';
@@ -27,7 +32,12 @@ describe('FarmsComponent', () => {
 
   // PRD Reference: 0003
   beforeEach(async () => {
-    const loggerSpy = jasmine.createSpyObj('LoggerService', ['log', 'info', 'warn', 'error']);
+    const loggerSpy = jasmine.createSpyObj('LoggerService', [
+      'log',
+      'info',
+      'warn',
+      'error',
+    ]);
     const spy = jasmine.createSpyObj('FarmManagementService', [
       'getFarms',
       'getFields',
@@ -39,8 +49,12 @@ describe('FarmsComponent', () => {
     spy.getFarms.and.returnValue(of(mockFarms));
     spy.getFields.and.returnValue(of([]));
     spy.getEvents.and.returnValue(of([]));
-    spy.addFarm.and.returnValue(of({ id: 3, name: 'New Farm', location: 'Galway, Ireland' }));
-    spy.updateFarm.and.returnValue(of({ id: 1, name: 'Updated Farm', location: 'Kerry, Ireland' }));
+    spy.addFarm.and.returnValue(
+      of({ id: 3, name: 'New Farm', location: 'Galway, Ireland' }),
+    );
+    spy.updateFarm.and.returnValue(
+      of({ id: 1, name: 'Updated Farm', location: 'Kerry, Ireland' }),
+    );
     spy.deleteEntity.and.returnValue(of(undefined));
 
     await TestBed.configureTestingModule({
@@ -58,8 +72,12 @@ describe('FarmsComponent', () => {
       imports: [FarmsComponent],
     }).compileComponents();
 
-    farmServiceSpy = TestBed.inject(FarmManagementService) as jasmine.SpyObj<FarmManagementService>;
-    loggerServiceSpy = TestBed.inject(LoggerService) as jasmine.SpyObj<LoggerService>;
+    farmServiceSpy = TestBed.inject(
+      FarmManagementService,
+    ) as jasmine.SpyObj<FarmManagementService>;
+    loggerServiceSpy = TestBed.inject(
+      LoggerService,
+    ) as jasmine.SpyObj<LoggerService>;
     fixture = TestBed.createComponent(FarmsComponent);
     component = fixture.componentInstance;
   });
@@ -93,7 +111,9 @@ describe('FarmsComponent', () => {
     // PRD Reference: 0003
     it('should display farm cards for each farm returned', () => {
       fixture.detectChanges();
-      const cards = fixture.nativeElement.querySelectorAll('[data-testid^="farm-card-"]');
+      const cards = fixture.nativeElement.querySelectorAll(
+        '[data-testid^="farm-card-"]',
+      );
       // PRD Reference: 0003
       expect(cards.length).toBe(2);
     });
@@ -102,17 +122,23 @@ describe('FarmsComponent', () => {
     it('should show empty state when no farms are returned', () => {
       farmServiceSpy.getFarms.and.returnValue(of([]));
       fixture.detectChanges();
-      const emptyState = fixture.nativeElement.querySelector('[data-testid="empty-state"]');
+      const emptyState = fixture.nativeElement.querySelector(
+        '[data-testid="empty-state"]',
+      );
       // PRD Reference: 0003
       expect(emptyState).toBeTruthy();
     });
 
     // PRD Reference: 0003
     it('should show error banner when getFarms fails', () => {
-      farmServiceSpy.getFarms.and.returnValue(throwError(() => new Error('Network error')));
+      farmServiceSpy.getFarms.and.returnValue(
+        throwError(() => new Error('Network error')),
+      );
       fixture.detectChanges();
       // PRD Reference: 0003
-      expect(component.errorMessage).toContain('Failed to load data. Please try again.');
+      expect(component.errorMessage).toContain(
+        'Failed to load data. Please try again.',
+      );
       // PRD Reference: 0003
       expect(component.isLoading).toBeFalse();
     });
@@ -122,7 +148,9 @@ describe('FarmsComponent', () => {
       // Set isLoading manually to verify template hides list during load
       component.isLoading = true;
       fixture.detectChanges();
-      const emptyState = fixture.nativeElement.querySelector('[data-testid="empty-state"]');
+      const emptyState = fixture.nativeElement.querySelector(
+        '[data-testid="empty-state"]',
+      );
       // The whole list div is hidden by *ngIf="!isLoading", so empty-state is also hidden
       // PRD Reference: 0003
       expect(emptyState).toBeNull();
@@ -245,7 +273,9 @@ describe('FarmsComponent', () => {
 
     // PRD Reference: 0003
     it('should set errorMessage if addFarm fails', () => {
-      farmServiceSpy.addFarm.and.returnValue(throwError(() => new Error('Server error')));
+      farmServiceSpy.addFarm.and.returnValue(
+        throwError(() => new Error('Server error')),
+      );
       component.newFarmName = 'New Farm';
       component.newFarmLocation = 'Galway, Ireland';
       component.addFarm();

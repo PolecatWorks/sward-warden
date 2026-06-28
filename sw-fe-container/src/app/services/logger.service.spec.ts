@@ -10,8 +10,11 @@ describe('LoggerService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        { provide: APP_CONFIG, useValue: { apiPath: '/api', logLevel: 'DEBUG' } }
-      ]
+        {
+          provide: APP_CONFIG,
+          useValue: { apiPath: '/api', logLevel: 'DEBUG' },
+        },
+      ],
     });
     service = TestBed.inject(LoggerService);
   });

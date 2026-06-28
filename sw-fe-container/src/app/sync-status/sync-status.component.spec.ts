@@ -14,7 +14,9 @@ describe('SyncStatusComponent', () => {
   // PRD Reference: 0011
   beforeEach(async () => {
     syncState$ = new BehaviorSubject<SyncState>('synced');
-    syncEngineServiceSpy = jasmine.createSpyObj('SyncEngineService', ['forcePullSync']);
+    syncEngineServiceSpy = jasmine.createSpyObj('SyncEngineService', [
+      'forcePullSync',
+    ]);
     syncEngineServiceSpy.forcePullSync.and.returnValue(Promise.resolve());
 
     await TestBed.configureTestingModule({
@@ -27,7 +29,7 @@ describe('SyncStatusComponent', () => {
         {
           provide: SyncEngineService,
           useValue: syncEngineServiceSpy,
-        }
+        },
       ],
     }).compileComponents();
 
@@ -45,7 +47,9 @@ describe('SyncStatusComponent', () => {
   // PRD Reference: 0011
   it('should show cloud_done icon when synced', () => {
     const el = fixture.nativeElement as HTMLElement;
-    const icon = el.querySelector('[data-testid="sync-status-synced"] .sync-icon--synced');
+    const icon = el.querySelector(
+      '[data-testid="sync-status-synced"] .sync-icon--synced',
+    );
     // PRD Reference: 0011
     expect(icon).toBeTruthy();
     // PRD Reference: 0011
@@ -58,7 +62,9 @@ describe('SyncStatusComponent', () => {
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
-    const icon = el.querySelector('[data-testid="sync-status-offline"] .sync-icon--offline');
+    const icon = el.querySelector(
+      '[data-testid="sync-status-offline"] .sync-icon--offline',
+    );
     // PRD Reference: 0011
     expect(icon).toBeTruthy();
     // PRD Reference: 0011
@@ -77,7 +83,9 @@ describe('SyncStatusComponent', () => {
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
-    const icon = el.querySelector('[data-testid="sync-status-syncing"] .sync-icon--syncing');
+    const icon = el.querySelector(
+      '[data-testid="sync-status-syncing"] .sync-icon--syncing',
+    );
     // PRD Reference: 0011
     expect(icon).toBeTruthy();
     // PRD Reference: 0011

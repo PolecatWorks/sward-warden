@@ -11,7 +11,7 @@ import { Observable, of } from 'rxjs';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './sward-movements.component.html',
-  styleUrls: ['./sward-movements.component.css']
+  styleUrls: ['./sward-movements.component.css'],
 })
 export class SwardMovementsComponent implements OnInit {
   farmId: number = 0;
@@ -27,19 +27,24 @@ export class SwardMovementsComponent implements OnInit {
     consignor_name: '',
     consignor_address: '',
     transporter_name: '',
-    contract_length_months: 0
+    contract_length_months: 0,
   };
 
-  manureTypes = ['Slurry', 'Farmyard Manure', 'Poultry Manure', 'Mushroom Compost'];
+  manureTypes = [
+    'Slurry',
+    'Farmyard Manure',
+    'Poultry Manure',
+    'Mushroom Compost',
+  ];
 
   constructor(
     private route: ActivatedRoute,
-    private farmManagementService: FarmManagementService
+    private farmManagementService: FarmManagementService,
   ) {}
 
   // No obvious PRD requirement
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe((params) => {
       this.farmId = +params['id'];
       this.newMovement.farm_id = this.farmId;
       this.loadMovements();
@@ -48,15 +53,19 @@ export class SwardMovementsComponent implements OnInit {
 
   // No obvious PRD requirement
   loadMovements(): void {
-    this.movements$ = this.farmManagementService.getSwardMovementsForFarm(this.farmId);
+    this.movements$ = this.farmManagementService.getSwardMovementsForFarm(
+      this.farmId,
+    );
   }
 
   // No obvious PRD requirement
   onSubmit(): void {
-    this.farmManagementService.addSwardMovement(this.newMovement).subscribe(() => {
-      this.loadMovements();
-      this.resetForm();
-    });
+    this.farmManagementService
+      .addSwardMovement(this.newMovement)
+      .subscribe(() => {
+        this.loadMovements();
+        this.resetForm();
+      });
   }
 
   // No obvious PRD requirement
@@ -72,7 +81,7 @@ export class SwardMovementsComponent implements OnInit {
       consignor_name: '',
       consignor_address: '',
       transporter_name: '',
-      contract_length_months: 0
+      contract_length_months: 0,
     };
   }
 }

@@ -1,5 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, combineLatest, map, distinctUntilChanged } from 'rxjs';
+import {
+  Observable,
+  BehaviorSubject,
+  combineLatest,
+  map,
+  distinctUntilChanged,
+} from 'rxjs';
 import { NetworkService } from './network.service';
 
 /** The possible sync states of the application. */
@@ -17,7 +23,7 @@ export type SyncState = 'offline' | 'syncing' | 'synced';
  * to drive transitions. The network service drives the offline state automatically.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SyncStateService {
   /** Internal subject tracking whether a sync operation is active. */

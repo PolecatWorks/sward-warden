@@ -7,13 +7,13 @@ import { APP_CONFIG, AppConfig } from '../app-config';
 import { Inject } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SpatialService {
   constructor(
     private http: HttpClient,
-    @Inject(APP_CONFIG) private config: AppConfig
-  ) { }
+    @Inject(APP_CONFIG) private config: AppConfig,
+  ) {}
 
   // No obvious PRD requirement
   private get apiUrl() {
@@ -22,6 +22,8 @@ export class SpatialService {
 
   // No obvious PRD requirement
   getWaterwayBuffers(distance: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/waterway-buffers?distance=${distance}`);
+    return this.http.get<any>(
+      `${this.apiUrl}/waterway-buffers?distance=${distance}`,
+    );
   }
 }

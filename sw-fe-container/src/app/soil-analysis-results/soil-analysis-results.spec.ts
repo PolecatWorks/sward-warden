@@ -19,12 +19,11 @@ describe('SoilAnalysisResults', () => {
           provide: FarmManagementService,
           useValue: {
             getFields: () => of([]),
-            getSoilAnalyses: () => of([])
-          }
-        }
-      ]
-    })
-    .compileComponents();
+            getSoilAnalyses: () => of([]),
+          },
+        },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SoilAnalysisResults);
     component = fixture.componentInstance;

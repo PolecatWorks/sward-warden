@@ -17,8 +17,11 @@ describe('OptimizationService', () => {
         provideHttpClient(),
         // No obvious PRD requirement
         provideHttpClientTesting(),
-        { provide: APP_CONFIG, useValue: { apiPath: '/api', logLevel: 'INFO' } }
-      ]
+        {
+          provide: APP_CONFIG,
+          useValue: { apiPath: '/api', logLevel: 'INFO' },
+        },
+      ],
     });
     service = TestBed.inject(OptimizationService);
   });

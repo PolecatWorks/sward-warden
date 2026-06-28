@@ -17,8 +17,11 @@ describe('WeatherService', () => {
         provideHttpClient(),
         // PRD Reference: 0008
         provideHttpClientTesting(),
-        { provide: APP_CONFIG, useValue: { apiPath: '/api', logLevel: 'INFO' } }
-      ]
+        {
+          provide: APP_CONFIG,
+          useValue: { apiPath: '/api', logLevel: 'INFO' },
+        },
+      ],
     });
     service = TestBed.inject(WeatherService);
   });

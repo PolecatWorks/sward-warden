@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private readonly USER_KEY = 'agent-user-id';
   private readonly JWT_KEY = 'dev-jwt-token';
 
-  constructor() { }
+  constructor() {}
 
   // PRD Reference: 0020
   login(userId: string, token?: string): void {

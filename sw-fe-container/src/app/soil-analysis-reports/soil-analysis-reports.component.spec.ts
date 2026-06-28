@@ -12,9 +12,8 @@ describe('SoilAnalysisReportsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
-      imports: [SoilAnalysisReportsComponent]
-    })
-    .compileComponents();
+      imports: [SoilAnalysisReportsComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SoilAnalysisReportsComponent);
     component = fixture.componentInstance;

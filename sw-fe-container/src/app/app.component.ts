@@ -7,7 +7,7 @@ import { SyncEngineService } from './services/sync-engine.service';
   standalone: true,
   imports: [RouterOutlet, RouterLink],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
   title = 'temp-app';

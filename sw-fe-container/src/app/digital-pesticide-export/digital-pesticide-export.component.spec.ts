@@ -12,9 +12,8 @@ describe('DigitalPesticideExportComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
-      imports: [DigitalPesticideExportComponent]
-    })
-    .compileComponents();
+      imports: [DigitalPesticideExportComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DigitalPesticideExportComponent);
     component = fixture.componentInstance;
