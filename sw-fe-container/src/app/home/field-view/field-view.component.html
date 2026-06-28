@@ -18,6 +18,11 @@
       </div>
       <p class="text-on-surface-variant font-medium mb-2">Tracking events for Spring Barley '24 ({{ field.area_hectares }} ha)</p>
 
+      <!-- Field Boundary Map (View Only) -->
+      <div class="mt-4" *ngIf="field.geometry_wkt">
+        <app-field-map-editor [wkt]="field.geometry_wkt" [isEditMode]="false" [readonly]="true"></app-field-map-editor>
+      </div>
+
       <!-- Topographical Data -->
       <div class="grid grid-cols-2 gap-4 mt-4 bg-surface-container-low p-4 rounded-xl border border-outline-variant" *ngIf="field.min_elevation !== undefined">
         <div class="flex flex-col">
@@ -43,7 +48,7 @@
 
     <!-- Edit Field Modal -->
     <div *ngIf="showEditFieldModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4" id="edit-field-modal">
-      <div class="bg-surface rounded-xl shadow-2xl p-6 w-full max-w-md">
+      <div class="bg-surface rounded-xl shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div class="flex justify-between items-center mb-4">
           <h3 class="font-headline font-bold text-xl text-on-surface">Edit Field</h3>
           <button (click)="closeEditFieldModal()" class="text-on-surface-variant hover:text-error" id="close-edit-field-modal-btn">
@@ -79,8 +84,8 @@
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">Geometry (WKT)</label>
-            <input type="text" [(ngModel)]="editFieldGeometry_wkt" name="fieldGeometry" placeholder="e.g. POLYGON((...))" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface" id="edit-field-geometry-input">
+            <label class="block text-sm font-medium text-on-surface mb-1">Boundary Map</label>
+            <app-field-map-editor [(wkt)]="editFieldGeometry_wkt" [isEditMode]="true"></app-field-map-editor>
           </div>
           <div class="pt-4 flex justify-end gap-3">
             <button type="button" (click)="closeEditFieldModal()" class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md" id="cancel-edit-field-btn">Cancel</button>

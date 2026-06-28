@@ -8,11 +8,12 @@ import { Event } from '../../models/event';
 import { FertiliserApplication } from '../../models/fertiliser-application';
 import { OrganicManureApplication } from '../../models/organic-manure-application';
 import { Farm } from '../../models/farm';
+import { FieldMapEditorComponent } from '../../shared/components/field-map-editor/field-map-editor.component';
 
 @Component({
   selector: 'app-field-view',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, FieldMapEditorComponent],
   providers: [DatePipe],
   templateUrl: './field-view.component.html',
   styleUrl: './field-view.component.css'
