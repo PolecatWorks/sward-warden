@@ -5,12 +5,14 @@ import { UserProfileComponent } from './user-profile.component';
 import { FarmManagementService } from '../services/farm-management.service';
 import { AuthService } from '../services/auth.service';
 
+// PRD Reference: 0003
 describe('UserProfileComponent', () => {
   let component: UserProfileComponent;
   let fixture: ComponentFixture<UserProfileComponent>;
   let mockFarmService: jasmine.SpyObj<FarmManagementService>;
   let mockAuthService: jasmine.SpyObj<AuthService>;
 
+  // PRD Reference: 0003
   beforeEach(async () => {
     mockFarmService = jasmine.createSpyObj('FarmManagementService', ['getUsers', 'getUser', 'updateUser', 'addUser']);
     mockFarmService.getUsers.and.returnValue(of([{ id: 1, name: 'Test User', email: 'test@example.com' }]));
@@ -25,6 +27,7 @@ describe('UserProfileComponent', () => {
       imports: [UserProfileComponent],
       providers: [
         { provide: ActivatedRoute, useValue: {} },
+        // PRD Reference: 0003
         provideRouter([]),
         { provide: FarmManagementService, useValue: mockFarmService },
         { provide: AuthService, useValue: mockAuthService }
@@ -37,20 +40,28 @@ describe('UserProfileComponent', () => {
     fixture.detectChanges();
   });
 
+  // PRD Reference: 0003
   it('should create', () => {
+    // PRD Reference: 0003
     expect(component).toBeTruthy();
   });
 
+  // PRD Reference: 0003
   it('should load users on init', () => {
     component.users$.subscribe(users => {
+      // PRD Reference: 0003
       expect(users.length).toBe(1);
+      // PRD Reference: 0003
       expect(users[0].name).toBe('Test User');
     });
+    // PRD Reference: 0003
     expect(mockFarmService.getUsers).toHaveBeenCalled();
   });
 
+  // PRD Reference: 0003
   it('should render the profile heading', () => {
     const compiled = fixture.nativeElement as HTMLElement;
+    // PRD Reference: 0003
     expect(compiled.textContent).toContain('User Profile');
   });
 });

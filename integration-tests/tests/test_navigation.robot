@@ -6,6 +6,7 @@ Resource    video_resource.robot
 ${EXTERNAL_DNS_URL}
 
 *** Test Cases ***
+# No obvious PRD requirement
 Navigate Through App
     [Documentation]    Test to navigate through dashboard, farm, field and profile.
     [Teardown]    Teardown With Video

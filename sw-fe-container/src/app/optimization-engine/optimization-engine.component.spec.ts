@@ -6,14 +6,17 @@ import { OptimizationEngineComponent } from './optimization-engine.component';
 import { OptimizationService } from '../services/optimization.service';
 import { WeatherService } from '../services/weather.service';
 
+// No obvious PRD requirement
 describe('OptimizationEngineComponent', () => {
   let component: OptimizationEngineComponent;
   let fixture: ComponentFixture<OptimizationEngineComponent>;
 
+  // No obvious PRD requirement
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [
         { provide: ActivatedRoute, useValue: {} },
+        // No obvious PRD requirement
         provideRouter([]),
         {
           provide: OptimizationService,
@@ -37,7 +40,9 @@ describe('OptimizationEngineComponent', () => {
     fixture.detectChanges();
   });
 
+  // No obvious PRD requirement
   it('should create', () => {
+    // No obvious PRD requirement
     expect(component).toBeTruthy();
   });
 });

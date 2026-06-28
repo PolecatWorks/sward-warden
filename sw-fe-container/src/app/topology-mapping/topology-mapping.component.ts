@@ -28,17 +28,20 @@ export class TopologyMappingComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute
   ) {}
 
+  // PRD Reference: 0008
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       this.farmId = params.get('farmId');
     });
   }
 
+  // PRD Reference: 0008
   ngAfterViewInit() {
     this.initMap();
     this.loadWaterwayBuffers();
   }
 
+  // PRD Reference: 0008
   private initMap(): void {
     // TODO: In the future, when PRDs add farm locations, fetch the farm by `this.farmId`
     // and use its specific coordinates to center the map instead of the hardcoded default.
@@ -56,6 +59,7 @@ export class TopologyMappingComponent implements OnInit, AfterViewInit {
     tiles.addTo(this.map);
   }
 
+  // PRD Reference: 0008
   private loadWaterwayBuffers(): void {
     // Fetch 10m buffers for organic manure
     this.spatialService.getWaterwayBuffers(10).subscribe(data => {

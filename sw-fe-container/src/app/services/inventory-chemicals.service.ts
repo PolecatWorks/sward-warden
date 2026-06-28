@@ -6,6 +6,7 @@ import { SyncEngineService } from './sync-engine.service';
 import { AuthService } from './auth.service';
 
 let localIdCounter = 0;
+// PRD Reference: 0006
 function generateLocalId(): string {
   localIdCounter = (localIdCounter + 1) % 100;
   return `-${Date.now()}${localIdCounter.toString().padStart(2, '0')}`;
@@ -21,12 +22,15 @@ export class InventoryChemicalsService {
     private authService: AuthService,
   ) {}
 
+  // PRD Reference: 0006
   getChemicals(): Observable<InventoryChemicalDocType[]> {
     return this.rxdbService.inventoryChemicalsCollection$.pipe(
+      // PRD Reference: 0006
       switchMap((collection) => collection.find().$),
     );
   }
 
+  // PRD Reference: 0006
   getChemicalsForFarm(farmId: number): Observable<InventoryChemicalDocType[]> {
     return this.rxdbService.inventoryChemicalsCollection$.pipe(
       switchMap(
@@ -40,6 +44,7 @@ export class InventoryChemicalsService {
     );
   }
 
+  // PRD Reference: 0006
   getPortfolioChemicals(): Observable<InventoryChemicalDocType[]> {
     return this.rxdbService.inventoryChemicalsCollection$.pipe(
       switchMap(
@@ -155,6 +160,7 @@ export class InventoryChemicalsService {
     }
   }
 
+  // PRD Reference: 0006
   async deleteChemical(id: string): Promise<void> {
     const collection = await firstValueFrom(
       this.rxdbService.inventoryChemicalsCollection$,

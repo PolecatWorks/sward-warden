@@ -23,6 +23,7 @@ use crate::{
 /// # Errors
 ///
 /// Returns `AppError` if the check fails after all configured attempts.
+// No obvious PRD requirement
 pub async fn run_check<G, F, T>(
     name: String,
     config: &StartupCheckConfig,

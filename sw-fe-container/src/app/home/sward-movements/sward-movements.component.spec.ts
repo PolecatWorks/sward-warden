@@ -7,10 +7,12 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { SwardMovementsComponent } from './sward-movements.component';
 import { FarmManagementService } from '../../services/farm-management.service';
 
+// No obvious PRD requirement
 describe('SwardMovementsComponent', () => {
   let component: SwardMovementsComponent;
   let fixture: ComponentFixture<SwardMovementsComponent>;
 
+  // No obvious PRD requirement
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SwardMovementsComponent],
@@ -30,7 +32,9 @@ describe('SwardMovementsComponent', () => {
             addSwardMovement: () => of({})
           }
         },
+        // No obvious PRD requirement
         provideHttpClient(),
+        // No obvious PRD requirement
         provideHttpClientTesting()
       ]
     })
@@ -41,7 +45,9 @@ describe('SwardMovementsComponent', () => {
     fixture.detectChanges();
   });
 
+  // No obvious PRD requirement
   it('should create', () => {
+    // No obvious PRD requirement
     expect(component).toBeTruthy();
   });
 });

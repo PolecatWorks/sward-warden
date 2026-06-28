@@ -37,6 +37,7 @@ export class SwardMovementsComponent implements OnInit {
     private farmManagementService: FarmManagementService
   ) {}
 
+  // No obvious PRD requirement
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.farmId = +params['id'];
@@ -45,10 +46,12 @@ export class SwardMovementsComponent implements OnInit {
     });
   }
 
+  // No obvious PRD requirement
   loadMovements(): void {
     this.movements$ = this.farmManagementService.getSwardMovementsForFarm(this.farmId);
   }
 
+  // No obvious PRD requirement
   onSubmit(): void {
     this.farmManagementService.addSwardMovement(this.newMovement).subscribe(() => {
       this.loadMovements();
@@ -56,6 +59,7 @@ export class SwardMovementsComponent implements OnInit {
     });
   }
 
+  // No obvious PRD requirement
   private resetForm(): void {
     this.newMovement = {
       farm_id: this.farmId,

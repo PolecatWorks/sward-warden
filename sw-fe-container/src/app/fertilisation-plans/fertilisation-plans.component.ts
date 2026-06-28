@@ -27,15 +27,18 @@ export class FertilisationPlansComponent implements OnInit {
 
   constructor(private farmService: FarmManagementService) {}
 
+  // No obvious PRD requirement
   ngOnInit(): void {
     this.loadData();
   }
 
+  // No obvious PRD requirement
   loadData(): void {
     this.farmService.getFields().subscribe(fields => this.fields = fields);
     this.farmService.getFertilisationPlans().subscribe(plans => this.plans = plans);
   }
 
+  // No obvious PRD requirement
   addPlan(): void {
     if (this.newPlan.field_id > 0 && this.newPlan.crop_type && this.newPlan.application_date) {
       this.farmService.addFertilisationPlan(this.newPlan).subscribe(() => {
@@ -53,6 +56,7 @@ export class FertilisationPlansComponent implements OnInit {
     }
   }
 
+  // No obvious PRD requirement
   deletePlan(id: number | undefined): void {
     if (id) {
       this.farmService.deleteEntity('fertilisation_plans', id).subscribe(() => {
@@ -61,6 +65,7 @@ export class FertilisationPlansComponent implements OnInit {
     }
   }
 
+  // No obvious PRD requirement
   getFieldName(fieldId: number): string {
     const field = this.fields.find(f => f.id === fieldId);
     return field ? field.name : 'Unknown Field';

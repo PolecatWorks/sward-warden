@@ -9,6 +9,7 @@ ${EXTERNAL_DNS_URL}
 ${BE_BASE_URL}
 
 *** Test Cases ***
+# PRD Reference: 0006
 Storage Capacity E2E Flow
     [Documentation]    Test adding and deleting storage capacities
     [Teardown]    Teardown With Video

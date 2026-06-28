@@ -17,6 +17,7 @@ export class OptimizationEngineComponent implements OnInit {
 
   constructor(private optimizationService: OptimizationService) {}
 
+  // No obvious PRD requirement
   ngOnInit() {
     // Hardcoded farmId for now, should come from route or state
     this.optimizationService.getSuggestions(1).subscribe({

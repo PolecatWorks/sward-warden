@@ -8,6 +8,7 @@ ${EXTERNAL_DNS_URL}
 ${BE_BASE_URL}
 
 *** Test Cases ***
+# PRD Reference: 0019
 Immediate Validation and Form UX Flow
     [Documentation]    Test that required fields in event logging modals (specifically Log Planting) immediately show visual error highlights when opened, that the Save button is disabled, and that filling the fields clears highlights and enables Save.
     [Teardown]    Teardown With Video

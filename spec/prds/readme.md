@@ -4,7 +4,7 @@ This directory contains Product Requirements Documents (PRDs).
 
 PRDs dictate the high-level features and requirements of the project. Every PRD added here should be analyzed for ambiguities and contradictions before being broken down into technical specifications.
 
-**Note**: All functions in the backend codebase should include comments referencing the PRDs they support. If a function references more than 3 PRDs, use a generic note instead of listing them all.
+**Note**: All functions across the frontend, backend, and robot tests should include comments referencing the PRDs they support. If more than 3 PRDs require the function then it should be labelled as `References more than 3 PRDs`, and should not reference which specific PRDs. If no obvious PRD requirement can be inferred, use `No obvious PRD requirement`.
 
 ## Contradictions Identified
 

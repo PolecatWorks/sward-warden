@@ -108,6 +108,7 @@ export class FieldViewComponent implements OnInit {
 
 
   @HostListener('document:keydown.escape', ['$event'])
+  // PRD Reference: 0016
   handleEscape(event: KeyboardEvent) {
     if (this.showEditFieldModal) this.closeEditFieldModal();
     if (this.showFertiliserForm) this.showFertiliserForm = false;
@@ -118,6 +119,7 @@ export class FieldViewComponent implements OnInit {
     if (this.editingEventId !== null) this.cancelEdit();
   }
 
+  // PRD Reference: 0016
   ngOnInit(): void {
     this.loadFarms();
     this.route.paramMap.subscribe(params => {
@@ -130,12 +132,14 @@ export class FieldViewComponent implements OnInit {
     });
   }
 
+  // PRD Reference: 0016
   loadFieldDetails(): void {
     this.farmService.getField(this.fieldId).subscribe(field => {
       this.field = field;
     });
   }
 
+  // PRD Reference: 0016
   confirmDelete(): void {
     if (!this.fieldId) return;
     this.isSaving = true;
@@ -152,6 +156,7 @@ export class FieldViewComponent implements OnInit {
     });
   }
 
+  // PRD Reference: 0016
   loadFarms(): void {
     this.farmService.getFarms().subscribe({
       next: (farms) => {
@@ -163,6 +168,7 @@ export class FieldViewComponent implements OnInit {
     });
   }
 
+  // PRD Reference: 0016
   openEditFieldModal(): void {
     if (!this.field) return;
 
@@ -182,14 +188,17 @@ export class FieldViewComponent implements OnInit {
 
 
 
+  // PRD Reference: 0016
   hasEditChanges(): boolean {
     return this.editFieldName !== this.originalEditFieldName ||
+           // PRD Reference: 0016
            Number(this.editFieldArea) !== this.originalEditFieldArea ||
            this.editFieldLandUse !== this.originalEditFieldLandUse ||
            this.editFieldFarmId !== this.originalEditFieldFarmId ||
            this.editFieldGeometry_wkt !== this.originalEditFieldGeometry_wkt;
   }
 
+  // PRD Reference: 0016
   closeEditFieldModal(): void {
     this.showEditFieldModal = false;
     this.editFieldName = '';
@@ -200,6 +209,7 @@ export class FieldViewComponent implements OnInit {
     this.errorMessage = null;
   }
 
+  // PRD Reference: 0016
   editField(): void {
     if (!this.field || !this.editFieldName || this.editFieldArea <= 0 || !this.editFieldFarmId || !this.hasEditChanges()) {
       this.errorMessage = 'Please enter valid details.';
@@ -230,6 +240,7 @@ export class FieldViewComponent implements OnInit {
   }
 
 
+  // PRD Reference: 0016
   loadEvents(): void {
     this.farmService.getEvents().subscribe(allEvents => {
       this.events = allEvents.filter(e => e.field_id === this.fieldId).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -242,10 +253,12 @@ export class FieldViewComponent implements OnInit {
     });
   }
 
+  // PRD Reference: 0016
   getOrganicManureAppForEvent(eventId: number): OrganicManureApplication | undefined {
     return this.organicManureApplications.find(oma => oma.event_id === eventId);
   }
 
+  // PRD Reference: 0016
   startEdit(event: Event): void {
     this.editingEventId = event.id || null;
     this.editFormData = { ...event };
@@ -272,11 +285,13 @@ export class FieldViewComponent implements OnInit {
     }
   }
 
+  // PRD Reference: 0016
   cancelEdit(): void {
     this.editingEventId = null;
     this.editFormData = {};
   }
 
+  // PRD Reference: 0016
   saveEdit(event: Event): void {
     if (!event.id) return;
     const localId = event.id.toString();
@@ -320,22 +335,27 @@ export class FieldViewComponent implements OnInit {
   }
 
 
+  // PRD Reference: 0016
   getFertiliserAppForEvent(eventId: number): FertiliserApplication | undefined {
     return this.fertiliserApplications.find(fa => fa.event_id === eventId);
   }
 
+  // PRD Reference: 0016
   toggleFertiliserForm(): void {
     this.showFertiliserForm = !this.showFertiliserForm;
   }
 
+  // PRD Reference: 0016
   toggleSprayingForm(): void {
     this.showSprayingForm = !this.showSprayingForm;
   }
 
+  // PRD Reference: 0016
   toggleOrganicManureForm(): void {
     this.showOrganicManureForm = !this.showOrganicManureForm;
   }
 
+  // PRD Reference: 0016
   submitFertiliserApplication(): void {
     if (!this.newFertiliser.fertiliser_type || !this.newFertiliser.amount_applied || !this.newFertiliser.date) return;
 
@@ -377,6 +397,7 @@ export class FieldViewComponent implements OnInit {
     });
   }
 
+  // PRD Reference: 0016
   submitSprayingRecord(): void {
     if (!this.newSpraying.date || !this.newSpraying.mapp_number || !this.newSpraying.eppo_code || !this.newSpraying.bbch_growth_stage) return;
 
@@ -404,6 +425,7 @@ export class FieldViewComponent implements OnInit {
     });
   }
 
+  // PRD Reference: 0016
   getEventIcon(eventType: string): string {
     const type = eventType.toLowerCase();
     if (type.includes('harvest')) return 'agriculture';
@@ -413,6 +435,7 @@ export class FieldViewComponent implements OnInit {
     return 'event';
   }
 
+  // PRD Reference: 0016
   getEventColorClass(eventType: string): string {
     const type = eventType.toLowerCase();
     if (type.includes('harvest')) return 'bg-secondary-container text-on-secondary-container';
@@ -422,6 +445,7 @@ export class FieldViewComponent implements OnInit {
     return 'bg-surface-variant text-on-surface';
   }
 
+  // PRD Reference: 0016
   getEventTextColorClass(eventType: string): string {
     const type = eventType.toLowerCase();
     if (type.includes('harvest')) return 'text-secondary';
@@ -431,6 +455,7 @@ export class FieldViewComponent implements OnInit {
     return 'text-on-surface';
   }
 
+  // PRD Reference: 0016
   submitOrganicManureApplication(): void {
     if (!this.newOrganicManure.manure_type || !this.newOrganicManure.date) return;
 
@@ -473,19 +498,23 @@ export class FieldViewComponent implements OnInit {
         };
       }, error => {
          // Error handled by interceptor or shown via alert
+         // PRD Reference: 0016
          alert("Validation failed: " + (error.error?.message || error.message || "Unknown error"));
       });
     });
   }
 
+  // PRD Reference: 0016
   togglePlantingForm(): void {
     this.showPlantingForm = !this.showPlantingForm;
   }
 
+  // PRD Reference: 0016
   toggleGeneralEventForm(): void {
     this.showGeneralEventForm = !this.showGeneralEventForm;
   }
 
+  // PRD Reference: 0016
   onGeneralEventTypeChange(type: string): void {
     if (type === 'Planting') {
       this.showGeneralEventForm = false;
@@ -502,6 +531,7 @@ export class FieldViewComponent implements OnInit {
     }
   }
 
+  // PRD Reference: 0016
   submitPlantingRecord(): void {
     if (!this.newPlanting.crop || !this.newPlanting.variety || !this.newPlanting.date) return;
 
@@ -526,6 +556,7 @@ export class FieldViewComponent implements OnInit {
     });
   }
 
+  // PRD Reference: 0016
   submitGeneralEvent(): void {
     if (!this.generalEvent.event_type || !this.generalEvent.date || !this.generalEvent.description) return;
 

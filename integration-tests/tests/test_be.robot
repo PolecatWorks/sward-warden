@@ -6,18 +6,21 @@ ${BE_POD_IP}
 ${EMPTY}
 
 *** Test Cases ***
+# No obvious PRD requirement
 Be Health Check
     [Documentation]    Test to verify the be health endpoint is responding directly on the pod IP.
     Skip If    '${BE_POD_IP}' == '${EMPTY}'    BE_POD_IP is empty
     ${response}=    GET    http://${BE_POD_IP}:8079/hams/alive    expected_status=200
     Log    Health Response: ${response.content}
 
+# No obvious PRD requirement
 Be API Hello Check
     [Documentation]    Test to verify the be API hello endpoint via the Service (default port 80).
     ${response}=    GET    ${BE_BASE_URL}/v0/hello    expected_status=200
     Log    API Response: ${response.content}
     Should Be Equal As Strings    ${response.json()['message']}    hello
 
+# No obvious PRD requirement
 Be API Hello Check via Pod
     [Documentation]    Test to verify the be API hello endpoint directly on the pod IP (port 8080).
     Skip If    '${BE_POD_IP}' == '${EMPTY}'    BE_POD_IP is empty
@@ -25,6 +28,7 @@ Be API Hello Check via Pod
     Log    API Response: ${response.content}
     Should Be Equal As Strings    ${response.json()['message']}    hello
 
+# No obvious PRD requirement
 Be API Prefixed Hello Check
     [Documentation]    Test to verify the be API hello endpoint with prefix.
     ${response}=    GET    ${BE_BASE_URL}/v0/hello    expected_status=200
@@ -32,6 +36,7 @@ Be API Prefixed Hello Check
     Should Be Equal As Strings    ${response.json()['message']}    hello
 
 # *** Test Cases - Users ***
+# No obvious PRD requirement
 Users BREAD Operations
     [Documentation]    Test BREAD operations for Users. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
@@ -57,6 +62,7 @@ Users BREAD Operations
     # 5. Delete: DELETE /v0/users/${user_id} is missing.
 
 # *** Test Cases - Farms ***
+# No obvious PRD requirement
 Farms BREAD Operations
     [Documentation]    Test BREAD operations for Farms. Note: Read (by ID) and Edit are not implemented in the backend.
 
@@ -93,6 +99,7 @@ Farms BREAD Operations
     Log    Delete Farm Response Code: ${delete_response.status_code}
 
 # *** Test Cases - Fields ***
+# No obvious PRD requirement
 Fields BREAD Operations
     [Documentation]    Test BREAD operations for Fields. Note: Read (by ID) and Edit are not implemented in the backend.
 
@@ -125,6 +132,7 @@ Fields BREAD Operations
     Log    Delete Field Response Code: ${delete_response.status_code}
 
 # *** Test Cases - Events ***
+# No obvious PRD requirement
 Events BREAD Operations
     [Documentation]    Test BREAD operations for Events. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
@@ -157,6 +165,7 @@ Events BREAD Operations
     # 5. Delete: DELETE /v0/events/${event_id} is missing.
 
 # *** Test Cases - Soil Analyses ***
+# No obvious PRD requirement
 Soil Analyses BREAD Operations
     [Documentation]    Test BREAD operations for Soil Analyses. Note: Read (by ID) and Edit are not implemented in the backend.
 
@@ -191,6 +200,7 @@ Soil Analyses BREAD Operations
     Log    Delete Soil Analysis Response Code: ${delete_response.status_code}
 
 # *** Test Cases - Fertilisation Plans ***
+# No obvious PRD requirement
 Fertilisation Plans BREAD Operations
     [Documentation]    Test BREAD operations for Fertilisation Plans. Note: Read (by ID) and Edit are not implemented in the backend.
 
@@ -225,6 +235,7 @@ Fertilisation Plans BREAD Operations
     Log    Delete Fertilisation Plan Response Code: ${delete_response.status_code}
 
 # *** Test Cases - Farm Records ***
+# No obvious PRD requirement
 Farm Records BREAD Operations
     [Documentation]    Test BREAD operations for Farm Records. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
@@ -252,6 +263,7 @@ Farm Records BREAD Operations
     # 5. Delete: DELETE /v0/farm_records/${record_id} is missing.
 
 # *** Test Cases - Fertiliser Applications ***
+# No obvious PRD requirement
 Fertiliser Applications BREAD Operations
     [Documentation]    Test BREAD operations for Fertiliser Applications. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
@@ -287,6 +299,7 @@ Fertiliser Applications BREAD Operations
     # 5. Delete: DELETE /v0/fertiliser_applications/${app_id} is missing.
 
 # *** Test Cases - Organic Manure Applications ***
+# No obvious PRD requirement
 Organic Manure Applications BREAD Operations
     [Documentation]    Test BREAD operations for Organic Manure Applications. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
@@ -322,6 +335,7 @@ Organic Manure Applications BREAD Operations
     # 5. Delete: DELETE /v0/organic_manure_applications/${app_id} is missing.
 
 # *** Test Cases - Compliance Breaches ***
+# No obvious PRD requirement
 Compliance Breaches BREAD Operations
     [Documentation]    Test BREAD operations for Compliance Breaches. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
@@ -349,6 +363,7 @@ Compliance Breaches BREAD Operations
     # 5. Delete: DELETE /v0/compliance-breaches/${breach_id} is missing.
 
 # *** Test Cases - Sward Movements ***
+# No obvious PRD requirement
 Sward Movements BREAD Operations
     [Documentation]    Test BREAD operations for Sward Movements. Note: Read (by ID), Edit, and Delete are not implemented in the backend.
 
@@ -376,6 +391,7 @@ Sward Movements BREAD Operations
     # 5. Delete: DELETE /v0/sward-movements/${movement_id} is missing.
 
 # *** Test Cases - Admin ***
+# No obvious PRD requirement
 Admin Endpoints Check
     [Documentation]    Test Admin operations.
     &{admin_headers}=    Create Dictionary    X-User-Role=admin

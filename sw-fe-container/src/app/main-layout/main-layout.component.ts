@@ -31,6 +31,7 @@ export class MainLayoutComponent implements OnInit {
     this.fallbackToRest$ = this.rxdbService.fallbackToRest$;
   }
 
+  // No obvious PRD requirement
   ngOnInit(): void {
     const userId = this.authService.getUserId();
     if (userId) {
@@ -39,11 +40,13 @@ export class MainLayoutComponent implements OnInit {
     this.users$ = this.farmManagementService.getUsers().pipe(shareReplay(1));
   }
 
+  // No obvious PRD requirement
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
   }
 
+  // No obvious PRD requirement
   switchUser(userId: string | number): void {
     const userIdStr = userId.toString();
     this.users$?.subscribe({
@@ -74,6 +77,7 @@ export class MainLayoutComponent implements OnInit {
     });
   }
 
+  // No obvious PRD requirement
   reloadPage(): void {
     window.location.reload();
   }

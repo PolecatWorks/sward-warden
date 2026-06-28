@@ -25,6 +25,7 @@ import { Inject } from '@angular/core';
 import { of } from 'rxjs';
 
 let localIdCounter = 0;
+// PRD Reference: 0003
 function generateLocalId(): string {
   localIdCounter = (localIdCounter + 1) % 100;
   return `-${Date.now()}${localIdCounter.toString().padStart(2, '0')}`;
@@ -46,6 +47,7 @@ export class FarmManagementService {
     this.apiUrl$ = of(this.config.apiPath).pipe(shareReplay(1));
   }
 
+  // PRD Reference: 0003
   getHeaders(): HttpHeaders {
     const userId = this.authService.getUserId() || '';
     return new HttpHeaders({
@@ -58,32 +60,42 @@ export class FarmManagementService {
   // Users — still HTTP-only (no local schema for users yet)
   // ──────────────────────────────────────────────────────────
 
+  // PRD Reference: 0003
   getUsers(): Observable<User[]> {
     return this.apiUrl$.pipe(
+      // PRD Reference: 0003
       switchMap(apiUrl => this.http.get<User[]>(`${apiUrl}/users`, { headers: this.getHeaders() }))
     );
   }
 
+  // PRD Reference: 0003
   addUser(user: User): Observable<User> {
     return this.apiUrl$.pipe(
+      // PRD Reference: 0003
       switchMap(apiUrl => this.http.post<User>(`${apiUrl}/users`, user, { headers: this.getHeaders() }))
     );
   }
 
+  // PRD Reference: 0003
   getUser(id: number | string): Observable<User> {
     return this.apiUrl$.pipe(
+      // PRD Reference: 0003
       switchMap(apiUrl => this.http.get<User>(`${apiUrl}/users/${id}`, { headers: this.getHeaders() }))
     );
   }
 
+  // PRD Reference: 0003
   updateUser(id: number | string, user: Partial<User>): Observable<User> {
     return this.apiUrl$.pipe(
+      // PRD Reference: 0003
       switchMap(apiUrl => this.http.put<User>(`${apiUrl}/users/${id}`, user, { headers: this.getHeaders() }))
     );
   }
 
+  // PRD Reference: 0003
   deleteUser(id: number | string): Observable<void> {
     return this.apiUrl$.pipe(
+      // PRD Reference: 0003
       switchMap(apiUrl => this.http.delete<void>(`${apiUrl}/users/${id}`, { headers: this.getHeaders() }))
     );
   }
@@ -110,13 +122,17 @@ export class FarmManagementService {
         };
         const collection = (db as any)[collectionName];
         return from(collection.insert(docData)).pipe(
+          // PRD Reference: 0003
           switchMap((doc: any) =>
+            // PRD Reference: 0003
             from(this.createOutboxEntry(db, 'POST', collectionName, localId, outboxPayload)).pipe(
+              // PRD Reference: 0003
               map(() => doc as TDoc),
             )
           ),
         );
       }),
+      // PRD Reference: 0003
       map(doc => mapper(doc)),
     );
   }
@@ -133,6 +149,7 @@ export class FarmManagementService {
       switchMap(db => {
         const collection = (db as any)[collectionName];
         return from(collection.findOne({ selector: { id: localId } }).exec()).pipe(
+          // PRD Reference: 0003
           switchMap((doc: any) => {
             if (!doc) {
               throw new Error(`Document with localId ${localId} not found in ${collectionName}`);
@@ -144,12 +161,14 @@ export class FarmManagementService {
             };
 
             return from(doc.patch(updateData)).pipe(
+              // PRD Reference: 0003
               switchMap((patchedDoc: any) => {
                 const payload = { ...outboxPayload };
                 if (serverId) {
                     payload.id = serverId;
                 }
                 return from(this.createOutboxEntry(db, 'PUT', collectionName, localId, payload)).pipe(
+                  // PRD Reference: 0003
                   map(() => patchedDoc as TDoc)
                 );
               })
@@ -157,27 +176,34 @@ export class FarmManagementService {
           })
         );
       }),
+      // PRD Reference: 0003
       map(doc => mapper(doc))
     );
   }
 
   /** Get all farms from the local RxDB database as a reactive observable. */
+  // PRD Reference: 0003
   getFarms(): Observable<Farm[]> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.get<Farm[]>(`${apiUrl}/farms`, { headers: this.getHeaders() }))
       );
     }
     return this.rxdbService.db$.pipe(
+      // PRD Reference: 0003
       switchMap(db => db.farms.find().$ as Observable<FarmDocType[]>),
+      // PRD Reference: 0003
       map(docs => docs.map(doc => this.farmDocToModel(doc))),
     );
   }
 
   /** Add a farm to the local RxDB database and queue an outbox entry. */
+  // PRD Reference: 0003
   addFarm(farm: Farm): Observable<Farm> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.post<Farm>(`${apiUrl}/farms`, farm, { headers: this.getHeaders() }))
       );
     }
@@ -190,9 +216,11 @@ export class FarmManagementService {
   }
 
   /** Update a farm in the local RxDB database and queue an outbox entry. */
+  // PRD Reference: 0003
   updateFarm(id: number | string, farm: Partial<Farm>): Observable<Farm> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.put<Farm>(`${apiUrl}/farms/${id}`, farm, { headers: this.getHeaders() }))
       );
     }
@@ -222,12 +250,14 @@ export class FarmManagementService {
             };
 
             return from(doc.patch(updateData)).pipe(
+              // PRD Reference: 0003
               switchMap((patchedDoc: any) => {
                 const payload = { ...outboxPayload };
                 if (serverId) {
                   payload.id = serverId;
                 }
                 return from(this.createOutboxEntry(db, 'PUT', 'farms', localId, payload)).pipe(
+                  // PRD Reference: 0003
                   map(() => patchedDoc as FarmDocType)
                 );
               })
@@ -235,14 +265,17 @@ export class FarmManagementService {
           })
         );
       }),
+      // PRD Reference: 0003
       map(doc => this.farmDocToModel(doc))
     );
   }
 
   /** Update a field in the local RxDB database and queue an outbox entry. */
+  // PRD Reference: 0003
   updateField(id: number | string, field: Partial<Field>): Observable<Field> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.put<Field>(`${apiUrl}/fields/${id}`, field, { headers: this.getHeaders() }))
       );
     }
@@ -278,12 +311,14 @@ export class FarmManagementService {
             };
 
             return from(doc.patch(updateData)).pipe(
+              // PRD Reference: 0003
               switchMap((patchedDoc: any) => {
                 const payload = { ...outboxPayload };
                 if (serverId) {
                   payload.id = serverId;
                 }
                 return from(this.createOutboxEntry(db, 'PUT', 'fields', localId, payload)).pipe(
+                  // PRD Reference: 0003
                   map(() => patchedDoc as FieldDocType)
                 );
               })
@@ -291,27 +326,34 @@ export class FarmManagementService {
           })
         );
       }),
+      // PRD Reference: 0003
       map(doc => this.fieldDocToModel(doc))
     );
   }
 
 
   /** Get all fields from the local RxDB database. */
+  // PRD Reference: 0003
   getFields(): Observable<Field[]> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.get<Field[]>(`${apiUrl}/fields`, { headers: this.getHeaders() }))
       );
     }
     return this.rxdbService.db$.pipe(
+      // PRD Reference: 0003
       switchMap(db => db.fields.find().$ as Observable<FieldDocType[]>),
+      // PRD Reference: 0003
       map(docs => docs.map(doc => this.fieldDocToModel(doc))),
     );
   }
 
+  // PRD Reference: 0003
   getField(id: number | string): Observable<Field | undefined> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.getFields().pipe(
+        // PRD Reference: 0003
         map(fields => fields.find(f => f.id === id || (typeof id === 'number' && f.id === id)))
       );
     }
@@ -319,15 +361,19 @@ export class FarmManagementService {
       ? { id: id.toString() }
       : (typeof id === 'number' ? { serverId: id } : { id: id });
     return this.rxdbService.db$.pipe(
+      // PRD Reference: 0003
       switchMap(db => db.fields.findOne({ selector }).$ as Observable<FieldDocType | null>),
+      // PRD Reference: 0003
       map(doc => doc ? this.fieldDocToModel(doc) : undefined),
     );
   }
 
   /** Add a field to the local RxDB database and queue an outbox entry. */
+  // PRD Reference: 0003
   addField(field: Field): Observable<Field> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.post<Field>(`${apiUrl}/fields`, field, { headers: this.getHeaders() }))
       );
     }
@@ -340,22 +386,28 @@ export class FarmManagementService {
   }
 
   /** Get all events from the local RxDB database. */
+  // PRD Reference: 0003
   getEvents(): Observable<Event[]> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.get<Event[]>(`${apiUrl}/events`, { headers: this.getHeaders() }))
       );
     }
     return this.rxdbService.db$.pipe(
+      // PRD Reference: 0003
       switchMap(db => db.events.find().$ as Observable<EventDocType[]>),
+      // PRD Reference: 0003
       map(docs => docs.map(doc => this.eventDocToModel(doc))),
     );
   }
 
   /** Add an event to the local RxDB database and queue an outbox entry. */
+  // PRD Reference: 0003
   addEvent(event: Event): Observable<Event> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.post<Event>(`${apiUrl}/events`, event, { headers: this.getHeaders() }))
       );
     }
@@ -385,9 +437,11 @@ export class FarmManagementService {
   }
 
   /** Update an event in the local RxDB database and queue an outbox entry. */
+  // PRD Reference: 0003
   updateEvent(localId: string, event: Partial<Event>): Observable<Event> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.put<Event>(`${apiUrl}/events/${event.id}`, event, { headers: this.getHeaders() }))
       );
     }
@@ -411,22 +465,28 @@ export class FarmManagementService {
   }
 
   /** Get all soil analyses from the local RxDB database. */
+  // PRD Reference: 0003
   getSoilAnalyses(): Observable<SoilAnalysis[]> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.get<SoilAnalysis[]>(`${apiUrl}/soil_analyses`, { headers: this.getHeaders() }))
       );
     }
     return this.rxdbService.db$.pipe(
+      // PRD Reference: 0003
       switchMap(db => db.soil_analyses.find().$ as Observable<SoilAnalysisDocType[]>),
+      // PRD Reference: 0003
       map(docs => docs.map(doc => this.soilAnalysisDocToModel(doc))),
     );
   }
 
   /** Add a soil analysis to the local RxDB database and queue an outbox entry. */
+  // PRD Reference: 0003
   addSoilAnalysis(analysis: SoilAnalysis): Observable<SoilAnalysis> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.post<SoilAnalysis>(`${apiUrl}/soil_analyses`, analysis, { headers: this.getHeaders() }))
       );
     }
@@ -439,22 +499,28 @@ export class FarmManagementService {
   }
 
   /** Get all fertilisation plans from the local RxDB database. */
+  // PRD Reference: 0003
   getFertilisationPlans(): Observable<FertilisationPlan[]> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.get<FertilisationPlan[]>(`${apiUrl}/fertilisation_plans`, { headers: this.getHeaders() }))
       );
     }
     return this.rxdbService.db$.pipe(
+      // PRD Reference: 0003
       switchMap(db => db.fertilisation_plans.find().$ as Observable<FertilisationPlanDocType[]>),
+      // PRD Reference: 0003
       map(docs => docs.map(doc => this.fertilisationPlanDocToModel(doc))),
     );
   }
 
   /** Add a fertilisation plan to the local RxDB database and queue an outbox entry. */
+  // PRD Reference: 0003
   addFertilisationPlan(plan: FertilisationPlan): Observable<FertilisationPlan> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.post<FertilisationPlan>(`${apiUrl}/fertilisation_plans`, plan, { headers: this.getHeaders() }))
       );
     }
@@ -467,22 +533,28 @@ export class FarmManagementService {
   }
 
   /** Get all farm records from the local RxDB database. */
+  // PRD Reference: 0003
   getFarmRecords(): Observable<FarmRecord[]> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.get<FarmRecord[]>(`${apiUrl}/farm_records`, { headers: this.getHeaders() }))
       );
     }
     return this.rxdbService.db$.pipe(
+      // PRD Reference: 0003
       switchMap(db => db.farm_records.find().$ as Observable<FarmRecordDocType[]>),
+      // PRD Reference: 0003
       map(docs => docs.map(doc => this.farmRecordDocToModel(doc))),
     );
   }
 
   /** Add a farm record to the local RxDB database and queue an outbox entry. */
+  // PRD Reference: 0003
   addFarmRecord(record: FarmRecord): Observable<FarmRecord> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.post<FarmRecord>(`${apiUrl}/farm_records`, record, { headers: this.getHeaders() }))
       );
     }
@@ -498,20 +570,26 @@ export class FarmManagementService {
   // Fertiliser Applications (Still HTTP-only for now)
   // ──────────────────────────────────────────────────────────
 
+  // PRD Reference: 0003
   getFertiliserApplications(): Observable<FertiliserApplication[]> {
     return this.apiUrl$.pipe(
+      // PRD Reference: 0003
       switchMap(apiUrl => this.http.get<FertiliserApplication[]>(`${apiUrl}/fertiliser_applications`, { headers: this.getHeaders() }))
     );
   }
 
+  // PRD Reference: 0003
   addFertiliserApplication(application: FertiliserApplication): Observable<FertiliserApplication> {
     return this.apiUrl$.pipe(
+      // PRD Reference: 0003
       switchMap(apiUrl => this.http.post<FertiliserApplication>(`${apiUrl}/fertiliser_applications`, application, { headers: this.getHeaders() }))
     );
   }
 
+  // PRD Reference: 0003
   updateFertiliserApplication(id: number | string, application: Partial<FertiliserApplication>): Observable<FertiliserApplication> {
     return this.apiUrl$.pipe(
+      // PRD Reference: 0003
       switchMap(apiUrl => this.http.put<FertiliserApplication>(`${apiUrl}/fertiliser_applications/${id}`, application, { headers: this.getHeaders() }))
     );
   }
@@ -520,14 +598,18 @@ export class FarmManagementService {
   // Organic Manure Applications
   // ──────────────────────────────────────────────────────────
 
+  // PRD Reference: 0003
   getOrganicManureApplications(): Observable<OrganicManureApplication[]> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.get<OrganicManureApplication[]>(`${apiUrl}/organic-manure-applications`, { headers: this.getHeaders() }))
       );
     }
     return this.rxdbService.db$.pipe(
+      // PRD Reference: 0003
       switchMap(db => from(db.organic_manure_applications.find().$)),
+      // PRD Reference: 0003
       map((docs: any[]) => docs.map(doc => this.organicManureApplicationDocToModel(doc)))
     );
   }
@@ -536,6 +618,7 @@ export class FarmManagementService {
   // Delete Helpers
   // ──────────────────────────────────────────────────────────
 
+  // PRD Reference: 0003
   deleteEntity(entity: OutboxEntityType, id: number | string): Observable<void> {
     if (this.rxdbService.fallbackToRest$.value) {
       const endpointMap: Record<string, string> = {
@@ -544,6 +627,7 @@ export class FarmManagementService {
       };
       const endpoint = endpointMap[entity] || entity;
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.delete<void>(`${apiUrl}/${endpoint}/${id}`, { headers: this.getHeaders() }))
       );
     }
@@ -558,6 +642,7 @@ export class FarmManagementService {
             if (doc) {
               const localId = doc.id;
               return from(doc.remove()).pipe(
+                // PRD Reference: 0003
                 switchMap(() => from(this.createOutboxEntry(db, 'DELETE', entity as any, localId, { id: id })).pipe(map(() => undefined as void))),
               );
             }
@@ -595,6 +680,7 @@ export class FarmManagementService {
   // Mapping helpers
   // ──────────────────────────────────────────────────────────
 
+  // PRD Reference: 0003
   private farmDocToModel(doc: FarmDocType): Farm {
     return {
       id: doc.serverId ?? (doc.id ? Number(doc.id) : undefined),
@@ -605,6 +691,7 @@ export class FarmManagementService {
     };
   }
 
+  // PRD Reference: 0003
   private fieldDocToModel(doc: FieldDocType): Field {
     return {
       id: doc.serverId ?? (doc.id ? Number(doc.id) : undefined),
@@ -620,6 +707,7 @@ export class FarmManagementService {
     };
   }
 
+  // PRD Reference: 0003
   private eventDocToModel(doc: EventDocType): Event {
     return {
       id: doc.serverId ?? (doc.id ? Number(doc.id) : undefined),
@@ -633,6 +721,7 @@ export class FarmManagementService {
     };
   }
 
+  // PRD Reference: 0003
   private soilAnalysisDocToModel(doc: SoilAnalysisDocType): SoilAnalysis {
     return {
       id: doc.serverId ?? 0, field_id: doc.field_id, sample_date: doc.sample_date,
@@ -641,6 +730,7 @@ export class FarmManagementService {
     };
   }
 
+  // PRD Reference: 0003
   private fertilisationPlanDocToModel(doc: FertilisationPlanDocType): FertilisationPlan {
     return {
       id: doc.serverId ?? 0, field_id: doc.field_id, crop_type: doc.crop_type,
@@ -650,6 +740,7 @@ export class FarmManagementService {
     };
   }
 
+  // PRD Reference: 0003
   private farmRecordDocToModel(doc: FarmRecordDocType): FarmRecord {
     return {
       id: doc.serverId,
@@ -661,6 +752,7 @@ export class FarmManagementService {
     };
   }
 
+  // PRD Reference: 0003
   private organicManureApplicationDocToModel(doc: OrganicManureApplicationDocType): OrganicManureApplication {
     return {
       id: doc.serverId ?? 0,
@@ -677,6 +769,7 @@ export class FarmManagementService {
     };
   }
 
+  // PRD Reference: 0003
   private complianceBreachDocToModel(doc: ComplianceBreachDocType): ComplianceBreach {
     return {
       id: doc.serverId ?? 0,
@@ -691,22 +784,29 @@ export class FarmManagementService {
     };
   }
 
+  // PRD Reference: 0003
   getComplianceBreachesForFarm(farmId: number): Observable<ComplianceBreach[]> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.get<ComplianceBreach[]>(`${apiUrl}/compliance-breaches`, { headers: this.getHeaders() })),
+        // PRD Reference: 0003
         map(breaches => breaches.filter(b => b.farm_id === farmId))
       );
     }
     return this.rxdbService.db$.pipe(
+      // PRD Reference: 0003
       switchMap(db => from(db.compliance_breaches.find({ selector: { farm_id: farmId } }).$)),
+      // PRD Reference: 0003
       map((docs: any[]) => docs.map(doc => this.complianceBreachDocToModel(doc)))
     );
   }
 
+  // PRD Reference: 0003
   addComplianceBreach(breach: ComplianceBreach): Observable<ComplianceBreach> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.post<ComplianceBreach>(`${apiUrl}/compliance-breaches`, breach, { headers: this.getHeaders() }))
       );
     }
@@ -728,9 +828,11 @@ export class FarmManagementService {
     );
   }
 
+  // PRD Reference: 0003
   addOrganicManureApplication(app: OrganicManureApplication): Observable<OrganicManureApplication> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.post<OrganicManureApplication>(`${apiUrl}/organic-manure-applications`, app, { headers: this.getHeaders() }))
       );
     }
@@ -754,9 +856,11 @@ export class FarmManagementService {
     );
   }
 
+  // PRD Reference: 0003
   updateOrganicManureApplication(localId: string, serverId: number | string | undefined, app: Partial<OrganicManureApplication>): Observable<OrganicManureApplication> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.put<OrganicManureApplication>(`${apiUrl}/organic-manure-applications/${serverId}`, app, { headers: this.getHeaders() }))
       );
     }
@@ -784,22 +888,29 @@ export class FarmManagementService {
   }
 
 
+  // PRD Reference: 0003
   getSwardMovementsForFarm(farmId: number): Observable<SwardMovement[]> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.get<SwardMovement[]>(`${apiUrl}/sward-movements`, { headers: this.getHeaders() })),
+        // PRD Reference: 0003
         map(movements => movements.filter(m => m.farm_id === farmId))
       );
     }
     return this.rxdbService.db$.pipe(
+      // PRD Reference: 0003
       switchMap(db => from(db.sward_movements.find({ selector: { farm_id: farmId } }).$)),
+      // PRD Reference: 0003
       map((docs: any[]) => docs.map(doc => this.swardMovementDocToModel(doc)))
     );
   }
 
+  // PRD Reference: 0003
   addSwardMovement(movement: SwardMovement): Observable<SwardMovement> {
     if (this.rxdbService.fallbackToRest$.value) {
       return this.apiUrl$.pipe(
+        // PRD Reference: 0003
         switchMap(apiUrl => this.http.post<SwardMovement>(`${apiUrl}/sward-movements`, movement, { headers: this.getHeaders() }))
       );
     }
@@ -823,6 +934,7 @@ export class FarmManagementService {
     );
   }
 
+  // PRD Reference: 0003
   private swardMovementDocToModel(doc: SwardMovementDocType): SwardMovement {
     return {
       id: doc.serverId ?? (doc.id ? Number(doc.id) : undefined),

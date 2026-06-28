@@ -28,6 +28,7 @@ export class AnnualFertilisationAccountsComponent implements OnInit {
 
   constructor(private fmService: FarmManagementService) {}
 
+  // No obvious PRD requirement
   ngOnInit(): void {
     this.fmService.getFarmRecords().subscribe(records => {
       this.farmRecords = records;
@@ -40,6 +41,7 @@ export class AnnualFertilisationAccountsComponent implements OnInit {
     });
   }
 
+  // No obvious PRD requirement
   calculateAccount() {
     if (this.farmRecords.length === 0) return;
 

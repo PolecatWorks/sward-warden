@@ -14,6 +14,7 @@ import { HttpHeaders } from '@angular/common/http';
 
 let syncTestCounter = 0;
 
+// PRD Reference: 0011
 describe('SyncEngineService', () => {
   let service: SyncEngineService;
   let rxdbService: RxdbService;
@@ -22,6 +23,7 @@ describe('SyncEngineService', () => {
   let syncStateService: SyncStateService;
   let testDbName: string;
 
+  // PRD Reference: 0011
   beforeEach(() => {
     syncTestCounter++;
     testDbName = `sync-engine-test-${syncTestCounter}-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
@@ -29,7 +31,9 @@ describe('SyncEngineService', () => {
 
     TestBed.configureTestingModule({
       providers: [
+        // PRD Reference: 0011
         provideHttpClient(),
+        // PRD Reference: 0011
         provideHttpClientTesting(),
         SyncEngineService,
         RxdbService,
@@ -57,6 +61,7 @@ describe('SyncEngineService', () => {
     service = TestBed.inject(SyncEngineService);
   });
 
+  // PRD Reference: 0011
   afterEach(async () => {
     service.ngOnDestroy();
     httpMock.verify();
@@ -64,7 +69,9 @@ describe('SyncEngineService', () => {
     await db.remove();
   });
 
+  // PRD Reference: 0011
   it('should be created', () => {
+    // PRD Reference: 0011
     expect(service).toBeTruthy();
   });
 
@@ -72,6 +79,7 @@ describe('SyncEngineService', () => {
   // Push Sync (Outbox Processing)
   // ──────────────────────────────────────────────────────────
 
+  // PRD Reference: 0011
   it('should process pending outbox entries via processOutbox()', async () => {
     const db = await firstValueFrom(rxdbService.db$);
 
@@ -98,19 +106,24 @@ describe('SyncEngineService', () => {
     await new Promise(resolve => setTimeout(resolve, 50));
 
     const farmReq = httpMock.expectOne('/v0/farms');
+    // PRD Reference: 0011
     expect(farmReq.request.method).toBe('POST');
     farmReq.flush({ id: 42, name: 'Sync Farm', location: 'Test' });
 
     await processPromise;
 
     const remaining = await db.outbox.find().exec();
+    // PRD Reference: 0011
     expect(remaining.length).toBe(0);
 
     const farm = await db.farms.findOne('local-farm-1').exec();
+    // PRD Reference: 0011
     expect(farm?.serverId).toBe(42);
+    // PRD Reference: 0011
     expect(farm?.syncStatus).toBe('synced');
   });
 
+  // PRD Reference: 0011
   it('should increment retry count on failure', async () => {
     const db = await firstValueFrom(rxdbService.db$);
 
@@ -142,12 +155,16 @@ describe('SyncEngineService', () => {
     await processPromise;
 
     const entries = await db.outbox.find().exec();
+    // PRD Reference: 0011
     expect(entries.length).toBe(1);
+    // PRD Reference: 0011
     expect(entries[0].retryCount).toBe(1);
+    // PRD Reference: 0011
     expect(entries[0].status).toBe('pending');
   });
 
 
+  // PRD Reference: 0011
   it('should increment retry count when processEntry throws a non-HTTP error (e.g. invalid JSON)', async () => {
     const db = await firstValueFrom(rxdbService.db$);
 
@@ -175,11 +192,15 @@ describe('SyncEngineService', () => {
     await processPromise;
 
     const entries = await db.outbox.find({ selector: { id: 'outbox-invalid-json-1' } }).exec();
+    // PRD Reference: 0011
     expect(entries.length).toBe(1);
+    // PRD Reference: 0011
     expect(entries[0].retryCount).toBe(1);
+    // PRD Reference: 0011
     expect(entries[0].status).toBe('pending');
   });
 
+  // PRD Reference: 0011
   it('should mark as failed after max retries', async () => {
     const db = await firstValueFrom(rxdbService.db$);
 
@@ -211,14 +232,19 @@ describe('SyncEngineService', () => {
     await processPromise;
 
     const entries = await db.outbox.find().exec();
+    // PRD Reference: 0011
     expect(entries.length).toBe(1);
+    // PRD Reference: 0011
     expect(entries[0].retryCount).toBe(5);
+    // PRD Reference: 0011
     expect(entries[0].status).toBe('failed');
 
     const farm = await db.farms.findOne('local-maxretry-1').exec();
+    // PRD Reference: 0011
     expect(farm?.syncStatus).toBe('failed');
   });
 
+  // PRD Reference: 0011
   it('should process DELETE outbox entries', async () => {
     const db = await firstValueFrom(rxdbService.db$);
 
@@ -237,15 +263,18 @@ describe('SyncEngineService', () => {
     await new Promise(resolve => setTimeout(resolve, 50));
 
     const delReq = httpMock.expectOne('/v0/farms/55');
+    // PRD Reference: 0011
     expect(delReq.request.method).toBe('DELETE');
     delReq.flush(null, { status: 204, statusText: 'No Content' });
 
     await processPromise;
 
     const remaining = await db.outbox.find().exec();
+    // PRD Reference: 0011
     expect(remaining.length).toBe(0);
   });
 
+  // PRD Reference: 0011
   it('should not process outbox when offline', async () => {
     const db = await firstValueFrom(rxdbService.db$);
 
@@ -263,6 +292,7 @@ describe('SyncEngineService', () => {
     await new Promise(resolve => setTimeout(resolve, 50));
 
     const entries = await db.outbox.find().exec();
+    // PRD Reference: 0011
     expect(entries.length).toBe(1);
   });
 
@@ -270,6 +300,7 @@ describe('SyncEngineService', () => {
   // Pull Sync (Delta Fetch)
   // ──────────────────────────────────────────────────────────
 
+  // PRD Reference: 0011
   it('should force pull sync and clear checkpoint', async () => {
     const db = await firstValueFrom(rxdbService.db$);
     await service.setCheckpoint(db, '2026-04-25T12:00:00Z');
@@ -279,7 +310,9 @@ describe('SyncEngineService', () => {
 
     // Force sync should clear checkpoint, so it shouldn't send `?since=`
     const syncReq = httpMock.expectOne('/v0/sync');
+    // PRD Reference: 0011
     expect(syncReq.request.method).toBe('GET');
+    // PRD Reference: 0011
     expect(syncReq.request.urlWithParams).not.toContain('since=');
 
     syncReq.flush({
@@ -292,9 +325,11 @@ describe('SyncEngineService', () => {
 
     await pullPromise;
     const checkpoint = await service.getCheckpoint(db);
+    // PRD Reference: 0011
     expect(checkpoint).toBe('2026-04-26T12:00:00Z');
   });
 
+  // PRD Reference: 0011
   it('should pull new farms from the be', async () => {
     const db = await firstValueFrom(rxdbService.db$);
 
@@ -302,6 +337,7 @@ describe('SyncEngineService', () => {
     await new Promise(resolve => setTimeout(resolve, 50));
 
     const syncReq = httpMock.expectOne('/v0/sync');
+    // PRD Reference: 0011
     expect(syncReq.request.method).toBe('GET');
     syncReq.flush({
       checkpoint: '2026-04-25T12:00:00Z',
@@ -316,12 +352,17 @@ describe('SyncEngineService', () => {
     await pullPromise;
 
     const farms = await db.farms.find().exec();
+    // PRD Reference: 0011
     expect(farms.length).toBe(1);
+    // PRD Reference: 0011
     expect(farms[0].name).toBe('Server Farm');
+    // PRD Reference: 0011
     expect(farms[0].serverId).toBe(1);
+    // PRD Reference: 0011
     expect(farms[0].syncStatus).toBe('synced');
   });
 
+  // PRD Reference: 0011
   it('should remove soft-deleted records on pull', async () => {
     const db = await firstValueFrom(rxdbService.db$);
 
@@ -353,9 +394,11 @@ describe('SyncEngineService', () => {
     await pullPromise;
 
     const farms = await db.farms.find().exec();
+    // PRD Reference: 0011
     expect(farms.length).toBe(0);
   });
 
+  // PRD Reference: 0011
   it('should update existing records when server is newer (LWW)', async () => {
     const db = await firstValueFrom(rxdbService.db$);
 
@@ -386,11 +429,15 @@ describe('SyncEngineService', () => {
     await pullPromise;
 
     const farm = await db.farms.findOne('server-10').exec();
+    // PRD Reference: 0011
     expect(farm?.name).toBe('New Name');
+    // PRD Reference: 0011
     expect(farm?.location).toBe('New Location');
+    // PRD Reference: 0011
     expect(farm?.syncStatus).toBe('synced');
   });
 
+  // PRD Reference: 0011
   it('should keep local record when local is newer with pending outbox (LWW)', async () => {
     const db = await firstValueFrom(rxdbService.db$);
 
@@ -434,6 +481,7 @@ describe('SyncEngineService', () => {
 
     // Local should be kept (local is newer + has pending outbox)
     const farm = await db.farms.findOne('server-20').exec();
+    // PRD Reference: 0011
     expect(farm?.name).toBe('Local Edit');
   });
 
@@ -441,19 +489,23 @@ describe('SyncEngineService', () => {
   // Checkpoint Management
   // ──────────────────────────────────────────────────────────
 
+  // PRD Reference: 0011
   it('should store and retrieve checkpoint', async () => {
     const db = await firstValueFrom(rxdbService.db$);
 
     // Initially no checkpoint
     const initial = await service.getCheckpoint(db);
+    // PRD Reference: 0011
     expect(initial).toBeNull();
 
     // Set a checkpoint
     await service.setCheckpoint(db, '2026-04-25T12:00:00Z');
     const stored = await service.getCheckpoint(db);
+    // PRD Reference: 0011
     expect(stored).toBe('2026-04-25T12:00:00Z');
   });
 
+  // PRD Reference: 0011
   it('should use checkpoint as since parameter on pull', async () => {
     const db = await firstValueFrom(rxdbService.db$);
 
@@ -465,6 +517,7 @@ describe('SyncEngineService', () => {
     const syncReq = httpMock.expectOne(
       (req) => req.url.includes('/v0/sync') && req.url.includes('since=')
     );
+    // PRD Reference: 0011
     expect(syncReq.request.url).toContain('2026-04-25T10%3A00%3A00Z');
     syncReq.flush({
       checkpoint: '2026-04-25T12:00:00Z',
@@ -478,14 +531,17 @@ describe('SyncEngineService', () => {
 
     // Checkpoint should be updated
     const newCheckpoint = await service.getCheckpoint(db);
+    // PRD Reference: 0011
     expect(newCheckpoint).toBe('2026-04-25T12:00:00Z');
   });
 
+  // PRD Reference: 0011
   it('should do full sync without since when no checkpoint exists', async () => {
     const pullPromise = service.pullSync();
     await new Promise(resolve => setTimeout(resolve, 50));
 
     const syncReq = httpMock.expectOne('/v0/sync');
+    // PRD Reference: 0011
     expect(syncReq.request.url).toBe('/v0/sync');
     syncReq.flush({
       checkpoint: '2026-04-25T12:00:00Z',
@@ -502,6 +558,7 @@ describe('SyncEngineService', () => {
   // SyncState Transitions
   // ──────────────────────────────────────────────────────────
 
+  // PRD Reference: 0011
   it('should drive SyncStateService transitions during processOutbox', async () => {
     const db = await firstValueFrom(rxdbService.db$);
     const states: string[] = [];
@@ -559,11 +616,15 @@ describe('SyncEngineService', () => {
 
     sub.unsubscribe();
 
+    // PRD Reference: 0011
     expect(states).toContain('syncing');
+    // PRD Reference: 0011
     expect(states[states.length - 1]).toBe('synced');
   });
 
+  // PRD Reference: 0011
   describe('Outbox Backoff and Client Error Handling', () => {
+    // PRD Reference: 0011
     it('should respect backoff period on retry', async () => {
       const db = await firstValueFrom(rxdbService.db$);
 
@@ -591,10 +652,13 @@ describe('SyncEngineService', () => {
       httpMock.expectNone('/v0/farms');
 
       const entries = await db.outbox.find().exec();
+      // PRD Reference: 0011
       expect(entries.length).toBe(1);
+      // PRD Reference: 0011
       expect(entries[0].retryCount).toBe(1);
     });
 
+    // PRD Reference: 0011
     it('should mark as failed immediately on 400 client error', async () => {
       const db = await firstValueFrom(rxdbService.db$);
 
@@ -626,11 +690,15 @@ describe('SyncEngineService', () => {
       await processPromise;
 
       const entries = await db.outbox.find().exec();
+      // PRD Reference: 0011
       expect(entries.length).toBe(1);
+      // PRD Reference: 0011
       expect(entries[0].status).toBe('failed');
+      // PRD Reference: 0011
       expect(entries[0].retryCount).toBe(1);
 
       const farm = await db.farms.findOne('local-400-1').exec();
+      // PRD Reference: 0011
       expect(farm?.syncStatus).toBe('failed');
     });
   });

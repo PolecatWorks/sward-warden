@@ -22,15 +22,18 @@ export class SoilAnalysisResults implements OnInit {
 
   constructor(private farmService: FarmManagementService) {}
 
+  // No obvious PRD requirement
   ngOnInit(): void {
     this.loadData();
   }
 
+  // No obvious PRD requirement
   loadData(): void {
     this.farmService.getFields().subscribe(fields => this.fields = fields);
     this.farmService.getSoilAnalyses().subscribe(analyses => this.analyses = analyses);
   }
 
+  // No obvious PRD requirement
   addAnalysis(): void {
     if (this.newAnalysis.field_id > 0 && this.newAnalysis.sample_date) {
       this.farmService.addSoilAnalysis(this.newAnalysis).subscribe(() => {
@@ -47,6 +50,7 @@ export class SoilAnalysisResults implements OnInit {
     }
   }
 
+  // No obvious PRD requirement
   deleteAnalysis(id: number | undefined): void {
     if (id) {
       this.farmService.deleteEntity('soil_analyses', id).subscribe(() => {
@@ -55,6 +59,7 @@ export class SoilAnalysisResults implements OnInit {
     }
   }
 
+  // No obvious PRD requirement
   getFieldName(fieldId: number): string {
     const field = this.fields.find(f => f.id === fieldId);
     return field ? field.name : 'Unknown Field';

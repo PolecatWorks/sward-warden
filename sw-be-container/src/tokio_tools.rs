@@ -50,6 +50,7 @@ pub fn rt_multithreaded(runtime: &ThreadRuntime) -> Result<Runtime, AppError> {
 }
 
 /// run async function inside tokio instance on current thread
+// No obvious PRD requirement
 pub fn run_in_tokio<F, T>(runtime: &ThreadRuntime, my_function: F) -> F::Output
 where
     F: Future<Output = Result<T, AppError>>,
@@ -62,6 +63,7 @@ where
 }
 
 /// Run async with cancellability via CancellationToken
+// No obvious PRD requirement
 pub fn run_in_tokio_with_cancel<F, T>(
     runtime: &ThreadRuntime,
     cancel: CancellationToken,

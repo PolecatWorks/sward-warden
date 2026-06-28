@@ -5,10 +5,12 @@ import { of } from 'rxjs';
 import { SoilAnalysisResults } from './soil-analysis-results';
 import { FarmManagementService } from '../services/farm-management.service';
 
+// No obvious PRD requirement
 describe('SoilAnalysisResults', () => {
   let component: SoilAnalysisResults;
   let fixture: ComponentFixture<SoilAnalysisResults>;
 
+  // No obvious PRD requirement
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SoilAnalysisResults, HttpClientTestingModule],
@@ -29,7 +31,9 @@ describe('SoilAnalysisResults', () => {
     fixture.detectChanges();
   });
 
+  // No obvious PRD requirement
   it('should create', () => {
+    // No obvious PRD requirement
     expect(component).toBeTruthy();
   });
 });

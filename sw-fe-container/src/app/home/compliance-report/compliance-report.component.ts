@@ -22,6 +22,7 @@ export class ComplianceReportComponent implements OnInit {
     private farmService: FarmManagementService
   ) {}
 
+  // No obvious PRD requirement
   ngOnInit(): void {
     const farmIdParam = this.route.snapshot.paramMap.get('farmId');
     if (farmIdParam) {
@@ -30,13 +31,16 @@ export class ComplianceReportComponent implements OnInit {
     }
   }
 
+  // No obvious PRD requirement
   loadBreaches(): void {
     this.breaches$ = this.farmService.getComplianceBreachesForFarm(this.farmId);
     this.totalPenalty$ = this.breaches$.pipe(
+      // No obvious PRD requirement
       map(breaches => breaches.reduce((sum, b) => sum + (b.estimated_penalty_percentage || 0), 0))
     );
   }
 
+  // No obvious PRD requirement
   getSeverityClass(severity: string): string {
     switch (severity) {
       case 'Very High': return 'bg-error/10 text-error border-error/20';

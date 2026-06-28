@@ -43,6 +43,7 @@ pub struct AppConfig {
     pub debugging: DebuggingConfig,
 }
 
+// No obvious PRD requirement
 fn serialize_hams<S>(hams: &HamsConfig, s: S) -> Result<S::Ok, S::Error>
 where
     S: serde::Serializer,

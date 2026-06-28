@@ -66,8 +66,10 @@ export class FieldMapEditorComponent
     this.wicket = new (WktModule as any).Wkt();
   }
 
+  // PRD Reference: 0016
   ngOnInit() {}
 
+  // PRD Reference: 0016
   ngAfterViewInit() {
     this.initMap();
     if (this.wkt) {
@@ -79,12 +81,14 @@ export class FieldMapEditorComponent
     }
   }
 
+  // PRD Reference: 0016
   ngOnDestroy() {
     if (this.map) {
       this.map.remove();
     }
   }
 
+  // PRD Reference: 0016
   private initMap(): void {
     this.map = L.map(this.mapElement.nativeElement, {
       center: [54.5, -6.5], // Default center
@@ -103,6 +107,7 @@ export class FieldMapEditorComponent
     tiles.addTo(this.map);
   }
 
+  // PRD Reference: 0016
   private setupGeoman(): void {
     this.map.pm.addControls({
       position: 'topleft',
@@ -142,6 +147,7 @@ export class FieldMapEditorComponent
     });
   }
 
+  // PRD Reference: 0016
   private loadWkt(wktString: string): void {
     try {
       this.wicket.read(wktString);
@@ -180,6 +186,7 @@ export class FieldMapEditorComponent
     }
   }
 
+  // PRD Reference: 0016
   private updateWktFromLayer(layer: L.Layer): void {
     try {
       let geojson;
@@ -198,6 +205,7 @@ export class FieldMapEditorComponent
   }
 
   // Stub for PRD 24 auto-detection
+  // PRD Reference: 0016
   autoDetectStub(): void {
     if (this.currentLayer) {
       this.map.removeLayer(this.currentLayer);

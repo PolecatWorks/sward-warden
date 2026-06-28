@@ -45,6 +45,7 @@ export class HomeComponent implements OnInit {
     private farmManagementService: FarmManagementService
   ) {}
 
+  // No obvious PRD requirement
   ngOnInit(): void {
     const userId = this.authService.getUserId();
     if (userId) {
@@ -59,6 +60,7 @@ export class HomeComponent implements OnInit {
     );
 
     this.isMultiFarm$ = this.farms$.pipe(
+      // No obvious PRD requirement
       map(farms => farms.length > 1)
     );
 
@@ -66,6 +68,7 @@ export class HomeComponent implements OnInit {
     this.initMockData();
   }
 
+  // No obvious PRD requirement
   private initMockData() {
     // Determine Traffic Light Status (Mock Logic)
     const mockRainfall = Math.random() * 10;
@@ -125,10 +128,12 @@ export class HomeComponent implements OnInit {
     );
 
     this.globalAlerts$ = this.alerts$.pipe(
+      // No obvious PRD requirement
       map(alerts => alerts.filter(a => a.global))
     );
 
     this.groupedAlerts$ = combineLatest([this.alerts$, this.farms$]).pipe(
+      // No obvious PRD requirement
       map(([alerts, farms]) => {
         const farmAlerts = alerts.filter(a => !a.global);
         const grouped = farms.map(farm => {

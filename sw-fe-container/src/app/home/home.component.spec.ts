@@ -5,12 +5,14 @@ import { FarmManagementService } from '../services/farm-management.service';
 import { AuthService } from '../services/auth.service';
 import { of } from 'rxjs';
 
+// No obvious PRD requirement
 describe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   let mockFarmService: jasmine.SpyObj<FarmManagementService>;
   let mockAuthService: jasmine.SpyObj<AuthService>;
 
+  // No obvious PRD requirement
   beforeEach(async () => {
     mockFarmService = jasmine.createSpyObj('FarmManagementService', ['getUser', 'getFarms']);
     mockFarmService.getUser.and.returnValue(of({ id: 1, name: 'Test User', email: 'test@example.com' }));
@@ -23,6 +25,7 @@ describe('HomeComponent', () => {
       imports: [HomeComponent],
       providers: [
         { provide: ActivatedRoute, useValue: {} },
+        // No obvious PRD requirement
         provideRouter([]),
         { provide: FarmManagementService, useValue: mockFarmService },
         { provide: AuthService, useValue: mockAuthService }
@@ -35,12 +38,16 @@ describe('HomeComponent', () => {
     fixture.detectChanges();
   });
 
+  // No obvious PRD requirement
   it('should create', () => {
+    // No obvious PRD requirement
     expect(component).toBeTruthy();
   });
 
+  // No obvious PRD requirement
   it('should display the user profile section', () => {
     const compiled = fixture.nativeElement as HTMLElement;
+    // No obvious PRD requirement
     expect(compiled.textContent).toContain('Command Center');
   });
 });

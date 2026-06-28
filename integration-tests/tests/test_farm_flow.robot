@@ -8,6 +8,7 @@ ${EXTERNAL_DNS_URL}
 ${BE_BASE_URL}
 
 *** Test Cases ***
+# PRD Reference: 0003
 Farm Creation and Deletion Flow
     [Documentation]    Test farm creation and deletion flow end-to-end
     [Teardown]    Teardown With Video
@@ -87,6 +88,7 @@ Farm Creation and Deletion Flow
     END
     Should Not Be True    ${found_farm_after}    Farm still found in API response after deletion
 
+# PRD Reference: 0003
 Farm Deletion Blocking and Field Migration Flow
     [Documentation]    Test that farm deletion is blocked if there are active fields, then migrate the field and delete
     [Teardown]    Teardown With Video

@@ -5,10 +5,12 @@ import { of } from 'rxjs';
 import { FertilisationPlansComponent } from './fertilisation-plans.component';
 import { FarmManagementService } from '../services/farm-management.service';
 
+// No obvious PRD requirement
 describe('FertilisationPlansComponent', () => {
   let component: FertilisationPlansComponent;
   let fixture: ComponentFixture<FertilisationPlansComponent>;
 
+  // No obvious PRD requirement
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [FertilisationPlansComponent, HttpClientTestingModule],
@@ -29,7 +31,9 @@ describe('FertilisationPlansComponent', () => {
     fixture.detectChanges();
   });
 
+  // No obvious PRD requirement
   it('should create', () => {
+    // No obvious PRD requirement
     expect(component).toBeTruthy();
   });
 });

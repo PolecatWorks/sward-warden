@@ -10,6 +10,7 @@ import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { By } from '@angular/platform-browser';
 
+// No obvious PRD requirement
 describe('MainLayoutComponent', () => {
   let component: MainLayoutComponent;
   let fixture: ComponentFixture<MainLayoutComponent>;
@@ -26,6 +27,7 @@ describe('MainLayoutComponent', () => {
     { id: 2, name: 'John Doe', email: 'john@example.com', role: 'user' }
   ];
 
+  // No obvious PRD requirement
   beforeEach(async () => {
     rxdbServiceSpy = jasmine.createSpyObj('RxdbService', [], {
       fallbackToRest$: of(false)
@@ -43,6 +45,7 @@ describe('MainLayoutComponent', () => {
     await TestBed.configureTestingModule({
       imports: [MainLayoutComponent],
       providers: [
+        // No obvious PRD requirement
         provideRouter([]),
         { provide: RxdbService, useValue: rxdbServiceSpy },
         { provide: AuthService, useValue: authServiceSpy },
@@ -55,39 +58,57 @@ describe('MainLayoutComponent', () => {
     fixture = TestBed.createComponent(MainLayoutComponent);
     component = fixture.componentInstance;
     router = TestBed.inject(Router);
+    // No obvious PRD requirement
     spyOn(router, 'navigate');
   });
 
+  // No obvious PRD requirement
   it('should create and load data on init', () => {
     fixture.detectChanges();
+    // No obvious PRD requirement
     expect(component).toBeTruthy();
+    // No obvious PRD requirement
     expect(authServiceSpy.getUserId).toHaveBeenCalled();
+    // No obvious PRD requirement
     expect(farmServiceSpy.getUser).toHaveBeenCalledWith('1');
+    // No obvious PRD requirement
     expect(farmServiceSpy.getUsers).toHaveBeenCalled();
   });
 
+  // No obvious PRD requirement
   it('should render switcher options', () => {
     fixture.detectChanges();
     const selectEl = fixture.debugElement.query(By.css('#user-switcher-dropdown'));
+    // No obvious PRD requirement
     expect(selectEl).toBeTruthy();
 
     const options = selectEl.nativeElement.querySelectorAll('option');
+    // No obvious PRD requirement
     expect(options.length).toBe(2);
+    // No obvious PRD requirement
     expect(options[0].textContent.trim()).toBe("Seamus O'Neill (admin)");
+    // No obvious PRD requirement
     expect(options[1].textContent.trim()).toBe("John Doe (user)");
   });
 
+  // No obvious PRD requirement
   it('should call devAuthApi.getToken, authService.login and reload on switchUser', () => {
+    // No obvious PRD requirement
     spyOn(component, 'reloadPage');
     fixture.detectChanges();
 
     component.switchUser('2');
+    // No obvious PRD requirement
     expect(devAuthApiSpy.getToken).toHaveBeenCalledWith(2, 'user');
+    // No obvious PRD requirement
     expect(authServiceSpy.login).toHaveBeenCalledWith('2', 'new-fake-token');
+    // No obvious PRD requirement
     expect(component.reloadPage).toHaveBeenCalled();
   });
 
+  // No obvious PRD requirement
   it('should call switchUser when dropdown selection changes', () => {
+    // No obvious PRD requirement
     spyOn(component, 'switchUser');
     fixture.detectChanges();
 
@@ -96,6 +117,7 @@ describe('MainLayoutComponent', () => {
     selectEl.nativeElement.dispatchEvent(new Event('change'));
 
     fixture.detectChanges();
+    // No obvious PRD requirement
     expect(component.switchUser).toHaveBeenCalledWith('2');
   });
 });

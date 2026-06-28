@@ -30,10 +30,12 @@ export class OptimizationService {
     @Inject(APP_CONFIG) private config: AppConfig
   ) { }
 
+  // No obvious PRD requirement
   private get apiUrl() {
     return `${this.config.apiPath}/v0/optimization`;
   }
 
+  // No obvious PRD requirement
   getSuggestions(farmId: number): Observable<OptimizationPlan> {
     return this.http.get<OptimizationPlan>(`${this.apiUrl}/suggestions/${farmId}`);
   }

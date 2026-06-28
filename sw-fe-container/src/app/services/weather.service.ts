@@ -24,10 +24,12 @@ export class WeatherService {
     @Inject(APP_CONFIG) private config: AppConfig
   ) { }
 
+  // PRD Reference: 0008
   private get apiUrl() {
     return `${this.config.apiPath}/v0/weather`;
   }
 
+  // PRD Reference: 0008
   getForecast(lat: number, lon: number): Observable<WeatherData[]> {
     return this.http.get<WeatherData[]>(`${this.apiUrl}/forecast?lat=${lat}&lon=${lon}`);
   }
