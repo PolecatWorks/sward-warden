@@ -177,7 +177,7 @@
 
   <!-- Add Field Modal -->
   <div *ngIf="showAddForm" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-labelledby="add-field-modal-title" id="add-field-modal">
-    <div class="bg-surface rounded-2xl w-full max-w-md shadow-2xl overflow-hidden border border-outline-variant">
+    <div class="bg-surface rounded-2xl w-full max-w-md shadow-2xl overflow-y-auto max-h-[90vh] border border-outline-variant">
       <div class="px-6 py-4 border-b border-surface-variant flex justify-between items-center">
         <h3 id="add-field-modal-title" class="text-xl font-bold text-on-surface">Add New Field</h3>
         <button (click)="toggleAddForm()" id="close-add-field-modal-btn" class="text-on-surface-variant hover:text-on-surface rounded-full p-1 transition-colors" aria-label="Close dialog">
