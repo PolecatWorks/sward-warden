@@ -22,23 +22,22 @@ describe('SwardMovementsComponent', () => {
           useValue: {
             params: of({ id: '1' }),
             snapshot: { paramMap: { get: () => '1' } },
-            paramMap: of({ get: () => '1' })
-          }
+            paramMap: of({ get: () => '1' }),
+          },
         },
         {
           provide: FarmManagementService,
           useValue: {
             getSwardMovementsForFarm: () => of([]),
-            addSwardMovement: () => of({})
-          }
+            addSwardMovement: () => of({}),
+          },
         },
         // No obvious PRD requirement
         provideHttpClient(),
         // No obvious PRD requirement
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
+        provideHttpClientTesting(),
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SwardMovementsComponent);
     component = fixture.componentInstance;

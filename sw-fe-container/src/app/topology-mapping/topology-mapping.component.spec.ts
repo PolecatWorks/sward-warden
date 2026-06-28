@@ -14,19 +14,22 @@ describe('TopologyMappingComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [
-        { provide: ActivatedRoute, useValue: { paramMap: of({ get: () => '1' }) } },
+        {
+          provide: ActivatedRoute,
+          useValue: { paramMap: of({ get: () => '1' }) },
+        },
         // PRD Reference: 0008
         provideRouter([]),
         {
           provide: SpatialService,
           useValue: {
-            getWaterwayBuffers: () => of({ type: 'FeatureCollection', features: [] })
-          }
-        }
+            getWaterwayBuffers: () =>
+              of({ type: 'FeatureCollection', features: [] }),
+          },
+        },
       ],
-      imports: [TopologyMappingComponent]
-    })
-    .compileComponents();
+      imports: [TopologyMappingComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(TopologyMappingComponent);
     component = fixture.componentInstance;

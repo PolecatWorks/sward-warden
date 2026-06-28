@@ -10,14 +10,14 @@ import { SoilAnalysis } from '../models/soil-analysis';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './soil-analysis-results.html',
-  styleUrls: ['./soil-analysis-results.css']
+  styleUrls: ['./soil-analysis-results.css'],
 })
 export class SoilAnalysisResults implements OnInit {
   fields: Field[] = [];
   analyses: SoilAnalysis[] = [];
   newAnalysis: SoilAnalysis = {
     field_id: 0,
-    sample_date: new Date().toISOString().split('T')[0]
+    sample_date: new Date().toISOString().split('T')[0],
   };
 
   constructor(private farmService: FarmManagementService) {}
@@ -29,8 +29,10 @@ export class SoilAnalysisResults implements OnInit {
 
   // No obvious PRD requirement
   loadData(): void {
-    this.farmService.getFields().subscribe(fields => this.fields = fields);
-    this.farmService.getSoilAnalyses().subscribe(analyses => this.analyses = analyses);
+    this.farmService.getFields().subscribe((fields) => (this.fields = fields));
+    this.farmService
+      .getSoilAnalyses()
+      .subscribe((analyses) => (this.analyses = analyses));
   }
 
   // No obvious PRD requirement
@@ -44,7 +46,7 @@ export class SoilAnalysisResults implements OnInit {
           ph_level: undefined,
           phosphorus_index: undefined,
           potassium_index: undefined,
-          magnesium_index: undefined
+          magnesium_index: undefined,
         };
       });
     }
@@ -61,7 +63,7 @@ export class SoilAnalysisResults implements OnInit {
 
   // No obvious PRD requirement
   getFieldName(fieldId: number): string {
-    const field = this.fields.find(f => f.id === fieldId);
+    const field = this.fields.find((f) => f.id === fieldId);
     return field ? field.name : 'Unknown Field';
   }
 }

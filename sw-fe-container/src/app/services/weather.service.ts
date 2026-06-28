@@ -16,13 +16,13 @@ import { APP_CONFIG, AppConfig } from '../app-config';
 import { Inject } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class WeatherService {
   constructor(
     private http: HttpClient,
-    @Inject(APP_CONFIG) private config: AppConfig
-  ) { }
+    @Inject(APP_CONFIG) private config: AppConfig,
+  ) {}
 
   // PRD Reference: 0008
   private get apiUrl() {
@@ -31,6 +31,8 @@ export class WeatherService {
 
   // PRD Reference: 0008
   getForecast(lat: number, lon: number): Observable<WeatherData[]> {
-    return this.http.get<WeatherData[]>(`${this.apiUrl}/forecast?lat=${lat}&lon=${lon}`);
+    return this.http.get<WeatherData[]>(
+      `${this.apiUrl}/forecast?lat=${lat}&lon=${lon}`,
+    );
   }
 }

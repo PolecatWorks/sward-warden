@@ -14,11 +14,24 @@ describe('UserProfileComponent', () => {
 
   // PRD Reference: 0003
   beforeEach(async () => {
-    mockFarmService = jasmine.createSpyObj('FarmManagementService', ['getUsers', 'getUser', 'updateUser', 'addUser']);
-    mockFarmService.getUsers.and.returnValue(of([{ id: 1, name: 'Test User', email: 'test@example.com' }]));
-    mockFarmService.getUser.and.returnValue(of({ id: 1, name: 'Test User', email: 'test@example.com' }));
-    mockFarmService.updateUser.and.returnValue(of({ id: 1, name: 'Updated User', email: 'test@example.com' }));
-    mockFarmService.addUser.and.returnValue(of({ id: 2, name: 'New User', email: 'new@example.com' }));
+    mockFarmService = jasmine.createSpyObj('FarmManagementService', [
+      'getUsers',
+      'getUser',
+      'updateUser',
+      'addUser',
+    ]);
+    mockFarmService.getUsers.and.returnValue(
+      of([{ id: 1, name: 'Test User', email: 'test@example.com' }]),
+    );
+    mockFarmService.getUser.and.returnValue(
+      of({ id: 1, name: 'Test User', email: 'test@example.com' }),
+    );
+    mockFarmService.updateUser.and.returnValue(
+      of({ id: 1, name: 'Updated User', email: 'test@example.com' }),
+    );
+    mockFarmService.addUser.and.returnValue(
+      of({ id: 2, name: 'New User', email: 'new@example.com' }),
+    );
 
     mockAuthService = jasmine.createSpyObj('AuthService', ['getUserId']);
     mockAuthService.getUserId.and.returnValue('1');
@@ -30,10 +43,9 @@ describe('UserProfileComponent', () => {
         // PRD Reference: 0003
         provideRouter([]),
         { provide: FarmManagementService, useValue: mockFarmService },
-        { provide: AuthService, useValue: mockAuthService }
-      ]
-    })
-    .compileComponents();
+        { provide: AuthService, useValue: mockAuthService },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(UserProfileComponent);
     component = fixture.componentInstance;
@@ -48,7 +60,7 @@ describe('UserProfileComponent', () => {
 
   // PRD Reference: 0003
   it('should load users on init', () => {
-    component.users$.subscribe(users => {
+    component.users$.subscribe((users) => {
       // PRD Reference: 0003
       expect(users.length).toBe(1);
       // PRD Reference: 0003

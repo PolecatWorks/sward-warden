@@ -12,9 +12,8 @@ describe('WaterwayProtectionComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
-      imports: [WaterwayProtectionComponent]
-    })
-    .compileComponents();
+      imports: [WaterwayProtectionComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(WaterwayProtectionComponent);
     component = fixture.componentInstance;

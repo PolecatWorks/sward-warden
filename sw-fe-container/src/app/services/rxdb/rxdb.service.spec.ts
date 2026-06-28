@@ -1,5 +1,10 @@
 import { TestBed } from '@angular/core/testing';
-import { RxdbService, SwardDatabase, RXDB_STORAGE, RXDB_DB_NAME } from './rxdb.service';
+import {
+  RxdbService,
+  SwardDatabase,
+  RXDB_STORAGE,
+  RXDB_DB_NAME,
+} from './rxdb.service';
 import { getRxStorageMemory } from 'rxdb/plugins/storage-memory';
 import { firstValueFrom } from 'rxjs';
 import * as rxdbModule from 'rxdb';
@@ -155,7 +160,10 @@ describe('RxdbService', () => {
       await existingDb.close();
 
       let callCount = 0;
-      const tryCreateSpy = spyOn<any>(service, 'tryCreateDatabase').and.callFake(async () => {
+      const tryCreateSpy = spyOn<any>(
+        service,
+        'tryCreateDatabase',
+      ).and.callFake(async () => {
         callCount++;
         if (callCount === 1) {
           throw new Error('Simulated database corruption/schema mismatch');

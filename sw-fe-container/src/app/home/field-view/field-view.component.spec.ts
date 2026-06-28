@@ -22,16 +22,34 @@ describe('FieldViewComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             paramMap: of({
-              get: (key: string) => key === 'fieldId' ? '1' : null
-            })
-          }
+              get: (key: string) => (key === 'fieldId' ? '1' : null),
+            }),
+          },
         },
         {
           provide: FarmManagementService,
           useValue: {
-            getField: () => of({ id: 1, farm_id: 1, name: 'Test Field', area_hectares: 10, land_use: 'grassland' }),
-            getFarms: () => of([{ id: 1, name: 'Test Farm' }, { id: 2, name: 'Other Farm' }]),
-            updateField: () => of({ id: 1, farm_id: 2, name: 'Updated Name', area_hectares: 12.5, land_use: 'arable' }),
+            getField: () =>
+              of({
+                id: 1,
+                farm_id: 1,
+                name: 'Test Field',
+                area_hectares: 10,
+                land_use: 'grassland',
+              }),
+            getFarms: () =>
+              of([
+                { id: 1, name: 'Test Farm' },
+                { id: 2, name: 'Other Farm' },
+              ]),
+            updateField: () =>
+              of({
+                id: 1,
+                farm_id: 2,
+                name: 'Updated Name',
+                area_hectares: 12.5,
+                land_use: 'arable',
+              }),
             getEvents: () => of([]),
             getFertiliserApplications: () => of([]),
             getOrganicManureApplications: () => of([]),
@@ -40,13 +58,16 @@ describe('FieldViewComponent', () => {
             addOrganicManureApplication: () => of({}),
             updateEvent: () => of({}),
             updateFertiliserApplication: () => of({}),
-            updateOrganicManureApplication: () => of({})
-          }
-        }
+            updateOrganicManureApplication: () => of({}),
+          },
+        },
       ],
-      imports: [FieldViewComponent, HttpClientTestingModule, RouterTestingModule]
-    })
-    .compileComponents();
+      imports: [
+        FieldViewComponent,
+        HttpClientTestingModule,
+        RouterTestingModule,
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(FieldViewComponent);
     component = fixture.componentInstance;
@@ -187,7 +208,7 @@ describe('FieldViewComponent', () => {
       date: '2026-06-08',
       crop: 'Barley',
       variety: 'Golden',
-      description: 'Test planting description'
+      description: 'Test planting description',
     };
 
     component.submitPlantingRecord();
@@ -199,7 +220,7 @@ describe('FieldViewComponent', () => {
       description: 'Test planting description',
       date: '2026-06-08',
       mapp_number: 'Barley',
-      eppo_code: 'Golden'
+      eppo_code: 'Golden',
     } as any);
     // PRD Reference: 0016
     expect(component.loadEvents).toHaveBeenCalled();
@@ -216,7 +237,7 @@ describe('FieldViewComponent', () => {
       field_id: 1,
       event_type: 'Planting',
       description: 'Planted Wheat (Variety: Winter Wheat)',
-      date: '2026-06-08'
+      date: '2026-06-08',
     };
 
     component.startEdit(legacyEvent);
@@ -246,7 +267,7 @@ describe('FieldViewComponent', () => {
       description: 'Original Notes',
       date: '2026-06-08',
       mapp_number: 'Oats',
-      eppo_code: 'Oat Variety'
+      eppo_code: 'Oat Variety',
     };
 
     component.startEdit(plantingEvent);
@@ -262,7 +283,7 @@ describe('FieldViewComponent', () => {
       date: '2026-06-08',
       mapp_number: 'Rye',
       eppo_code: 'Rye Variety',
-      bbch_growth_stage: undefined
+      bbch_growth_stage: undefined,
     });
     // PRD Reference: 0016
     expect(component.loadEvents).toHaveBeenCalled();
@@ -280,7 +301,7 @@ describe('FieldViewComponent', () => {
     component.generalEvent = {
       event_type: 'Harvesting',
       date: '2026-06-08',
-      description: 'Harvesting the field'
+      description: 'Harvesting the field',
     };
 
     component.submitGeneralEvent();
@@ -290,7 +311,7 @@ describe('FieldViewComponent', () => {
       field_id: component.fieldId,
       event_type: 'Harvesting',
       description: 'Harvesting the field',
-      date: '2026-06-08'
+      date: '2026-06-08',
     } as any);
     // PRD Reference: 0016
     expect(component.loadEvents).toHaveBeenCalled();
@@ -309,7 +330,9 @@ describe('FieldViewComponent', () => {
     await fixture.whenStable();
 
     const cropInput = fixture.nativeElement.querySelector('input[name="crop"]');
-    const varietyInput = fixture.nativeElement.querySelector('input[name="variety"]');
+    const varietyInput = fixture.nativeElement.querySelector(
+      'input[name="variety"]',
+    );
 
     // PRD Reference: 0016
     expect(cropInput).toBeTruthy();

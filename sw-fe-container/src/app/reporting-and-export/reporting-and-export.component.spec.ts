@@ -12,9 +12,8 @@ describe('ReportingAndExportComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
-      imports: [ReportingAndExportComponent]
-    })
-    .compileComponents();
+      imports: [ReportingAndExportComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ReportingAndExportComponent);
     component = fixture.componentInstance;

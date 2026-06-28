@@ -6,8 +6,6 @@ import { RouterLink } from '@angular/router';
   selector: 'app-equipment-tracking',
   imports: [RouterLink],
   templateUrl: './equipment-tracking.component.html',
-  styleUrl: './equipment-tracking.component.css'
+  styleUrl: './equipment-tracking.component.css',
 })
-export class EquipmentTrackingComponent {
-
-}
+export class EquipmentTrackingComponent {}

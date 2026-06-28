@@ -9,11 +9,11 @@ import { MatIconModule } from '@angular/material/icon';
   standalone: true,
   imports: [CommonModule, MatCardModule, MatListModule, MatIconModule],
   templateUrl: './waterway-protection.component.html',
-  styleUrl: './waterway-protection.component.css'
+  styleUrl: './waterway-protection.component.css',
 })
 export class WaterwayProtectionComponent {
   waterways = [
     { name: 'River Shannon', bufferZone: '10m', isWithinBuffer: false },
-    { name: 'Local Stream (East)', bufferZone: '5m', isWithinBuffer: true }
+    { name: 'Local Stream (East)', bufferZone: '5m', isWithinBuffer: true },
   ];
 }

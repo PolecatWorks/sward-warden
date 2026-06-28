@@ -48,14 +48,32 @@ async function murmurhash3Hash(
 }
 
 import {
-  FarmDocType, FieldDocType, EventDocType, OutboxDocType, MetadataDocType,
-  SoilAnalysisDocType, FertilisationPlanDocType, FarmRecordDocType,
-  OrganicManureApplicationDocType, ComplianceBreachDocType, SwardMovementDocType,
-  InventoryStorageDocType, InventoryChemicalDocType,
-  farmSchema, fieldSchema, eventSchema, outboxSchema, metadataSchema,
-  soilAnalysisSchema, fertilisationPlanSchema, farmRecordSchema,
-  organicManureApplicationSchema, complianceBreachSchema, swardMovementSchema,
-  inventoryStorageSchema, inventoryChemicalSchema
+  FarmDocType,
+  FieldDocType,
+  EventDocType,
+  OutboxDocType,
+  MetadataDocType,
+  SoilAnalysisDocType,
+  FertilisationPlanDocType,
+  FarmRecordDocType,
+  OrganicManureApplicationDocType,
+  ComplianceBreachDocType,
+  SwardMovementDocType,
+  InventoryStorageDocType,
+  InventoryChemicalDocType,
+  farmSchema,
+  fieldSchema,
+  eventSchema,
+  outboxSchema,
+  metadataSchema,
+  soilAnalysisSchema,
+  fertilisationPlanSchema,
+  farmRecordSchema,
+  organicManureApplicationSchema,
+  complianceBreachSchema,
+  swardMovementSchema,
+  inventoryStorageSchema,
+  inventoryChemicalSchema,
 } from './schemas';
 
 /** Injection token for providing an alternative RxStorage (e.g. memory for tests). */

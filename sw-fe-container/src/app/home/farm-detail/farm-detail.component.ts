@@ -14,7 +14,7 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './farm-detail.component.html',
-  styleUrl: './farm-detail.component.css'
+  styleUrl: './farm-detail.component.css',
 })
 export class FarmDetailComponent implements OnInit {
   farmId!: number;
@@ -37,9 +37,8 @@ export class FarmDetailComponent implements OnInit {
     private router: Router,
     private farmService: FarmManagementService,
     private rxdbService: RxdbService,
-    private logger: LoggerService
+    private logger: LoggerService,
   ) {}
-
 
   @HostListener('document:keydown.escape', ['$event'])
   // PRD Reference: 0003
@@ -51,7 +50,7 @@ export class FarmDetailComponent implements OnInit {
 
   // PRD Reference: 0003
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.subscribe((params) => {
       const idStr = params.get('farmId');
       if (idStr) {
         this.farmId = Number(idStr);
@@ -74,15 +73,15 @@ export class FarmDetailComponent implements OnInit {
 
     combineLatest({
       farms: this.farmService.getFarms(),
-      fields: this.farmService.getFields()
+      fields: this.farmService.getFields(),
     }).subscribe({
       next: ({ farms, fields }) => {
-        this.farm = farms.find(f => f.id === this.farmId) || null;
+        this.farm = farms.find((f) => f.id === this.farmId) || null;
         if (!this.farm) {
           this.errorMessage = 'Farm not found.';
         } else {
           // Filter active fields belonging to this farm
-          this.fields = fields.filter(f => f.farm_id === this.farmId);
+          this.fields = fields.filter((f) => f.farm_id === this.farmId);
         }
         this.isLoading = false;
       },
@@ -90,7 +89,7 @@ export class FarmDetailComponent implements OnInit {
         this.errorMessage = 'Failed to load farm details. Please try again.';
         this.isLoading = false;
         this.logger.error('Error loading farm details:', err);
-      }
+      },
     });
   }
 
@@ -105,11 +104,12 @@ export class FarmDetailComponent implements OnInit {
     this.showEditFarmModal = true;
   }
 
-
   // PRD Reference: 0003
   hasEditChanges(): boolean {
-    return this.editFarmName !== this.originalEditFarmName ||
-           this.editFarmLocation !== this.originalEditFarmLocation;
+    return (
+      this.editFarmName !== this.originalEditFarmName ||
+      this.editFarmLocation !== this.originalEditFarmLocation
+    );
   }
 
   // PRD Reference: 0003
@@ -121,13 +121,18 @@ export class FarmDetailComponent implements OnInit {
 
   // PRD Reference: 0003
   editFarm(): void {
-    if (!this.farm || !this.editFarmName || !this.editFarmLocation || !this.hasEditChanges()) {
+    if (
+      !this.farm ||
+      !this.editFarmName ||
+      !this.editFarmLocation ||
+      !this.hasEditChanges()
+    ) {
       return;
     }
 
     const updatedData: Partial<Farm> = {
       name: this.editFarmName,
-      location: this.editFarmLocation
+      location: this.editFarmLocation,
     };
 
     this.isSaving = true;
@@ -141,7 +146,7 @@ export class FarmDetailComponent implements OnInit {
         this.errorMessage = 'Failed to update farm. Please try again.';
         this.isSaving = false;
         this.logger.error('Error updating farm:', err);
-      }
+      },
     });
   }
 
@@ -158,7 +163,7 @@ export class FarmDetailComponent implements OnInit {
         this.errorMessage = 'Failed to delete farm. Please try again.';
         this.isSaving = false;
         this.logger.error('Error deleting farm:', err);
-      }
+      },
     });
   }
 }

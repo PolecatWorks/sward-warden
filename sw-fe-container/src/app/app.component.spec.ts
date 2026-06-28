@@ -11,7 +11,10 @@ describe('AppComponent Routing', () => {
 
   // No obvious PRD requirement
   beforeEach(async () => {
-    mockAuthService = jasmine.createSpyObj('AuthService', ['isLoggedIn', 'getUserId']);
+    mockAuthService = jasmine.createSpyObj('AuthService', [
+      'isLoggedIn',
+      'getUserId',
+    ]);
     mockAuthService.isLoggedIn.and.returnValue(true);
     mockAuthService.getUserId.and.returnValue('1');
 
@@ -21,8 +24,8 @@ describe('AppComponent Routing', () => {
         { provide: ActivatedRoute, useValue: {} },
         // No obvious PRD requirement
         provideRouter(routes),
-        { provide: AuthService, useValue: mockAuthService }
-      ]
+        { provide: AuthService, useValue: mockAuthService },
+      ],
     }).compileComponents();
   });
 

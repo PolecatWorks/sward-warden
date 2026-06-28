@@ -14,8 +14,13 @@ describe('HomeComponent', () => {
 
   // No obvious PRD requirement
   beforeEach(async () => {
-    mockFarmService = jasmine.createSpyObj('FarmManagementService', ['getUser', 'getFarms']);
-    mockFarmService.getUser.and.returnValue(of({ id: 1, name: 'Test User', email: 'test@example.com' }));
+    mockFarmService = jasmine.createSpyObj('FarmManagementService', [
+      'getUser',
+      'getFarms',
+    ]);
+    mockFarmService.getUser.and.returnValue(
+      of({ id: 1, name: 'Test User', email: 'test@example.com' }),
+    );
     mockFarmService.getFarms.and.returnValue(of([]));
 
     mockAuthService = jasmine.createSpyObj('AuthService', ['getUserId']);
@@ -28,10 +33,9 @@ describe('HomeComponent', () => {
         // No obvious PRD requirement
         provideRouter([]),
         { provide: FarmManagementService, useValue: mockFarmService },
-        { provide: AuthService, useValue: mockAuthService }
-      ]
-    })
-    .compileComponents();
+        { provide: AuthService, useValue: mockAuthService },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;

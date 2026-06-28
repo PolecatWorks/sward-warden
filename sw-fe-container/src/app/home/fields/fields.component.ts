@@ -16,7 +16,7 @@ import { FieldMapEditorComponent } from '../../shared/components/field-map-edito
   standalone: true,
   imports: [CommonModule, RouterLink, FormsModule, FieldMapEditorComponent],
   templateUrl: './fields.component.html',
-  styleUrl: './fields.component.css'
+  styleUrl: './fields.component.css',
 })
 export class FieldsComponent implements OnInit {
   fields: Field[] = [];
@@ -46,7 +46,10 @@ export class FieldsComponent implements OnInit {
 
   // PRD Reference: 0016
   get totalArea(): number {
-    return this.fields.reduce((acc, field) => acc + (field.area_hectares || 0), 0);
+    return this.fields.reduce(
+      (acc, field) => acc + (field.area_hectares || 0),
+      0,
+    );
   }
 
   constructor(
@@ -54,13 +57,13 @@ export class FieldsComponent implements OnInit {
     private farmService: FarmManagementService,
     private rxdbService: RxdbService,
     private authService: AuthService,
-    private syncEngineService: SyncEngineService
+    private syncEngineService: SyncEngineService,
   ) {}
 
   // PRD Reference: 0016
   ngOnInit(): void {
     this.loadFarms();
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.subscribe((params) => {
       const id = params.get('farmId');
       if (id) {
         this.farmId = +id;
@@ -85,7 +88,6 @@ export class FieldsComponent implements OnInit {
     });
   }
 
-
   @HostListener('document:keydown.escape', ['$event'])
   // PRD Reference: 0016
   handleEscape(event: KeyboardEvent) {
@@ -99,7 +101,7 @@ export class FieldsComponent implements OnInit {
 
   // PRD Reference: 0016
   loadFarms(): void {
-    this.farmService.getFarms().subscribe(farms => {
+    this.farmService.getFarms().subscribe((farms) => {
       this.farms = farms;
       if (this.farms.length === 1) {
         this.selectedFarmId = this.farms[0].id || 0;
@@ -111,21 +113,21 @@ export class FieldsComponent implements OnInit {
 
   // PRD Reference: 0016
   loadFarm(): void {
-    this.farmService.getFarms().subscribe(farms => {
-      this.farm = farms.find(f => f.id === this.farmId);
+    this.farmService.getFarms().subscribe((farms) => {
+      this.farm = farms.find((f) => f.id === this.farmId);
     });
   }
 
   // PRD Reference: 0016
   loadFields(): void {
-    this.farmService.getFields().subscribe(allFields => {
-      this.fields = allFields.filter(f => f.farm_id === this.farmId);
+    this.farmService.getFields().subscribe((allFields) => {
+      this.fields = allFields.filter((f) => f.farm_id === this.farmId);
     });
   }
 
   // PRD Reference: 0016
   loadAllFields(): void {
-    this.farmService.getFields().subscribe(allFields => {
+    this.farmService.getFields().subscribe((allFields) => {
       this.fields = allFields;
     });
   }
@@ -133,7 +135,7 @@ export class FieldsComponent implements OnInit {
   // PRD Reference: 0016
   getFarmName(farmId: number | string | undefined): string {
     if (!farmId) return 'Unknown Farm';
-    const farm = this.farms.find(f => f.id === Number(farmId));
+    const farm = this.farms.find((f) => f.id === Number(farmId));
     return farm ? farm.name : 'Unknown Farm';
   }
 
@@ -154,15 +156,20 @@ export class FieldsComponent implements OnInit {
           // PRD Reference: 0003, 0016
           const currentUserId = this.authService.getUserId() || '1';
           try {
-            const user = await firstValueFrom(this.farmService.getUser(currentUserId));
-            const newFarmName = user && user.name ? `${user.name}'s Farm` : 'My Farm';
+            const user = await firstValueFrom(
+              this.farmService.getUser(currentUserId),
+            );
+            const newFarmName =
+              user && user.name ? `${user.name}'s Farm` : 'My Farm';
             const newFarm: Farm = {
               name: newFarmName,
               location: 'Default Location',
               has_derogation: false,
-              user_id: Number(currentUserId)
+              user_id: Number(currentUserId),
             };
-            const createdFarm = await firstValueFrom(this.farmService.addFarm(newFarm));
+            const createdFarm = await firstValueFrom(
+              this.farmService.addFarm(newFarm),
+            );
             // Trigger push sync so it creates it on the backend, this is needed because
             // RxDB might just queue it in the outbox but the field might need the serverID
             // Actually RxDB will assign a local ID, but since we're using offline-first,
@@ -185,13 +192,16 @@ export class FieldsComponent implements OnInit {
             await this.syncEngineService.fullSync();
 
             // Reload farms to get the serverId if synced
-            const updatedFarms = await firstValueFrom(this.farmService.getFarms());
-            const syncedFarm = updatedFarms.find(f => f.name === newFarmName);
+            const updatedFarms = await firstValueFrom(
+              this.farmService.getFarms(),
+            );
+            const syncedFarm = updatedFarms.find((f) => f.name === newFarmName);
             targetFarmId = syncedFarm?.id || createdFarm.id || 0;
             this.farms = updatedFarms;
           } catch (error) {
             console.error('Failed to create default farm:', error);
-            this.errorMessage = 'Failed to create default farm. Please try again.';
+            this.errorMessage =
+              'Failed to create default farm. Please try again.';
             return;
           }
         }
@@ -260,7 +270,13 @@ export class FieldsComponent implements OnInit {
 
   // PRD Reference: 0016
   saveField(field: Field): void {
-    if (!field.id || !this.editFieldName || !this.editFieldArea || !this.editFieldFarmId) return;
+    if (
+      !field.id ||
+      !this.editFieldName ||
+      !this.editFieldArea ||
+      !this.editFieldFarmId
+    )
+      return;
     const area = parseFloat(this.editFieldArea);
     if (isNaN(area)) return;
 
@@ -285,9 +301,15 @@ export class FieldsComponent implements OnInit {
 
   // PRD Reference: 0016
   saveFieldFromList(): void {
-    if (!this.editingFieldId || !this.editFieldName || !this.editFieldArea || !this.editFieldFarmId) return;
+    if (
+      !this.editingFieldId ||
+      !this.editFieldName ||
+      !this.editFieldArea ||
+      !this.editFieldFarmId
+    )
+      return;
     const fieldId = this.editingFieldId;
-    const field = this.fields.find(f => f.id === fieldId);
+    const field = this.fields.find((f) => f.id === fieldId);
     if (!field) return;
     this.saveField(field);
   }
@@ -303,11 +325,12 @@ export class FieldsComponent implements OnInit {
     this.showEditFarmModal = true;
   }
 
-
   // PRD Reference: 0016
   hasEditChanges(): boolean {
-    return this.editFarmName !== this.originalEditFarmName ||
-           this.editFarmLocation !== this.originalEditFarmLocation;
+    return (
+      this.editFarmName !== this.originalEditFarmName ||
+      this.editFarmLocation !== this.originalEditFarmLocation
+    );
   }
 
   // PRD Reference: 0016
@@ -320,13 +343,18 @@ export class FieldsComponent implements OnInit {
 
   // PRD Reference: 0016
   editFarm(): void {
-    if (!this.farm || !this.editFarmName || !this.editFarmLocation || !this.hasEditChanges()) {
+    if (
+      !this.farm ||
+      !this.editFarmName ||
+      !this.editFarmLocation ||
+      !this.hasEditChanges()
+    ) {
       return;
     }
 
     const updatedData: Partial<Farm> = {
       name: this.editFarmName,
-      location: this.editFarmLocation
+      location: this.editFarmLocation,
     };
 
     this.isSaving = true;
@@ -340,7 +368,7 @@ export class FieldsComponent implements OnInit {
         this.errorMessage = 'Failed to update farm. Please try again.';
         this.isSaving = false;
         console.error('Error updating farm:', err);
-      }
+      },
     });
   }
 }

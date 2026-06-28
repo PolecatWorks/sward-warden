@@ -16,7 +16,7 @@ export const devAuthInterceptor: HttpInterceptorFn = (req, next) => {
 
     if (token) {
       newReq = req.clone({
-        headers: req.headers.set('Authorization', `Bearer ${token}`)
+        headers: req.headers.set('Authorization', `Bearer ${token}`),
       });
     }
   }
@@ -26,10 +26,12 @@ export const devAuthInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
       // Catch authentication/authorization errors and route to the error page
       if (error.status === 401 || error.status === 403) {
-        const errorMsg = error.error?.error || 'Authentication failed. Please check your credentials or access rights.';
+        const errorMsg =
+          error.error?.error ||
+          'Authentication failed. Please check your credentials or access rights.';
         router.navigate(['/error'], { state: { error: errorMsg } });
       }
       return throwError(() => error);
-    })
+    }),
   );
 };

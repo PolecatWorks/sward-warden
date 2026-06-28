@@ -1,6 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import {
+  HttpTestingController,
+  provideHttpClientTesting,
+} from '@angular/common/http/testing';
 import { firstValueFrom, BehaviorSubject, of } from 'rxjs';
 import { getRxStorageMemory } from 'rxdb/plugins/storage-memory';
 
@@ -42,15 +45,18 @@ describe('SyncEngineService', () => {
           provide: FarmManagementService,
           useValue: {
             apiUrl$: of('/v0'),
-            getHeaders: () => new HttpHeaders({
-              'Content-Type': 'application/json',
-              'X-User-ID': '1',
-            }),
+            getHeaders: () =>
+              new HttpHeaders({
+                'Content-Type': 'application/json',
+              }),
           },
         },
         { provide: RXDB_STORAGE, useFactory: () => getRxStorageMemory() },
         { provide: RXDB_DB_NAME, useValue: testDbName },
-        { provide: NetworkService, useValue: { isOnline$: mockOnline$.asObservable() } },
+        {
+          provide: NetworkService,
+          useValue: { isOnline$: mockOnline$.asObservable() },
+        },
         { provide: AuthService, useValue: { getUserId: () => '1' } },
       ],
     });
@@ -103,7 +109,7 @@ describe('SyncEngineService', () => {
     });
 
     const processPromise = service.processOutbox();
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     const farmReq = httpMock.expectOne('/v0/farms');
     // PRD Reference: 0011
@@ -147,10 +153,13 @@ describe('SyncEngineService', () => {
     });
 
     const processPromise = service.processOutbox();
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     const farmReq = httpMock.expectOne('/v0/farms');
-    farmReq.flush('Server Error', { status: 500, statusText: 'Internal Server Error' });
+    farmReq.flush('Server Error', {
+      status: 500,
+      statusText: 'Internal Server Error',
+    });
 
     await processPromise;
 
@@ -162,7 +171,6 @@ describe('SyncEngineService', () => {
     // PRD Reference: 0011
     expect(entries[0].status).toBe('pending');
   });
-
 
   // PRD Reference: 0011
   it('should increment retry count when processEntry throws a non-HTTP error (e.g. invalid JSON)', async () => {
@@ -188,10 +196,12 @@ describe('SyncEngineService', () => {
     });
 
     const processPromise = service.processOutbox();
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
     await processPromise;
 
-    const entries = await db.outbox.find({ selector: { id: 'outbox-invalid-json-1' } }).exec();
+    const entries = await db.outbox
+      .find({ selector: { id: 'outbox-invalid-json-1' } })
+      .exec();
     // PRD Reference: 0011
     expect(entries.length).toBe(1);
     // PRD Reference: 0011
@@ -224,10 +234,13 @@ describe('SyncEngineService', () => {
     });
 
     const processPromise = service.processOutbox();
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     const farmReq = httpMock.expectOne('/v0/farms');
-    farmReq.flush('Server Error', { status: 500, statusText: 'Internal Server Error' });
+    farmReq.flush('Server Error', {
+      status: 500,
+      statusText: 'Internal Server Error',
+    });
 
     await processPromise;
 
@@ -260,7 +273,7 @@ describe('SyncEngineService', () => {
     });
 
     const processPromise = service.processOutbox();
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     const delReq = httpMock.expectOne('/v0/farms/55');
     // PRD Reference: 0011
@@ -289,7 +302,7 @@ describe('SyncEngineService', () => {
       retryCount: 0,
     });
 
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     const entries = await db.outbox.find().exec();
     // PRD Reference: 0011
@@ -306,7 +319,7 @@ describe('SyncEngineService', () => {
     await service.setCheckpoint(db, '2026-04-25T12:00:00Z');
 
     const pullPromise = service.forcePullSync();
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     // Force sync should clear checkpoint, so it shouldn't send `?since=`
     const syncReq = httpMock.expectOne('/v0/sync');
@@ -334,7 +347,7 @@ describe('SyncEngineService', () => {
     const db = await firstValueFrom(rxdbService.db$);
 
     const pullPromise = service.pullSync();
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     const syncReq = httpMock.expectOne('/v0/sync');
     // PRD Reference: 0011
@@ -342,7 +355,14 @@ describe('SyncEngineService', () => {
     syncReq.flush({
       checkpoint: '2026-04-25T12:00:00Z',
       farms: [
-        { id: 1, user_id: 1, name: 'Server Farm', location: 'Dublin', updated_at: '2026-04-25T11:00:00Z', is_deleted: false },
+        {
+          id: 1,
+          user_id: 1,
+          name: 'Server Farm',
+          location: 'Dublin',
+          updated_at: '2026-04-25T11:00:00Z',
+          is_deleted: false,
+        },
       ],
       fields: [],
       events: [],
@@ -378,13 +398,20 @@ describe('SyncEngineService', () => {
     });
 
     const pullPromise = service.pullSync();
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     const syncReq = httpMock.expectOne('/v0/sync');
     syncReq.flush({
       checkpoint: '2026-04-25T12:00:00Z',
       farms: [
-        { id: 42, user_id: 1, name: 'Old Farm', location: 'Cork', updated_at: '2026-04-25T11:00:00Z', is_deleted: true },
+        {
+          id: 42,
+          user_id: 1,
+          name: 'Old Farm',
+          location: 'Cork',
+          updated_at: '2026-04-25T11:00:00Z',
+          is_deleted: true,
+        },
       ],
       fields: [],
       events: [],
@@ -413,13 +440,20 @@ describe('SyncEngineService', () => {
     });
 
     const pullPromise = service.pullSync();
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     const syncReq = httpMock.expectOne('/v0/sync');
     syncReq.flush({
       checkpoint: '2026-04-25T12:00:00Z',
       farms: [
-        { id: 10, user_id: 1, name: 'New Name', location: 'New Location', updated_at: '2026-04-25T11:00:00Z', is_deleted: false },
+        {
+          id: 10,
+          user_id: 1,
+          name: 'New Name',
+          location: 'New Location',
+          updated_at: '2026-04-25T11:00:00Z',
+          is_deleted: false,
+        },
       ],
       fields: [],
       events: [],
@@ -457,20 +491,31 @@ describe('SyncEngineService', () => {
       actionType: 'PUT',
       entityType: 'farms',
       localDocId: 'server-20',
-      payload: JSON.stringify({ id: 20, name: 'Local Edit', location: 'Local Location' }),
+      payload: JSON.stringify({
+        id: 20,
+        name: 'Local Edit',
+        location: 'Local Location',
+      }),
       timestamp: new Date().toISOString(),
       status: 'pending',
       retryCount: 0,
     });
 
     const pullPromise = service.pullSync();
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     const syncReq = httpMock.expectOne('/v0/sync');
     syncReq.flush({
       checkpoint: '2026-04-25T12:00:00Z',
       farms: [
-        { id: 20, user_id: 1, name: 'Server Name', location: 'Server Location', updated_at: '2026-04-25T10:00:00Z', is_deleted: false },
+        {
+          id: 20,
+          user_id: 1,
+          name: 'Server Name',
+          location: 'Server Location',
+          updated_at: '2026-04-25T10:00:00Z',
+          is_deleted: false,
+        },
       ],
       fields: [],
       events: [],
@@ -512,10 +557,10 @@ describe('SyncEngineService', () => {
     await service.setCheckpoint(db, '2026-04-25T10:00:00Z');
 
     const pullPromise = service.pullSync();
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     const syncReq = httpMock.expectOne(
-      (req) => req.url.includes('/v0/sync') && req.url.includes('since=')
+      (req) => req.url.includes('/v0/sync') && req.url.includes('since='),
     );
     // PRD Reference: 0011
     expect(syncReq.request.url).toContain('2026-04-25T10%3A00%3A00Z');
@@ -538,7 +583,7 @@ describe('SyncEngineService', () => {
   // PRD Reference: 0011
   it('should do full sync without since when no checkpoint exists', async () => {
     const pullPromise = service.pullSync();
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     const syncReq = httpMock.expectOne('/v0/sync');
     // PRD Reference: 0011
@@ -563,7 +608,7 @@ describe('SyncEngineService', () => {
     const db = await firstValueFrom(rxdbService.db$);
     const states: string[] = [];
 
-    const sub = syncStateService.syncState$.subscribe(s => states.push(s));
+    const sub = syncStateService.syncState$.subscribe((s) => states.push(s));
 
     await db.outbox.insert({
       id: 'outbox-state-1',
@@ -586,31 +631,49 @@ describe('SyncEngineService', () => {
 
     // Trigger the automatic sync by going online
     mockOnline$.next(true);
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     const farmReq = httpMock.expectOne('/v0/farms');
     farmReq.flush({ id: 100, name: 'State Farm', location: 'Test' });
 
     // Handle any background sync pull requests triggered by going online
-    const syncReqs1 = httpMock.match(req => req.url.includes('/v0/sync'));
+    const syncReqs1 = httpMock.match((req) => req.url.includes('/v0/sync'));
     for (const req of syncReqs1) {
-      req.flush({ checkpoint: 'test', farms: [], fields: [], events: [], farm_records: [] });
+      req.flush({
+        checkpoint: 'test',
+        farms: [],
+        fields: [],
+        events: [],
+        farm_records: [],
+      });
     }
 
     // Wait for the outbox trigger debounce (500ms) to fire and flush the trailing sync request
-    await new Promise(resolve => setTimeout(resolve, 550));
-    const syncReqs2 = httpMock.match(req => req.url.includes('/v0/sync'));
+    await new Promise((resolve) => setTimeout(resolve, 550));
+    const syncReqs2 = httpMock.match((req) => req.url.includes('/v0/sync'));
     for (const req of syncReqs2) {
-      req.flush({ checkpoint: 'test-done', farms: [], fields: [], events: [], farm_records: [] });
+      req.flush({
+        checkpoint: 'test-done',
+        farms: [],
+        fields: [],
+        events: [],
+        farm_records: [],
+      });
     }
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     // Flush any further loop requests if syncNeededAgain was set
-    const syncReqs3 = httpMock.match(req => req.url.includes('/v0/sync'));
+    const syncReqs3 = httpMock.match((req) => req.url.includes('/v0/sync'));
     for (const req of syncReqs3) {
-      req.flush({ checkpoint: 'test-done-2', farms: [], fields: [], events: [], farm_records: [] });
+      req.flush({
+        checkpoint: 'test-done-2',
+        farms: [],
+        fields: [],
+        events: [],
+        farm_records: [],
+      });
     }
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     console.log('TEST STATES LOG:', states);
 
@@ -682,7 +745,7 @@ describe('SyncEngineService', () => {
       });
 
       const processPromise = service.processOutbox();
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
       const farmReq = httpMock.expectOne('/v0/farms');
       farmReq.flush('Bad Request', { status: 400, statusText: 'Bad Request' });

@@ -12,9 +12,8 @@ describe('EquipmentTrackingComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
-      imports: [EquipmentTrackingComponent]
-    })
-    .compileComponents();
+      imports: [EquipmentTrackingComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(EquipmentTrackingComponent);
     component = fixture.componentInstance;

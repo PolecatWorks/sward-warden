@@ -159,7 +159,15 @@ export const inventoryStorageSchema: RxJsonSchema<InventoryStorageDocType> = {
     syncStatus: { type: 'string', default: 'synced' },
     updatedAt: { type: 'string' },
   },
-  required: ['id', 'name', 'storage_type', 'capacity_volume', 'is_covered', 'syncStatus', 'updatedAt'],
+  required: [
+    'id',
+    'name',
+    'storage_type',
+    'capacity_volume',
+    'is_covered',
+    'syncStatus',
+    'updatedAt',
+  ],
 };
 
 export const farmSchema: RxJsonSchema<FarmDocType> = {
@@ -463,7 +471,19 @@ export const farmRecordSchema: RxJsonSchema<FarmRecordDocType> = {
 
 /** Outbox entry for queuing offline writes. */
 export type OutboxActionType = 'POST' | 'PUT' | 'DELETE';
-export type OutboxEntityType = 'farms' | 'fields' | 'events' | 'soil_analyses' | 'fertilisation_plans' | 'farm_records' | 'fertiliser_applications' | 'organic_manure_applications' | 'compliance_breaches' | 'sward_movements' | 'inventory_storage' | 'inventory_chemicals';
+export type OutboxEntityType =
+  | 'farms'
+  | 'fields'
+  | 'events'
+  | 'soil_analyses'
+  | 'fertilisation_plans'
+  | 'farm_records'
+  | 'fertiliser_applications'
+  | 'organic_manure_applications'
+  | 'compliance_breaches'
+  | 'sward_movements'
+  | 'inventory_storage'
+  | 'inventory_chemicals';
 export type OutboxStatus = 'pending' | 'failed';
 
 export interface OutboxDocType {

@@ -6,8 +6,6 @@ import { RouterLink } from '@angular/router';
   selector: 'app-reporting-and-export',
   imports: [RouterLink],
   templateUrl: './reporting-and-export.component.html',
-  styleUrl: './reporting-and-export.component.css'
+  styleUrl: './reporting-and-export.component.css',
 })
-export class ReportingAndExportComponent {
-
-}
+export class ReportingAndExportComponent {}

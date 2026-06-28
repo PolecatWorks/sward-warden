@@ -16,11 +16,10 @@ describe('ChemicalPesticideInventoryComponent', () => {
         { provide: ActivatedRoute, useValue: {} },
         // PRD Reference: 0006
         provideRouter([]),
-        { provide: APP_CONFIG, useValue: { apiPath: '/v0' } }
+        { provide: APP_CONFIG, useValue: { apiPath: '/v0' } },
       ],
-      imports: [ChemicalPesticideInventoryComponent, HttpClientTestingModule]
-    })
-    .compileComponents();
+      imports: [ChemicalPesticideInventoryComponent, HttpClientTestingModule],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ChemicalPesticideInventoryComponent);
     component = fixture.componentInstance;

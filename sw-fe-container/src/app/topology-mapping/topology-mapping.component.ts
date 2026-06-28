@@ -12,7 +12,7 @@ import { SpatialService } from '../services/spatial.service';
   standalone: true,
   imports: [CommonModule, MatCardModule, MatListModule, MatIconModule],
   templateUrl: './topology-mapping.component.html',
-  styleUrl: './topology-mapping.component.css'
+  styleUrl: './topology-mapping.component.css',
 })
 export class TopologyMappingComponent implements OnInit, AfterViewInit {
   private map!: L.Map;
@@ -20,17 +20,17 @@ export class TopologyMappingComponent implements OnInit, AfterViewInit {
   fields = [
     { name: 'North Field', slope: 'Gentle (2%)', riskLevel: 'Low' },
     { name: 'South Field', slope: 'Moderate (8%)', riskLevel: 'Medium' },
-    { name: 'River Bend Field', slope: 'Steep (15%)', riskLevel: 'High' }
+    { name: 'River Bend Field', slope: 'Steep (15%)', riskLevel: 'High' },
   ];
 
   constructor(
     private spatialService: SpatialService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {}
 
   // PRD Reference: 0008
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.subscribe((params) => {
       this.farmId = params.get('farmId');
     });
   }
@@ -47,14 +47,18 @@ export class TopologyMappingComponent implements OnInit, AfterViewInit {
     // and use its specific coordinates to center the map instead of the hardcoded default.
     this.map = L.map('map', {
       center: [54.5, -6.5], // Northern Ireland center approx
-      zoom: 13
+      zoom: 13,
     });
 
-    const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      minZoom: 3,
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    });
+    const tiles = L.tileLayer(
+      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {
+        maxZoom: 18,
+        minZoom: 3,
+        attribution:
+          '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      },
+    );
 
     tiles.addTo(this.map);
   }
@@ -62,15 +66,15 @@ export class TopologyMappingComponent implements OnInit, AfterViewInit {
   // PRD Reference: 0008
   private loadWaterwayBuffers(): void {
     // Fetch 10m buffers for organic manure
-    this.spatialService.getWaterwayBuffers(10).subscribe(data => {
+    this.spatialService.getWaterwayBuffers(10).subscribe((data) => {
       L.geoJSON(data, {
         style: {
           color: '#f43f5e',
           weight: 2,
           opacity: 0.8,
           fillColor: '#f43f5e',
-          fillOpacity: 0.3
-        }
+          fillOpacity: 0.3,
+        },
       }).addTo(this.map);
     });
   }

@@ -15,14 +15,42 @@ describe('FarmManagementComponent', () => {
 
   // PRD Reference: 0003
   beforeEach(async () => {
-    farmsSubject = new BehaviorSubject<any[]>([{ id: 1, user_id: 1, name: 'Test Farm', location: 'Test Location' }]);
+    farmsSubject = new BehaviorSubject<any[]>([
+      { id: 1, user_id: 1, name: 'Test Farm', location: 'Test Location' },
+    ]);
 
-    mockFarmService = jasmine.createSpyObj('FarmManagementService', ['getUsers', 'getUser', 'getFarms', 'getFields', 'getEvents', 'addFarm', 'addField']);
-    mockFarmService.getUsers.and.returnValue(of([{ id: 1, name: 'Test User', email: 'test@example.com', role: 'user' }]));
-    mockFarmService.getUser.and.returnValue(of({ id: 1, name: 'Test User', email: 'test@example.com', role: 'user' }));
+    mockFarmService = jasmine.createSpyObj('FarmManagementService', [
+      'getUsers',
+      'getUser',
+      'getFarms',
+      'getFields',
+      'getEvents',
+      'addFarm',
+      'addField',
+    ]);
+    mockFarmService.getUsers.and.returnValue(
+      of([
+        { id: 1, name: 'Test User', email: 'test@example.com', role: 'user' },
+      ]),
+    );
+    mockFarmService.getUser.and.returnValue(
+      of({ id: 1, name: 'Test User', email: 'test@example.com', role: 'user' }),
+    );
     mockFarmService.getFarms.and.returnValue(farmsSubject.asObservable());
-    mockFarmService.getFields.and.returnValue(of([{ id: 1, farm_id: 1, name: 'Test Field', area_hectares: 10 }]));
-    mockFarmService.getEvents.and.returnValue(of([{ id: 1, field_id: 1, event_type: 'Test Event', description: 'Test', date: '2024-01-01' }]));
+    mockFarmService.getFields.and.returnValue(
+      of([{ id: 1, farm_id: 1, name: 'Test Field', area_hectares: 10 }]),
+    );
+    mockFarmService.getEvents.and.returnValue(
+      of([
+        {
+          id: 1,
+          field_id: 1,
+          event_type: 'Test Event',
+          description: 'Test',
+          date: '2024-01-01',
+        },
+      ]),
+    );
 
     mockAuthService = jasmine.createSpyObj('AuthService', ['getUserId']);
     mockAuthService.getUserId.and.returnValue('1');
@@ -34,10 +62,9 @@ describe('FarmManagementComponent', () => {
         // PRD Reference: 0003
         provideRouter([]),
         { provide: FarmManagementService, useValue: mockFarmService },
-        { provide: AuthService, useValue: mockAuthService }
-      ]
-    })
-    .compileComponents();
+        { provide: AuthService, useValue: mockAuthService },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(FarmManagementComponent);
     component = fixture.componentInstance;
@@ -86,7 +113,12 @@ describe('FarmManagementComponent', () => {
 
   // PRD Reference: 0003
   it('should make farm_id required for admin even when no farms exist', () => {
-    component.currentUser = { id: 2, name: 'Admin', email: 'admin@example.com', role: 'admin' };
+    component.currentUser = {
+      id: 2,
+      name: 'Admin',
+      email: 'admin@example.com',
+      role: 'admin',
+    };
     farmsSubject.next([]); // No farms
     fixture.detectChanges();
 
@@ -100,15 +132,32 @@ describe('FarmManagementComponent', () => {
     farmsSubject.next([]);
     fixture.detectChanges();
 
-    mockFarmService.addFarm.and.returnValue(of({ id: 99, user_id: 1, name: 'Default Farm', location: 'Default Location' }));
-    mockFarmService.addField.and.returnValue(of({ id: 100, farm_id: 99, name: 'New Field', area_hectares: 5 }));
+    mockFarmService.addFarm.and.returnValue(
+      of({
+        id: 99,
+        user_id: 1,
+        name: 'Default Farm',
+        location: 'Default Location',
+      }),
+    );
+    mockFarmService.addField.and.returnValue(
+      of({ id: 100, farm_id: 99, name: 'New Field', area_hectares: 5 }),
+    );
 
-    component.fieldForm.setValue({ farm_id: null, name: 'New Field', area_hectares: 5 });
+    component.fieldForm.setValue({
+      farm_id: null,
+      name: 'New Field',
+      area_hectares: 5,
+    });
     component.onSubmitField();
 
     // PRD Reference: 0003
-    expect(mockFarmService.addFarm).toHaveBeenCalledWith(jasmine.objectContaining({ name: 'Default Farm', user_id: 1 }));
+    expect(mockFarmService.addFarm).toHaveBeenCalledWith(
+      jasmine.objectContaining({ name: 'Default Farm', user_id: 1 }),
+    );
     // PRD Reference: 0003
-    expect(mockFarmService.addField).toHaveBeenCalledWith(jasmine.objectContaining({ farm_id: 99, name: 'New Field' }));
+    expect(mockFarmService.addField).toHaveBeenCalledWith(
+      jasmine.objectContaining({ farm_id: 99, name: 'New Field' }),
+    );
   });
 });

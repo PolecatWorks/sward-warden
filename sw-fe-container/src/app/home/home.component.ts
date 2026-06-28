@@ -24,7 +24,7 @@ export interface Alert {
   standalone: true,
   imports: [RouterLink, CommonModule],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  styleUrl: './home.component.css',
 })
 export class HomeComponent implements OnInit {
   currentUser$!: Observable<User>;
@@ -37,12 +37,14 @@ export class HomeComponent implements OnInit {
 
   // View mode
   isMultiFarm$: Observable<boolean> = of(false);
-  groupedAlerts$: Observable<{ farmId?: number, farmName?: string, alerts: Alert[] }[]> = of([]);
+  groupedAlerts$: Observable<
+    { farmId?: number; farmName?: string; alerts: Alert[] }[]
+  > = of([]);
   globalAlerts$: Observable<Alert[]> = of([]);
 
   constructor(
     private authService: AuthService,
-    private farmManagementService: FarmManagementService
+    private farmManagementService: FarmManagementService,
   ) {}
 
   // No obvious PRD requirement
@@ -53,15 +55,15 @@ export class HomeComponent implements OnInit {
     }
 
     this.farms$ = this.farmManagementService.getFarms().pipe(
-      catchError(err => {
+      catchError((err) => {
         console.error('Failed to load farms', err);
         return of([]);
-      })
+      }),
     );
 
     this.isMultiFarm$ = this.farms$.pipe(
       // No obvious PRD requirement
-      map(farms => farms.length > 1)
+      map((farms) => farms.length > 1),
     );
 
     // Mock Data initialization
@@ -72,14 +74,16 @@ export class HomeComponent implements OnInit {
   private initMockData() {
     // Determine Traffic Light Status (Mock Logic)
     const mockRainfall = Math.random() * 10;
-    const isClosedPeriod = new Date().getMonth() === 11 || new Date().getMonth() === 0; // Nov, Dec, Jan
+    const isClosedPeriod =
+      new Date().getMonth() === 11 || new Date().getMonth() === 0; // Nov, Dec, Jan
 
     if (isClosedPeriod) {
       this.trafficLightStatus = 'red';
       this.trafficLightMessage = 'Do not spread. Currently in closed period.';
     } else if (mockRainfall > 5) {
       this.trafficLightStatus = 'yellow';
-      this.trafficLightMessage = 'Proceed with caution. Recent rainfall detected.';
+      this.trafficLightMessage =
+        'Proceed with caution. Recent rainfall detected.';
     } else {
       this.trafficLightStatus = 'green';
       this.trafficLightMessage = 'Good to spread. Conditions are optimal.';
@@ -87,76 +91,78 @@ export class HomeComponent implements OnInit {
 
     // Mock Alerts
     this.alerts$ = this.farms$.pipe(
-      map(farms => {
+      map((farms) => {
         const mockAlerts: Alert[] = [];
 
         // Add a global alert
         if (isClosedPeriod) {
-            mockAlerts.push({
-                id: 'global-1',
-                type: 'critical',
-                message: 'National closed spreading period is currently in effect.',
-                global: true
-            });
+          mockAlerts.push({
+            id: 'global-1',
+            type: 'critical',
+            message: 'National closed spreading period is currently in effect.',
+            global: true,
+          });
         }
 
         if (farms.length > 0) {
-           const farmA = farms[0];
-           mockAlerts.push({
-             id: 'alert-1',
-             type: 'warning',
-             message: 'Requires a buffer zone due to recent rainfall.',
-             farmId: farmA.id,
-             farmName: farmA.name,
-             fieldId: 101,
-             fieldName: 'Field A'
-           });
+          const farmA = farms[0];
+          mockAlerts.push({
+            id: 'alert-1',
+            type: 'warning',
+            message: 'Requires a buffer zone due to recent rainfall.',
+            farmId: farmA.id,
+            farmName: farmA.name,
+            fieldId: 101,
+            fieldName: 'Field A',
+          });
 
-           if (farms.length > 1) {
-             const farmB = farms[1];
-             mockAlerts.push({
-               id: 'alert-2',
-               type: 'critical',
-               message: 'Approaching nitrogen limit.',
-               farmId: farmB.id,
-               farmName: farmB.name
-             });
-           }
+          if (farms.length > 1) {
+            const farmB = farms[1];
+            mockAlerts.push({
+              id: 'alert-2',
+              type: 'critical',
+              message: 'Approaching nitrogen limit.',
+              farmId: farmB.id,
+              farmName: farmB.name,
+            });
+          }
         }
         return mockAlerts;
-      })
+      }),
     );
 
     this.globalAlerts$ = this.alerts$.pipe(
       // No obvious PRD requirement
-      map(alerts => alerts.filter(a => a.global))
+      map((alerts) => alerts.filter((a) => a.global)),
     );
 
     this.groupedAlerts$ = combineLatest([this.alerts$, this.farms$]).pipe(
       // No obvious PRD requirement
       map(([alerts, farms]) => {
-        const farmAlerts = alerts.filter(a => !a.global);
-        const grouped = farms.map(farm => {
+        const farmAlerts = alerts.filter((a) => !a.global);
+        const grouped = farms.map((farm) => {
           return {
             farmId: farm.id,
             farmName: farm.name,
-            alerts: farmAlerts.filter(a => a.farmId === farm.id)
+            alerts: farmAlerts.filter((a) => a.farmId === farm.id),
           };
         });
 
         // Add any alerts not matched to a specific farm (if any)
-        const matchedFarmIds = new Set(farms.map(f => f.id));
-        const unmatchedAlerts = farmAlerts.filter(a => !matchedFarmIds.has(a.farmId as number));
+        const matchedFarmIds = new Set(farms.map((f) => f.id));
+        const unmatchedAlerts = farmAlerts.filter(
+          (a) => !matchedFarmIds.has(a.farmId as number),
+        );
         if (unmatchedAlerts.length > 0) {
-            grouped.push({
-                farmId: undefined,
-                farmName: 'Unknown Farm',
-                alerts: unmatchedAlerts
-            });
+          grouped.push({
+            farmId: undefined,
+            farmName: 'Unknown Farm',
+            alerts: unmatchedAlerts,
+          });
         }
 
-        return grouped.filter(g => g.alerts.length > 0);
-      })
+        return grouped.filter((g) => g.alerts.length > 0);
+      }),
     );
   }
 }

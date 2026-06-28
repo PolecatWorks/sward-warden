@@ -22,13 +22,13 @@ import { APP_CONFIG, AppConfig } from '../app-config';
 import { Inject } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class OptimizationService {
   constructor(
     private http: HttpClient,
-    @Inject(APP_CONFIG) private config: AppConfig
-  ) { }
+    @Inject(APP_CONFIG) private config: AppConfig,
+  ) {}
 
   // No obvious PRD requirement
   private get apiUrl() {
@@ -37,6 +37,8 @@ export class OptimizationService {
 
   // No obvious PRD requirement
   getSuggestions(farmId: number): Observable<OptimizationPlan> {
-    return this.http.get<OptimizationPlan>(`${this.apiUrl}/suggestions/${farmId}`);
+    return this.http.get<OptimizationPlan>(
+      `${this.apiUrl}/suggestions/${farmId}`,
+    );
   }
 }

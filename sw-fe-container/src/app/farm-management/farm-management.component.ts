@@ -1,6 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { FarmManagementService } from '../services/farm-management.service';
 import { AuthService } from '../services/auth.service';
 import { User } from '../models/user';
@@ -15,7 +20,7 @@ import { switchMap } from 'rxjs/operators';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './farm-management.component.html',
-  styleUrl: './farm-management.component.css'
+  styleUrl: './farm-management.component.css',
 })
 export class FarmManagementComponent implements OnInit, OnDestroy {
   users$!: Observable<User[]>;
@@ -33,25 +38,25 @@ export class FarmManagementComponent implements OnInit, OnDestroy {
   constructor(
     private farmService: FarmManagementService,
     private authService: AuthService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
   ) {
     this.farmForm = this.fb.group({
       user_id: ['', Validators.required],
       name: ['', Validators.required],
-      location: ['', Validators.required]
+      location: ['', Validators.required],
     });
 
     this.fieldForm = this.fb.group({
       farm_id: ['', Validators.required],
       name: ['', Validators.required],
-      area_hectares: [0, [Validators.required, Validators.min(0.1)]]
+      area_hectares: [0, [Validators.required, Validators.min(0.1)]],
     });
 
     this.eventForm = this.fb.group({
       field_id: ['', Validators.required],
       event_type: ['', Validators.required],
       description: ['', Validators.required],
-      date: ['', Validators.required]
+      date: ['', Validators.required],
     });
   }
 
@@ -59,7 +64,7 @@ export class FarmManagementComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const userId = this.authService.getUserId();
     if (userId) {
-      this.farmService.getUser(userId).subscribe(user => {
+      this.farmService.getUser(userId).subscribe((user) => {
         this.currentUser = user;
         this.loadData();
       });
@@ -79,7 +84,7 @@ export class FarmManagementComponent implements OnInit, OnDestroy {
       this.farmsSubscription.unsubscribe();
     }
 
-    this.farmsSubscription = this.farms$.subscribe(farms => {
+    this.farmsSubscription = this.farms$.subscribe((farms) => {
       const farmIdControl = this.fieldForm.get('farm_id');
       if (farmIdControl) {
         const isAdmin = this.currentUser?.role === 'admin';
@@ -107,7 +112,7 @@ export class FarmManagementComponent implements OnInit, OnDestroy {
         id: Math.floor(Math.random() * 10000),
         user_id: Number(this.farmForm.value.user_id),
         name: this.farmForm.value.name,
-        location: this.farmForm.value.location
+        location: this.farmForm.value.location,
       };
       this.farmService.addFarm(newFarm).subscribe(() => {
         this.loadData();
@@ -126,29 +131,32 @@ export class FarmManagementComponent implements OnInit, OnDestroy {
           id: Math.floor(Math.random() * 10000),
           user_id: this.currentUser.id,
           name: 'Default Farm',
-          location: 'Default Location'
+          location: 'Default Location',
         };
 
-        this.farmService.addFarm(newFarm).pipe(
-          switchMap(createdFarm => {
-            const newField: Field = {
-              id: Math.floor(Math.random() * 10000),
-              farm_id: createdFarm.id as number,
-              name: formValue.name,
-              area_hectares: formValue.area_hectares
-            };
-            return this.farmService.addField(newField);
-          })
-        ).subscribe(() => {
-          this.loadData();
-          this.fieldForm.reset();
-        });
+        this.farmService
+          .addFarm(newFarm)
+          .pipe(
+            switchMap((createdFarm) => {
+              const newField: Field = {
+                id: Math.floor(Math.random() * 10000),
+                farm_id: createdFarm.id as number,
+                name: formValue.name,
+                area_hectares: formValue.area_hectares,
+              };
+              return this.farmService.addField(newField);
+            }),
+          )
+          .subscribe(() => {
+            this.loadData();
+            this.fieldForm.reset();
+          });
       } else {
         const newField: Field = {
           id: Math.floor(Math.random() * 10000),
           farm_id: Number(formValue.farm_id),
           name: formValue.name,
-          area_hectares: formValue.area_hectares
+          area_hectares: formValue.area_hectares,
         };
         this.farmService.addField(newField).subscribe(() => {
           this.loadData();
@@ -166,7 +174,7 @@ export class FarmManagementComponent implements OnInit, OnDestroy {
         field_id: Number(this.eventForm.value.field_id),
         event_type: this.eventForm.value.event_type,
         description: this.eventForm.value.description,
-        date: this.eventForm.value.date
+        date: this.eventForm.value.date,
       };
       this.farmService.addEvent(newEvent).subscribe(() => {
         this.loadData();

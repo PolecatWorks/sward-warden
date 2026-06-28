@@ -328,7 +328,9 @@ export class SyncEngineService implements OnDestroy {
     let checkpoint = await this.getCheckpoint(db);
 
     if (lastSyncUserId && lastSyncUserId !== currentUserId) {
-      console.warn(`SYNC ENGINE: User changed from ${lastSyncUserId} to ${currentUserId}. Invaliding checkpoint and performing full refresh.`);
+      console.warn(
+        `SYNC ENGINE: User changed from ${lastSyncUserId} to ${currentUserId}. Invaliding checkpoint and performing full refresh.`,
+      );
       await this.clearCheckpoint(db);
       await this.clearAllCollections(db);
       checkpoint = null;
@@ -397,7 +399,11 @@ export class SyncEngineService implements OnDestroy {
 
   /** Set the sync checkpoint and user ID in the metadata collection. */
   // PRD Reference: 0011
-  async setCheckpoint(db: SwardDatabase, checkpoint: string, userId: string = ''): Promise<void> {
+  async setCheckpoint(
+    db: SwardDatabase,
+    checkpoint: string,
+    userId: string = '',
+  ): Promise<void> {
     // PRD Reference: 0011
     await (db as any).metadata.upsert({
       key: CHECKPOINT_KEY,
@@ -437,7 +443,7 @@ export class SyncEngineService implements OnDestroy {
       'organic_manure_applications',
       'compliance_breaches',
       'sward_movements',
-      'outbox'
+      'outbox',
     ];
     for (const name of collections) {
       const col = (db as any)[name];
@@ -464,7 +470,9 @@ export class SyncEngineService implements OnDestroy {
       const currentUserId = this.authService.getUserId() || '';
       const lastSyncUserId = await this.getLastSyncUserId(db);
       if (lastSyncUserId && lastSyncUserId !== currentUserId) {
-        console.warn(`SYNC ENGINE (Force): User changed from ${lastSyncUserId} to ${currentUserId}. Invaliding checkpoint and performing full refresh.`);
+        console.warn(
+          `SYNC ENGINE (Force): User changed from ${lastSyncUserId} to ${currentUserId}. Invaliding checkpoint and performing full refresh.`,
+        );
         await this.clearCheckpoint(db);
         await this.clearAllCollections(db);
       }

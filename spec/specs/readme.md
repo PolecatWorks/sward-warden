@@ -119,3 +119,4 @@ Specifications under PRD 0008 (Spatial Optimization) require the PostGIS extensi
 | [0024-01 Field Topology Creation](./0024/0024-01-field-topology-creation.md) | Complete |
 | [0023-01 Modal Keyboard Accessibility](./0023/0023-01-modal-keyboard-accessibility.md) | Complete |
 | [0024-02 GeoJSON Geometry Transition](./0024/0024-02-geojson-geometry.md) | Complete |
+| [0020-03 Drop X-User-ID Header Support](./0020/0020-03-drop-x-user-id.md) | Complete |

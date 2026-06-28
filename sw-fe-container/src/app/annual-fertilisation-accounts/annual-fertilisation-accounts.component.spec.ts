@@ -22,13 +22,12 @@ describe('AnnualFertilisationAccountsComponent', () => {
           provide: FarmManagementService,
           useValue: {
             getFarmRecords: () => of([]),
-            getFertiliserApplications: () => of([])
-          }
-        }
+            getFertiliserApplications: () => of([]),
+          },
+        },
       ],
-      imports: [AnnualFertilisationAccountsComponent, HttpClientTestingModule]
-    })
-    .compileComponents();
+      imports: [AnnualFertilisationAccountsComponent, HttpClientTestingModule],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(AnnualFertilisationAccountsComponent);
     component = fixture.componentInstance;

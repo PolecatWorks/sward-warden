@@ -1,6 +1,11 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { FarmManagementService } from '../services/farm-management.service';
 import { AuthService } from '../services/auth.service';
@@ -12,7 +17,7 @@ import { Observable } from 'rxjs';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './user-profile.component.html',
-  styleUrl: './user-profile.component.css'
+  styleUrl: './user-profile.component.css',
 })
 export class UserProfileComponent implements OnInit {
   users$!: Observable<User[]>;
@@ -28,7 +33,11 @@ export class UserProfileComponent implements OnInit {
 
   activeModules = [
     { name: 'Slurry Management Dashboard', icon: 'dashboard', active: true },
-    { name: 'Compliance & Regulatory Hub', icon: 'assignment_turned_in', active: true },
+    {
+      name: 'Compliance & Regulatory Hub',
+      icon: 'assignment_turned_in',
+      active: true,
+    },
     { name: 'Inventory & Equipment', icon: 'inventory', active: true },
     { name: 'Reporting & Export', icon: 'summarize', active: true },
     { name: 'Optimization Engine', icon: 'auto_awesome', active: false },
@@ -38,25 +47,24 @@ export class UserProfileComponent implements OnInit {
   constructor(
     private farmManagementService: FarmManagementService,
     private authService: AuthService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
   ) {
     this.userForm = this.fb.group({
       name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]]
+      email: ['', [Validators.required, Validators.email]],
     });
 
     this.editProfileForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       phone: [''],
-      description: ['']
+      description: [''],
     });
   }
 
   // PRD Reference: 0003
   ngOnInit(): void {
     this.users$ = this.farmManagementService.getUsers();
-
 
     const authId = this.authService.getUserId();
     this.currentUserId = authId || '1';
@@ -66,41 +74,46 @@ export class UserProfileComponent implements OnInit {
 
   // PRD Reference: 0003
   loadCurrentUser() {
-      this.currentUser$ = this.farmManagementService.getUser(this.currentUserId);
-      this.currentUser$.subscribe(user => {
-          if (user) {
-              this.currentUserData = user;
-              this.editProfileForm.patchValue({
-                  name: user.name,
-                  email: user.email,
-                  phone: user.phone || '',
-                  description: user.description || ''
-              });
-          }
-      });
+    this.currentUser$ = this.farmManagementService.getUser(this.currentUserId);
+    this.currentUser$.subscribe((user) => {
+      if (user) {
+        this.currentUserData = user;
+        this.editProfileForm.patchValue({
+          name: user.name,
+          email: user.email,
+          phone: user.phone || '',
+          description: user.description || '',
+        });
+      }
+    });
   }
 
   // PRD Reference: 0003
   onEditProfileSubmit(): void {
-      if (this.editProfileForm.valid && this.currentUserData && !this.editProfileForm.pristine) {
-          const updatedUser: User = {
-              id: this.currentUserData.id,
-              name: this.editProfileForm.value.name,
-              email: this.editProfileForm.value.email,
-              role: this.currentUserData.role,
-              phone: this.editProfileForm.value.phone,
-              description: this.editProfileForm.value.description
-          };
+    if (
+      this.editProfileForm.valid &&
+      this.currentUserData &&
+      !this.editProfileForm.pristine
+    ) {
+      const updatedUser: User = {
+        id: this.currentUserData.id,
+        name: this.editProfileForm.value.name,
+        email: this.editProfileForm.value.email,
+        role: this.currentUserData.role,
+        phone: this.editProfileForm.value.phone,
+        description: this.editProfileForm.value.description,
+      };
 
-          this.isSaving = true;
-          this.farmManagementService.updateUser(this.currentUserId, updatedUser).subscribe(() => {
-              this.isSaving = false;
-              this.closeEditProfileModal();
-              this.loadCurrentUser();
-          });
-      }
+      this.isSaving = true;
+      this.farmManagementService
+        .updateUser(this.currentUserId, updatedUser)
+        .subscribe(() => {
+          this.isSaving = false;
+          this.closeEditProfileModal();
+          this.loadCurrentUser();
+        });
+    }
   }
-
 
   @HostListener('document:keydown.escape', ['$event'])
   // PRD Reference: 0003
@@ -126,7 +139,7 @@ export class UserProfileComponent implements OnInit {
       const newUser: User = {
         id: Math.floor(Math.random() * 10000),
         name: this.userForm.value.name,
-        email: this.userForm.value.email
+        email: this.userForm.value.email,
       };
       this.farmManagementService.addUser(newUser).subscribe(() => {
         this.users$ = this.farmManagementService.getUsers();

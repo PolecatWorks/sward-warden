@@ -1,4 +1,9 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { LoginComponent } from './login.component';
 import { FarmManagementService } from '../services/farm-management.service';
@@ -19,16 +24,22 @@ describe('LoginComponent', () => {
 
   // No obvious PRD requirement
   beforeEach(async () => {
-    mockFarmService = jasmine.createSpyObj('FarmManagementService', ['getUsers', 'addUser', 'deleteUser']);
+    mockFarmService = jasmine.createSpyObj('FarmManagementService', [
+      'getUsers',
+      'addUser',
+      'deleteUser',
+    ]);
     mockAuthService = jasmine.createSpyObj('AuthService', ['login']);
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
     mockDevAuthApi = jasmine.createSpyObj('DevAuthApiService', ['getToken']);
     mockDevAuthApi.getToken.and.returnValue(of({ access_token: 'fake-token' }));
 
-    mockFarmService.getUsers.and.returnValue(of([
-      { id: 1, name: 'Alice', email: 'alice@example.com', role: 'user' },
-      { id: 2, name: 'Bob', email: 'bob@example.com', role: 'admin' }
-    ]));
+    mockFarmService.getUsers.and.returnValue(
+      of([
+        { id: 1, name: 'Alice', email: 'alice@example.com', role: 'user' },
+        { id: 2, name: 'Bob', email: 'bob@example.com', role: 'admin' },
+      ]),
+    );
 
     await TestBed.configureTestingModule({
       imports: [LoginComponent, ReactiveFormsModule],
@@ -36,8 +47,8 @@ describe('LoginComponent', () => {
         { provide: FarmManagementService, useValue: mockFarmService },
         { provide: AuthService, useValue: mockAuthService },
         { provide: Router, useValue: mockRouter },
-        { provide: DevAuthApiService, useValue: mockDevAuthApi }
-      ]
+        { provide: DevAuthApiService, useValue: mockDevAuthApi },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoginComponent);
@@ -55,7 +66,7 @@ describe('LoginComponent', () => {
   it('should fetch and display users on init', () => {
     // No obvious PRD requirement
     expect(mockFarmService.getUsers).toHaveBeenCalled();
-    component.users$.subscribe(users => {
+    component.users$.subscribe((users) => {
       // No obvious PRD requirement
       expect(users.length).toBe(2);
       // No obvious PRD requirement
@@ -67,13 +78,15 @@ describe('LoginComponent', () => {
 
   // No obvious PRD requirement
   it('should display error message if fetch fails', fakeAsync(() => {
-    mockFarmService.getUsers.and.returnValue(throwError(() => new Error('Server offline')));
+    mockFarmService.getUsers.and.returnValue(
+      throwError(() => new Error('Server offline')),
+    );
 
     component.ngOnInit();
     fixture.detectChanges();
 
     let usersLength = -1;
-    component.users$.subscribe(users => {
+    component.users$.subscribe((users) => {
       usersLength = users.length;
     });
 
@@ -89,7 +102,12 @@ describe('LoginComponent', () => {
 
   // No obvious PRD requirement
   it('should login and navigate when loginAs is called', () => {
-    component.loginAs({ id: 1, name: 'Test', email: 'test@example.com', role: 'user' });
+    component.loginAs({
+      id: 1,
+      name: 'Test',
+      email: 'test@example.com',
+      role: 'user',
+    });
     // No obvious PRD requirement
     expect(mockDevAuthApi.getToken).toHaveBeenCalledWith(1, 'user');
     // No obvious PRD requirement
@@ -106,7 +124,10 @@ describe('LoginComponent', () => {
     // No obvious PRD requirement
     expect(component.showCreateForm).toBeTrue();
 
-    component.createUserForm.patchValue({ name: 'Declan', email: 'declan@test.com' });
+    component.createUserForm.patchValue({
+      name: 'Declan',
+      email: 'declan@test.com',
+    });
     component.toggleCreateForm();
     // No obvious PRD requirement
     expect(component.showCreateForm).toBeFalse();
@@ -139,12 +160,14 @@ describe('LoginComponent', () => {
 
   // No obvious PRD requirement
   it('should successfully submit new user and refresh list', fakeAsync(() => {
-    mockFarmService.addUser.and.returnValue(of({
-      id: 3,
-      name: 'Charlie',
-      email: 'charlie@example.com',
-      role: 'support'
-    }).pipe(delay(50)));
+    mockFarmService.addUser.and.returnValue(
+      of({
+        id: 3,
+        name: 'Charlie',
+        email: 'charlie@example.com',
+        role: 'support',
+      }).pipe(delay(50)),
+    );
 
     component.toggleCreateForm();
     component.createUserForm.patchValue({
@@ -152,7 +175,7 @@ describe('LoginComponent', () => {
       email: 'charlie@example.com',
       role: 'support',
       phone: '12345',
-      description: 'New support operator'
+      description: 'New support operator',
     });
 
     component.onSubmitUser();
@@ -170,7 +193,7 @@ describe('LoginComponent', () => {
       email: 'charlie@example.com',
       role: 'support',
       phone: '12345',
-      description: 'New support operator'
+      description: 'New support operator',
     });
 
     // No obvious PRD requirement
@@ -185,14 +208,14 @@ describe('LoginComponent', () => {
   it('should handle submission error gracefully', fakeAsync(() => {
     mockFarmService.addUser.and.returnValue(
       // No obvious PRD requirement
-      timer(50).pipe(switchMap(() => throwError(() => new Error('DB Error'))))
+      timer(50).pipe(switchMap(() => throwError(() => new Error('DB Error')))),
     );
 
     component.toggleCreateForm();
     component.createUserForm.patchValue({
       name: 'Error User',
       email: 'err@example.com',
-      role: 'user'
+      role: 'user',
     });
 
     component.onSubmitUser();
@@ -218,14 +241,21 @@ describe('LoginComponent', () => {
     mockFarmService.deleteUser.and.returnValue(of(undefined));
 
     const event = jasmine.createSpyObj('Event', ['stopPropagation']);
-    const userToDelete = { id: 1, name: 'Alice', email: 'alice@example.com', role: 'user' };
+    const userToDelete = {
+      id: 1,
+      name: 'Alice',
+      email: 'alice@example.com',
+      role: 'user',
+    };
 
     component.deleteUser(event, userToDelete);
 
     // No obvious PRD requirement
     expect(event.stopPropagation).toHaveBeenCalled();
     // No obvious PRD requirement
-    expect(window.confirm).toHaveBeenCalledWith(jasmine.stringContaining('delete the user "Alice"'));
+    expect(window.confirm).toHaveBeenCalledWith(
+      jasmine.stringContaining('delete the user "Alice"'),
+    );
     // No obvious PRD requirement
     expect(mockFarmService.deleteUser).toHaveBeenCalledWith(1);
 
@@ -243,7 +273,12 @@ describe('LoginComponent', () => {
     spyOn(window, 'confirm').and.returnValue(false);
 
     const event = jasmine.createSpyObj('Event', ['stopPropagation']);
-    const userToDelete = { id: 1, name: 'Alice', email: 'alice@example.com', role: 'user' };
+    const userToDelete = {
+      id: 1,
+      name: 'Alice',
+      email: 'alice@example.com',
+      role: 'user',
+    };
 
     component.deleteUser(event, userToDelete);
 

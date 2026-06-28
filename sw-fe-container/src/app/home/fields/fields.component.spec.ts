@@ -25,46 +25,47 @@ describe('FieldsComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             paramMap: of({
-              get: (key: string) => key === 'farmId' ? '1' : null
-            })
-          }
+              get: (key: string) => (key === 'farmId' ? '1' : null),
+            }),
+          },
         },
         {
           provide: RxdbService,
           useValue: {
-            fallbackToRest$: new BehaviorSubject<boolean>(false)
-          }
+            fallbackToRest$: new BehaviorSubject<boolean>(false),
+          },
         },
         {
           provide: FarmManagementService,
           useValue: {
             getFields: () => of([]),
-            getFarms: () => of([{ id: 1, name: 'Sunrise Farm', location: 'Kerry, Ireland' }]),
+            getFarms: () =>
+              of([{ id: 1, name: 'Sunrise Farm', location: 'Kerry, Ireland' }]),
             getUser: () => of({ id: 1, name: 'Test User' }),
             addFarm: () => of({ id: 2 }),
             addField: () => of({}),
             deleteEntity: () => of({}),
             updateField: () => of({}),
-            updateFarm: () => of({ id: 1, name: 'Updated Farm', location: 'New Location' })
-          }
+            updateFarm: () =>
+              of({ id: 1, name: 'Updated Farm', location: 'New Location' }),
+          },
         },
         {
           provide: AuthService,
           useValue: {
-            getUserId: () => '1'
-          }
+            getUserId: () => '1',
+          },
         },
         {
           provide: SyncEngineService,
           useValue: {
             forcePullSync: () => Promise.resolve(),
-            fullSync: () => Promise.resolve()
-          }
-        }
+            fullSync: () => Promise.resolve(),
+          },
+        },
       ],
-      imports: [FieldsComponent, HttpClientTestingModule, RouterTestingModule]
-    })
-    .compileComponents();
+      imports: [FieldsComponent, HttpClientTestingModule, RouterTestingModule],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(FieldsComponent);
     component = fixture.componentInstance;
@@ -113,7 +114,7 @@ describe('FieldsComponent', () => {
     // PRD Reference: 0016
     expect(farmService.updateFarm).toHaveBeenCalledWith(1, {
       name: 'New Sunrise Farm',
-      location: 'Cork, Ireland'
+      location: 'Cork, Ireland',
     });
     // PRD Reference: 0016
     expect(component.loadFarm).toHaveBeenCalled();
@@ -123,7 +124,12 @@ describe('FieldsComponent', () => {
 
   // PRD Reference: 0016
   it('should start inline editing with field details', () => {
-    const field = { id: 42, farm_id: 1, name: 'South Paddock', area_hectares: 8.5 };
+    const field = {
+      id: 42,
+      farm_id: 1,
+      name: 'South Paddock',
+      area_hectares: 8.5,
+    };
     component.startEdit(field);
     // PRD Reference: 0016
     expect(component.editingFieldId).toBe(42);
@@ -135,7 +141,12 @@ describe('FieldsComponent', () => {
 
   // PRD Reference: 0016
   it('should clear editing state on cancel', () => {
-    const field = { id: 42, farm_id: 1, name: 'South Paddock', area_hectares: 8.5 };
+    const field = {
+      id: 42,
+      farm_id: 1,
+      name: 'South Paddock',
+      area_hectares: 8.5,
+    };
     component.startEdit(field);
     component.cancelEdit();
     // PRD Reference: 0016
@@ -154,7 +165,12 @@ describe('FieldsComponent', () => {
     // PRD Reference: 0016
     spyOn(component, 'loadFields').and.callThrough();
 
-    const field = { id: 42, farm_id: 1, name: 'South Paddock', area_hectares: 8.5 };
+    const field = {
+      id: 42,
+      farm_id: 1,
+      name: 'South Paddock',
+      area_hectares: 8.5,
+    };
     component.startEdit(field);
     component.editFieldName = 'Updated Paddock';
     component.editFieldArea = '9.2';

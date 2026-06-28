@@ -21,19 +21,18 @@ describe('OptimizationEngineComponent', () => {
         {
           provide: OptimizationService,
           useValue: {
-            getSuggestions: () => of({ suggestions: [] })
-          }
+            getSuggestions: () => of({ suggestions: [] }),
+          },
         },
         {
           provide: WeatherService,
           useValue: {
-            getForecast: () => of([])
-          }
-        }
+            getForecast: () => of([]),
+          },
+        },
       ],
-      imports: [OptimizationEngineComponent]
-    })
-    .compileComponents();
+      imports: [OptimizationEngineComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(OptimizationEngineComponent);
     component = fixture.componentInstance;

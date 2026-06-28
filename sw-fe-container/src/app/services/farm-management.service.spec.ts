@@ -1,6 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import {
+  HttpTestingController,
+  provideHttpClientTesting,
+} from '@angular/common/http/testing';
 import { firstValueFrom } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { getRxStorageMemory } from 'rxdb/plugins/storage-memory';
@@ -36,12 +39,12 @@ describe('FarmManagementService', () => {
         { provide: RXDB_DB_NAME, useValue: testDbName },
         {
           provide: AuthService,
-          useValue: { getUserId: () => '1' }
+          useValue: { getUserId: () => '1' },
         },
         {
           provide: APP_CONFIG,
-          useValue: { apiPath: '/api', logLevel: 'INFO' }
-        }
+          useValue: { apiPath: '/api', logLevel: 'INFO' },
+        },
       ],
     });
     service = TestBed.inject(FarmManagementService);
@@ -214,14 +217,18 @@ describe('FarmManagementService', () => {
         updatedAt: new Date().toISOString(),
       });
 
-      const updated = await firstValueFrom(service.updateFarm(123, { name: 'New Name', location: 'New Location' }));
+      const updated = await firstValueFrom(
+        service.updateFarm(123, { name: 'New Name', location: 'New Location' }),
+      );
       // PRD Reference: 0003
       expect(updated.name).toBe('New Name');
       // PRD Reference: 0003
       expect(updated.location).toBe('New Location');
 
       // Verify it's in RxDB
-      const doc = await db.farms.findOne({ selector: { serverId: 123 } }).exec();
+      const doc = await db.farms
+        .findOne({ selector: { serverId: 123 } })
+        .exec();
       // PRD Reference: 0003
       expect(doc).toBeTruthy();
       // PRD Reference: 0003
@@ -269,12 +276,14 @@ describe('FarmManagementService', () => {
         updatedAt: new Date().toISOString(),
       });
 
-      const updatedField = await firstValueFrom(service.updateField(123, {
-        name: 'New Field Name',
-        farm_id: 2,
-        area_hectares: 12,
-        land_use: 'arable'
-      }));
+      const updatedField = await firstValueFrom(
+        service.updateField(123, {
+          name: 'New Field Name',
+          farm_id: 2,
+          area_hectares: 12,
+          land_use: 'arable',
+        }),
+      );
 
       // PRD Reference: 0003
       expect(updatedField.name).toBe('New Field Name');
@@ -286,7 +295,9 @@ describe('FarmManagementService', () => {
       expect(updatedField.land_use).toBe('arable');
 
       // Verify RxDB document updated
-      const doc = await db.fields.findOne({ selector: { serverId: 123 } }).exec();
+      const doc = await db.fields
+        .findOne({ selector: { serverId: 123 } })
+        .exec();
       // PRD Reference: 0003
       expect(doc).not.toBeNull();
       // PRD Reference: 0003

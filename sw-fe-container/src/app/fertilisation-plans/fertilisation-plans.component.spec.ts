@@ -19,12 +19,11 @@ describe('FertilisationPlansComponent', () => {
           provide: FarmManagementService,
           useValue: {
             getFields: () => of([]),
-            getFertilisationPlans: () => of([])
-          }
-        }
-      ]
-    })
-    .compileComponents();
+            getFertilisationPlans: () => of([]),
+          },
+        },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(FertilisationPlansComponent);
     component = fixture.componentInstance;

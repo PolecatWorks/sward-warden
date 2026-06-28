@@ -5,11 +5,11 @@ enum LogLevel {
   DEBUG = 0,
   INFO = 1,
   WARN = 2,
-  ERROR = 3
+  ERROR = 3,
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LoggerService {
   private level: LogLevel;
@@ -21,11 +21,16 @@ export class LoggerService {
   // No obvious PRD requirement
   private parseLogLevel(level: string): LogLevel {
     switch (level?.toUpperCase()) {
-      case 'DEBUG': return LogLevel.DEBUG;
-      case 'INFO': return LogLevel.INFO;
-      case 'WARN': return LogLevel.WARN;
-      case 'ERROR': return LogLevel.ERROR;
-      default: return LogLevel.INFO;
+      case 'DEBUG':
+        return LogLevel.DEBUG;
+      case 'INFO':
+        return LogLevel.INFO;
+      case 'WARN':
+        return LogLevel.WARN;
+      case 'ERROR':
+        return LogLevel.ERROR;
+      default:
+        return LogLevel.INFO;
     }
   }
 

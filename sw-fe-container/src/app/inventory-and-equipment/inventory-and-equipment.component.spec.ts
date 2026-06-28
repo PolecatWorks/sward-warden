@@ -12,9 +12,8 @@ describe('InventoryAndEquipmentComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
-      imports: [InventoryAndEquipmentComponent]
-    })
-    .compileComponents();
+      imports: [InventoryAndEquipmentComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(InventoryAndEquipmentComponent);
     component = fixture.componentInstance;

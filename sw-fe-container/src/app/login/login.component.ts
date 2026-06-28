@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { FarmManagementService } from '../services/farm-management.service';
 import { AuthService } from '../services/auth.service';
 import { DevAuthApiService } from '../services/dev-auth-api.service';
@@ -14,7 +19,7 @@ import { catchError, switchMap } from 'rxjs/operators';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
   users$!: Observable<User[]>;
@@ -30,7 +35,7 @@ export class LoginComponent implements OnInit {
     private devAuthApi: DevAuthApiService,
     private authService: AuthService,
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
   ) {}
 
   // No obvious PRD requirement
@@ -40,21 +45,24 @@ export class LoginComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       role: ['user', Validators.required],
       phone: [''],
-      description: ['']
+      description: [''],
     });
 
     this.users$ = this.refreshUsers$.pipe(
       // No obvious PRD requirement
-      switchMap(() => this.farmManagementService.getUsers().pipe(
-        catchError(err => {
-          console.error('Error fetching users:', err);
-          // No obvious PRD requirement
-          setTimeout(() => {
-            this.errorMsg = 'Failed to load users from the backend server. Is the backend running?';
-          });
-          return of([]);
-        })
-      ))
+      switchMap(() =>
+        this.farmManagementService.getUsers().pipe(
+          catchError((err) => {
+            console.error('Error fetching users:', err);
+            // No obvious PRD requirement
+            setTimeout(() => {
+              this.errorMsg =
+                'Failed to load users from the backend server. Is the backend running?';
+            });
+            return of([]);
+          }),
+        ),
+      ),
     );
   }
 
@@ -68,8 +76,9 @@ export class LoginComponent implements OnInit {
         },
         error: (err) => {
           console.error('Failed to get Dev JWT token:', err);
-          this.errorMsg = 'Failed to get dev authentication token. Is dev auth enabled in backend?';
-        }
+          this.errorMsg =
+            'Failed to get dev authentication token. Is dev auth enabled in backend?';
+        },
       });
     }
   }
@@ -77,7 +86,9 @@ export class LoginComponent implements OnInit {
   // No obvious PRD requirement
   deleteUser(event: Event, user: User): void {
     event.stopPropagation();
-    const confirmed = confirm(`Are you sure you want to delete the user "${user.name}"? This will delete all of their farms, fields, and records.`);
+    const confirmed = confirm(
+      `Are you sure you want to delete the user "${user.name}"? This will delete all of their farms, fields, and records.`,
+    );
     if (!confirmed) {
       return;
     }
@@ -88,7 +99,7 @@ export class LoginComponent implements OnInit {
       error: (err) => {
         this.errorMsg = 'Failed to delete user. Please try again.';
         console.error('Error deleting user:', err);
-      }
+      },
     });
   }
 
@@ -110,7 +121,7 @@ export class LoginComponent implements OnInit {
     this.errorMsg = null;
     const newUser: User = {
       id: 0,
-      ...this.createUserForm.value
+      ...this.createUserForm.value,
     };
 
     this.farmManagementService.addUser(newUser).subscribe({
@@ -122,9 +133,10 @@ export class LoginComponent implements OnInit {
       },
       error: (err) => {
         this.isSubmitting = false;
-        this.errorMsg = 'Failed to create user. Please ensure the backend is running and details are correct.';
+        this.errorMsg =
+          'Failed to create user. Please ensure the backend is running and details are correct.';
         console.error('Error creating user:', err);
-      }
+      },
     });
   }
 }

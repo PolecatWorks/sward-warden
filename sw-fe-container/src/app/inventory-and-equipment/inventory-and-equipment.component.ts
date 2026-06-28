@@ -6,8 +6,6 @@ import { RouterLink } from '@angular/router';
   selector: 'app-inventory-and-equipment',
   imports: [RouterLink],
   templateUrl: './inventory-and-equipment.component.html',
-  styleUrl: './inventory-and-equipment.component.css'
+  styleUrl: './inventory-and-equipment.component.css',
 })
-export class InventoryAndEquipmentComponent {
-
-}
+export class InventoryAndEquipmentComponent {}
