@@ -151,6 +151,7 @@ export class FieldsComponent implements OnInit {
           return;
         } else {
           // Auto-create a default farm for the user if they don't have one
+          // PRD Reference: 0003, 0016
           const currentUserId = this.authService.getUserId() || '1';
           try {
             const user = await firstValueFrom(this.farmService.getUser(currentUserId));
