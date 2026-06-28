@@ -19,8 +19,8 @@
       <p class="text-on-surface-variant font-medium mb-2">Tracking events for Spring Barley '24 ({{ field.area_hectares }} ha)</p>
 
       <!-- Field Boundary Map (View Only) -->
-      <div class="mt-4" *ngIf="field.geometry_wkt">
-        <app-field-map-editor [wkt]="field.geometry_wkt" [isEditMode]="false" [readonly]="true"></app-field-map-editor>
+      <div class="mt-4" *ngIf="field.geometry_geojson">
+        <app-field-map-editor [geojson]="field.geometry_geojson" [isEditMode]="false" [readonly]="true"></app-field-map-editor>
       </div>
 
       <!-- Topographical Data -->
@@ -85,7 +85,7 @@
           </div>
           <div>
             <label class="block text-sm font-medium text-on-surface mb-1">Boundary Map</label>
-            <app-field-map-editor [(wkt)]="editFieldGeometry_wkt" [isEditMode]="true"></app-field-map-editor>
+            <app-field-map-editor [(geojson)]="editFieldGeometry_geojson" [isEditMode]="true"></app-field-map-editor>
           </div>
           <div class="pt-4 flex justify-end gap-3">
             <button type="button" (click)="closeEditFieldModal()" class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md" id="cancel-edit-field-btn">Cancel</button>
