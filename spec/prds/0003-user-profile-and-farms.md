@@ -27,7 +27,7 @@ This document defines the requirements for user profiles and the management of f
    - **Separate Navigation**: Split Farms and Fields into separate main menu items. The top-level Fields view (`/fields`) displays all fields in the portfolio.
    - **List Layout & Experience**: The fields list view must display a prominent, big "Add Field" button.
    - **Empty State**: When no fields exist, display a prominent, center-aligned empty state card with an icon, welcoming description, and a large "Add Field" button.
-   - **Auto-Farm Creation (Beginner Flow)**: When a user creates their first field, if they have not yet created a farm, the system must automatically create a default farm named `"My Farm"` behind the scenes and associate the field with it. This ensures single-farm users do not need to navigate back and forth during initial setup.
+   - **Auto-Farm Creation (Beginner Flow)**: When a user creates their first field, if they have not yet created a farm, the system must automatically create a default farm named `"[User's Name]'s Farm"` (with `"My Farm"` as a fallback) behind the scenes and associate the field with it. This ensures single-farm users do not need to navigate back and forth during initial setup.
 
 4. **Security & Ownership Enforcement**
    - **Backend Verification**: The backend must enforce that users can only list, view, create, update, or delete farms, fields, and related agricultural entities (events, records, soil analyses, plans, applications, compliance breaches, sward movements) that they own.

@@ -12,7 +12,6 @@ PRDs dictate the high-level features and requirements of the project. Every PRD 
 - **Authentication Headers vs JWT**: PRD 0010, PRD 0017, and PRD 0018 specify the use of the `X-User-ID` header (and role derivation from it) for identifying users and roles on the backend. PRD 0020 explicitly requires replacing these headers with an `Authorization: Bearer <token>` JWT flow.
 - **Admin Access & Endpoints**: PRD 0010 states admin users access records via "dedicated admin endpoints". PRD 0018 states that standard endpoints (like `GET /farms` and `/sync`) should simply bypass ownership filters for admins. Additionally, PRD 0013 states support/admin views should initially be "read-only", whereas PRD 0018 explicitly grants admins full reading, updating, and deleting rights.
 - **Navigation Menu Layout**: PRD 0002 and PRD 0016 dictate a navigation bar order including "Dashboard" and "Compliance". PRD 0022 (Option A, Recommended) proposes eliminating "Dashboard" and "Compliance" from the navigation menu in favor of a consolidated "Home" view.
-- **Default Farm Name**: PRD 0003 states that when auto-creating a farm for a beginner flow, the default farm should be named `"My Farm"`. PRD 0016 states it should be named `"[User's Name]'s Farm"` (with `"My Farm"` as a fallback).
 
 ## Current PRDs
 
