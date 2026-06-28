@@ -53,6 +53,7 @@ export class UserProfileComponent implements OnInit {
     });
   }
 
+  // PRD Reference: 0003
   ngOnInit(): void {
     this.users$ = this.farmManagementService.getUsers();
 
@@ -63,6 +64,7 @@ export class UserProfileComponent implements OnInit {
     this.loadCurrentUser();
   }
 
+  // PRD Reference: 0003
   loadCurrentUser() {
       this.currentUser$ = this.farmManagementService.getUser(this.currentUserId);
       this.currentUser$.subscribe(user => {
@@ -78,6 +80,7 @@ export class UserProfileComponent implements OnInit {
       });
   }
 
+  // PRD Reference: 0003
   onEditProfileSubmit(): void {
       if (this.editProfileForm.valid && this.currentUserData && !this.editProfileForm.pristine) {
           const updatedUser: User = {
@@ -100,20 +103,24 @@ export class UserProfileComponent implements OnInit {
 
 
   @HostListener('document:keydown.escape', ['$event'])
+  // PRD Reference: 0003
   handleEscape(event: KeyboardEvent) {
     if (this.showEditProfileModal) {
       this.closeEditProfileModal();
     }
   }
 
+  // PRD Reference: 0003
   openEditProfileModal(): void {
     this.showEditProfileModal = true;
   }
 
+  // PRD Reference: 0003
   closeEditProfileModal(): void {
     this.showEditProfileModal = false;
   }
 
+  // PRD Reference: 0003
   onSubmitUser(): void {
     if (this.userForm.valid) {
       const newUser: User = {

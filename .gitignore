@@ -1,2 +1,4 @@
 .garden
 **/reports/
+integration-tests/venv
+venv/

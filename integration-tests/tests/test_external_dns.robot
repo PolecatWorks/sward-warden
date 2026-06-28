@@ -6,6 +6,7 @@ Resource    video_resource.robot
 ${EXTERNAL_DNS_URL}
 
 *** Test Cases ***
+# No obvious PRD requirement
 External DNS Check
     [Documentation]    Test to verify the application loads via the external DNS defined in the virtual service.
     ...                NOTE: Expecting potential resolution failures until gateway DNS is fully configured.
@@ -14,6 +15,7 @@ External DNS Check
     Check External DNS    ${EXTERNAL_DNS_URL}
 
 *** Keywords ***
+# No obvious PRD requirement
 Check External DNS
     [Arguments]    ${url}
     New Browser    chromium    headless=True
@@ -21,6 +23,7 @@ Check External DNS
     New Page    about:blank
     Wait Until Keyword Succeeds    12x    10s    Load Page And Verify    ${url}
 
+# No obvious PRD requirement
 Load Page And Verify
     [Arguments]    ${url}
     Go To    ${url}

@@ -3,10 +3,12 @@ import { ActivatedRoute, provideRouter } from '@angular/router';
 
 import { EquipmentTrackingComponent } from './equipment-tracking.component';
 
+// No obvious PRD requirement
 describe('EquipmentTrackingComponent', () => {
   let component: EquipmentTrackingComponent;
   let fixture: ComponentFixture<EquipmentTrackingComponent>;
 
+  // No obvious PRD requirement
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
@@ -19,7 +21,9 @@ describe('EquipmentTrackingComponent', () => {
     fixture.detectChanges();
   });
 
+  // No obvious PRD requirement
   it('should create', () => {
+    // No obvious PRD requirement
     expect(component).toBeTruthy();
   });
 });

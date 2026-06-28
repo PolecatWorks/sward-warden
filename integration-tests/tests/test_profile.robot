@@ -7,6 +7,7 @@ ${EXTERNAL_DNS_URL}
 ${BE_BASE_URL}
 
 *** Test Cases ***
+# PRD Reference: 0003
 Edit Profile
     [Documentation]    Test to navigate to profile page, edit the profile via pencil icon modal, and verify the changes.
     [Teardown]    Teardown With Video

@@ -8,6 +8,7 @@ import { delay, switchMap } from 'rxjs/operators';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DevAuthApiService } from '../services/dev-auth-api.service';
 
+// No obvious PRD requirement
 describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
@@ -16,6 +17,7 @@ describe('LoginComponent', () => {
   let mockRouter: jasmine.SpyObj<Router>;
   let mockDevAuthApi: jasmine.SpyObj<DevAuthApiService>;
 
+  // No obvious PRD requirement
   beforeEach(async () => {
     mockFarmService = jasmine.createSpyObj('FarmManagementService', ['getUsers', 'addUser', 'deleteUser']);
     mockAuthService = jasmine.createSpyObj('AuthService', ['login']);
@@ -43,19 +45,27 @@ describe('LoginComponent', () => {
     fixture.detectChanges();
   });
 
+  // No obvious PRD requirement
   it('should create', () => {
+    // No obvious PRD requirement
     expect(component).toBeTruthy();
   });
 
+  // No obvious PRD requirement
   it('should fetch and display users on init', () => {
+    // No obvious PRD requirement
     expect(mockFarmService.getUsers).toHaveBeenCalled();
     component.users$.subscribe(users => {
+      // No obvious PRD requirement
       expect(users.length).toBe(2);
+      // No obvious PRD requirement
       expect(users[0].name).toBe('Alice');
+      // No obvious PRD requirement
       expect(users[1].name).toBe('Bob');
     });
   });
 
+  // No obvious PRD requirement
   it('should display error message if fetch fails', fakeAsync(() => {
     mockFarmService.getUsers.and.returnValue(throwError(() => new Error('Server offline')));
 
@@ -67,34 +77,48 @@ describe('LoginComponent', () => {
       usersLength = users.length;
     });
 
+    // No obvious PRD requirement
     tick();
     fixture.detectChanges();
 
+    // No obvious PRD requirement
     expect(component.errorMsg).toContain('Failed to load users');
+    // No obvious PRD requirement
     expect(usersLength).toBe(0);
   }));
 
+  // No obvious PRD requirement
   it('should login and navigate when loginAs is called', () => {
     component.loginAs({ id: 1, name: 'Test', email: 'test@example.com', role: 'user' });
+    // No obvious PRD requirement
     expect(mockDevAuthApi.getToken).toHaveBeenCalledWith(1, 'user');
+    // No obvious PRD requirement
     expect(mockAuthService.login).toHaveBeenCalledWith('1', 'fake-token');
+    // No obvious PRD requirement
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
   });
 
+  // No obvious PRD requirement
   it('should toggle create user form visibility and reset form controls', () => {
+    // No obvious PRD requirement
     expect(component.showCreateForm).toBeFalse();
     component.toggleCreateForm();
+    // No obvious PRD requirement
     expect(component.showCreateForm).toBeTrue();
 
     component.createUserForm.patchValue({ name: 'Declan', email: 'declan@test.com' });
     component.toggleCreateForm();
+    // No obvious PRD requirement
     expect(component.showCreateForm).toBeFalse();
+    // No obvious PRD requirement
     expect(component.createUserForm.get('name')?.value).toBeNull();
   });
 
+  // No obvious PRD requirement
   it('should validate required fields in create user form', () => {
     component.toggleCreateForm();
     const form = component.createUserForm;
+    // No obvious PRD requirement
     expect(form.valid).toBeFalse();
 
     const nameControl = form.get('name');
@@ -102,14 +126,18 @@ describe('LoginComponent', () => {
 
     nameControl?.setValue('');
     emailControl?.setValue('invalid-email');
+    // No obvious PRD requirement
     expect(form.valid).toBeFalse();
+    // No obvious PRD requirement
     expect(emailControl?.hasError('email')).toBeTrue();
 
     nameControl?.setValue('Declan');
     emailControl?.setValue('declan@example.com');
+    // No obvious PRD requirement
     expect(form.valid).toBeTrue();
   });
 
+  // No obvious PRD requirement
   it('should successfully submit new user and refresh list', fakeAsync(() => {
     mockFarmService.addUser.and.returnValue(of({
       id: 3,
@@ -128,11 +156,14 @@ describe('LoginComponent', () => {
     });
 
     component.onSubmitUser();
+    // No obvious PRD requirement
     expect(component.isSubmitting).toBeTrue();
 
+    // No obvious PRD requirement
     tick(50);
     fixture.detectChanges();
 
+    // No obvious PRD requirement
     expect(mockFarmService.addUser).toHaveBeenCalledWith({
       id: 0,
       name: 'Charlie',
@@ -142,13 +173,18 @@ describe('LoginComponent', () => {
       description: 'New support operator'
     });
 
+    // No obvious PRD requirement
     expect(component.isSubmitting).toBeFalse();
+    // No obvious PRD requirement
     expect(component.showCreateForm).toBeFalse();
+    // No obvious PRD requirement
     expect(mockFarmService.getUsers).toHaveBeenCalledTimes(2); // Initial + reload
   }));
 
+  // No obvious PRD requirement
   it('should handle submission error gracefully', fakeAsync(() => {
     mockFarmService.addUser.and.returnValue(
+      // No obvious PRD requirement
       timer(50).pipe(switchMap(() => throwError(() => new Error('DB Error'))))
     );
 
@@ -160,17 +196,24 @@ describe('LoginComponent', () => {
     });
 
     component.onSubmitUser();
+    // No obvious PRD requirement
     expect(component.isSubmitting).toBeTrue();
 
+    // No obvious PRD requirement
     tick(50);
     fixture.detectChanges();
 
+    // No obvious PRD requirement
     expect(component.isSubmitting).toBeFalse();
+    // No obvious PRD requirement
     expect(component.errorMsg).toContain('Failed to create user');
+    // No obvious PRD requirement
     expect(component.showCreateForm).toBeTrue(); // Keeps form open
   }));
 
+  // No obvious PRD requirement
   it('should prompt confirmation, delete user, and refresh user list on delete button click', fakeAsync(() => {
+    // No obvious PRD requirement
     spyOn(window, 'confirm').and.returnValue(true);
     mockFarmService.deleteUser.and.returnValue(of(undefined));
 
@@ -179,17 +222,24 @@ describe('LoginComponent', () => {
 
     component.deleteUser(event, userToDelete);
 
+    // No obvious PRD requirement
     expect(event.stopPropagation).toHaveBeenCalled();
+    // No obvious PRD requirement
     expect(window.confirm).toHaveBeenCalledWith(jasmine.stringContaining('delete the user "Alice"'));
+    // No obvious PRD requirement
     expect(mockFarmService.deleteUser).toHaveBeenCalledWith(1);
 
     fixture.detectChanges();
+    // No obvious PRD requirement
     tick();
 
+    // No obvious PRD requirement
     expect(mockFarmService.getUsers).toHaveBeenCalledTimes(2); // Initial + reload after delete
   }));
 
+  // No obvious PRD requirement
   it('should not delete user if confirmation is cancelled', () => {
+    // No obvious PRD requirement
     spyOn(window, 'confirm').and.returnValue(false);
 
     const event = jasmine.createSpyObj('Event', ['stopPropagation']);
@@ -197,8 +247,11 @@ describe('LoginComponent', () => {
 
     component.deleteUser(event, userToDelete);
 
+    // No obvious PRD requirement
     expect(event.stopPropagation).toHaveBeenCalled();
+    // No obvious PRD requirement
     expect(window.confirm).toHaveBeenCalled();
+    // No obvious PRD requirement
     expect(mockFarmService.deleteUser).not.toHaveBeenCalled();
   });
 });

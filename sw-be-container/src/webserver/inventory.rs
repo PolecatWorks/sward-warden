@@ -5,6 +5,7 @@ use crate::webserver::auth::UserId;
 use axum::extract::Path;
 use axum::{Json, extract::State};
 
+// PRD Reference: 0006
 pub async fn list_inventory_storage(
     State(state): State<AppState>,
     UserId(user_id): UserId,
@@ -18,6 +19,7 @@ pub async fn list_inventory_storage(
     Ok(Json(storages))
 }
 
+// PRD Reference: 0006
 pub async fn create_inventory_storage(
     State(state): State<AppState>,
     UserId(user_id): UserId,
@@ -58,6 +60,7 @@ pub async fn create_inventory_storage(
     Ok(Json(inserted))
 }
 
+// PRD Reference: 0006
 pub async fn update_inventory_storage(
     State(state): State<AppState>,
     UserId(user_id): UserId,
@@ -102,6 +105,7 @@ pub async fn update_inventory_storage(
     Ok(Json(updated))
 }
 
+// PRD Reference: 0006
 pub async fn delete_inventory_storage(
     State(state): State<AppState>,
     UserId(user_id): UserId,

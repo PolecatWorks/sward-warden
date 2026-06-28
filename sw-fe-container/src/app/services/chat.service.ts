@@ -97,6 +97,7 @@ export class ChatService {
     this.apiUrl$ = of(this.config.apiPath).pipe(shareReplay(1));
   }
 
+  // No obvious PRD requirement
   private getHeaders(): HttpHeaders {
     const userId = this.authService.getUserId() || '';
     return new HttpHeaders({
@@ -111,6 +112,7 @@ export class ChatService {
   private externalMessageSubject = new Subject<string>();
   externalMessage$ = this.externalMessageSubject.asObservable();
 
+  // No obvious PRD requirement
   triggerExternalMessage(threadId: string) {
     this.externalMessageSubject.next(threadId);
   }
@@ -118,10 +120,12 @@ export class ChatService {
   private currentVisualizationsSubject = new BehaviorSubject<Visualization[]>([]);
   currentVisualizations$ = this.currentVisualizationsSubject.asObservable();
 
+  // No obvious PRD requirement
   updateVisualizations(visualizations: Visualization[]) {
     this.currentVisualizationsSubject.next(visualizations);
   }
 
+  // No obvious PRD requirement
   refreshThreads() {
     this.getThreads().subscribe({
       next: (res) => {
@@ -131,21 +135,28 @@ export class ChatService {
     });
   }
 
+  // No obvious PRD requirement
   sendMessage(message: string, threadId?: string, bypassLearningMode: boolean = false): Observable<ChatResponse> {
     return this.apiUrl$.pipe(
+      // No obvious PRD requirement
       switchMap(apiUrl => this.http.post<ChatResponse>(`${apiUrl}/chat`, { message, thread_id: threadId, bypass_learning_mode: bypassLearningMode }, { headers: this.getHeaders() }))
     );
   }
 
+  // No obvious PRD requirement
   getThreads(): Observable<{ threads: Thread[] }> {
     return this.apiUrl$.pipe(
+      // No obvious PRD requirement
       switchMap(apiUrl => this.http.get<{ threads: Thread[] }>(`${apiUrl}/threads`, { headers: this.getHeaders() }))
     );
   }
 
+  // No obvious PRD requirement
   getHistory(threadId: string): Observable<HistoryResponse> {
     return this.apiUrl$.pipe(
+      // No obvious PRD requirement
       switchMap(apiUrl => this.http.get<HistoryResponse>(`${apiUrl}/threads/${threadId}/history`, { headers: this.getHeaders() })),
+      // No obvious PRD requirement
       tap((res) => {
         if (res.visualizations) {
           this.updateVisualizations(res.visualizations);
@@ -163,56 +174,74 @@ export class ChatService {
     );
   }
 
+  // No obvious PRD requirement
   deleteThread(threadId: string): Observable<any> {
     return this.apiUrl$.pipe(
+      // No obvious PRD requirement
       switchMap(apiUrl => this.http.delete(`${apiUrl}/threads/${threadId}`, { headers: this.getHeaders() }))
     );
   }
 
+  // No obvious PRD requirement
   updateThread(threadId: string, thread: { title?: string, color?: string, learning_mode_enabled?: boolean }): Observable<any> {
     return this.apiUrl$.pipe(
+      // No obvious PRD requirement
       switchMap(apiUrl => this.http.put(`${apiUrl}/threads/${threadId}`, thread, { headers: this.getHeaders() }))
     );
   }
 
+  // No obvious PRD requirement
   getVisualizations(threadId: string): Observable<VisualizationsResponse> {
     return this.apiUrl$.pipe(
+      // No obvious PRD requirement
       switchMap(apiUrl => this.http.get<VisualizationsResponse>(`${apiUrl}/threads/${threadId}/visualizations`, { headers: this.getHeaders() }))
     );
   }
 
+  // No obvious PRD requirement
   getUserSettings(): Observable<UserSettings> {
     return this.apiUrl$.pipe(
+      // No obvious PRD requirement
       switchMap(apiUrl => this.http.get<UserSettings>(`${apiUrl}/user/settings`, { headers: this.getHeaders() }))
     );
   }
 
+  // No obvious PRD requirement
   updateUserSettings(settings: UserSettings): Observable<any> {
     return this.apiUrl$.pipe(
+      // No obvious PRD requirement
       switchMap(apiUrl => this.http.put(`${apiUrl}/user/settings`, settings, { headers: this.getHeaders() }))
     );
   }
 
+  // No obvious PRD requirement
   getAgents(): Observable<AgentDefinition[]> {
     return this.apiUrl$.pipe(
+      // No obvious PRD requirement
       switchMap(apiUrl => this.http.get<AgentDefinition[]>(`${apiUrl}/agents`, { headers: this.getHeaders() }))
     );
   }
 
+  // No obvious PRD requirement
   createAgent(agent: AgentDefinition): Observable<AgentDefinition> {
     return this.apiUrl$.pipe(
+      // No obvious PRD requirement
       switchMap(apiUrl => this.http.post<AgentDefinition>(`${apiUrl}/agents`, agent, { headers: this.getHeaders() }))
     );
   }
 
+  // No obvious PRD requirement
   updateAgent(id: string, agent: AgentDefinition): Observable<AgentDefinition> {
     return this.apiUrl$.pipe(
+      // No obvious PRD requirement
       switchMap(apiUrl => this.http.put<AgentDefinition>(`${apiUrl}/agents/${id}`, agent, { headers: this.getHeaders() }))
     );
   }
 
+  // No obvious PRD requirement
   deleteAgent(id: string): Observable<any> {
     return this.apiUrl$.pipe(
+      // No obvious PRD requirement
       switchMap(apiUrl => this.http.delete(`${apiUrl}/agents/${id}`, { headers: this.getHeaders() }))
     );
   }

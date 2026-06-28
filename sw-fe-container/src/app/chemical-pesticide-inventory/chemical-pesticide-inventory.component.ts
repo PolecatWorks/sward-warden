@@ -29,11 +29,13 @@ export class ChemicalPesticideInventoryComponent implements OnInit {
     private fb: FormBuilder,
   ) {}
 
+  // PRD Reference: 0006
   ngOnInit(): void {
     this.chemicals$ = this.inventoryService.getChemicals();
     this.initForm();
   }
 
+  // PRD Reference: 0006
   initForm(): void {
     this.chemicalForm = this.fb.group({
       name: ['', Validators.required],
@@ -45,12 +47,14 @@ export class ChemicalPesticideInventoryComponent implements OnInit {
     });
   }
 
+  // PRD Reference: 0006
   openAddForm(): void {
     this.showForm = true;
     this.editingId = null;
     this.chemicalForm.reset({ unit: 'Litres' });
   }
 
+  // PRD Reference: 0006
   openEditForm(chemical: InventoryChemicalDocType): void {
     this.showForm = true;
     this.editingId = chemical.id;
@@ -64,11 +68,13 @@ export class ChemicalPesticideInventoryComponent implements OnInit {
     });
   }
 
+  // PRD Reference: 0006
   closeForm(): void {
     this.showForm = false;
     this.editingId = null;
   }
 
+  // PRD Reference: 0006
   async submitForm(): Promise<void> {
     if (this.chemicalForm.valid) {
       try {
@@ -87,6 +93,7 @@ export class ChemicalPesticideInventoryComponent implements OnInit {
     }
   }
 
+  // PRD Reference: 0006
   async deleteChemical(id: string): Promise<void> {
     if (confirm('Are you sure you want to delete this product?')) {
       try {

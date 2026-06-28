@@ -44,6 +44,7 @@ export class FieldsComponent implements OnInit {
   isSaving: boolean = false;
   errorMessage: string | null = null;
 
+  // PRD Reference: 0016
   get totalArea(): number {
     return this.fields.reduce((acc, field) => acc + (field.area_hectares || 0), 0);
   }
@@ -56,6 +57,7 @@ export class FieldsComponent implements OnInit {
     private syncEngineService: SyncEngineService
   ) {}
 
+  // PRD Reference: 0016
   ngOnInit(): void {
     this.loadFarms();
     this.route.paramMap.subscribe(params => {
@@ -85,6 +87,7 @@ export class FieldsComponent implements OnInit {
 
 
   @HostListener('document:keydown.escape', ['$event'])
+  // PRD Reference: 0016
   handleEscape(event: KeyboardEvent) {
     if (this.showAddForm) {
       this.toggleAddForm();
@@ -94,6 +97,7 @@ export class FieldsComponent implements OnInit {
     }
   }
 
+  // PRD Reference: 0016
   loadFarms(): void {
     this.farmService.getFarms().subscribe(farms => {
       this.farms = farms;
@@ -105,30 +109,35 @@ export class FieldsComponent implements OnInit {
     });
   }
 
+  // PRD Reference: 0016
   loadFarm(): void {
     this.farmService.getFarms().subscribe(farms => {
       this.farm = farms.find(f => f.id === this.farmId);
     });
   }
 
+  // PRD Reference: 0016
   loadFields(): void {
     this.farmService.getFields().subscribe(allFields => {
       this.fields = allFields.filter(f => f.farm_id === this.farmId);
     });
   }
 
+  // PRD Reference: 0016
   loadAllFields(): void {
     this.farmService.getFields().subscribe(allFields => {
       this.fields = allFields;
     });
   }
 
+  // PRD Reference: 0016
   getFarmName(farmId: number | string | undefined): string {
     if (!farmId) return 'Unknown Farm';
     const farm = this.farms.find(f => f.id === Number(farmId));
     return farm ? farm.name : 'Unknown Farm';
   }
 
+  // PRD Reference: 0016
   async addField(): Promise<void> {
     if (this.newFieldName && this.newFieldArea) {
       const area = parseFloat(this.newFieldArea);
@@ -212,10 +221,12 @@ export class FieldsComponent implements OnInit {
     }
   }
 
+  // PRD Reference: 0016
   toggleAddForm(): void {
     this.showAddForm = !this.showAddForm;
   }
 
+  // PRD Reference: 0016
   deleteField(id: number): void {
     this.farmService.deleteEntity('fields', id).subscribe(() => {
       if (this.farmId) {
@@ -226,6 +237,7 @@ export class FieldsComponent implements OnInit {
     });
   }
 
+  // PRD Reference: 0016
   startEdit(field: Field): void {
     this.editingFieldId = field.id || null;
     this.editFieldName = field.name;
@@ -235,6 +247,7 @@ export class FieldsComponent implements OnInit {
     this.editFieldFarmId = field.farm_id;
   }
 
+  // PRD Reference: 0016
   cancelEdit(): void {
     this.editingFieldId = null;
     this.editFieldName = '';
@@ -244,6 +257,7 @@ export class FieldsComponent implements OnInit {
     this.editFieldFarmId = 0;
   }
 
+  // PRD Reference: 0016
   saveField(field: Field): void {
     if (!field.id || !this.editFieldName || !this.editFieldArea || !this.editFieldFarmId) return;
     const area = parseFloat(this.editFieldArea);
@@ -268,6 +282,7 @@ export class FieldsComponent implements OnInit {
     });
   }
 
+  // PRD Reference: 0016
   saveFieldFromList(): void {
     if (!this.editingFieldId || !this.editFieldName || !this.editFieldArea || !this.editFieldFarmId) return;
     const fieldId = this.editingFieldId;
@@ -276,6 +291,7 @@ export class FieldsComponent implements OnInit {
     this.saveField(field);
   }
 
+  // PRD Reference: 0016
   openEditFarmModal(): void {
     if (!this.farm) return;
     this.editFarmName = this.farm.name;
@@ -287,11 +303,13 @@ export class FieldsComponent implements OnInit {
   }
 
 
+  // PRD Reference: 0016
   hasEditChanges(): boolean {
     return this.editFarmName !== this.originalEditFarmName ||
            this.editFarmLocation !== this.originalEditFarmLocation;
   }
 
+  // PRD Reference: 0016
   closeEditFarmModal(): void {
     this.showEditFarmModal = false;
     this.editFarmName = '';
@@ -299,6 +317,7 @@ export class FieldsComponent implements OnInit {
     this.errorMessage = null;
   }
 
+  // PRD Reference: 0016
   editFarm(): void {
     if (!this.farm || !this.editFarmName || !this.editFarmLocation || !this.hasEditChanges()) {
       return;

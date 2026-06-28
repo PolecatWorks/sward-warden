@@ -15,10 +15,14 @@ export class NetworkService {
 
   constructor() {
     this.isOnline$ = merge(
+      // No obvious PRD requirement
       fromEvent(window, 'online').pipe(map(() => true)),
+      // No obvious PRD requirement
       fromEvent(window, 'offline').pipe(map(() => false))
     ).pipe(
+      // No obvious PRD requirement
       startWith(navigator.onLine),
+      // No obvious PRD requirement
       shareReplay(1),
     );
   }

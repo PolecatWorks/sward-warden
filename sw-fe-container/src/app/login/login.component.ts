@@ -33,6 +33,7 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder
   ) {}
 
+  // No obvious PRD requirement
   ngOnInit(): void {
     this.createUserForm = this.fb.group({
       name: ['', Validators.required],
@@ -43,9 +44,11 @@ export class LoginComponent implements OnInit {
     });
 
     this.users$ = this.refreshUsers$.pipe(
+      // No obvious PRD requirement
       switchMap(() => this.farmManagementService.getUsers().pipe(
         catchError(err => {
           console.error('Error fetching users:', err);
+          // No obvious PRD requirement
           setTimeout(() => {
             this.errorMsg = 'Failed to load users from the backend server. Is the backend running?';
           });
@@ -55,6 +58,7 @@ export class LoginComponent implements OnInit {
     );
   }
 
+  // No obvious PRD requirement
   loginAs(user: User): void {
     if (user && user.id !== undefined) {
       this.devAuthApi.getToken(user.id, user.role || 'user').subscribe({
@@ -70,6 +74,7 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  // No obvious PRD requirement
   deleteUser(event: Event, user: User): void {
     event.stopPropagation();
     const confirmed = confirm(`Are you sure you want to delete the user "${user.name}"? This will delete all of their farms, fields, and records.`);
@@ -87,6 +92,7 @@ export class LoginComponent implements OnInit {
     });
   }
 
+  // No obvious PRD requirement
   toggleCreateForm(): void {
     this.showCreateForm = !this.showCreateForm;
     if (!this.showCreateForm) {
@@ -94,6 +100,7 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  // No obvious PRD requirement
   onSubmitUser(): void {
     if (this.createUserForm.invalid) {
       return;

@@ -11,9 +11,13 @@ import { devAuthInterceptor } from './services/dev-auth.interceptor';
 
 export const createAppConfig = (config: AppConfig): ApplicationConfig => ({
   providers: [
+    // No obvious PRD requirement
     provideZoneChangeDetection({ eventCoalescing: true }),
+    // No obvious PRD requirement
     provideRouter(routes),
+    // No obvious PRD requirement
     provideHttpClient(withInterceptors([devAuthInterceptor])),
+    // No obvious PRD requirement
     provideAnimations(),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),

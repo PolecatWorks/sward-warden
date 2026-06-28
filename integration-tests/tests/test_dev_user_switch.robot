@@ -8,6 +8,7 @@ ${EXTERNAL_DNS_URL}
 ${BE_BASE_URL}
 
 *** Keywords ***
+# PRD Reference: 0020
 Setup User And Farm
     [Documentation]    Finds or creates a base user and creates exactly one Farm 1 for them.
     ${users_res}=    GET    ${BE_BASE_URL}/v0/users    expected_status=200
@@ -38,6 +39,7 @@ Setup User And Farm
     RETURN    ${user_id}
 
 *** Test Cases ***
+# PRD Reference: 0020
 Dev User Switching Flow
     [Documentation]    Test that we can login as one user, switch to another, and see different farms.
     [Teardown]    Teardown With Video
@@ -87,6 +89,7 @@ Dev User Switching Flow
     Wait For Elements State    text=Farm 1    visible    timeout=10s
     Wait For Elements State    text=No farms yet    detached    timeout=5s
 
+# PRD Reference: 0020
 Verify Force Sync With User Change In Between
     [Documentation]    Test that if the user changes in between syncs (simulated by localStorage changes),
     ...                clicking the refresh/sync button invalidates the old sync point and refreshes all.

@@ -43,6 +43,7 @@ export class StorageCapacityComponent implements OnInit, OnDestroy {
     });
   }
 
+  // No obvious PRD requirement
   ngOnInit() {
     this.subs.add(
       this.rxdbService.db$.subscribe((db) => {
@@ -65,16 +66,19 @@ export class StorageCapacityComponent implements OnInit, OnDestroy {
     );
   }
 
+  // No obvious PRD requirement
   ngOnDestroy() {
     this.subs.unsubscribe();
   }
 
+  // No obvious PRD requirement
   getFarmName(farmId?: number | null): string {
     if (!farmId) return 'Shared / Unassigned';
     const farm = this.farms.find((f) => f.serverId === farmId);
     return farm ? farm.name : 'Unknown Farm';
   }
 
+  // No obvious PRD requirement
   startAdd() {
     this.isAdding = true;
     this.editingId = null;
@@ -86,6 +90,7 @@ export class StorageCapacityComponent implements OnInit, OnDestroy {
     });
   }
 
+  // No obvious PRD requirement
   startEdit(storage: InventoryStorageDocType) {
     this.isAdding = false;
     this.editingId = storage.id;
@@ -98,12 +103,14 @@ export class StorageCapacityComponent implements OnInit, OnDestroy {
     });
   }
 
+  // No obvious PRD requirement
   cancelForm() {
     this.isAdding = false;
     this.editingId = null;
     this.storageForm.reset();
   }
 
+  // No obvious PRD requirement
   async saveStorage() {
     if (this.storageForm.invalid || !this.db) return;
 
@@ -165,6 +172,7 @@ export class StorageCapacityComponent implements OnInit, OnDestroy {
     this.cancelForm();
   }
 
+  // No obvious PRD requirement
   async deleteStorage(id: string) {
     if (
       !this.db ||

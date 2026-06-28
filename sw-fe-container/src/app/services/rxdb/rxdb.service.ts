@@ -32,6 +32,7 @@ import * as MurmurHash3 from 'murmurhash3js-revisited';
  * hash algorithm — appropriate for RxDB document fingerprinting.
  * Accepts string | ArrayBuffer | Blob to satisfy RxDB's HashFunction contract.
  */
+// PRD Reference: 0010
 async function murmurhash3Hash(
   input: string | ArrayBuffer | Blob,
 ): Promise<string> {
@@ -124,6 +125,7 @@ export class RxdbService implements OnDestroy {
   }
 
   /** Create the RxDB database and add all collections. Wrap in try/catch for self-healing. */
+  // PRD Reference: 0010
   private async createDatabase(): Promise<SwardDatabase> {
     try {
       return await this.tryCreateDatabase();
@@ -152,6 +154,7 @@ export class RxdbService implements OnDestroy {
     }
   }
 
+  // PRD Reference: 0010
   private async tryCreateDatabase(): Promise<SwardDatabase> {
     // E2E Test hooks to simulate database failures via query parameters
     if (typeof window !== 'undefined' && window.location) {
@@ -214,6 +217,7 @@ export class RxdbService implements OnDestroy {
     RxCollection<InventoryChemicalDocType>
   > {
     return this.db$.pipe(
+      // PRD Reference: 0010
       switchMap((db) => from(Promise.resolve(db.inventory_chemicals))),
     );
   }
@@ -236,6 +240,7 @@ export class RxdbService implements OnDestroy {
   /** Observable emitting the soil analyses RxCollection. */
   get soilAnalysesCollection$(): Observable<RxCollection<SoilAnalysisDocType>> {
     return this.db$.pipe(
+      // PRD Reference: 0010
       switchMap((db) => from(Promise.resolve(db.soil_analyses))),
     );
   }
@@ -245,6 +250,7 @@ export class RxdbService implements OnDestroy {
     RxCollection<FertilisationPlanDocType>
   > {
     return this.db$.pipe(
+      // PRD Reference: 0010
       switchMap((db) => from(Promise.resolve(db.fertilisation_plans))),
     );
   }
@@ -252,6 +258,7 @@ export class RxdbService implements OnDestroy {
   /** Observable emitting the farm records RxCollection. */
   get farmRecordsCollection$(): Observable<RxCollection<FarmRecordDocType>> {
     return this.db$.pipe(
+      // PRD Reference: 0010
       switchMap((db) => from(Promise.resolve(db.farm_records))),
     );
   }
@@ -261,6 +268,7 @@ export class RxdbService implements OnDestroy {
     RxCollection<SwardMovementDocType>
   > {
     return this.db$.pipe(
+      // PRD Reference: 0010
       switchMap((db) => from(Promise.resolve(db.sward_movements))),
     );
   }
@@ -275,6 +283,7 @@ export class RxdbService implements OnDestroy {
     return this.db$.pipe(switchMap((db) => from(Promise.resolve(db.metadata))));
   }
 
+  // PRD Reference: 0010
   async ngOnDestroy(): Promise<void> {
     const db = await this.db$.toPromise();
     if (db) {

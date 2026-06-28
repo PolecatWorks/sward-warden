@@ -42,12 +42,14 @@ export class FarmDetailComponent implements OnInit {
 
 
   @HostListener('document:keydown.escape', ['$event'])
+  // PRD Reference: 0003
   handleEscape(event: KeyboardEvent) {
     if (this.showEditFarmModal) {
       this.closeEditFarmModal();
     }
   }
 
+  // PRD Reference: 0003
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const idStr = params.get('farmId');
@@ -65,6 +67,7 @@ export class FarmDetailComponent implements OnInit {
     });
   }
 
+  // PRD Reference: 0003
   loadFarmData(): void {
     this.isLoading = true;
     this.errorMessage = null;
@@ -91,6 +94,7 @@ export class FarmDetailComponent implements OnInit {
     });
   }
 
+  // PRD Reference: 0003
   openEditFarmModal(): void {
     if (!this.farm) return;
     this.editFarmName = this.farm.name;
@@ -102,17 +106,20 @@ export class FarmDetailComponent implements OnInit {
   }
 
 
+  // PRD Reference: 0003
   hasEditChanges(): boolean {
     return this.editFarmName !== this.originalEditFarmName ||
            this.editFarmLocation !== this.originalEditFarmLocation;
   }
 
+  // PRD Reference: 0003
   closeEditFarmModal(): void {
     this.showEditFarmModal = false;
     this.editFarmName = '';
     this.editFarmLocation = '';
   }
 
+  // PRD Reference: 0003
   editFarm(): void {
     if (!this.farm || !this.editFarmName || !this.editFarmLocation || !this.hasEditChanges()) {
       return;
@@ -138,6 +145,7 @@ export class FarmDetailComponent implements OnInit {
     });
   }
 
+  // PRD Reference: 0003
   confirmDelete(): void {
     if (!this.farm) return;
     this.isSaving = true;

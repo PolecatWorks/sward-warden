@@ -18,6 +18,7 @@ export class LoggerService {
     this.level = this.parseLogLevel(config.logLevel);
   }
 
+  // No obvious PRD requirement
   private parseLogLevel(level: string): LogLevel {
     switch (level?.toUpperCase()) {
       case 'DEBUG': return LogLevel.DEBUG;
@@ -28,24 +29,28 @@ export class LoggerService {
     }
   }
 
+  // No obvious PRD requirement
   log(message: any, ...args: any[]): void {
     if (this.level <= LogLevel.DEBUG) {
       console.log(message, ...args);
     }
   }
 
+  // No obvious PRD requirement
   info(message: any, ...args: any[]): void {
     if (this.level <= LogLevel.INFO) {
       console.info(message, ...args);
     }
   }
 
+  // No obvious PRD requirement
   warn(message: any, ...args: any[]): void {
     if (this.level <= LogLevel.WARN) {
       console.warn(message, ...args);
     }
   }
 
+  // No obvious PRD requirement
   error(message: any, ...args: any[]): void {
     if (this.level <= LogLevel.ERROR) {
       console.error(message, ...args);

@@ -3,10 +3,12 @@ import { ActivatedRoute, provideRouter } from '@angular/router';
 
 import { StorageCapacityComponent } from './storage-capacity.component';
 
+// No obvious PRD requirement
 describe('StorageCapacityComponent', () => {
   let component: StorageCapacityComponent;
   let fixture: ComponentFixture<StorageCapacityComponent>;
 
+  // No obvious PRD requirement
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
@@ -18,7 +20,9 @@ describe('StorageCapacityComponent', () => {
     fixture.detectChanges();
   });
 
+  // No obvious PRD requirement
   it('should create', () => {
+    // No obvious PRD requirement
     expect(component).toBeTruthy();
   });
 });

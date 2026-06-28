@@ -17,6 +17,7 @@ export class WeatherIntegrationComponent implements OnInit {
 
   constructor(private weatherService: WeatherService) {}
 
+  // PRD Reference: 0008
   ngOnInit() {
     this.weatherService.getForecast(0, 0).subscribe(data => {
       this.forecast = data;

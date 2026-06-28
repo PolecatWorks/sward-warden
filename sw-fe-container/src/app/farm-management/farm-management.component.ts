@@ -55,6 +55,7 @@ export class FarmManagementComponent implements OnInit, OnDestroy {
     });
   }
 
+  // PRD Reference: 0003
   ngOnInit(): void {
     const userId = this.authService.getUserId();
     if (userId) {
@@ -67,6 +68,7 @@ export class FarmManagementComponent implements OnInit, OnDestroy {
     }
   }
 
+  // PRD Reference: 0003
   loadData(): void {
     this.users$ = this.farmService.getUsers();
     this.farms$ = this.farmService.getFarms();
@@ -91,12 +93,14 @@ export class FarmManagementComponent implements OnInit, OnDestroy {
     });
   }
 
+  // PRD Reference: 0003
   ngOnDestroy(): void {
     if (this.farmsSubscription) {
       this.farmsSubscription.unsubscribe();
     }
   }
 
+  // PRD Reference: 0003
   onSubmitFarm(): void {
     if (this.farmForm.valid) {
       const newFarm: Farm = {
@@ -112,6 +116,7 @@ export class FarmManagementComponent implements OnInit, OnDestroy {
     }
   }
 
+  // PRD Reference: 0003
   onSubmitField(): void {
     if (this.fieldForm.valid) {
       const formValue = this.fieldForm.value;
@@ -153,6 +158,7 @@ export class FarmManagementComponent implements OnInit, OnDestroy {
     }
   }
 
+  // PRD Reference: 0003
   onSubmitEvent(): void {
     if (this.eventForm.valid) {
       const newEvent: Event = {

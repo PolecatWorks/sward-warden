@@ -16,6 +16,7 @@ export class DevAuthApiService {
     @Inject(APP_CONFIG) private config: AppConfig
   ) {}
 
+  // PRD Reference: 0020
   getToken(userId: number, role: string): Observable<DevAuthTokenResponse> {
     const url = `${this.config.apiPath.replace('/v0', '')}/dev/auth/token`;
     return this.http.post<DevAuthTokenResponse>(url, { user_id: userId, role });

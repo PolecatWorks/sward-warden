@@ -8,6 +8,7 @@ ${EXTERNAL_DNS_URL}
 ${BE_BASE_URL}
 
 *** Test Cases ***
+# No obvious PRD requirement
 Verify REST Fallback and Warning Banner on Database Failure
     [Documentation]    Test that the application falls back to REST-only mode and displays a warning banner when database initialization persistently fails.
     [Teardown]    Teardown With Video

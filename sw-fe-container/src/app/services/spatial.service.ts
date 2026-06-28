@@ -15,10 +15,12 @@ export class SpatialService {
     @Inject(APP_CONFIG) private config: AppConfig
   ) { }
 
+  // No obvious PRD requirement
   private get apiUrl() {
     return `${this.config.apiPath}/v0/spatial`;
   }
 
+  // No obvious PRD requirement
   getWaterwayBuffers(distance: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/waterway-buffers?distance=${distance}`);
   }

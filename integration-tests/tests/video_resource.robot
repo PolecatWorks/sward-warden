@@ -3,6 +3,7 @@ Library    Browser
 Library    OperatingSystem
 
 *** Keywords ***
+# No obvious PRD requirement
 Teardown With Video
     [Documentation]    Close the browser context to finalize the video, then embed it in the log/report.
     # Close context to finalize the video file
@@ -19,6 +20,7 @@ Teardown With Video
 
     Close Browser    ALL
 
+# No obvious PRD requirement
 Login As Demo User
     [Documentation]    Logs in as the default Demo User (ID 1) via the development login page
     New Page    ${EXTERNAL_DNS_URL}/login

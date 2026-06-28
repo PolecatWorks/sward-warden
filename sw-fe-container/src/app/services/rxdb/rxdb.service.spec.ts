@@ -6,10 +6,12 @@ import * as rxdbModule from 'rxdb';
 
 let testCounter = 0;
 
+// PRD Reference: 0010
 describe('RxdbService', () => {
   let service: RxdbService;
   let testDbName: string;
 
+  // PRD Reference: 0010
   beforeEach(() => {
     testCounter++;
     testDbName = `rxdb-svc-test-${testCounter}-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
@@ -23,6 +25,7 @@ describe('RxdbService', () => {
     service = TestBed.inject(RxdbService);
   });
 
+  // PRD Reference: 0010
   afterEach(async () => {
     try {
       const db = await firstValueFrom(service.db$);
@@ -35,30 +38,41 @@ describe('RxdbService', () => {
     }
   });
 
+  // PRD Reference: 0010
   it('should be created', () => {
+    // PRD Reference: 0010
     expect(service).toBeTruthy();
   });
 
+  // PRD Reference: 0010
   it('should create a database with the configured name', async () => {
     const db = await firstValueFrom(service.db$);
+    // PRD Reference: 0010
     expect(db.name).toBe(testDbName);
   });
 
+  // PRD Reference: 0010
   it('should have a farms collection', async () => {
     const db = await firstValueFrom(service.db$);
+    // PRD Reference: 0010
     expect(db.farms).toBeDefined();
   });
 
+  // PRD Reference: 0010
   it('should have a fields collection', async () => {
     const db = await firstValueFrom(service.db$);
+    // PRD Reference: 0010
     expect(db.fields).toBeDefined();
   });
 
+  // PRD Reference: 0010
   it('should have an events collection', async () => {
     const db = await firstValueFrom(service.db$);
+    // PRD Reference: 0010
     expect(db.events).toBeDefined();
   });
 
+  // PRD Reference: 0010
   it('should insert and retrieve a farm document', async () => {
     const db = await firstValueFrom(service.db$);
     const doc = await db.farms.insert({
@@ -69,13 +83,17 @@ describe('RxdbService', () => {
       updatedAt: new Date().toISOString(),
     });
 
+    // PRD Reference: 0010
     expect(doc.name).toBe('Sunrise Farm');
 
     const found = await db.farms.findOne('test-farm-1').exec();
+    // PRD Reference: 0010
     expect(found).toBeTruthy();
+    // PRD Reference: 0010
     expect(found!.location).toBe('Kerry, Ireland');
   });
 
+  // PRD Reference: 0010
   it('should insert and retrieve a field document', async () => {
     const db = await firstValueFrom(service.db$);
     const doc = await db.fields.insert({
@@ -87,13 +105,17 @@ describe('RxdbService', () => {
       updatedAt: new Date().toISOString(),
     });
 
+    // PRD Reference: 0010
     expect(doc.name).toBe('North Meadow');
 
     const found = await db.fields.findOne('test-field-1').exec();
+    // PRD Reference: 0010
     expect(found).toBeTruthy();
+    // PRD Reference: 0010
     expect(found!.area_hectares).toBe(12.5);
   });
 
+  // PRD Reference: 0010
   it('should insert and retrieve an event document', async () => {
     const db = await firstValueFrom(service.db$);
     const doc = await db.events.insert({
@@ -106,20 +128,27 @@ describe('RxdbService', () => {
       updatedAt: new Date().toISOString(),
     });
 
+    // PRD Reference: 0010
     expect(doc.event_type).toBe('planting');
 
     const found = await db.events.findOne('test-event-1').exec();
+    // PRD Reference: 0010
     expect(found).toBeTruthy();
+    // PRD Reference: 0010
     expect(found!.description).toBe('Spring barley planting');
   });
 
+  // PRD Reference: 0010
   it('should return the same database instance on multiple db$ subscriptions', async () => {
     const db1 = await firstValueFrom(service.db$);
     const db2 = await firstValueFrom(service.db$);
+    // PRD Reference: 0010
     expect(db1).toBe(db2);
   });
 
+  // PRD Reference: 0010
   describe('Self-Healing & Fallback', () => {
+    // PRD Reference: 0010
     it('should wipe database and retry on initialization failure', async () => {
       // Close the database instance created during construction to avoid storage lock/removal conflicts
       const existingDb = await firstValueFrom(service.db$);
@@ -136,13 +165,16 @@ describe('RxdbService', () => {
       });
 
       const db = await service['createDatabase']();
+      // PRD Reference: 0010
       expect(db).toBeTruthy();
+      // PRD Reference: 0010
       expect(callCount).toBe(2);
 
       // Clean up the newly created database instance
       await db.remove();
     });
 
+    // PRD Reference: 0010
     it('should activate fallbackToRest on second failure', async () => {
       // Close the database instance created during construction to avoid storage lock/removal conflicts
       const existingDb = await firstValueFrom(service.db$);
@@ -156,9 +188,12 @@ describe('RxdbService', () => {
 
       try {
         await service['createDatabase']();
+        // PRD Reference: 0010
         fail('Should have thrown an error');
       } catch (err) {
+        // PRD Reference: 0010
         expect(callCount).toBe(2);
+        // PRD Reference: 0010
         expect(service.fallbackToRest$.value).toBe(true);
       }
     });

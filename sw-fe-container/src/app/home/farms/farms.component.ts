@@ -29,12 +29,14 @@ export class FarmsComponent implements OnInit {
     private logger: LoggerService
   ) {}
 
+  // PRD Reference: 0003
   ngOnInit(): void {
     this.loadFarms();
   }
 
 
   @HostListener('document:keydown.escape', ['$event'])
+  // PRD Reference: 0003
   handleEscape(event: KeyboardEvent) {
     if (this.showAddFarmModal) {
       this.closeAddFarmModal();
@@ -44,6 +46,7 @@ export class FarmsComponent implements OnInit {
     }
   }
 
+  // PRD Reference: 0003
   loadFarms(): void {
     this.isLoading = true;
     this.errorMessage = null;
@@ -68,6 +71,7 @@ export class FarmsComponent implements OnInit {
     });
   }
 
+  // PRD Reference: 0003
   addFarm(): void {
     if (!this.newFarmName || !this.newFarmLocation || this.isSaving) {
       return;
@@ -101,6 +105,7 @@ export class FarmsComponent implements OnInit {
   originalEditFarmName: string = '';
   originalEditFarmLocation: string = '';
 
+  // PRD Reference: 0003
   openAddFarmModal(): void {
     this.newFarmName = '';
     this.newFarmLocation = '';
@@ -108,12 +113,14 @@ export class FarmsComponent implements OnInit {
     this.showAddFarmModal = true;
   }
 
+  // PRD Reference: 0003
   closeAddFarmModal(): void {
     this.showAddFarmModal = false;
     this.newFarmName = '';
     this.newFarmLocation = '';
   }
 
+  // PRD Reference: 0003
   startEdit(farm: Farm): void {
     this.editingFarmId = farm.id || null;
     this.editFarmName = farm.name;
@@ -123,17 +130,20 @@ export class FarmsComponent implements OnInit {
   }
 
 
+  // PRD Reference: 0003
   hasEditChanges(): boolean {
     return this.editFarmName !== this.originalEditFarmName ||
            this.editFarmLocation !== this.originalEditFarmLocation;
   }
 
+  // PRD Reference: 0003
   cancelEdit(): void {
     this.editingFarmId = null;
     this.editFarmName = '';
     this.editFarmLocation = '';
   }
 
+  // PRD Reference: 0003
   saveFarmFromList(): void {
     if (!this.editingFarmId || !this.editFarmName || !this.editFarmLocation || !this.hasEditChanges()) {
       return;

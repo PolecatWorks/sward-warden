@@ -8,6 +8,7 @@ ${EXTERNAL_DNS_URL}
 ${BE_BASE_URL}
 
 *** Test Cases ***
+# PRD Reference: 0004
 Sward Movement Creation Flow
     [Documentation]    Test sward movement creation flow end-to-end within a specific farm.
     [Setup]    Create Test Farm
@@ -62,6 +63,7 @@ Sward Movement Creation Flow
         Should Be True    ${found_movement}    Movement not found in API response
 
 *** Keywords ***
+# PRD Reference: 0004
 Create Test Farm
     ${random_str}=    Evaluate    str(random.randint(1000, 9999))    modules=random
     ${farm_name}=    Set Variable    E2E Parent Farm ${random_str}
@@ -70,6 +72,7 @@ Create Test Farm
     ${farm_id}=    Convert To String    ${farm_response.json()['id']}
     Set Test Variable    ${TEST_FARM_ID}    ${farm_id}
 
+# PRD Reference: 0004
 Teardown And Clean Up Farm
     Run Keyword And Ignore Error    DELETE    ${BE_BASE_URL}/v0/farms/${TEST_FARM_ID}
     Teardown With Video
