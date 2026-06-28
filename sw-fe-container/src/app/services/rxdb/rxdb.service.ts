@@ -1,7 +1,25 @@
-import { Injectable, OnDestroy, InjectionToken, Inject, Optional } from '@angular/core';
-import { createRxDatabase, RxDatabase, RxCollection, RxStorage, removeRxDatabase } from 'rxdb';
+import {
+  Injectable,
+  OnDestroy,
+  InjectionToken,
+  Inject,
+  Optional,
+} from '@angular/core';
+import {
+  createRxDatabase,
+  RxDatabase,
+  RxCollection,
+  RxStorage,
+  removeRxDatabase,
+} from 'rxdb';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
-import { Observable, from, shareReplay, switchMap, BehaviorSubject } from 'rxjs';
+import {
+  Observable,
+  from,
+  shareReplay,
+  switchMap,
+  BehaviorSubject,
+} from 'rxjs';
 
 import * as MurmurHash3 from 'murmurhash3js-revisited';
 
@@ -14,7 +32,9 @@ import * as MurmurHash3 from 'murmurhash3js-revisited';
  * hash algorithm — appropriate for RxDB document fingerprinting.
  * Accepts string | ArrayBuffer | Blob to satisfy RxDB's HashFunction contract.
  */
-async function murmurhash3Hash(input: string | ArrayBuffer | Blob): Promise<string> {
+async function murmurhash3Hash(
+  input: string | ArrayBuffer | Blob,
+): Promise<string> {
   let bytes: Uint8Array;
   if (typeof input === 'string') {
     bytes = new TextEncoder().encode(input);
@@ -30,15 +50,17 @@ import {
   FarmDocType, FieldDocType, EventDocType, OutboxDocType, MetadataDocType,
   SoilAnalysisDocType, FertilisationPlanDocType, FarmRecordDocType,
   OrganicManureApplicationDocType, ComplianceBreachDocType, SwardMovementDocType,
-  InventoryStorageDocType,
+  InventoryStorageDocType, InventoryChemicalDocType,
   farmSchema, fieldSchema, eventSchema, outboxSchema, metadataSchema,
   soilAnalysisSchema, fertilisationPlanSchema, farmRecordSchema,
   organicManureApplicationSchema, complianceBreachSchema, swardMovementSchema,
-  inventoryStorageSchema
+  inventoryStorageSchema, inventoryChemicalSchema
 } from './schemas';
 
 /** Injection token for providing an alternative RxStorage (e.g. memory for tests). */
-export const RXDB_STORAGE = new InjectionToken<RxStorage<any, any>>('RXDB_STORAGE');
+export const RXDB_STORAGE = new InjectionToken<RxStorage<any, any>>(
+  'RXDB_STORAGE',
+);
 
 /** Injection token for overriding the database name (e.g. unique name per test). */
 export const RXDB_DB_NAME = new InjectionToken<string>('RXDB_DB_NAME');
@@ -55,6 +77,7 @@ export type SwardCollections = {
   compliance_breaches: RxCollection<ComplianceBreachDocType>;
   sward_movements: RxCollection<SwardMovementDocType>;
   inventory_storage: RxCollection<InventoryStorageDocType>;
+  inventory_chemicals: RxCollection<InventoryChemicalDocType>;
   outbox: RxCollection<OutboxDocType>;
   metadata: RxCollection<MetadataDocType>;
 };
@@ -71,7 +94,7 @@ export type SwardDatabase = RxDatabase<SwardCollections>;
  * `RXDB_DB_NAME` with a unique name to avoid cross-test contamination.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RxdbService implements OnDestroy {
   /** The lazily-initialised database observable — shared across all consumers. */
@@ -105,16 +128,24 @@ export class RxdbService implements OnDestroy {
     try {
       return await this.tryCreateDatabase();
     } catch (err) {
-      console.warn('RxDB Database initialization failed. Attempting self-healing/wipe...', err);
+      console.warn(
+        'RxDB Database initialization failed. Attempting self-healing/wipe...',
+        err,
+      );
       try {
         // Attempt to wipe the existing database
         await removeRxDatabase(this.dbName, this.storage);
-        console.log('RxDB Database successfully wiped. Re-attempting initialization.');
+        console.log(
+          'RxDB Database successfully wiped. Re-attempting initialization.',
+        );
 
         // Re-try database creation
         return await this.tryCreateDatabase();
       } catch (retryErr) {
-        console.error('RxDB Database initialization failed on second attempt. Falling back to REST mode.', retryErr);
+        console.error(
+          'RxDB Database initialization failed on second attempt. Falling back to REST mode.',
+          retryErr,
+        );
         this.fallbackToRest$.next(true);
         throw retryErr;
       }
@@ -160,6 +191,7 @@ export class RxdbService implements OnDestroy {
         compliance_breaches: { schema: complianceBreachSchema },
         sward_movements: { schema: swardMovementSchema },
         inventory_storage: { schema: inventoryStorageSchema },
+        inventory_chemicals: { schema: inventoryChemicalSchema },
         outbox: { schema: outboxSchema },
         metadata: { schema: metadataSchema },
       });
@@ -177,50 +209,70 @@ export class RxdbService implements OnDestroy {
     }
   }
 
+  /** Observable emitting the inventory chemicals RxCollection. */
+  get inventoryChemicalsCollection$(): Observable<
+    RxCollection<InventoryChemicalDocType>
+  > {
+    return this.db$.pipe(
+      switchMap((db) => from(Promise.resolve(db.inventory_chemicals))),
+    );
+  }
+
   /** Observable emitting the farms RxCollection. */
   get farmsCollection$(): Observable<RxCollection<FarmDocType>> {
-    return this.db$.pipe(switchMap(db => from(Promise.resolve(db.farms))));
+    return this.db$.pipe(switchMap((db) => from(Promise.resolve(db.farms))));
   }
 
   /** Observable emitting the fields RxCollection. */
   get fieldsCollection$(): Observable<RxCollection<FieldDocType>> {
-    return this.db$.pipe(switchMap(db => from(Promise.resolve(db.fields))));
+    return this.db$.pipe(switchMap((db) => from(Promise.resolve(db.fields))));
   }
 
   /** Observable emitting the events RxCollection. */
   get eventsCollection$(): Observable<RxCollection<EventDocType>> {
-    return this.db$.pipe(switchMap(db => from(Promise.resolve(db.events))));
+    return this.db$.pipe(switchMap((db) => from(Promise.resolve(db.events))));
   }
 
   /** Observable emitting the soil analyses RxCollection. */
   get soilAnalysesCollection$(): Observable<RxCollection<SoilAnalysisDocType>> {
-    return this.db$.pipe(switchMap(db => from(Promise.resolve(db.soil_analyses))));
+    return this.db$.pipe(
+      switchMap((db) => from(Promise.resolve(db.soil_analyses))),
+    );
   }
 
   /** Observable emitting the fertilisation plans RxCollection. */
-  get fertilisationPlansCollection$(): Observable<RxCollection<FertilisationPlanDocType>> {
-    return this.db$.pipe(switchMap(db => from(Promise.resolve(db.fertilisation_plans))));
+  get fertilisationPlansCollection$(): Observable<
+    RxCollection<FertilisationPlanDocType>
+  > {
+    return this.db$.pipe(
+      switchMap((db) => from(Promise.resolve(db.fertilisation_plans))),
+    );
   }
-
 
   /** Observable emitting the farm records RxCollection. */
   get farmRecordsCollection$(): Observable<RxCollection<FarmRecordDocType>> {
-    return this.db$.pipe(switchMap(db => from(Promise.resolve(db.farm_records))));
+    return this.db$.pipe(
+      switchMap((db) => from(Promise.resolve(db.farm_records))),
+    );
   }
 
   /** Observable emitting the sward movements RxCollection. */
-  get swardMovementsCollection$(): Observable<RxCollection<SwardMovementDocType>> {
-    return this.db$.pipe(switchMap(db => from(Promise.resolve(db.sward_movements))));
+  get swardMovementsCollection$(): Observable<
+    RxCollection<SwardMovementDocType>
+  > {
+    return this.db$.pipe(
+      switchMap((db) => from(Promise.resolve(db.sward_movements))),
+    );
   }
 
   /** Observable emitting the outbox RxCollection. */
   get outboxCollection$(): Observable<RxCollection<OutboxDocType>> {
-    return this.db$.pipe(switchMap(db => from(Promise.resolve(db.outbox))));
+    return this.db$.pipe(switchMap((db) => from(Promise.resolve(db.outbox))));
   }
 
   /** Observable emitting the metadata RxCollection. */
   get metadataCollection$(): Observable<RxCollection<MetadataDocType>> {
-    return this.db$.pipe(switchMap(db => from(Promise.resolve(db.metadata))));
+    return this.db$.pipe(switchMap((db) => from(Promise.resolve(db.metadata))));
   }
 
   async ngOnDestroy(): Promise<void> {

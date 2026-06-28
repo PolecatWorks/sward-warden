@@ -29,7 +29,9 @@ This document outlines the requirements for tracking inventory and equipment. Ma
 
 4. **Chemical and Pesticide Inventory**
    - Record and maintain an inventory of Plant Protection Products (PPPs).
-   - Track specific data points: Product Authorization Number (MAPP).
+   - Implement full BREAD operations (Browse, Read, Edit, Add, Delete) for these inventory items.
+   - Farm association is optional; when unassigned, the item is attributed to the user's overall portfolio (all farms).
+   - Track specific data points: Product Authorization Number (MAPP), active ingredient, quantity on hand, and unit.
    - Provide visibility into available quantities to facilitate accurate event tracking.
 
 5. **Equipment Tracking**
