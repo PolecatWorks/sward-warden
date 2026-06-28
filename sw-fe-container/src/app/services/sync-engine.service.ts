@@ -13,6 +13,7 @@ import {
   of,
 } from 'rxjs';
 import { RxdbService, SwardDatabase } from './rxdb/rxdb.service';
+import { InventoryChemicalDocType } from './rxdb/schemas';
 import { NetworkService } from './network.service';
 import { SyncStateService } from './sync-state.service';
 import { AuthService } from './auth.service';

@@ -173,7 +173,12 @@ export const farmSchema: RxJsonSchema<FarmDocType> = {
     name: { type: 'string' },
     location: { type: 'string' },
     has_derogation: { type: 'boolean' },
-    syncStatus: { type: 'string', maxLength: 16, enum: ['synced', 'pending', 'failed'], default: 'pending' },
+    syncStatus: {
+      type: 'string',
+      maxLength: 16,
+      enum: ['synced', 'pending', 'failed'],
+      default: 'pending',
+    },
     updatedAt: { type: 'string', maxLength: 32 },
   },
   required: ['id', 'name', 'location', 'syncStatus', 'updatedAt'],
@@ -197,10 +202,22 @@ export const fieldSchema: RxJsonSchema<FieldDocType> = {
     average_slope: { type: 'number' },
     max_slope: { type: 'number' },
     geometry_wkt: { type: 'string' },
-    syncStatus: { type: 'string', maxLength: 16, enum: ['synced', 'pending', 'failed'], default: 'pending' },
+    syncStatus: {
+      type: 'string',
+      maxLength: 16,
+      enum: ['synced', 'pending', 'failed'],
+      default: 'pending',
+    },
     updatedAt: { type: 'string', maxLength: 32 },
   },
-  required: ['id', 'farm_id', 'name', 'area_hectares', 'syncStatus', 'updatedAt'],
+  required: [
+    'id',
+    'farm_id',
+    'name',
+    'area_hectares',
+    'syncStatus',
+    'updatedAt',
+  ],
   indexes: ['syncStatus', 'updatedAt'],
 };
 
@@ -218,10 +235,23 @@ export const eventSchema: RxJsonSchema<EventDocType> = {
     mapp_number: { type: 'string' },
     eppo_code: { type: 'string' },
     bbch_growth_stage: { type: 'string' },
-    syncStatus: { type: 'string', maxLength: 16, enum: ['synced', 'pending', 'failed'], default: 'pending' },
+    syncStatus: {
+      type: 'string',
+      maxLength: 16,
+      enum: ['synced', 'pending', 'failed'],
+      default: 'pending',
+    },
     updatedAt: { type: 'string', maxLength: 32 },
   },
-  required: ['id', 'field_id', 'event_type', 'description', 'date', 'syncStatus', 'updatedAt'],
+  required: [
+    'id',
+    'field_id',
+    'event_type',
+    'description',
+    'date',
+    'syncStatus',
+    'updatedAt',
+  ],
   indexes: ['syncStatus', 'updatedAt'],
 };
 
@@ -238,7 +268,12 @@ export const soilAnalysisSchema: RxJsonSchema<SoilAnalysisDocType> = {
     phosphorus_index: { type: 'number' },
     potassium_index: { type: 'number' },
     magnesium_index: { type: 'number' },
-    syncStatus: { type: 'string', maxLength: 16, enum: ['synced', 'pending', 'failed'], default: 'pending' },
+    syncStatus: {
+      type: 'string',
+      maxLength: 16,
+      enum: ['synced', 'pending', 'failed'],
+      default: 'pending',
+    },
     updatedAt: { type: 'string', maxLength: 32 },
   },
   required: ['id', 'field_id', 'sample_date', 'syncStatus', 'updatedAt'],
@@ -259,36 +294,54 @@ export const fertilisationPlanSchema: RxJsonSchema<FertilisationPlanDocType> = {
     phosphorus_requirement: { type: 'number' },
     potassium_requirement: { type: 'number' },
     application_date: { type: 'string' },
-    syncStatus: { type: 'string', maxLength: 16, enum: ['synced', 'pending', 'failed'], default: 'pending' },
+    syncStatus: {
+      type: 'string',
+      maxLength: 16,
+      enum: ['synced', 'pending', 'failed'],
+      default: 'pending',
+    },
     updatedAt: { type: 'string', maxLength: 32 },
   },
-  required: ['id', 'field_id', 'crop_type', 'target_yield', 'syncStatus', 'updatedAt'],
+  required: [
+    'id',
+    'field_id',
+    'crop_type',
+    'target_yield',
+    'syncStatus',
+    'updatedAt',
+  ],
   indexes: ['syncStatus', 'updatedAt'],
 };
 
-export const organicManureApplicationSchema: RxJsonSchema<OrganicManureApplicationDocType> = {
-  version: 0,
-  primaryKey: 'id',
-  type: 'object',
-  properties: {
-    id: { type: 'string', maxLength: 64 },
-    serverId: { type: 'number' },
-    event_id: { type: 'number' },
-    manure_type: { type: 'string' },
-    volume_applied_m3_per_ha: { type: 'number' },
-    weight_applied_tonnes_per_ha: { type: 'number' },
-    nitrogen_content_kg_per_unit: { type: 'number' },
-    is_lesse_applied: { type: 'boolean' },
-    weather_conditions_confirmed: { type: 'boolean' },
-    buffer_zone_distance_meters: { type: 'number' },
-    equipment_used: { type: 'string' },
-    lesse_exemption_reason: { type: 'string' },
-    syncStatus: { type: 'string', maxLength: 16, enum: ['synced', 'pending', 'failed'], default: 'pending' },
-    updatedAt: { type: 'string', maxLength: 32 },
-  },
-  required: ['id', 'event_id', 'manure_type', 'syncStatus', 'updatedAt'],
-  indexes: ['syncStatus', 'updatedAt'],
-};
+export const organicManureApplicationSchema: RxJsonSchema<OrganicManureApplicationDocType> =
+  {
+    version: 0,
+    primaryKey: 'id',
+    type: 'object',
+    properties: {
+      id: { type: 'string', maxLength: 64 },
+      serverId: { type: 'number' },
+      event_id: { type: 'number' },
+      manure_type: { type: 'string' },
+      volume_applied_m3_per_ha: { type: 'number' },
+      weight_applied_tonnes_per_ha: { type: 'number' },
+      nitrogen_content_kg_per_unit: { type: 'number' },
+      is_lesse_applied: { type: 'boolean' },
+      weather_conditions_confirmed: { type: 'boolean' },
+      buffer_zone_distance_meters: { type: 'number' },
+      equipment_used: { type: 'string' },
+      lesse_exemption_reason: { type: 'string' },
+      syncStatus: {
+        type: 'string',
+        maxLength: 16,
+        enum: ['synced', 'pending', 'failed'],
+        default: 'pending',
+      },
+      updatedAt: { type: 'string', maxLength: 32 },
+    },
+    required: ['id', 'event_id', 'manure_type', 'syncStatus', 'updatedAt'],
+    indexes: ['syncStatus', 'updatedAt'],
+  };
 
 export const complianceBreachSchema: RxJsonSchema<ComplianceBreachDocType> = {
   version: 0,
@@ -305,10 +358,23 @@ export const complianceBreachSchema: RxJsonSchema<ComplianceBreachDocType> = {
     breach_date: { type: 'string' },
     notes: { type: 'string' },
     is_repeat: { type: 'boolean' },
-    syncStatus: { type: 'string', maxLength: 16, enum: ['synced', 'pending', 'failed'], default: 'pending' },
+    syncStatus: {
+      type: 'string',
+      maxLength: 16,
+      enum: ['synced', 'pending', 'failed'],
+      default: 'pending',
+    },
     updatedAt: { type: 'string', maxLength: 32 },
   },
-  required: ['id', 'farm_id', 'breach_type', 'severity', 'breach_date', 'syncStatus', 'updatedAt'],
+  required: [
+    'id',
+    'farm_id',
+    'breach_type',
+    'severity',
+    'breach_date',
+    'syncStatus',
+    'updatedAt',
+  ],
   indexes: ['syncStatus', 'updatedAt'],
 };
 
@@ -330,13 +396,26 @@ export const swardMovementSchema: RxJsonSchema<SwardMovementDocType> = {
     consignor_address: { type: 'string' },
     transporter_name: { type: 'string' },
     contract_length_months: { type: 'number' },
-    syncStatus: { type: 'string', maxLength: 16, enum: ['synced', 'pending', 'failed'], default: 'pending' },
+    syncStatus: {
+      type: 'string',
+      maxLength: 16,
+      enum: ['synced', 'pending', 'failed'],
+      default: 'pending',
+    },
     updatedAt: { type: 'string', maxLength: 32 },
   },
-  required: ['id', 'farm_id', 'movement_type', 'quantity_m3', 'date', 'manure_type', 'syncStatus', 'updatedAt'],
+  required: [
+    'id',
+    'farm_id',
+    'movement_type',
+    'quantity_m3',
+    'date',
+    'manure_type',
+    'syncStatus',
+    'updatedAt',
+  ],
   indexes: ['syncStatus', 'updatedAt'],
 };
-
 
 export interface FarmRecordDocType {
   id: string;
@@ -362,16 +441,29 @@ export const farmRecordSchema: RxJsonSchema<FarmRecordDocType> = {
     manure_storage_capacity: { type: 'number' },
     year: { type: 'number' },
     has_derogation: { type: 'boolean' },
-    syncStatus: { type: 'string', maxLength: 16, enum: ['synced', 'pending', 'failed'], default: 'pending' },
+    syncStatus: {
+      type: 'string',
+      maxLength: 16,
+      enum: ['synced', 'pending', 'failed'],
+      default: 'pending',
+    },
     updatedAt: { type: 'string', maxLength: 32 },
   },
-  required: ['id', 'farm_id', 'agricultural_area', 'manure_storage_capacity', 'year', 'syncStatus', 'updatedAt'],
+  required: [
+    'id',
+    'farm_id',
+    'agricultural_area',
+    'manure_storage_capacity',
+    'year',
+    'syncStatus',
+    'updatedAt',
+  ],
   indexes: ['syncStatus', 'updatedAt'],
 };
 
 /** Outbox entry for queuing offline writes. */
 export type OutboxActionType = 'POST' | 'PUT' | 'DELETE';
-export type OutboxEntityType = 'farms' | 'fields' | 'events' | 'soil_analyses' | 'fertilisation_plans' | 'farm_records' | 'fertiliser_applications' | 'organic_manure_applications' | 'compliance_breaches' | 'sward_movements' | 'inventory_storage';
+export type OutboxEntityType = 'farms' | 'fields' | 'events' | 'soil_analyses' | 'fertilisation_plans' | 'farm_records' | 'fertiliser_applications' | 'organic_manure_applications' | 'compliance_breaches' | 'sward_movements' | 'inventory_storage' | 'inventory_chemicals';
 export type OutboxStatus = 'pending' | 'failed';
 
 export interface OutboxDocType {
@@ -393,15 +485,49 @@ export const outboxSchema: RxJsonSchema<OutboxDocType> = {
   type: 'object',
   properties: {
     id: { type: 'string', maxLength: 64 },
-    actionType: { type: 'string', maxLength: 8, enum: ['POST', 'PUT', 'DELETE'] },
-    entityType: { type: 'string', maxLength: 32, enum: ['farms', 'fields', 'events', 'soil_analyses', 'fertilisation_plans', 'farm_records', 'fertiliser_applications', 'organic_manure_applications', 'compliance_breaches', 'sward_movements'] },
+    actionType: {
+      type: 'string',
+      maxLength: 8,
+      enum: ['POST', 'PUT', 'DELETE'],
+    },
+    entityType: {
+      type: 'string',
+      maxLength: 32,
+      enum: [
+        'farms',
+        'fields',
+        'events',
+        'soil_analyses',
+        'fertilisation_plans',
+        'farm_records',
+        'fertiliser_applications',
+        'organic_manure_applications',
+        'compliance_breaches',
+        'sward_movements',
+        'inventory_chemicals',
+      ],
+    },
     localDocId: { type: 'string', maxLength: 64 },
     payload: { type: 'string' },
     timestamp: { type: 'string', maxLength: 32 },
-    status: { type: 'string', maxLength: 16, enum: ['pending', 'failed'], default: 'pending' },
+    status: {
+      type: 'string',
+      maxLength: 16,
+      enum: ['pending', 'failed'],
+      default: 'pending',
+    },
     retryCount: { type: 'number', default: 0 },
   },
-  required: ['id', 'actionType', 'entityType', 'localDocId', 'payload', 'timestamp', 'status', 'retryCount'],
+  required: [
+    'id',
+    'actionType',
+    'entityType',
+    'localDocId',
+    'payload',
+    'timestamp',
+    'status',
+    'retryCount',
+  ],
   indexes: ['status', 'timestamp'],
 };
 
@@ -420,4 +546,43 @@ export const metadataSchema: RxJsonSchema<MetadataDocType> = {
     value: { type: 'string' },
   },
   required: ['key', 'value'],
+};
+export interface InventoryChemicalDocType {
+  id: string;
+  serverId?: number;
+  user_id: number;
+  farm_id?: number;
+  name: string;
+  mapp_number: string;
+  active_ingredient?: string;
+  quantity_on_hand?: number;
+  unit?: string;
+  syncStatus: SyncStatus;
+  updatedAt: string;
+}
+
+export const inventoryChemicalSchema: RxJsonSchema<InventoryChemicalDocType> = {
+  version: 0,
+  primaryKey: 'id',
+  type: 'object',
+  properties: {
+    id: { type: 'string', maxLength: 64 },
+    serverId: { type: 'number' },
+    user_id: { type: 'number' },
+    farm_id: { type: 'number' },
+    name: { type: 'string' },
+    mapp_number: { type: 'string' },
+    active_ingredient: { type: 'string' },
+    quantity_on_hand: { type: 'number' },
+    unit: { type: 'string' },
+    syncStatus: {
+      type: 'string',
+      maxLength: 16,
+      enum: ['synced', 'pending', 'failed'],
+      default: 'pending',
+    },
+    updatedAt: { type: 'string', maxLength: 32 },
+  },
+  required: ['id', 'user_id', 'name', 'mapp_number', 'syncStatus', 'updatedAt'],
+  indexes: ['syncStatus', 'updatedAt'],
 };
