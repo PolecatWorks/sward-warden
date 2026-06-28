@@ -17,13 +17,13 @@ pub async fn list_fields(
 
     let fields = if is_admin {
         sqlx::query_as::<_, Field>(
-            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, f.min_elevation, f.max_elevation, f.mean_elevation, f.average_slope, f.max_slope, ST_AsText(f.geom) as geometry_wkt, f.updated_at, f.is_deleted FROM fields f WHERE f.is_deleted = FALSE"
+            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, f.min_elevation, f.max_elevation, f.mean_elevation, f.average_slope, f.max_slope, ST_AsGeoJSON(f.geom) as geometry_geojson, f.updated_at, f.is_deleted FROM fields f WHERE f.is_deleted = FALSE"
         )
         .fetch_all(&state.db_pool)
         .await?
     } else {
         sqlx::query_as::<_, Field>(
-            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, f.min_elevation, f.max_elevation, f.mean_elevation, f.average_slope, f.max_slope, ST_AsText(f.geom) as geometry_wkt, f.updated_at, f.is_deleted FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = $1 AND f.is_deleted = FALSE"
+            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, f.min_elevation, f.max_elevation, f.mean_elevation, f.average_slope, f.max_slope, ST_AsGeoJSON(f.geom) as geometry_geojson, f.updated_at, f.is_deleted FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = $1 AND f.is_deleted = FALSE"
         )
         .bind(user_id)
         .fetch_all(&state.db_pool)
@@ -42,14 +42,14 @@ pub async fn get_field(
 
     let field = if is_admin {
         sqlx::query_as::<_, Field>(
-            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, f.min_elevation, f.max_elevation, f.mean_elevation, f.average_slope, f.max_slope, ST_AsText(f.geom) as geometry_wkt, f.updated_at, f.is_deleted FROM fields f WHERE f.id = $1 AND f.is_deleted = FALSE"
+            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, f.min_elevation, f.max_elevation, f.mean_elevation, f.average_slope, f.max_slope, ST_AsGeoJSON(f.geom) as geometry_geojson, f.updated_at, f.is_deleted FROM fields f WHERE f.id = $1 AND f.is_deleted = FALSE"
         )
         .bind(id)
         .fetch_one(&state.db_pool)
         .await?
     } else {
         sqlx::query_as::<_, Field>(
-            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, f.min_elevation, f.max_elevation, f.mean_elevation, f.average_slope, f.max_slope, ST_AsText(f.geom) as geometry_wkt, f.updated_at, f.is_deleted FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE f.id = $1 AND fa.user_id = $2 AND f.is_deleted = FALSE"
+            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, f.min_elevation, f.max_elevation, f.mean_elevation, f.average_slope, f.max_slope, ST_AsGeoJSON(f.geom) as geometry_geojson, f.updated_at, f.is_deleted FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE f.id = $1 AND fa.user_id = $2 AND f.is_deleted = FALSE"
         )
         .bind(id)
         .bind(user_id)
@@ -98,13 +98,13 @@ pub async fn create_field(
         }
     }
 
-    let parsed_wkt = field
-        .geometry_wkt
+    let parsed_geojson = field
+        .geometry_geojson
         .as_deref()
         .filter(|s| !s.trim().is_empty());
 
     let new_field = sqlx::query_as::<_, Field>(
-        "INSERT INTO fields (farm_id, name, area_hectares, land_use, min_elevation, max_elevation, mean_elevation, average_slope, max_slope, geom) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, ST_GeomFromText($10, 4326)) RETURNING id, farm_id, name, area_hectares, land_use, min_elevation, max_elevation, mean_elevation, average_slope, max_slope, ST_AsText(geom) as geometry_wkt, updated_at, is_deleted"
+        "INSERT INTO fields (farm_id, name, area_hectares, land_use, min_elevation, max_elevation, mean_elevation, average_slope, max_slope, geom) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, ST_SetSRID(ST_GeomFromGeoJSON($10), 4326)) RETURNING id, farm_id, name, area_hectares, land_use, min_elevation, max_elevation, mean_elevation, average_slope, max_slope, ST_AsGeoJSON(geom) as geometry_geojson, updated_at, is_deleted"
     )
     .bind(field.farm_id)
     .bind(&field.name)
@@ -115,7 +115,7 @@ pub async fn create_field(
     .bind(field.mean_elevation)
     .bind(field.average_slope)
     .bind(field.max_slope)
-    .bind(parsed_wkt)
+    .bind(parsed_geojson)
     .fetch_one(&state.db_pool)
     .await?;
     Ok(Json(new_field))
@@ -186,15 +186,15 @@ pub async fn update_field(
         }
     }
 
-    let parsed_wkt = field
-        .geometry_wkt
+    let parsed_geojson = field
+        .geometry_geojson
         .as_deref()
         .filter(|s| !s.trim().is_empty());
 
     // 2. Perform the update
     let updated_field = if is_admin {
         sqlx::query_as::<_, Field>(
-            "UPDATE fields SET farm_id = $1, name = $2, area_hectares = $3, land_use = $4, min_elevation = $5, max_elevation = $6, mean_elevation = $7, average_slope = $8, max_slope = $9, geom = ST_GeomFromText($11, 4326), updated_at = NOW() WHERE id = $10 AND is_deleted = FALSE RETURNING id, farm_id, name, area_hectares, land_use, min_elevation, max_elevation, mean_elevation, average_slope, max_slope, ST_AsText(geom) as geometry_wkt, updated_at, is_deleted"
+            "UPDATE fields SET farm_id = $1, name = $2, area_hectares = $3, land_use = $4, min_elevation = $5, max_elevation = $6, mean_elevation = $7, average_slope = $8, max_slope = $9, geom = ST_SetSRID(ST_GeomFromGeoJSON($11), 4326), updated_at = NOW() WHERE id = $10 AND is_deleted = FALSE RETURNING id, farm_id, name, area_hectares, land_use, min_elevation, max_elevation, mean_elevation, average_slope, max_slope, ST_AsGeoJSON(geom) as geometry_geojson, updated_at, is_deleted"
         )
         .bind(field.farm_id)
         .bind(&field.name)
@@ -206,12 +206,12 @@ pub async fn update_field(
         .bind(field.average_slope)
         .bind(field.max_slope)
         .bind(id)
-        .bind(parsed_wkt)
+        .bind(parsed_geojson)
         .fetch_one(&state.db_pool)
         .await?
     } else {
         sqlx::query_as::<_, Field>(
-            "UPDATE fields SET farm_id = $1, name = $2, area_hectares = $3, land_use = $4, min_elevation = $5, max_elevation = $6, mean_elevation = $7, average_slope = $8, max_slope = $9, geom = ST_GeomFromText($12, 4326), updated_at = NOW() WHERE id = $10 AND farm_id IN (SELECT id FROM farms WHERE user_id = $11) AND is_deleted = FALSE RETURNING id, farm_id, name, area_hectares, land_use, min_elevation, max_elevation, mean_elevation, average_slope, max_slope, ST_AsText(geom) as geometry_wkt, updated_at, is_deleted"
+            "UPDATE fields SET farm_id = $1, name = $2, area_hectares = $3, land_use = $4, min_elevation = $5, max_elevation = $6, mean_elevation = $7, average_slope = $8, max_slope = $9, geom = ST_SetSRID(ST_GeomFromGeoJSON($12), 4326), updated_at = NOW() WHERE id = $10 AND farm_id IN (SELECT id FROM farms WHERE user_id = $11) AND is_deleted = FALSE RETURNING id, farm_id, name, area_hectares, land_use, min_elevation, max_elevation, mean_elevation, average_slope, max_slope, ST_AsGeoJSON(geom) as geometry_geojson, updated_at, is_deleted"
         )
         .bind(field.farm_id)
         .bind(&field.name)
@@ -224,7 +224,7 @@ pub async fn update_field(
         .bind(field.max_slope)
         .bind(id)
         .bind(user_id)
-        .bind(parsed_wkt)
+        .bind(parsed_geojson)
         .fetch_one(&state.db_pool)
         .await?
     };

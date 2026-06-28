@@ -118,3 +118,4 @@ Specifications under PRD 0008 (Spatial Optimization) require the PostGIS extensi
 | [0016-06 Auto-Farm Creation Name Resolution](./0016/0016-06-auto-farm-creation-name-resolution.md) | Complete |
 | [0024-01 Field Topology Creation](./0024/0024-01-field-topology-creation.md) | Complete |
 | [0023-01 Modal Keyboard Accessibility](./0023/0023-01-modal-keyboard-accessibility.md) | Complete |
+| [0024-02 GeoJSON Geometry Transition](./0024/0024-02-geojson-geometry.md) | Complete |
