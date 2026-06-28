@@ -1,5 +1,5 @@
 import { combineLatest } from 'rxjs';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FarmManagementService } from '../../services/farm-management.service';
@@ -33,6 +33,17 @@ export class FarmsComponent implements OnInit {
     this.loadFarms();
   }
 
+
+  @HostListener('document:keydown.escape', ['$event'])
+  handleEscape(event: KeyboardEvent) {
+    if (this.showAddFarmModal) {
+      this.closeAddFarmModal();
+    }
+    if (this.editingFarmId !== null) {
+      this.cancelEdit();
+    }
+  }
+
   loadFarms(): void {
     this.isLoading = true;
     this.errorMessage = null;
@@ -58,7 +69,7 @@ export class FarmsComponent implements OnInit {
   }
 
   addFarm(): void {
-    if (!this.newFarmName || !this.newFarmLocation) {
+    if (!this.newFarmName || !this.newFarmLocation || this.isSaving) {
       return;
     }
 
@@ -87,6 +98,8 @@ export class FarmsComponent implements OnInit {
   editingFarmId: number | null = null;
   editFarmName: string = '';
   editFarmLocation: string = '';
+  originalEditFarmName: string = '';
+  originalEditFarmLocation: string = '';
 
   openAddFarmModal(): void {
     this.newFarmName = '';
@@ -105,6 +118,14 @@ export class FarmsComponent implements OnInit {
     this.editingFarmId = farm.id || null;
     this.editFarmName = farm.name;
     this.editFarmLocation = farm.location;
+    this.originalEditFarmName = farm.name;
+    this.originalEditFarmLocation = farm.location;
+  }
+
+
+  hasEditChanges(): boolean {
+    return this.editFarmName !== this.originalEditFarmName ||
+           this.editFarmLocation !== this.originalEditFarmLocation;
   }
 
   cancelEdit(): void {
@@ -114,7 +135,7 @@ export class FarmsComponent implements OnInit {
   }
 
   saveFarmFromList(): void {
-    if (!this.editingFarmId || !this.editFarmName || !this.editFarmLocation) {
+    if (!this.editingFarmId || !this.editFarmName || !this.editFarmLocation || !this.hasEditChanges()) {
       return;
     }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FarmManagementService } from '../../services/farm-management.service';
@@ -39,6 +39,8 @@ export class FieldsComponent implements OnInit {
   showEditFarmModal: boolean = false;
   editFarmName: string = '';
   editFarmLocation: string = '';
+  originalEditFarmName: string = '';
+  originalEditFarmLocation: string = '';
   isSaving: boolean = false;
   errorMessage: string | null = null;
 
@@ -79,6 +81,17 @@ export class FieldsComponent implements OnInit {
         this.loadAllFields();
       }
     });
+  }
+
+
+  @HostListener('document:keydown.escape', ['$event'])
+  handleEscape(event: KeyboardEvent) {
+    if (this.showAddForm) {
+      this.toggleAddForm();
+    }
+    if (this.showEditFarmModal) {
+      this.closeEditFarmModal();
+    }
   }
 
   loadFarms(): void {
@@ -267,8 +280,16 @@ export class FieldsComponent implements OnInit {
     if (!this.farm) return;
     this.editFarmName = this.farm.name;
     this.editFarmLocation = this.farm.location;
+    this.originalEditFarmName = this.farm.name;
+    this.originalEditFarmLocation = this.farm.location;
     this.errorMessage = null;
     this.showEditFarmModal = true;
+  }
+
+
+  hasEditChanges(): boolean {
+    return this.editFarmName !== this.originalEditFarmName ||
+           this.editFarmLocation !== this.originalEditFarmLocation;
   }
 
   closeEditFarmModal(): void {
@@ -279,7 +300,7 @@ export class FieldsComponent implements OnInit {
   }
 
   editFarm(): void {
-    if (!this.farm || !this.editFarmName || !this.editFarmLocation) {
+    if (!this.farm || !this.editFarmName || !this.editFarmLocation || !this.hasEditChanges()) {
       return;
     }
 

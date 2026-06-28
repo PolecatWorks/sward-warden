@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -79,7 +79,7 @@ export class UserProfileComponent implements OnInit {
   }
 
   onEditProfileSubmit(): void {
-      if (this.editProfileForm.valid && this.currentUserData) {
+      if (this.editProfileForm.valid && this.currentUserData && !this.editProfileForm.pristine) {
           const updatedUser: User = {
               id: this.currentUserData.id,
               name: this.editProfileForm.value.name,
@@ -96,6 +96,14 @@ export class UserProfileComponent implements OnInit {
               this.loadCurrentUser();
           });
       }
+  }
+
+
+  @HostListener('document:keydown.escape', ['$event'])
+  handleEscape(event: KeyboardEvent) {
+    if (this.showEditProfileModal) {
+      this.closeEditProfileModal();
+    }
   }
 
   openEditProfileModal(): void {
