@@ -37,6 +37,9 @@ To prevent the application from entering a permanently locked or degraded state 
 - **Graceful Online Fallback:** In the event that local storage is completely blocked or corrupted beyond recovery (e.g. browser storage permissions disabled), the app must gracefully degrade to an online-only fallback mode, making direct API calls to the server rather than using the local database.
 - **Outbox Queue Management:** Stuck or permanently invalid outbox actions (e.g. HTTP 400 Bad Request) must be marked as permanently failed rather than blocking the synchronization queue indefinitely.
 
+### F. Background Service Workers
+- The application should use service workers to maintain the synchronisation in the background, ensuring data is always up-to-date and outbox queues are processed reliably without requiring the application to be actively open in the foreground.
+
 ## User Interface
 - Monitor network status and provide an indicator on the FE. The application will use an `isOnline$` observable stream (combining window `online` and `offline` events) to display the current connectivity state to the user.
 - Display a status icon on the screen indicating the current sync state: "offline", "syncing", or "synced".
