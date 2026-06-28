@@ -26,7 +26,15 @@ To account for AI detection errors or users who prefer manual input, the system 
 
 ### 2.3 Saving and Viewing
 *   **Save Action:** Once the user is satisfied with the boundary (either auto-generated, manually drawn, or edited), clicking "Save" will transmit the boundary data to the backend.
-*   **View Mode:** When navigating to a specific field's detail page, the map will center on the saved boundary, rendering it as a clear, highlighted overlay.
+*   **Field View Mode:** When navigating to a specific field's detail page:
+    *   The map should be shown at the bounds of the farm.
+    *   The active field should be shown as a coloured polygon on top of the map.
+    *   Other fields in the farm should also be shown, but in different colours to distinguish them from the active field.
+*   **Farm View Mode:** When navigating to a farm's detail page:
+    *   The map should show the extent of all fields in the farm.
+    *   A suitable boundary around the farm (perhaps 1 km) should be left so it is shown in context.
+    *   The bounds should be recorded on the farm definition object and persisted. These bounds must be updated as fields are added or removed, or as the geometry of the farm is modified.
+*   **Undefined Boundaries:** Sometimes when a field is created, the boundary is not yet defined. In that case, a single point representing the centre of the field can be used instead of a polygon.
 *   **Data Format:** The frontend will communicate spatial data with the backend using the standard GeoJSON format.
 
 ## 3. Backend and Storage Requirements
