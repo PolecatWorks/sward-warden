@@ -9,11 +9,12 @@ import { Field } from '../../models/field';
 import { Farm } from '../../models/farm';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
+import { FieldMapEditorComponent } from '../../shared/components/field-map-editor/field-map-editor.component';
 
 @Component({
   selector: 'app-fields',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, FieldMapEditorComponent],
   templateUrl: './fields.component.html',
   styleUrl: './fields.component.css'
 })
