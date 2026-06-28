@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { combineLatest } from 'rxjs';
@@ -27,6 +27,8 @@ export class FarmDetailComponent implements OnInit {
   showEditFarmModal: boolean = false;
   editFarmName: string = '';
   editFarmLocation: string = '';
+  originalEditFarmName: string = '';
+  originalEditFarmLocation: string = '';
 
   showDeleteConfirm: boolean = false;
 
@@ -37,6 +39,14 @@ export class FarmDetailComponent implements OnInit {
     private rxdbService: RxdbService,
     private logger: LoggerService
   ) {}
+
+
+  @HostListener('document:keydown.escape', ['$event'])
+  handleEscape(event: KeyboardEvent) {
+    if (this.showEditFarmModal) {
+      this.closeEditFarmModal();
+    }
+  }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
@@ -85,8 +95,16 @@ export class FarmDetailComponent implements OnInit {
     if (!this.farm) return;
     this.editFarmName = this.farm.name;
     this.editFarmLocation = this.farm.location;
+    this.originalEditFarmName = this.farm.name;
+    this.originalEditFarmLocation = this.farm.location;
     this.errorMessage = null;
     this.showEditFarmModal = true;
+  }
+
+
+  hasEditChanges(): boolean {
+    return this.editFarmName !== this.originalEditFarmName ||
+           this.editFarmLocation !== this.originalEditFarmLocation;
   }
 
   closeEditFarmModal(): void {
@@ -96,7 +114,7 @@ export class FarmDetailComponent implements OnInit {
   }
 
   editFarm(): void {
-    if (!this.farm || !this.editFarmName || !this.editFarmLocation) {
+    if (!this.farm || !this.editFarmName || !this.editFarmLocation || !this.hasEditChanges()) {
       return;
     }
 

@@ -1,3 +1,4 @@
+import { HostListener } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -32,6 +33,10 @@ export class FieldViewComponent implements OnInit {
   editFieldLandUse: string = 'grassland';
   editFieldFarmId: number = 0;
   editFieldGeometry_wkt: string = '';
+  originalEditFieldName: string = '';
+  originalEditFieldArea: number = 0;
+  originalEditFieldLandUse: string = 'grassland';
+  originalEditFieldFarmId: number = 0;
   farms: Farm[] = [];
   isSaving: boolean = false;
   errorMessage: string | null = null;
@@ -100,6 +105,18 @@ export class FieldViewComponent implements OnInit {
     private router: Router
   ) {}
 
+
+  @HostListener('document:keydown.escape', ['$event'])
+  handleEscape(event: KeyboardEvent) {
+    if (this.showEditFieldModal) this.closeEditFieldModal();
+    if (this.showFertiliserForm) this.showFertiliserForm = false;
+    if (this.showSprayingForm) this.showSprayingForm = false;
+    if (this.showOrganicManureForm) this.showOrganicManureForm = false;
+    if (this.showPlantingForm) this.showPlantingForm = false;
+    if (this.showGeneralEventForm) this.showGeneralEventForm = false;
+    if (this.editingEventId !== null) this.cancelEdit();
+  }
+
   ngOnInit(): void {
     this.loadFarms();
     this.route.paramMap.subscribe(params => {
@@ -153,10 +170,22 @@ export class FieldViewComponent implements OnInit {
     this.editFieldLandUse = this.field.land_use || 'grassland';
     this.editFieldFarmId = this.field.farm_id;
     this.editFieldGeometry_wkt = this.field.geometry_wkt || '';
+    this.originalEditFieldName = this.field.name;
+    this.originalEditFieldArea = Number(this.field.area_hectares) || 0;
+    this.originalEditFieldLandUse = this.field.land_use || 'grassland';
+    this.originalEditFieldFarmId = this.field.farm_id;
     this.errorMessage = null;
     this.showEditFieldModal = true;
   }
 
+
+
+  hasEditChanges(): boolean {
+    return this.editFieldName !== this.originalEditFieldName ||
+           Number(this.editFieldArea) !== this.originalEditFieldArea ||
+           this.editFieldLandUse !== this.originalEditFieldLandUse ||
+           this.editFieldFarmId !== this.originalEditFieldFarmId;
+  }
 
   closeEditFieldModal(): void {
     this.showEditFieldModal = false;
@@ -169,7 +198,7 @@ export class FieldViewComponent implements OnInit {
   }
 
   editField(): void {
-    if (!this.field || !this.editFieldName || this.editFieldArea <= 0 || !this.editFieldFarmId) {
+    if (!this.field || !this.editFieldName || this.editFieldArea <= 0 || !this.editFieldFarmId || !this.hasEditChanges()) {
       this.errorMessage = 'Please enter valid details.';
       return;
     }
