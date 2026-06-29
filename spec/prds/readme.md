@@ -40,8 +40,12 @@ PRDs dictate the high-level features and requirements of the project. Every PRD 
 - [0018 Multi-User Data Isolation and Admin Visibility](./0018-multi-user-data-isolation-and-admin-visibility.md)
 - [0019 Field Event Logging UX and Validation](./0019-field-event-logging-ux-and-validation.md)
 - [0020 Dev JWT Authentication](./0020-dev-jwt-auth.md)
+- [0021 Topographical Data Analysis](./0021-topographical-data-analysis.md)
+- [0022 Home View Consolidation](./0022-home-view-consolidation.md)
 - [0023 Field Creation & Edit Farm Selector enhancements](./0023-field-creation-edit-farm-selector.md)
 - [0024 Field Topology Creation and Editing](./0024-field-topology-creation.md)
+- [0025 Modal Keyboard Accessibility](./0025-modal-keyboard-accessibility.md)
+- [0026 Storage Capacity Management](./0026-storage-capacity-management.md)
 
 ## PRD gaps
 

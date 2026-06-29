@@ -1,4 +1,4 @@
-# PRD 0023: Modal Keyboard Accessibility
+# PRD 0025: Modal Keyboard Accessibility
 
 ## Overview
 This document defines the product requirements for enhancing modal accessibility by adding keyboard navigation for modals within the frontend.
