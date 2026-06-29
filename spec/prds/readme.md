@@ -11,6 +11,13 @@ PRDs dictate the high-level features and requirements of the project. Every PRD 
 - **Authentication Headers vs JWT**: PRD 0010, PRD 0017, and PRD 0018 specify the use of the `X-User-ID` header (and role derivation from it) for identifying users and roles on the backend. PRD 0020 explicitly requires replacing these headers with an `Authorization: Bearer <token>` JWT flow.
 - **Navigation Menu Layout**: PRD 0002 and PRD 0016 dictate a navigation bar order including "Dashboard" and "Compliance". PRD 0022 (Option A, Recommended) proposes eliminating "Dashboard" and "Compliance" from the navigation menu in favor of a consolidated "Home" view.
 
+## Duplicates
+
+- **PRD 0023**: Multiple PRDs share the 0023 ID:
+  - [0023 Field Creation & Edit Farm Selector enhancements](./0023-field-creation-edit-farm-selector.md)
+  - [0023 Modal Keyboard Accessibility](./0023-modal-keyboard-accessibility.md)
+  - [0023 Storage Capacity Management](./0023-storage-capacity-management.md)
+
 ## Current PRDs
 
 - [0001 Application Architecture](./0001-app-architecture.md)
