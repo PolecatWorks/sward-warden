@@ -1,4 +1,4 @@
-# PRD 0023: Storage Capacity Management
+# PRD 0026: Storage Capacity Management
 
 ## Overview
 This document specifies the feature requirements for allowing users to manage their storage capacities for livestock manure, chemical fertilizers, and other organic materials. This builds upon PRD 0006 by providing explicit instructions on DB schema, Backend APIs (BREAD), and UI interactions required for users to log, view, edit, and delete their storage capabilities.
