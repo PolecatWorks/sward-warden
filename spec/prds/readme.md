@@ -8,7 +8,7 @@ PRDs dictate the high-level features and requirements of the project. Every PRD 
 
 ## Contradictions Identified
 
-- **Navigation Menu Layout**: PRD 0002 and PRD 0016 dictate a navigation bar order including "Dashboard" and "Compliance". PRD 0022 (Option A, Recommended) proposes eliminating "Dashboard" and "Compliance" from the navigation menu in favor of a consolidated "Home" view.
+None.
 
 ## Duplicated Functionality Resolved
 

@@ -1,7 +1,7 @@
 # PRD 0022: Consolidating Dashboard and Compliance into the Home View
 
 ## Status
-Proposed
+Accepted
 
 ## 1. Introduction
 The objective of this project is to streamline the Sward Warden user interface by consolidating the currently fragmented views ("Home", "Compliance and Dashboard", and "Reporting") into a single, highly actionable, and context-aware "Home" view. The new Home view will serve as a central hub where critical tasks, compliance alerts, and actionable intelligence are immediately visible, eliminating the need for users to hunt for information across different navigation items.
@@ -50,6 +50,5 @@ This approach keeps the current underlying data structures but changes the Home 
 *   **Multi-Farm Users:** If an alert applies to only one farm, it should be displayed as a farm-level alert (e.g., "Farm A: Spreading prohibited today"). If it applies globally across all their farms (e.g., a national closed spreading period), it is displayed once as a global alert.
 
 ## 5. Next Steps
-1.  Review and select the preferred Option (A, B, or C).
-2.  Update the existing PRDs (0002-fe.md, 0016-fields-first-ux.md) to reflect the chosen consolidation strategy.
-3.  Design the "Daily Action Traffic Light" component and its underlying logic requirements.
+1.  Design the "Daily Action Traffic Light" component and its underlying logic requirements as dictated by Option A.
+2.  Implement the unified "Home" view and remove the deprecated "Dashboard" and "Compliance" views.
