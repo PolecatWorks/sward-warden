@@ -66,7 +66,7 @@
   </div>
 
   <!-- Field Cards Grid (image-header + bottom-drawer layout) -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div *ngIf="fields.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <!-- Image-header Field Cards -->
     <div *ngFor="let field of fields"
       class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm group hover:shadow-md transition-shadow cursor-pointer"
@@ -152,17 +152,17 @@
         </div>
       </div>
     </div>
+  </div>
 
-    <div *ngIf="fields.length === 0" class="flex flex-col items-center justify-center py-16 text-center space-y-4" data-testid="empty-state">
-      <span class="material-symbols-outlined text-6xl text-on-surface-variant/40">format_list_bulleted</span>
-      <div class="space-y-1">
-        <p class="text-lg font-semibold text-on-surface">No fields yet</p>
-        <p class="text-sm text-on-surface-variant">Tap the button below to add your first field.</p>
-      </div>
-      <button (click)="toggleAddForm()" class="px-6 py-2.5 rounded-full bg-primary text-on-primary font-medium hover:bg-primary/90 transition-colors" id="add-field-empty-btn" data-testid="add-field-empty-btn">
-        Add Field
-      </button>
+  <div *ngIf="fields.length === 0" class="flex flex-col items-center justify-center py-16 text-center space-y-4" data-testid="empty-state">
+    <span class="material-symbols-outlined text-6xl text-on-surface-variant/40">format_list_bulleted</span>
+    <div class="space-y-1">
+      <p class="text-lg font-semibold text-on-surface">No fields yet</p>
+      <p class="text-sm text-on-surface-variant">Tap the button below to add your first field.</p>
     </div>
+    <button (click)="toggleAddForm()" class="px-6 py-2.5 rounded-full bg-primary text-on-primary font-medium hover:bg-primary/90 transition-colors" id="add-field-empty-btn" data-testid="add-field-empty-btn">
+      Add Field
+    </button>
   </div>
 
   <!-- Large Centred Add Button (shown when fields exist) -->
