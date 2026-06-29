@@ -15,9 +15,9 @@ export const createAppConfig = (config: AppConfig): ApplicationConfig => ({
     provideRouter(routes),
     provideHttpClient(withInterceptors([devAuthInterceptor])),
     provideAnimations(),
-    provideServiceWorker('ngsw-worker.js', {
+    provideServiceWorker('custom-service-worker.js', {
       enabled: !isDevMode(),
-      registrationStrategy: 'registerWhenStable:30000'
+      registrationStrategy: config.serviceWorker?.registrationStrategy || 'registerWhenStable:30000'
     }),
     { provide: APP_CONFIG, useValue: config }
   ]

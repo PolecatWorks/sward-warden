@@ -93,7 +93,18 @@ export class SyncEngineService implements OnDestroy {
       switchMap((db) => db!.outbox.find({ selector: { status: 'pending' } }).$),
       filter((entries) => entries.length > 0),
       debounceTime(500),
-      switchMap(() => this.networkService.isOnline$),
+      switchMap(async () => {
+        // Dynamically register background sync when outbox items are pending
+        if ('serviceWorker' in navigator && 'SyncManager' in window) {
+          try {
+            const registration = await navigator.serviceWorker.ready;
+            await (registration as any).sync.register('sward-sync');
+          } catch (error) {
+            console.error('Could not register dynamic background sync', error);
+          }
+        }
+        return firstValueFrom(this.networkService.isOnline$);
+      }),
       filter((online) => online),
     );
 

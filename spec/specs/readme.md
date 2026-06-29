@@ -70,6 +70,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [Specification 0011-04: Outbox Pattern and Push Sync](./0011/0011-04-outbox-pattern-push-sync.md) | Complete |
 | [Specification 0011-05: Delta Sync Client and Conflict Resolution](./0011/0011-05-delta-sync-client-and-conflict-resolution.md) | Complete |
 | [Specification 0011-06: Self-Healing and Recovery Mechanisms](./0011/0011-06-self-healing-and-recovery.md) | Complete |
+| [Specification 0011-07: Service Worker Background Sync](./0011/0011-07-service-worker-background-sync.md) | Complete |
 | [Spec 0012-01: Adaptive Layouts](./0012/0012-01-adaptive-layouts.md) | Complete |
 | [Spec 0012-02: Component Scaling and Typography](./0012/0012-02-component-scaling-and-typography.md) | Complete |
 | [Spec 0012-03: Responsive Design Implementation Guidelines](./0012/0012-03-implementation-guidelines.md) | Complete |

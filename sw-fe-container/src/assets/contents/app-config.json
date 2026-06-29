@@ -4,5 +4,9 @@
   "otel": {
     "collectorUrl": "http://localhost:4318",
     "logLevel": "info"
+  },
+  "serviceWorker": {
+    "registrationStrategy": "registerWhenStable:30000",
+    "syncIntervalMs": 300000
   }
 }
