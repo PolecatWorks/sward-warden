@@ -46,7 +46,7 @@ pub struct Field {
     pub average_slope: Option<f64>,
     pub max_slope: Option<f64>,
     #[sqlx(default)]
-    pub geometry_wkt: Option<String>,
+    pub geometry_geojson: Option<String>,
     pub updated_at: Option<DateTime<Utc>>,
     pub is_deleted: Option<bool>,
 }
@@ -139,7 +139,7 @@ pub struct FertiliserApplication {
     pub buffer_zone_confirmed: Option<bool>,
     pub evidence_of_control: Option<String>,
     #[sqlx(default)]
-    pub geometry_wkt: Option<String>,
+    pub geometry_geojson: Option<String>,
     pub updated_at: Option<DateTime<Utc>>,
     pub is_deleted: Option<bool>,
 }
@@ -158,7 +158,7 @@ pub struct OrganicManureApplication {
     pub equipment_used: Option<String>,
     pub lesse_exemption_reason: Option<String>,
     #[sqlx(default)]
-    pub geometry_wkt: Option<String>,
+    pub geometry_geojson: Option<String>,
     pub updated_at: Option<DateTime<Utc>>,
     pub is_deleted: Option<bool>,
 }

@@ -35,9 +35,12 @@ Support staff require the ability to view data as it relates to a specific user 
 - **Events:** View spreading events or other activities recorded for specific fields to help verify records or debug user issues.
 - **Farm Records:** View high-level farm records (agricultural area, manure storage capacity, year) for compliance troubleshooting.
 
-### 4.3 Data Consistency and Read-Only Access
-- Initially, the primary function of the support views will be read-only to prevent accidental data corruption by support staff.
-- Write access (e.g., editing a farm's details on behalf of a user) should be heavily restricted or deferred to a later phase.
+### 4.3 Data Consistency and Full Access
+- Support and admin users will have full read, write, update, and delete access through standard endpoints, enabling comprehensive troubleshooting and management on behalf of users.
+- **MFE Architecture for Bespoke Operations**: To prevent administrative interface code from being shipped to standard users, bespoke admin operations will be implemented using a Micro-Frontend (MFE) architecture (e.g., Webpack Module Federation).
+  - The admin MFE bundle will be dynamically loaded at runtime only for users with the appropriate role.
+  - **Asset-Level Security**: Istio will be configured to intercept requests for the admin MFE bundle (e.g., `remoteEntry.js` and associated chunks) and mandate a valid `Authorization: Bearer <token>` possessing the `admin` role, ensuring unauthorized users cannot even download the frontend assets.
+  - This provides a seamless, unified UX for administrative staff while maintaining strict separation of code.
 
 ## 5. Security Considerations
 - The admin interface must be heavily protected, potentially restricted by IP address or VPN access, in addition to strong authentication.
