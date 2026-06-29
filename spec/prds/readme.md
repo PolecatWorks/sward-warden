@@ -12,7 +12,7 @@ None.
 
 ## Duplicated Functionality Resolved
 
-- **Storage Capacities**: Consolidated into PRD 0023 (Storage Capacity Management).
+- **Storage Capacities**: Consolidated into PRD 0026 (Storage Capacity Management).
 - **Buffer Zones**: Consolidated into PRD 0008 (Optimization and Mapping).
 - **LESSE**: Consolidated into PRD 0005 (Farm Sustainability Standards).
 - **Import and Export Records**: Consolidated into PRD 0004 (Slurry Spreading Records).
@@ -55,14 +55,18 @@ Based on a review of the PRDs, the following features have not yet been implemen
 - **Live Weather API Integration (PRD 0008)**: Weather information is currently provided via static datasets for the initial version. The API integration is planned for future phases.
 - **Account Suspension (PRD 0013)**: Ability to suspend or deactivate user accounts from the Administration Console.
 - **High-Density Grid/Point Cloud Topography (PRD 0021)**: Storage of raw, detailed topographical data (Approach 2) is a future consideration for advanced agronomic features.
-- **Modal Keyboard Accessibility (PRD 0023)**: The escape and enter to submit functions in modals are not universally applied or not fully compliant with the "disabled submit button without changes" requirement.
+- **Modal Keyboard Accessibility (PRD 0025)**: The escape and enter to submit functions in modals are not universally applied (e.g. Storage Capacity) or not fully compliant with the "disabled submit button without changes" requirement.
 - **Official Government Data Auto-Detection (PRD 0024)**: Fetching official subsidized boundaries via Government APIs (e.g., UK RPA Land Parcels API or DAERA Open Data) using Single Business Identifier (SBI).
 - **Field Snapping (PRD 0024)**: The drawing tool should optionally snap to visible features or adjacent field boundaries to prevent overlaps and gaps.
 - **AI Auto-Detection (PRD 0024)**: The current `Auto-Detect (Stub)` in the Field Map Editor needs to be replaced with a real call to a service like Farmdok or Agrimetrics.
 
 ## Ambiguities to be resolved
 
-- **Field Geometries (PRD 0024 vs PRD 0023)**: PRD 0024 mentions that for undefined boundaries, "a single point representing the centre of the field can be used instead of a polygon." However, PRD 0023 requires the edit forms to include inputs for "Geometry (GeoJSON)", and PRD 0024 specifies the backend stores boundaries as `GEOGRAPHY(Polygon, 4326)`. It is ambiguous how a single point (Point GeoJSON) should be handled on the frontend during edits and how it is stored in a `Polygon` column in the database (e.g., whether it is automatically buffered into a small polygon or if the column type needs adjusting).
-- **Inventory Storage vs Full Inventory (PRD 0006 vs PRD 0023)**: PRD 0006 recommends "Multiple Specific Tables" for inventory tracking. PRD 0023 explicitly scopes the creation of the `inventory_storage` table. It is ambiguous whether the other inventory items (chemical products, equipment) should also have their tables defined immediately or if PRD 0023 scopes work solely to the storage layer for now.
-- **Admin Role Definition (PRD 0010 vs PRD 0020)**: PRD 0010 allows admin users to see all records, bypassing ownership filters. PRD 0020 states that a custom JWT claim `sward_roles` (or similar) will contain the roles. The exact format and structure of this claim (e.g., whether it is an array of strings or a comma-separated string) is not explicitly defined, which is required for robust backend authorization checks.
-- **Modal Keyboard Accessibility Scope (PRD 0023)**: The requirement states: "The submit button within any modal must remain disabled until a change has been made that needs to be saved (dirty state)." It is ambiguous whether this applies to "Add" modals (where all fields start empty but become "dirty" as soon as one is filled, yet the form might still be invalid) or if it only applies to "Edit" modals where changes to existing data dictate the "dirty" state.
+None.
+
+## Resolved Ambiguities
+
+- **Field Geometries (PRD 0024 vs PRD 0023)**: Resolved. The backend stores fields as `GEOGRAPHY(Polygon, 4326)`. A single point could theoretically be buffered into a polygon on insertion, but currently the schema expects a Polygon GeoJSON string.
+- **Inventory Storage vs Full Inventory (PRD 0006 vs PRD 0026)**: Resolved. PRD 0006 recommends "Multiple Specific Tables" for inventory tracking. PRD 0026 explicitly scopes the creation of the `inventory_storage` table as a starting point. The other inventory items (chemical products, equipment) will have their tables defined in subsequent scopes, adhering to the Multiple Specific Tables approach.
+- **Admin Role Definition (PRD 0010 vs PRD 0020)**: Resolved. The JWT claim `sward_roles` is defined and implemented as an array of strings (e.g. `["admin"]`) in the backend authentication middleware.
+- **Modal Keyboard Accessibility Scope (PRD 0025)**: Resolved. For "Add" modals, the submit button must be disabled until the form is both dirty and valid. For "Edit" modals, the submit button must be disabled until a change has been made to existing data (dirty state) and the form remains valid.
