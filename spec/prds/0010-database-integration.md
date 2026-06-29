@@ -11,7 +11,7 @@ Migrate the `sw-be-container` be away from the legacy MVP in-memory `RwLock<Vec<
    - **Note on `X-User-ID` Header:** While `X-User-ID` may be used as a temporary development mechanism (as per PRD 0017) or injected by a trusted internal API gateway, production environments must never blindly trust a raw `X-User-ID` header originating from the client, as this introduces IDOR vulnerabilities.
    - **TODO:** Fully implement secure JWT validation in the backend and ensure the frontend passes standard `Authorization: Bearer <token>` headers instead of relying on `X-User-ID` before the application moves to production.
    - Hardcoded user IDs (such as `user_id = 1`) are prohibited.
-   - Admin users may be allowed to see all records via dedicated admin endpoints, but normal users MUST ONLY see data linked to their own `user_id`.
+   - Admin users may be allowed to see all records via standard endpoints bypassing ownership filters, but normal users MUST ONLY see data linked to their own `user_id`.
    - All assets and tables in the system that relate to a user's data must enforce this.
 4. **Endpoint Refactoring**: Refactor all CRUD routes in `src/webserver/mod.rs` to execute standard SQL queries and use the dynamically extracted user ID.
 5. **Schema Setup**: Prepare SQL initialization scripts or `sqlx` migrations to define the database schema (Tables: `users`, `farms`, `fields`, `events`, `farm_records`), respecting the multi-tenant foreign keys (e.g., `user_id` on `farms`).
@@ -29,5 +29,5 @@ Migrate the `sw-be-container` be away from the legacy MVP in-memory `RwLock<Vec<
 To confirm multi-tenancy is working correctly, the following test patterns must be implemented:
 - **Data Isolation Test**: Create User A and User B. Create a farm for User A. Log in as User B and verify the farm list is empty. Log in as User A and verify the farm is visible.
 - **Cross-Tenant Access Denial**: Attempt to access, update, or delete User A's farm or field directly by ID using User B's authentication token/header. The system must return a 403 Forbidden or 404 Not Found.
-- **Admin Visibility Test**: Log in as an Admin user and verify that farms and fields for both User A and User B are visible via admin endpoints.
+- **Admin Visibility Test**: Log in as an Admin user and verify that farms and fields for both User A and User B are visible via standard endpoints.
 - **Asset Cascading Validation**: Verify that filtering by `user_id` on the `farms` table correctly cascades to all child entities (e.g., fields, events, farm_records, soil analyses) so User A cannot see User B's data across all tables.
