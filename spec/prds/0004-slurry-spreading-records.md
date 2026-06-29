@@ -8,7 +8,7 @@ This document outlines the record-keeping requirements to maintain compliance wi
 1. **General Farm Records**
    - Must be prepared by 30 June each year and kept for five years.
    - Include the identity of the land controller, agricultural area, field sizes, locations, and cropping regimes.
-   - Document livestock numbers, species, time kept, livestock manure storage capacity, and rental agreements for off-farm storage.
+   - Document livestock numbers, species, time kept, and rental agreements for off-farm storage.
 
 2. **Fertiliser Application Records**
    - Document the amount of each type of nitrogen fertiliser applied (including nitrogen content of organic manures).
@@ -21,6 +21,8 @@ This document outlines the record-keeping requirements to maintain compliance wi
    - If the farm operates under an approved derogation (allowing up to 250 kg N/ha/year from grazing livestock), an annual fertilisation account must be submitted online to the Northern Ireland Environment Agency (NIEA) by 1 March for the previous calendar year.
 
 5. **Import and Export Records**
+   - Document written contractual agreements for manure movement onto or off the farm.
+   - Track origin, destination, volume, and contract length for compliance reporting.
    - Moving organic material onto or off the farm requires recording the quantity, date, type of organic manure/material, names, and addresses of the consignee, consignor, and transporter.
    - **Supported Organic Materials**: The system must track various types of organic materials including, but not limited to:
      - Standard liquid slurry (cattle, pig)
@@ -34,11 +36,8 @@ This document outlines the record-keeping requirements to maintain compliance wi
 6. **Soil Analysis Results**
    - Applying P-rich organic manures (>0.25 kg total P per 1 kg total N) or anaerobic digestate requires available soil test results to prove crop requirement for additional phosphorus.
 
-7. **Spreading Equipment Exemptions**
-   - If Low Emission Sward Spreading Equipment (LESSE) is required but impractical due to field slope, an inverted splash plate may be used.
-   - Must keep a specific record of the field number and the reason for using the splash plate for inspection purposes.
+
 
 ## FE Requirements
 - **Record Entry UX**: Forms for recording spreading events must be optimized for speed and clarity, utilizing the "Record Event" pattern from the FE review (large touch targets, clear iconography). It must easily support selecting between different material types (liquid slurry, solid dung, abattoir blood, etc.) as they may have different spreading implications or unit measurements (e.g., cubic meters vs. tonnes).
 - **Import/Export Dashboard**: Use a dedicated Bento-style overview to track manure movements and deadlines.
-- **Exemption Logging**: A specific high-quality FE component should be provided to quickly log splash plate exemptions, ensuring compliance data is captured with minimal friction.

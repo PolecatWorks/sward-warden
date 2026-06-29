@@ -20,7 +20,6 @@ This document outlines the strict environmental and reporting standards under th
   - From 1 January 2026, granular urea fertilisers are prohibited unless they contain a urease inhibitor (protected urea) to reduce ammonia losses.
   - Chemical nitrogen limits for grasslands are dictated by farm type and expected dry matter yield.
 - **Phosphorus Restrictions**: Chemical phosphorus fertilisers can only be applied if a recent soil analysis demonstrates a genuine crop requirement.
-- **Buffer Zones**: All chemical fertilisers must be kept at least 2 metres away from any waterway.
 
 ### 3. Sward and Organic Manure
 - **Nitrogen Loading Limits**: Total livestock manure application must not exceed 170 kg of nitrogen per hectare per year. Derogated farms (requiring at least 80% grassland) can apply up to 250 kg N/ha/year from grazing livestock but must adhere to additional planning and phosphorus balance rules.
@@ -31,16 +30,13 @@ This document outlines the strict environmental and reporting standards under th
 - **Application Limits**:
   - Maximum application of 50m³ (4,500 gallons) of sward or 50 tonnes of solid manure per hectare at any one time.
   - Must leave a minimum of three weeks between applications.
-- **Buffer Zones**:
-  - Standard buffer: 10 metres from a waterway, 20 metres from a lake.
-  - Increased buffer (February and 30 September - 15 October): 15 metres from waterways, 30 metres from lakes, with maximum application rate reduced to 30m³ per hectare.
 - **Equipment Requirements (LESSE)**: Low Emission Sward Spreading Equipment (dribble bars, trailing shoes, soil injection) is legally required for:
   - All sward contractors.
   - Anyone spreading anaerobic digestate.
   - Cattle farms with 200+ livestock units.
   - Pig farms producing 20,000kg+ of nitrogen.
   - Derogated farms for all sward applications after 15 June.
-- **Storage Capacities**: Minimum 22 weeks of livestock manure storage capacity for most enterprises, extending to 26 weeks for pig and poultry enterprises.
+  - **Exemptions**: If LESSE is required but impractical due to field slope, an inverted splash plate may be used. A specific record of the field number and the reason must be kept.
 
 ## Penalty Matrix for Audit Breaches
 
@@ -53,6 +49,7 @@ Under the new Farm Sustainability Standards (FSS), the penalty matrix for audit 
 - **Repeat Breaches**: If a business breaches the same requirement within a 3-year period, the financial penalties will increase.
 
 ## FE Requirements for Compliance Tracking
+- **Exemption Logging**: A specific high-quality FE component should be provided to quickly log splash plate exemptions, ensuring compliance data is captured with minimal friction.
 - **Interactive Alerts**: Compliance warnings must use high-visibility Material Symbols and clear, tonal color coding (e.g., Error/Warning containers) rather than basic lists.
 - **Regulation Visualization**: Closed periods and nitrogen limits should be visualized using the standardized Bento grid pattern for quick reference.
-- **Risk Assessment Mapping**: Vulnerable zones and buffer zones must be clearly rendered on field maps as part of the Topology view, following the premium design system's color and texture patterns.
+- **Risk Assessment Mapping**: Vulnerable zones must be clearly rendered on field maps as part of the Topology view, following the premium design system's color and texture patterns.

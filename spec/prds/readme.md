@@ -10,12 +10,12 @@ PRDs dictate the high-level features and requirements of the project. Every PRD 
 
 - **Navigation Menu Layout**: PRD 0002 and PRD 0016 dictate a navigation bar order including "Dashboard" and "Compliance". PRD 0022 (Option A, Recommended) proposes eliminating "Dashboard" and "Compliance" from the navigation menu in favor of a consolidated "Home" view.
 
-## Duplicates
+## Duplicated Functionality Resolved
 
-- **PRD 0023**: Multiple PRDs share the 0023 ID:
-  - [0023 Field Creation & Edit Farm Selector enhancements](./0023-field-creation-edit-farm-selector.md)
-  - [0023 Modal Keyboard Accessibility](./0023-modal-keyboard-accessibility.md)
-  - [0023 Storage Capacity Management](./0023-storage-capacity-management.md)
+- **Storage Capacities**: Consolidated into PRD 0023 (Storage Capacity Management).
+- **Buffer Zones**: Consolidated into PRD 0008 (Optimization and Mapping).
+- **LESSE**: Consolidated into PRD 0005 (Farm Sustainability Standards).
+- **Import and Export Records**: Consolidated into PRD 0004 (Slurry Spreading Records).
 
 ## Current PRDs
 
