@@ -35,9 +35,9 @@ Support staff require the ability to view data as it relates to a specific user 
 - **Events:** View spreading events or other activities recorded for specific fields to help verify records or debug user issues.
 - **Farm Records:** View high-level farm records (agricultural area, manure storage capacity, year) for compliance troubleshooting.
 
-### 4.3 Data Consistency and Read-Only Access
-- Initially, the primary function of the support views will be read-only to prevent accidental data corruption by support staff.
-- Write access (e.g., editing a farm's details on behalf of a user) should be heavily restricted or deferred to a later phase.
+### 4.3 Data Consistency and Full Access
+- Support and admin users will have full read, write, update, and delete access through standard endpoints, enabling comprehensive troubleshooting and management on behalf of users.
+- The Admin UI experience must be a separately bundled and deployed application to prevent administrative interface code from being shipped to standard users. This separate UI will utilize the standard application APIs, which inherently provide broader data visibility for admin roles.
 
 ## 5. Security Considerations
 - The admin interface must be heavily protected, potentially restricted by IP address or VPN access, in addition to strong authentication.

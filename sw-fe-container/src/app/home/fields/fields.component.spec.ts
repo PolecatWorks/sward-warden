@@ -170,7 +170,7 @@ describe('FieldsComponent', () => {
       name: 'Updated Paddock',
       area_hectares: 9.2,
       land_use: 'grassland',
-      geometry_wkt: undefined
+      geometry_geojson: undefined
     });
     // PRD Reference: 0016
     expect(component.loadFields).toHaveBeenCalled();

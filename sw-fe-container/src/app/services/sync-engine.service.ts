@@ -646,7 +646,7 @@ export class SyncEngineService implements OnDestroy {
             mean_elevation: serverField.mean_elevation,
             average_slope: serverField.average_slope,
             max_slope: serverField.max_slope,
-            geometry_wkt: serverField.geometry_wkt,
+            geometry_geojson: serverField.geometry_geojson,
             updatedAt: serverField.updated_at,
             syncStatus: 'synced' as any,
           });
@@ -664,7 +664,7 @@ export class SyncEngineService implements OnDestroy {
           mean_elevation: serverField.mean_elevation,
           average_slope: serverField.average_slope,
           max_slope: serverField.max_slope,
-          geometry_wkt: serverField.geometry_wkt,
+          geometry_geojson: serverField.geometry_geojson,
           syncStatus: 'synced' as any,
           updatedAt: serverField.updated_at,
         });

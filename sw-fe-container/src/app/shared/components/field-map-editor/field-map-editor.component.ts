@@ -12,8 +12,6 @@ import {
 import { CommonModule } from '@angular/common';
 import * as L from 'leaflet';
 import '@geoman-io/leaflet-geoman-free';
-// @ts-ignore
-import * as WktModule from 'wicket';
 
 @Component({
   selector: 'app-field-map-editor',
@@ -53,18 +51,15 @@ export class FieldMapEditorComponent
 {
   @ViewChild('mapElement') mapElement!: ElementRef;
 
-  @Input() wkt: string = '';
+  @Input() geojson: string = '';
   @Input() isEditMode: boolean = true;
   @Input() readonly: boolean = false;
-  @Output() wktChange = new EventEmitter<string>();
+  @Output() geojsonChange = new EventEmitter<string>();
 
   private map!: L.Map;
   private currentLayer: L.Layer | null = null;
-  private wicket: any;
 
-  constructor() {
-    this.wicket = new (WktModule as any).Wkt();
-  }
+  constructor() {}
 
   // PRD Reference: 0016
   ngOnInit() {}
@@ -72,8 +67,8 @@ export class FieldMapEditorComponent
   // PRD Reference: 0016
   ngAfterViewInit() {
     this.initMap();
-    if (this.wkt) {
-      this.loadWkt(this.wkt);
+    if (this.geojson) {
+      this.loadGeoJson(this.geojson);
     }
 
     if (this.isEditMode && !this.readonly) {
@@ -131,29 +126,28 @@ export class FieldMapEditorComponent
         this.map.removeLayer(this.currentLayer);
       }
       this.currentLayer = e.layer;
-      this.updateWktFromLayer(this.currentLayer);
+      this.updateGeoJsonFromLayer(this.currentLayer);
 
       // Listen for updates on the new layer
       this.currentLayer.on('pm:update', () =>
-        this.updateWktFromLayer(this.currentLayer!),
+        this.updateGeoJsonFromLayer(this.currentLayer!),
       );
     });
 
     this.map.on('pm:remove', (e) => {
       if (this.currentLayer === e.layer) {
         this.currentLayer = null;
-        this.wktChange.emit('');
+        this.geojsonChange.emit('');
       }
     });
   }
 
   // PRD Reference: 0016
-  private loadWkt(wktString: string): void {
+  private loadGeoJson(geoJsonString: string): void {
     try {
-      this.wicket.read(wktString);
-      const geojson = this.wicket.toJson();
+      const geojsonObj = JSON.parse(geoJsonString);
 
-      const layer = L.geoJSON(geojson, {
+      const layer = L.geoJSON(geojsonObj, {
         style: {
           color: '#1976d2',
           weight: 2,
@@ -170,37 +164,34 @@ export class FieldMapEditorComponent
       layer.addTo(this.map);
       this.map.fitBounds(layer.getBounds());
 
-      // In Geoman, we typically want to work with the individual polygon layer, not the GeoJSON group
-      // if we want to edit it directly.
       const layers = layer.getLayers();
       if (layers.length > 0) {
         this.currentLayer = layers[0];
         if (this.isEditMode && !this.readonly) {
           this.currentLayer.on('pm:update', () =>
-            this.updateWktFromLayer(this.currentLayer!),
+            this.updateGeoJsonFromLayer(this.currentLayer!),
           );
         }
       }
     } catch (e) {
-      console.error('Invalid WKT string', e);
+      console.error('Invalid GeoJSON string', e);
     }
   }
 
   // PRD Reference: 0016
-  private updateWktFromLayer(layer: L.Layer): void {
+  private updateGeoJsonFromLayer(layer: L.Layer): void {
     try {
       let geojson;
       if (typeof (layer as any).toGeoJSON === 'function') {
         geojson = (layer as any).toGeoJSON();
       }
 
-      if (geojson && geojson.geometry) {
-        this.wicket.fromObject(geojson.geometry);
-        const wktString = this.wicket.write();
-        this.wktChange.emit(wktString);
+      if (geojson) {
+        const geom = geojson.geometry || geojson;
+        this.geojsonChange.emit(JSON.stringify(geom));
       }
     } catch (e) {
-      console.error('Error generating WKT from layer', e);
+      console.error('Error generating GeoJSON from layer', e);
     }
   }
 
@@ -231,11 +222,11 @@ export class FieldMapEditorComponent
 
     polygon.addTo(this.map);
     this.currentLayer = polygon;
-    this.updateWktFromLayer(polygon);
+    this.updateGeoJsonFromLayer(polygon);
 
     if (this.isEditMode && !this.readonly) {
       this.currentLayer.on('pm:update', () =>
-        this.updateWktFromLayer(this.currentLayer!),
+        this.updateGeoJsonFromLayer(this.currentLayer!),
       );
     }
     this.map.fitBounds(polygon.getBounds());

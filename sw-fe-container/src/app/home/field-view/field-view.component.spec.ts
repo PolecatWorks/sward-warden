@@ -110,7 +110,7 @@ describe('FieldViewComponent', () => {
       area_hectares: 12.5,
       land_use: 'arable',
       farm_id: 2,
-      geometry_wkt: undefined
+      geometry_geojson: undefined
     });
     // PRD Reference: 0016
     expect(component.loadFieldDetails).toHaveBeenCalled();
