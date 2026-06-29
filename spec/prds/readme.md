@@ -8,7 +8,6 @@ PRDs dictate the high-level features and requirements of the project. Every PRD 
 
 ## Contradictions Identified
 
-- **Admin Access & Endpoints**: PRD 0010 states admin users access records via "dedicated admin endpoints". PRD 0018 states that standard endpoints (like `GET /farms` and `/sync`) should simply bypass ownership filters for admins. Additionally, PRD 0013 states support/admin views should initially be "read-only", whereas PRD 0018 explicitly grants admins full reading, updating, and deleting rights.
 - **Navigation Menu Layout**: PRD 0002 and PRD 0016 dictate a navigation bar order including "Dashboard" and "Compliance". PRD 0022 (Option A, Recommended) proposes eliminating "Dashboard" and "Compliance" from the navigation menu in favor of a consolidated "Home" view.
 
 ## Duplicates

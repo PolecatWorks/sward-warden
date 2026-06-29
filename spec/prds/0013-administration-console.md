@@ -9,7 +9,7 @@ As the application scales to support multiple users and farms, an Administration
 - Implement strict access controls to ensure only authorized personnel can access the administration tools.
 
 ## 3. Scope
-The Administration Console will focus on providing read and limited write capabilities for the primary data entities established in the system architecture.
+The Administration Console will focus on providing full read, write, update, and delete capabilities for the primary data entities established in the system architecture. Admin users do not have explicit APIs; instead, they have elevated privileges to act upon the full list of items in the data via standard endpoints and are not filtered by ownership of fields or farms.
 
 ### 3.1 Separate Interface
 - The admin console will not be bundled with the standard user application.
