@@ -28,7 +28,7 @@ This document outlines the strict environmental and reporting standards under th
   - Farmyard manure (FYM): Prohibited from 31 October to 31 January.
 - **Weather and Soil Conditions**: Spreading any organic manure is prohibited if the soil is waterlogged, flooded, frozen, snow-covered, or if heavy rain is falling or forecast within the next 48 hours.
 - **Application Limits**:
-  - Maximum application of 50m³ (4,500 gallons) of sward or 50 tonnes of solid manure per hectare at any one time.
+  - Maximum application of 50m³ (4,500 gallons) of sward or 50 tonnes of solid manure per hectare at any one time. The user inputs the total amount applied to a field, and the system calculates the per-hectare rate using the field's defined area.
   - Must leave a minimum of three weeks between applications.
 - **Equipment Requirements (LESSE)**: Low Emission Sward Spreading Equipment (dribble bars, trailing shoes, soil injection) is legally required for:
   - All sward contractors.
