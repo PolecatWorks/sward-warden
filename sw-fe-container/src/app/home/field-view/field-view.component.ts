@@ -191,12 +191,14 @@ export class FieldViewComponent implements OnInit {
 
   // PRD Reference: 0016
   hasEditChanges(): boolean {
-    return this.editFieldName !== this.originalEditFieldName ||
-           // PRD Reference: 0016
-           Number(this.editFieldArea) !== this.originalEditFieldArea ||
-           this.editFieldLandUse !== this.originalEditFieldLandUse ||
-           this.editFieldFarmId !== this.originalEditFieldFarmId ||
-           this.editFieldGeometry_geojson !== this.originalEditFieldGeometry_geojson;
+    return (
+      this.editFieldName !== this.originalEditFieldName ||
+      // PRD Reference: 0016
+      Number(this.editFieldArea) !== this.originalEditFieldArea ||
+      this.editFieldLandUse !== this.originalEditFieldLandUse ||
+      this.editFieldFarmId !== this.originalEditFieldFarmId ||
+      this.editFieldGeometry_geojson !== this.originalEditFieldGeometry_geojson
+    );
   }
 
   // PRD Reference: 0016
@@ -228,7 +230,7 @@ export class FieldViewComponent implements OnInit {
       area_hectares: this.editFieldArea,
       land_use: this.editFieldLandUse,
       farm_id: +this.editFieldFarmId,
-      geometry_geojson: this.editFieldGeometry_geojson.trim() || undefined
+      geometry_geojson: this.editFieldGeometry_geojson.trim() || undefined,
     };
 
     this.isSaving = true;

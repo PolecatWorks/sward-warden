@@ -33,7 +33,13 @@ export class FieldsComponent implements OnInit {
   editFieldArea: string = '';
   editFieldGeometry_geojson: string = '';
   editFieldLandUse: string = 'grassland';
-  editFieldFarmId: number = 0;
+  editFieldFarmId: number | string = 0;
+
+  originalEditFieldName: string = '';
+  originalEditFieldArea: string = '';
+  originalEditFieldGeometry_geojson: string = '';
+  originalEditFieldLandUse: string = 'grassland';
+  originalEditFieldFarmId: number | string = 0;
 
   farm: Farm | undefined;
   showEditFarmModal: boolean = false;
@@ -89,13 +95,16 @@ export class FieldsComponent implements OnInit {
   }
 
   @HostListener('document:keydown.escape', ['$event'])
-  // PRD Reference: 0016
+  // PRD Reference: 0016, 0025
   handleEscape(event: KeyboardEvent) {
     if (this.showAddForm) {
       this.toggleAddForm();
     }
     if (this.showEditFarmModal) {
       this.closeEditFarmModal();
+    }
+    if (this.editingFieldId !== null) {
+      this.cancelEdit();
     }
   }
 
@@ -211,7 +220,7 @@ export class FieldsComponent implements OnInit {
         farm_id: targetFarmId || 0,
         name: this.newFieldName,
         area_hectares: area,
-        geometry_geojson: this.newFieldGeometry_geojson.trim() || undefined
+        geometry_geojson: this.newFieldGeometry_geojson.trim() || undefined,
       };
 
       this.farmService.addField(newField).subscribe(async () => {
@@ -248,7 +257,7 @@ export class FieldsComponent implements OnInit {
     });
   }
 
-  // PRD Reference: 0016
+  // PRD Reference: 0016, 0025
   startEdit(field: Field): void {
     this.editingFieldId = field.id || null;
     this.editFieldName = field.name;
@@ -256,6 +265,24 @@ export class FieldsComponent implements OnInit {
     this.editFieldGeometry_geojson = field.geometry_geojson || '';
     this.editFieldLandUse = field.land_use || 'grassland';
     this.editFieldFarmId = field.farm_id;
+
+    this.originalEditFieldName = this.editFieldName;
+    this.originalEditFieldArea = this.editFieldArea;
+    this.originalEditFieldGeometry_geojson = this.editFieldGeometry_geojson;
+    this.originalEditFieldLandUse = this.editFieldLandUse;
+    this.originalEditFieldFarmId = this.editFieldFarmId;
+  }
+
+  // PRD Reference: 0025
+  hasFieldEditChanges(): boolean {
+    return (
+      this.editFieldName !== this.originalEditFieldName ||
+      this.editFieldArea !== this.originalEditFieldArea ||
+      this.editFieldGeometry_geojson !==
+        this.originalEditFieldGeometry_geojson ||
+      this.editFieldLandUse !== this.originalEditFieldLandUse ||
+      this.editFieldFarmId != this.originalEditFieldFarmId
+    );
   }
 
   // PRD Reference: 0016
@@ -286,7 +313,7 @@ export class FieldsComponent implements OnInit {
       area_hectares: area,
       land_use: this.editFieldLandUse,
       farm_id: +this.editFieldFarmId,
-      geometry_geojson: this.editFieldGeometry_geojson.trim() || undefined
+      geometry_geojson: this.editFieldGeometry_geojson.trim() || undefined,
     };
 
     this.farmService.updateField(field.id, updatedField).subscribe(() => {
@@ -299,13 +326,14 @@ export class FieldsComponent implements OnInit {
     });
   }
 
-  // PRD Reference: 0016
+  // PRD Reference: 0016, 0025
   saveFieldFromList(): void {
     if (
       !this.editingFieldId ||
       !this.editFieldName ||
       !this.editFieldArea ||
-      !this.editFieldFarmId
+      !this.editFieldFarmId ||
+      !this.hasFieldEditChanges()
     )
       return;
     const fieldId = this.editingFieldId;

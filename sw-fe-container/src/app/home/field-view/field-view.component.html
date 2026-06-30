@@ -1,7 +1,14 @@
 <div class="px-6 pt-4 max-w-2xl mx-auto">
   <div *ngIf="field; else loadingTemplate">
-    <a [routerLink]="['/farms', field.farm_id, 'fields']" class="inline-flex items-center text-sm font-medium text-on-surface-variant hover:text-primary mb-4" id="back-to-fields-link" data-testid="back-to-fields-link">
-      <span class="material-symbols-outlined mr-1" style="font-size: 18px;">arrow_back</span>
+    <a
+      [routerLink]="['/farms', field.farm_id, 'fields']"
+      class="inline-flex items-center text-sm font-medium text-on-surface-variant hover:text-primary mb-4"
+      id="back-to-fields-link"
+      data-testid="back-to-fields-link"
+    >
+      <span class="material-symbols-outlined mr-1" style="font-size: 18px"
+        >arrow_back</span
+      >
       Back to Fields
     </a>
 
@@ -9,68 +16,136 @@
     <section class="mb-6">
       <div class="flex items-end justify-between mb-2">
         <div class="flex items-center gap-2">
-          <h2 class="font-headline font-bold text-4xl tracking-tight text-primary">{{ field.name }}</h2>
-          <button (click)="openEditFieldModal()" class="text-on-surface-variant hover:text-primary transition-colors mb-1" id="edit-field-btn">
+          <h2
+            class="font-headline font-bold text-4xl tracking-tight text-primary"
+          >
+            {{ field.name }}
+          </h2>
+          <button
+            (click)="openEditFieldModal()"
+            class="text-on-surface-variant hover:text-primary transition-colors mb-1"
+            id="edit-field-btn"
+          >
             <span class="material-symbols-outlined text-[24px]">edit</span>
           </button>
         </div>
-        <span class="px-3 py-1 bg-tertiary-container text-white text-[10px] font-bold uppercase tracking-widest rounded-full mb-1 text-center leading-tight">ACTIVE<br>CYCLE</span>
+        <span
+          class="px-3 py-1 bg-tertiary-container text-white text-[10px] font-bold uppercase tracking-widest rounded-full mb-1 text-center leading-tight"
+          >ACTIVE<br />CYCLE</span
+        >
       </div>
-      <p class="text-on-surface-variant font-medium mb-2">Tracking events for Spring Barley '24 ({{ field.area_hectares }} ha)</p>
+      <p class="text-on-surface-variant font-medium mb-2">
+        Tracking events for Spring Barley '24 ({{ field.area_hectares }} ha)
+      </p>
 
       <!-- Field Boundary Map (View Only) -->
       <div class="mt-4" *ngIf="field.geometry_geojson">
-        <app-field-map-editor [geojson]="field.geometry_geojson" [isEditMode]="false" [readonly]="true"></app-field-map-editor>
+        <app-field-map-editor
+          [geojson]="field.geometry_geojson"
+          [isEditMode]="false"
+          [readonly]="true"
+        ></app-field-map-editor>
       </div>
 
       <!-- Topographical Data -->
-      <div class="grid grid-cols-2 gap-4 mt-4 bg-surface-container-low p-4 rounded-xl border border-outline-variant" *ngIf="field.min_elevation !== undefined">
+      <div
+        class="grid grid-cols-2 gap-4 mt-4 bg-surface-container-low p-4 rounded-xl border border-outline-variant"
+        *ngIf="field.min_elevation !== undefined"
+      >
         <div class="flex flex-col">
-          <span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-1 flex items-center gap-1">
-             <span class="material-symbols-outlined text-[14px]">landscape</span> Elevation
+          <span
+            class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-1 flex items-center gap-1"
+          >
+            <span class="material-symbols-outlined text-[14px]">landscape</span>
+            Elevation
           </span>
           <span class="text-sm text-on-surface font-medium">
             Min: {{ field.min_elevation }}m | Max: {{ field.max_elevation }}m
           </span>
         </div>
         <div class="flex flex-col">
-          <span class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-1 flex items-center gap-1">
-             <span class="material-symbols-outlined text-[14px]">moving</span> Slope
+          <span
+            class="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant mb-1 flex items-center gap-1"
+          >
+            <span class="material-symbols-outlined text-[14px]">moving</span>
+            Slope
           </span>
           <span class="text-sm text-on-surface font-medium">
             Avg: {{ field.average_slope }}% | Max: {{ field.max_slope }}%
           </span>
         </div>
       </div>
-
     </section>
 
-
     <!-- Edit Field Modal -->
-    <div *ngIf="showEditFieldModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4" id="edit-field-modal">
-      <div class="bg-surface rounded-xl shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div
+      *ngIf="showEditFieldModal"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+      id="edit-field-modal"
+    >
+      <div
+        class="bg-surface rounded-xl shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+      >
         <div class="flex justify-between items-center mb-4">
-          <h3 class="font-headline font-bold text-xl text-on-surface">Edit Field</h3>
-          <button (click)="closeEditFieldModal()" class="text-on-surface-variant hover:text-error" id="close-edit-field-modal-btn">
+          <h3 class="font-headline font-bold text-xl text-on-surface">
+            Edit Field
+          </h3>
+          <button
+            (click)="closeEditFieldModal()"
+            class="text-on-surface-variant hover:text-error"
+            id="close-edit-field-modal-btn"
+          >
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>
 
         <form (ngSubmit)="editField()" class="space-y-4">
-          <div *ngIf="errorMessage" class="p-3 bg-error-container text-on-error-container rounded-md text-sm" id="edit-field-error">
+          <div
+            *ngIf="errorMessage"
+            class="p-3 bg-error-container text-on-error-container rounded-md text-sm"
+            id="edit-field-error"
+          >
             {{ errorMessage }}
           </div>
           <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">Field Name</label>
-            <input type="text" [(ngModel)]="editFieldName" name="fieldName" (keydown.enter)="editField()" required class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface" id="edit-field-name-input">
+            <label class="block text-sm font-medium text-on-surface mb-1"
+              >Field Name</label
+            >
+            <input
+              type="text"
+              [(ngModel)]="editFieldName"
+              name="fieldName"
+              (keydown.enter)="editField()"
+              required
+              class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+              id="edit-field-name-input"
+            />
           </div>
           <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">Area (hectares)</label>
-            <input type="number" step="0.01" [(ngModel)]="editFieldArea" name="fieldArea" (keydown.enter)="editField()" required class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface" id="edit-field-area-input">
+            <label class="block text-sm font-medium text-on-surface mb-1"
+              >Area (hectares)</label
+            >
+            <input
+              type="number"
+              step="0.01"
+              [(ngModel)]="editFieldArea"
+              name="fieldArea"
+              (keydown.enter)="editField()"
+              required
+              class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+              id="edit-field-area-input"
+            />
           </div>
           <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">Land Use</label>
-            <select [(ngModel)]="editFieldLandUse" name="fieldLandUse" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface" id="edit-field-landuse-input">
+            <label class="block text-sm font-medium text-on-surface mb-1"
+              >Land Use</label
+            >
+            <select
+              [(ngModel)]="editFieldLandUse"
+              name="fieldLandUse"
+              class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+              id="edit-field-landuse-input"
+            >
               <option value="grassland">Grassland</option>
               <option value="arable">Arable</option>
               <option value="mixed">Mixed</option>
@@ -78,19 +153,51 @@
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">Farm</label>
-            <select [(ngModel)]="editFieldFarmId" name="fieldFarmId" required class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface" id="edit-field-farm-input">
-              <option *ngFor="let farm of farms" [value]="farm.id">{{ farm.name }}</option>
+            <label class="block text-sm font-medium text-on-surface mb-1"
+              >Farm</label
+            >
+            <select
+              [(ngModel)]="editFieldFarmId"
+              name="fieldFarmId"
+              required
+              class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+              id="edit-field-farm-input"
+            >
+              <option *ngFor="let farm of farms" [value]="farm.id">
+                {{ farm.name }}
+              </option>
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">Boundary Map</label>
-            <app-field-map-editor [(geojson)]="editFieldGeometry_geojson" [isEditMode]="true"></app-field-map-editor>
+            <label class="block text-sm font-medium text-on-surface mb-1"
+              >Boundary Map</label
+            >
+            <app-field-map-editor
+              [(geojson)]="editFieldGeometry_geojson"
+              [isEditMode]="true"
+            ></app-field-map-editor>
           </div>
           <div class="pt-4 flex justify-end gap-3">
-            <button type="button" (click)="closeEditFieldModal()" class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md" id="cancel-edit-field-btn">Cancel</button>
-            <button type="submit" [disabled]="!editFieldName || !editFieldArea || isSaving || !hasEditChanges()" class="px-4 py-2 bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90 disabled:opacity-50" id="save-edit-field-btn">
-              {{ isSaving ? 'Saving...' : 'Save Changes' }}
+            <button
+              type="button"
+              (click)="closeEditFieldModal()"
+              class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md"
+              id="cancel-edit-field-btn"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              [disabled]="
+                !editFieldName ||
+                !editFieldArea ||
+                isSaving ||
+                !hasEditChanges()
+              "
+              class="px-4 py-2 bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90 disabled:opacity-50"
+              id="save-edit-field-btn"
+            >
+              {{ isSaving ? "Saving..." : "Save Changes" }}
             </button>
           </div>
         </form>
@@ -98,283 +205,773 @@
     </div>
 
     <!-- Fertiliser Application Form Modal -->
-    <div *ngIf="showFertiliserForm" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div
+      *ngIf="showFertiliserForm"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+    >
       <div class="bg-surface rounded-xl shadow-2xl p-6 w-full max-w-md">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="font-headline font-bold text-xl text-on-surface">Log Fertiliser</h3>
-          <button (click)="toggleFertiliserForm()" class="text-on-surface-variant hover:text-error">
+          <h3 class="font-headline font-bold text-xl text-on-surface">
+            Log Fertiliser
+          </h3>
+          <button
+            (click)="toggleFertiliserForm()"
+            class="text-on-surface-variant hover:text-error"
+          >
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>
 
-        <form #fertForm="ngForm" (ngSubmit)="fertForm.valid && submitFertiliserApplication()" class="space-y-4" novalidate>
+        <form
+          #fertForm="ngForm"
+          (ngSubmit)="fertForm.valid && submitFertiliserApplication()"
+          class="space-y-4"
+          novalidate
+        >
           <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">Date</label>
-            <input type="date" [(ngModel)]="newFertiliser.date" name="date" required #fDate="ngModel"
+            <label class="block text-sm font-medium text-on-surface mb-1"
+              >Date</label
+            >
+            <input
+              type="date"
+              [(ngModel)]="newFertiliser.date"
+              name="date"
+              required
+              #fDate="ngModel"
               class="w-full px-3 py-2 border rounded-md bg-surface text-on-surface focus:outline-none transition-all"
-              [ngClass]="(fDate?.invalid || !newFertiliser.date) ? 'border-error ring-1 ring-error focus:ring-error' : 'border-outline focus:ring-primary focus:border-primary'">
-            <span *ngIf="fDate?.invalid || !newFertiliser.date" class="text-xs text-error font-medium mt-1 block">Date is required</span>
+              [ngClass]="
+                fDate?.invalid || !newFertiliser.date
+                  ? 'border-error ring-1 ring-error focus:ring-error'
+                  : 'border-outline focus:ring-primary focus:border-primary'
+              "
+            />
+            <span
+              *ngIf="fDate?.invalid || !newFertiliser.date"
+              class="text-xs text-error font-medium mt-1 block"
+              >Date is required</span
+            >
           </div>
           <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">Fertiliser Type</label>
-            <input type="text" [(ngModel)]="newFertiliser.fertiliser_type" name="type" required placeholder="e.g. Urea, CAN" #fType="ngModel"
+            <label class="block text-sm font-medium text-on-surface mb-1"
+              >Fertiliser Type</label
+            >
+            <input
+              type="text"
+              [(ngModel)]="newFertiliser.fertiliser_type"
+              name="type"
+              required
+              placeholder="e.g. Urea, CAN"
+              #fType="ngModel"
               class="w-full px-3 py-2 border rounded-md bg-surface text-on-surface focus:outline-none transition-all"
-              [ngClass]="(fType?.invalid || !newFertiliser.fertiliser_type) ? 'border-error ring-1 ring-error focus:ring-error' : 'border-outline focus:ring-primary focus:border-primary'">
-            <span *ngIf="fType?.invalid || !newFertiliser.fertiliser_type" class="text-xs text-error font-medium mt-1 block">Fertiliser type is required</span>
+              [ngClass]="
+                fType?.invalid || !newFertiliser.fertiliser_type
+                  ? 'border-error ring-1 ring-error focus:ring-error'
+                  : 'border-outline focus:ring-primary focus:border-primary'
+              "
+            />
+            <span
+              *ngIf="fType?.invalid || !newFertiliser.fertiliser_type"
+              class="text-xs text-error font-medium mt-1 block"
+              >Fertiliser type is required</span
+            >
           </div>
           <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">Amount Applied (kg/ha)</label>
-            <input type="number" [(ngModel)]="newFertiliser.amount_applied" name="amount" required min="1" #fAmount="ngModel"
+            <label class="block text-sm font-medium text-on-surface mb-1"
+              >Amount Applied (kg/ha)</label
+            >
+            <input
+              type="number"
+              [(ngModel)]="newFertiliser.amount_applied"
+              name="amount"
+              required
+              min="1"
+              #fAmount="ngModel"
               class="w-full px-3 py-2 border rounded-md bg-surface text-on-surface focus:outline-none transition-all"
-              [ngClass]="(fAmount?.invalid || !newFertiliser.amount_applied || newFertiliser.amount_applied < 1) ? 'border-error ring-1 ring-error focus:ring-error' : 'border-outline focus:ring-primary focus:border-primary'">
-            <span *ngIf="fAmount?.invalid || !newFertiliser.amount_applied || newFertiliser.amount_applied < 1" class="text-xs text-error font-medium mt-1 block">Amount must be greater than 0</span>
+              [ngClass]="
+                fAmount?.invalid ||
+                !newFertiliser.amount_applied ||
+                newFertiliser.amount_applied < 1
+                  ? 'border-error ring-1 ring-error focus:ring-error'
+                  : 'border-outline focus:ring-primary focus:border-primary'
+              "
+            />
+            <span
+              *ngIf="
+                fAmount?.invalid ||
+                !newFertiliser.amount_applied ||
+                newFertiliser.amount_applied < 1
+              "
+              class="text-xs text-error font-medium mt-1 block"
+              >Amount must be greater than 0</span
+            >
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-on-surface mb-1">Nitrogen (%)</label>
-              <input type="number" [(ngModel)]="newFertiliser.nitrogen_content" name="nitrogen" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface">
+              <label class="block text-sm font-medium text-on-surface mb-1"
+                >Nitrogen (%)</label
+              >
+              <input
+                type="number"
+                [(ngModel)]="newFertiliser.nitrogen_content"
+                name="nitrogen"
+                class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+              />
             </div>
             <div>
-              <label class="block text-sm font-medium text-on-surface mb-1">Phosphorus (%)</label>
-              <input type="number" [(ngModel)]="newFertiliser.phosphorus_content" name="phosphorus" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface">
+              <label class="block text-sm font-medium text-on-surface mb-1"
+                >Phosphorus (%)</label
+              >
+              <input
+                type="number"
+                [(ngModel)]="newFertiliser.phosphorus_content"
+                name="phosphorus"
+                class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+              />
             </div>
           </div>
           <div class="space-y-2">
             <label class="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" [(ngModel)]="newFertiliser.is_protected_urea" name="protected_urea" class="w-4 h-4 text-primary rounded border-outline focus:ring-primary">
-              <span class="text-sm font-medium text-on-surface">Urease Inhibitor (Protected Urea)</span>
+              <input
+                type="checkbox"
+                [(ngModel)]="newFertiliser.is_protected_urea"
+                name="protected_urea"
+                class="w-4 h-4 text-primary rounded border-outline focus:ring-primary"
+              />
+              <span class="text-sm font-medium text-on-surface"
+                >Urease Inhibitor (Protected Urea)</span
+              >
             </label>
             <div>
               <label class="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" [(ngModel)]="newFertiliser.buffer_zone_confirmed" name="buffer_zone" required #fBuffer="ngModel"
-                  class="w-4 h-4 text-primary rounded border-outline focus:ring-primary">
-                <span class="text-sm font-medium text-on-surface" [ngClass]="(fBuffer?.invalid || !newFertiliser.buffer_zone_confirmed) ? 'text-error font-bold' : ''">Confirm 2m Buffer Zone from Water</span>
+                <input
+                  type="checkbox"
+                  [(ngModel)]="newFertiliser.buffer_zone_confirmed"
+                  name="buffer_zone"
+                  required
+                  #fBuffer="ngModel"
+                  class="w-4 h-4 text-primary rounded border-outline focus:ring-primary"
+                />
+                <span
+                  class="text-sm font-medium text-on-surface"
+                  [ngClass]="
+                    fBuffer?.invalid || !newFertiliser.buffer_zone_confirmed
+                      ? 'text-error font-bold'
+                      : ''
+                  "
+                  >Confirm 2m Buffer Zone from Water</span
+                >
               </label>
-              <span *ngIf="fBuffer?.invalid || !newFertiliser.buffer_zone_confirmed" class="text-xs text-error font-medium mt-1 block">You must confirm the buffer zone</span>
+              <span
+                *ngIf="fBuffer?.invalid || !newFertiliser.buffer_zone_confirmed"
+                class="text-xs text-error font-medium mt-1 block"
+                >You must confirm the buffer zone</span
+              >
             </div>
           </div>
           <div>
-             <label class="block text-sm font-medium text-on-surface mb-1">Description / Notes</label>
-             <input type="text" [(ngModel)]="newFertiliser.description" name="description" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface">
+            <label class="block text-sm font-medium text-on-surface mb-1"
+              >Description / Notes</label
+            >
+            <input
+              type="text"
+              [(ngModel)]="newFertiliser.description"
+              name="description"
+              class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+            />
           </div>
           <div class="pt-4 flex justify-end gap-3">
-            <button type="button" (click)="toggleFertiliserForm()" class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md">Cancel</button>
-            <button type="submit" [disabled]="!fertForm.valid"
-              class="px-4 py-2 bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all">Save Record</button>
+            <button
+              type="button"
+              (click)="toggleFertiliserForm()"
+              class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              [disabled]="!fertForm.valid"
+              class="px-4 py-2 bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            >
+              Save Record
+            </button>
           </div>
         </form>
       </div>
     </div>
 
     <!-- Spraying Record Form Modal -->
-    <div *ngIf="showSprayingForm" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div
+      *ngIf="showSprayingForm"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+    >
       <div class="bg-surface rounded-xl shadow-2xl p-6 w-full max-w-md">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="font-headline font-bold text-xl text-on-surface">Log Spraying</h3>
-          <button (click)="toggleSprayingForm()" class="text-on-surface-variant hover:text-error">
+          <h3 class="font-headline font-bold text-xl text-on-surface">
+            Log Spraying
+          </h3>
+          <button
+            (click)="toggleSprayingForm()"
+            class="text-on-surface-variant hover:text-error"
+          >
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>
 
-        <form #sprayForm="ngForm" (ngSubmit)="sprayForm.valid && submitSprayingRecord()" class="space-y-4" novalidate>
+        <form
+          #sprayForm="ngForm"
+          (ngSubmit)="sprayForm.valid && submitSprayingRecord()"
+          class="space-y-4"
+          novalidate
+        >
           <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">Date</label>
-            <input type="date" [(ngModel)]="newSpraying.date" name="s_date" required #sDate="ngModel"
+            <label class="block text-sm font-medium text-on-surface mb-1"
+              >Date</label
+            >
+            <input
+              type="date"
+              [(ngModel)]="newSpraying.date"
+              name="s_date"
+              required
+              #sDate="ngModel"
               class="w-full px-3 py-2 border rounded-md bg-surface text-on-surface focus:outline-none transition-all"
-              [ngClass]="(sDate?.invalid || !newSpraying.date) ? 'border-error ring-1 ring-error focus:ring-error' : 'border-outline focus:ring-primary focus:border-primary'">
-            <span *ngIf="sDate?.invalid || !newSpraying.date" class="text-xs text-error font-medium mt-1 block">Date is required</span>
+              [ngClass]="
+                sDate?.invalid || !newSpraying.date
+                  ? 'border-error ring-1 ring-error focus:ring-error'
+                  : 'border-outline focus:ring-primary focus:border-primary'
+              "
+            />
+            <span
+              *ngIf="sDate?.invalid || !newSpraying.date"
+              class="text-xs text-error font-medium mt-1 block"
+              >Date is required</span
+            >
           </div>
           <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">Product MAPP Number</label>
-            <input type="text" [(ngModel)]="newSpraying.mapp_number" name="mapp" required placeholder="e.g. 12345" #sMapp="ngModel"
+            <label class="block text-sm font-medium text-on-surface mb-1"
+              >Product MAPP Number</label
+            >
+            <input
+              type="text"
+              [(ngModel)]="newSpraying.mapp_number"
+              name="mapp"
+              required
+              placeholder="e.g. 12345"
+              #sMapp="ngModel"
               class="w-full px-3 py-2 border rounded-md bg-surface text-on-surface focus:outline-none transition-all"
-              [ngClass]="(sMapp?.invalid || !newSpraying.mapp_number) ? 'border-error ring-1 ring-error focus:ring-error' : 'border-outline focus:ring-primary focus:border-primary'">
-            <span *ngIf="sMapp?.invalid || !newSpraying.mapp_number" class="text-xs text-error font-medium mt-1 block">MAPP Number is required</span>
+              [ngClass]="
+                sMapp?.invalid || !newSpraying.mapp_number
+                  ? 'border-error ring-1 ring-error focus:ring-error'
+                  : 'border-outline focus:ring-primary focus:border-primary'
+              "
+            />
+            <span
+              *ngIf="sMapp?.invalid || !newSpraying.mapp_number"
+              class="text-xs text-error font-medium mt-1 block"
+              >MAPP Number is required</span
+            >
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-on-surface mb-1">EPPO Code</label>
-              <input type="text" [(ngModel)]="newSpraying.eppo_code" name="eppo" required placeholder="e.g. HORVX" #sEppo="ngModel"
+              <label class="block text-sm font-medium text-on-surface mb-1"
+                >EPPO Code</label
+              >
+              <input
+                type="text"
+                [(ngModel)]="newSpraying.eppo_code"
+                name="eppo"
+                required
+                placeholder="e.g. HORVX"
+                #sEppo="ngModel"
                 class="w-full px-3 py-2 border rounded-md bg-surface text-on-surface focus:outline-none transition-all"
-                [ngClass]="(sEppo?.invalid || !newSpraying.eppo_code) ? 'border-error ring-1 ring-error focus:ring-error' : 'border-outline focus:ring-primary focus:border-primary'">
-              <span *ngIf="sEppo?.invalid || !newSpraying.eppo_code" class="text-xs text-error font-medium mt-1 block">EPPO Code is required</span>
+                [ngClass]="
+                  sEppo?.invalid || !newSpraying.eppo_code
+                    ? 'border-error ring-1 ring-error focus:ring-error'
+                    : 'border-outline focus:ring-primary focus:border-primary'
+                "
+              />
+              <span
+                *ngIf="sEppo?.invalid || !newSpraying.eppo_code"
+                class="text-xs text-error font-medium mt-1 block"
+                >EPPO Code is required</span
+              >
             </div>
             <div>
-              <label class="block text-sm font-medium text-on-surface mb-1">BBCH Stage</label>
-              <input type="text" [(ngModel)]="newSpraying.bbch_growth_stage" name="bbch" required placeholder="e.g. 31" #sBbch="ngModel"
+              <label class="block text-sm font-medium text-on-surface mb-1"
+                >BBCH Stage</label
+              >
+              <input
+                type="text"
+                [(ngModel)]="newSpraying.bbch_growth_stage"
+                name="bbch"
+                required
+                placeholder="e.g. 31"
+                #sBbch="ngModel"
                 class="w-full px-3 py-2 border rounded-md bg-surface text-on-surface focus:outline-none transition-all"
-                [ngClass]="(sBbch?.invalid || !newSpraying.bbch_growth_stage) ? 'border-error ring-1 ring-error focus:ring-error' : 'border-outline focus:ring-primary focus:border-primary'">
-              <span *ngIf="sBbch?.invalid || !newSpraying.bbch_growth_stage" class="text-xs text-error font-medium mt-1 block">BBCH Stage is required</span>
+                [ngClass]="
+                  sBbch?.invalid || !newSpraying.bbch_growth_stage
+                    ? 'border-error ring-1 ring-error focus:ring-error'
+                    : 'border-outline focus:ring-primary focus:border-primary'
+                "
+              />
+              <span
+                *ngIf="sBbch?.invalid || !newSpraying.bbch_growth_stage"
+                class="text-xs text-error font-medium mt-1 block"
+                >BBCH Stage is required</span
+              >
             </div>
           </div>
           <div>
-             <label class="block text-sm font-medium text-on-surface mb-1">Description / Notes</label>
-             <input type="text" [(ngModel)]="newSpraying.description" name="s_description" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface">
+            <label class="block text-sm font-medium text-on-surface mb-1"
+              >Description / Notes</label
+            >
+            <input
+              type="text"
+              [(ngModel)]="newSpraying.description"
+              name="s_description"
+              class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+            />
           </div>
           <div class="pt-4 flex justify-end gap-3">
-            <button type="button" (click)="toggleSprayingForm()" class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md">Cancel</button>
-            <button type="submit" [disabled]="!sprayForm.valid"
-              class="px-4 py-2 bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all">Save Record</button>
+            <button
+              type="button"
+              (click)="toggleSprayingForm()"
+              class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              [disabled]="!sprayForm.valid"
+              class="px-4 py-2 bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            >
+              Save Record
+            </button>
           </div>
         </form>
       </div>
     </div>
 
     <!-- Organic Manure Application Form Modal -->
-    <div *ngIf="showOrganicManureForm" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div
+      *ngIf="showOrganicManureForm"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+    >
       <div class="bg-surface rounded-xl shadow-2xl p-6 w-full max-w-md">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="font-headline font-bold text-xl text-on-surface">Log Organic Manure</h3>
-          <button (click)="toggleOrganicManureForm()" class="text-on-surface-variant hover:text-error">
+          <h3 class="font-headline font-bold text-xl text-on-surface">
+            Log Organic Manure
+          </h3>
+          <button
+            (click)="toggleOrganicManureForm()"
+            class="text-on-surface-variant hover:text-error"
+          >
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>
 
-        <form #manureForm="ngForm" (ngSubmit)="manureForm.valid && submitOrganicManureApplication()" class="space-y-4" novalidate>
+        <form
+          #manureForm="ngForm"
+          (ngSubmit)="manureForm.valid && submitOrganicManureApplication()"
+          class="space-y-4"
+          novalidate
+        >
           <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">Date</label>
-            <input type="date" [(ngModel)]="newOrganicManure.date" name="o_date" required #oDate="ngModel"
+            <label class="block text-sm font-medium text-on-surface mb-1"
+              >Date</label
+            >
+            <input
+              type="date"
+              [(ngModel)]="newOrganicManure.date"
+              name="o_date"
+              required
+              #oDate="ngModel"
               class="w-full px-3 py-2 border rounded-md bg-surface text-on-surface focus:outline-none transition-all"
-              [ngClass]="(oDate?.invalid || !newOrganicManure.date) ? 'border-error ring-1 ring-error focus:ring-error' : 'border-outline focus:ring-primary focus:border-primary'">
-            <span *ngIf="oDate?.invalid || !newOrganicManure.date" class="text-xs text-error font-medium mt-1 block">Date is required</span>
+              [ngClass]="
+                oDate?.invalid || !newOrganicManure.date
+                  ? 'border-error ring-1 ring-error focus:ring-error'
+                  : 'border-outline focus:ring-primary focus:border-primary'
+              "
+            />
+            <span
+              *ngIf="oDate?.invalid || !newOrganicManure.date"
+              class="text-xs text-error font-medium mt-1 block"
+              >Date is required</span
+            >
           </div>
           <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">Manure Type</label>
-            <select [(ngModel)]="newOrganicManure.manure_type" name="o_type" required #oType="ngModel"
+            <label class="block text-sm font-medium text-on-surface mb-1"
+              >Manure Type</label
+            >
+            <select
+              [(ngModel)]="newOrganicManure.manure_type"
+              name="o_type"
+              required
+              #oType="ngModel"
               class="w-full px-3 py-2 border rounded-md bg-surface text-on-surface focus:outline-none transition-all"
-              [ngClass]="(oType?.invalid || !newOrganicManure.manure_type) ? 'border-error ring-1 ring-error focus:ring-error' : 'border-outline focus:ring-primary focus:border-primary'">
+              [ngClass]="
+                oType?.invalid || !newOrganicManure.manure_type
+                  ? 'border-error ring-1 ring-error focus:ring-error'
+                  : 'border-outline focus:ring-primary focus:border-primary'
+              "
+            >
               <option value="">Select type...</option>
               <option value="Slurry (Cattle)">Slurry (Cattle)</option>
               <option value="Slurry (Pig)">Slurry (Pig)</option>
-              <option value="FYM (Farmyard Manure)">FYM (Farmyard Manure)</option>
+              <option value="FYM (Farmyard Manure)">
+                FYM (Farmyard Manure)
+              </option>
               <option value="Poultry Litter">Poultry Litter</option>
               <option value="Digestate">Digestate</option>
             </select>
-            <span *ngIf="oType?.invalid || !newOrganicManure.manure_type" class="text-xs text-error font-medium mt-1 block">Manure type is required</span>
+            <span
+              *ngIf="oType?.invalid || !newOrganicManure.manure_type"
+              class="text-xs text-error font-medium mt-1 block"
+              >Manure type is required</span
+            >
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-on-surface mb-1">Vol (m³/ha)</label>
-              <input type="number" [(ngModel)]="newOrganicManure.volume_applied_m3_per_ha" name="vol" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface">
+              <label class="block text-sm font-medium text-on-surface mb-1"
+                >Vol (m³/ha)</label
+              >
+              <input
+                type="number"
+                [(ngModel)]="newOrganicManure.volume_applied_m3_per_ha"
+                name="vol"
+                class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+              />
             </div>
             <div>
-              <label class="block text-sm font-medium text-on-surface mb-1">Weight (t/ha)</label>
-              <input type="number" [(ngModel)]="newOrganicManure.weight_applied_tonnes_per_ha" name="weight" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface">
+              <label class="block text-sm font-medium text-on-surface mb-1"
+                >Weight (t/ha)</label
+              >
+              <input
+                type="number"
+                [(ngModel)]="newOrganicManure.weight_applied_tonnes_per_ha"
+                name="weight"
+                class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+              />
             </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">N Content (kg N/unit)</label>
-            <input type="number" [(ngModel)]="newOrganicManure.nitrogen_content_kg_per_unit" name="o_n" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface">
+            <label class="block text-sm font-medium text-on-surface mb-1"
+              >N Content (kg N/unit)</label
+            >
+            <input
+              type="number"
+              [(ngModel)]="newOrganicManure.nitrogen_content_kg_per_unit"
+              name="o_n"
+              class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+            />
           </div>
           <div class="space-y-2">
             <label class="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" [(ngModel)]="newOrganicManure.is_lesse_applied" name="lesse" class="w-4 h-4 text-primary rounded border-outline focus:ring-primary">
-              <span class="text-sm font-medium text-on-surface">Low Emission Equipment (LESSE)</span>
+              <input
+                type="checkbox"
+                [(ngModel)]="newOrganicManure.is_lesse_applied"
+                name="lesse"
+                class="w-4 h-4 text-primary rounded border-outline focus:ring-primary"
+              />
+              <span class="text-sm font-medium text-on-surface"
+                >Low Emission Equipment (LESSE)</span
+              >
             </label>
             <div>
               <label class="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" [(ngModel)]="newOrganicManure.weather_conditions_confirmed" name="weather" required #oWeather="ngModel"
-                  class="w-4 h-4 text-primary rounded border-outline focus:ring-primary">
-                <span class="text-sm font-medium text-on-surface" [ngClass]="(oWeather?.invalid || !newOrganicManure.weather_conditions_confirmed) ? 'text-error font-bold' : ''">Confirm Soil/Weather Conditions</span>
+                <input
+                  type="checkbox"
+                  [(ngModel)]="newOrganicManure.weather_conditions_confirmed"
+                  name="weather"
+                  required
+                  #oWeather="ngModel"
+                  class="w-4 h-4 text-primary rounded border-outline focus:ring-primary"
+                />
+                <span
+                  class="text-sm font-medium text-on-surface"
+                  [ngClass]="
+                    oWeather?.invalid ||
+                    !newOrganicManure.weather_conditions_confirmed
+                      ? 'text-error font-bold'
+                      : ''
+                  "
+                  >Confirm Soil/Weather Conditions</span
+                >
               </label>
-              <span *ngIf="oWeather?.invalid || !newOrganicManure.weather_conditions_confirmed" class="text-xs text-error font-medium mt-1 block">You must confirm soil and weather conditions</span>
+              <span
+                *ngIf="
+                  oWeather?.invalid ||
+                  !newOrganicManure.weather_conditions_confirmed
+                "
+                class="text-xs text-error font-medium mt-1 block"
+                >You must confirm soil and weather conditions</span
+              >
             </div>
           </div>
 
-          <div *ngIf="!newOrganicManure.is_lesse_applied" class="grid grid-cols-2 gap-4 mt-4">
-             <div>
-               <label class="block text-sm font-medium text-on-surface mb-1">Equipment Used</label>
-               <input type="text" [(ngModel)]="newOrganicManure.equipment_used" name="equipment" [required]="!newOrganicManure.is_lesse_applied" #oEquip="ngModel"
-                 placeholder="e.g. Inverted splash plate"
-                 class="w-full px-3 py-2 border rounded-md bg-surface text-on-surface focus:outline-none transition-all"
-                 [ngClass]="(oEquip?.invalid || (!newOrganicManure.is_lesse_applied && !newOrganicManure.equipment_used)) ? 'border-error ring-1 ring-error focus:ring-error' : 'border-outline focus:ring-primary focus:border-primary'">
-               <span *ngIf="oEquip?.invalid || (!newOrganicManure.is_lesse_applied && !newOrganicManure.equipment_used)" class="text-xs text-error font-medium mt-1 block">Equipment is required</span>
-             </div>
-             <div>
-               <label class="block text-sm font-medium text-on-surface mb-1">LESSE Exemption Reason</label>
-               <input type="text" [(ngModel)]="newOrganicManure.lesse_exemption_reason" name="exemption_reason" [required]="!newOrganicManure.is_lesse_applied" #oExempt="ngModel"
-                 placeholder="e.g. Field slope > 15%"
-                 class="w-full px-3 py-2 border rounded-md bg-surface text-on-surface focus:outline-none transition-all"
-                 [ngClass]="(oExempt?.invalid || (!newOrganicManure.is_lesse_applied && !newOrganicManure.lesse_exemption_reason)) ? 'border-error ring-1 ring-error focus:ring-error' : 'border-outline focus:ring-primary focus:border-primary'">
-               <span *ngIf="oExempt?.invalid || (!newOrganicManure.is_lesse_applied && !newOrganicManure.lesse_exemption_reason)" class="text-xs text-error font-medium mt-1 block">Exemption reason is required</span>
-             </div>
+          <div
+            *ngIf="!newOrganicManure.is_lesse_applied"
+            class="grid grid-cols-2 gap-4 mt-4"
+          >
+            <div>
+              <label class="block text-sm font-medium text-on-surface mb-1"
+                >Equipment Used</label
+              >
+              <input
+                type="text"
+                [(ngModel)]="newOrganicManure.equipment_used"
+                name="equipment"
+                [required]="!newOrganicManure.is_lesse_applied"
+                #oEquip="ngModel"
+                placeholder="e.g. Inverted splash plate"
+                class="w-full px-3 py-2 border rounded-md bg-surface text-on-surface focus:outline-none transition-all"
+                [ngClass]="
+                  oEquip?.invalid ||
+                  (!newOrganicManure.is_lesse_applied &&
+                    !newOrganicManure.equipment_used)
+                    ? 'border-error ring-1 ring-error focus:ring-error'
+                    : 'border-outline focus:ring-primary focus:border-primary'
+                "
+              />
+              <span
+                *ngIf="
+                  oEquip?.invalid ||
+                  (!newOrganicManure.is_lesse_applied &&
+                    !newOrganicManure.equipment_used)
+                "
+                class="text-xs text-error font-medium mt-1 block"
+                >Equipment is required</span
+              >
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-on-surface mb-1"
+                >LESSE Exemption Reason</label
+              >
+              <input
+                type="text"
+                [(ngModel)]="newOrganicManure.lesse_exemption_reason"
+                name="exemption_reason"
+                [required]="!newOrganicManure.is_lesse_applied"
+                #oExempt="ngModel"
+                placeholder="e.g. Field slope > 15%"
+                class="w-full px-3 py-2 border rounded-md bg-surface text-on-surface focus:outline-none transition-all"
+                [ngClass]="
+                  oExempt?.invalid ||
+                  (!newOrganicManure.is_lesse_applied &&
+                    !newOrganicManure.lesse_exemption_reason)
+                    ? 'border-error ring-1 ring-error focus:ring-error'
+                    : 'border-outline focus:ring-primary focus:border-primary'
+                "
+              />
+              <span
+                *ngIf="
+                  oExempt?.invalid ||
+                  (!newOrganicManure.is_lesse_applied &&
+                    !newOrganicManure.lesse_exemption_reason)
+                "
+                class="text-xs text-error font-medium mt-1 block"
+                >Exemption reason is required</span
+              >
+            </div>
           </div>
 
           <div class="mt-4">
-             <label class="block text-sm font-medium text-on-surface mb-1">Buffer Zone (m)</label>
-             <input type="number" [(ngModel)]="newOrganicManure.buffer_zone_distance_meters" name="buffer" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface">
+            <label class="block text-sm font-medium text-on-surface mb-1"
+              >Buffer Zone (m)</label
+            >
+            <input
+              type="number"
+              [(ngModel)]="newOrganicManure.buffer_zone_distance_meters"
+              name="buffer"
+              class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+            />
           </div>
           <div class="pt-4 flex justify-end gap-3">
-            <button type="button" (click)="toggleOrganicManureForm()" class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md">Cancel</button>
-            <button type="submit" [disabled]="!manureForm.valid"
-              class="px-4 py-2 bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all">Save Record</button>
+            <button
+              type="button"
+              (click)="toggleOrganicManureForm()"
+              class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              [disabled]="!manureForm.valid"
+              class="px-4 py-2 bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            >
+              Save Record
+            </button>
           </div>
         </form>
       </div>
     </div>
 
     <!-- Planting Form Modal -->
-    <div *ngIf="showPlantingForm" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div
+      *ngIf="showPlantingForm"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+    >
       <div class="bg-surface rounded-xl shadow-2xl p-6 w-full max-w-md">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="font-headline font-bold text-xl text-on-surface">Log Planting</h3>
-          <button (click)="togglePlantingForm()" class="text-on-surface-variant hover:text-error">
+          <h3 class="font-headline font-bold text-xl text-on-surface">
+            Log Planting
+          </h3>
+          <button
+            (click)="togglePlantingForm()"
+            class="text-on-surface-variant hover:text-error"
+          >
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>
 
-        <form #plantingForm="ngForm" (ngSubmit)="plantingForm.valid && submitPlantingRecord()" class="space-y-4" novalidate>
+        <form
+          #plantingForm="ngForm"
+          (ngSubmit)="plantingForm.valid && submitPlantingRecord()"
+          class="space-y-4"
+          novalidate
+        >
           <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">Date</label>
-            <input type="date" [(ngModel)]="newPlanting.date" name="p_date" required #pDate="ngModel"
+            <label class="block text-sm font-medium text-on-surface mb-1"
+              >Date</label
+            >
+            <input
+              type="date"
+              [(ngModel)]="newPlanting.date"
+              name="p_date"
+              required
+              #pDate="ngModel"
               class="w-full px-3 py-2 border rounded-md bg-surface text-on-surface focus:outline-none transition-all"
-              [ngClass]="(pDate?.invalid || !newPlanting.date) ? 'border-error ring-1 ring-error focus:ring-error' : 'border-outline focus:ring-primary focus:border-primary'">
-            <span *ngIf="pDate?.invalid || !newPlanting.date" class="text-xs text-error font-medium mt-1 block">Date is required</span>
+              [ngClass]="
+                pDate?.invalid || !newPlanting.date
+                  ? 'border-error ring-1 ring-error focus:ring-error'
+                  : 'border-outline focus:ring-primary focus:border-primary'
+              "
+            />
+            <span
+              *ngIf="pDate?.invalid || !newPlanting.date"
+              class="text-xs text-error font-medium mt-1 block"
+              >Date is required</span
+            >
           </div>
           <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">Crop Type</label>
-            <input type="text" [(ngModel)]="newPlanting.crop" name="crop" required placeholder="e.g. Wheat, Barley" #pCrop="ngModel"
+            <label class="block text-sm font-medium text-on-surface mb-1"
+              >Crop Type</label
+            >
+            <input
+              type="text"
+              [(ngModel)]="newPlanting.crop"
+              name="crop"
+              required
+              placeholder="e.g. Wheat, Barley"
+              #pCrop="ngModel"
               class="w-full px-3 py-2 border rounded-md bg-surface text-on-surface focus:outline-none transition-all"
-              [ngClass]="(pCrop?.invalid || !newPlanting.crop) ? 'border-error ring-1 ring-error focus:ring-error' : 'border-outline focus:ring-primary focus:border-primary'">
-            <span *ngIf="pCrop?.invalid || !newPlanting.crop" class="text-xs text-error font-medium mt-1 block">Crop Type is required</span>
+              [ngClass]="
+                pCrop?.invalid || !newPlanting.crop
+                  ? 'border-error ring-1 ring-error focus:ring-error'
+                  : 'border-outline focus:ring-primary focus:border-primary'
+              "
+            />
+            <span
+              *ngIf="pCrop?.invalid || !newPlanting.crop"
+              class="text-xs text-error font-medium mt-1 block"
+              >Crop Type is required</span
+            >
           </div>
           <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">Variety</label>
-            <input type="text" [(ngModel)]="newPlanting.variety" name="variety" required placeholder="e.g. Spring Barley '24" #pVariety="ngModel"
+            <label class="block text-sm font-medium text-on-surface mb-1"
+              >Variety</label
+            >
+            <input
+              type="text"
+              [(ngModel)]="newPlanting.variety"
+              name="variety"
+              required
+              placeholder="e.g. Spring Barley '24"
+              #pVariety="ngModel"
               class="w-full px-3 py-2 border rounded-md bg-surface text-on-surface focus:outline-none transition-all"
-              [ngClass]="(pVariety?.invalid || !newPlanting.variety) ? 'border-error ring-1 ring-error focus:ring-error' : 'border-outline focus:ring-primary focus:border-primary'">
-            <span *ngIf="pVariety?.invalid || !newPlanting.variety" class="text-xs text-error font-medium mt-1 block">Variety is required</span>
+              [ngClass]="
+                pVariety?.invalid || !newPlanting.variety
+                  ? 'border-error ring-1 ring-error focus:ring-error'
+                  : 'border-outline focus:ring-primary focus:border-primary'
+              "
+            />
+            <span
+              *ngIf="pVariety?.invalid || !newPlanting.variety"
+              class="text-xs text-error font-medium mt-1 block"
+              >Variety is required</span
+            >
           </div>
           <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">Description / Notes</label>
-            <input type="text" [(ngModel)]="newPlanting.description" name="p_description" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface">
+            <label class="block text-sm font-medium text-on-surface mb-1"
+              >Description / Notes</label
+            >
+            <input
+              type="text"
+              [(ngModel)]="newPlanting.description"
+              name="p_description"
+              class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+            />
           </div>
           <div class="pt-4 flex justify-end gap-3">
-            <button type="button" (click)="togglePlantingForm()" class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md">Cancel</button>
-            <button type="submit" [disabled]="!plantingForm.valid"
-              class="px-4 py-2 bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all">Save Record</button>
+            <button
+              type="button"
+              (click)="togglePlantingForm()"
+              class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              [disabled]="!plantingForm.valid"
+              class="px-4 py-2 bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            >
+              Save Record
+            </button>
           </div>
         </form>
       </div>
     </div>
 
     <!-- General Event Form Modal -->
-    <div *ngIf="showGeneralEventForm" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+    <div
+      *ngIf="showGeneralEventForm"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+    >
       <div class="bg-surface rounded-xl shadow-2xl p-6 w-full max-w-md">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="font-headline font-bold text-xl text-on-surface">Record Event</h3>
-          <button (click)="toggleGeneralEventForm()" class="text-on-surface-variant hover:text-error">
+          <h3 class="font-headline font-bold text-xl text-on-surface">
+            Record Event
+          </h3>
+          <button
+            (click)="toggleGeneralEventForm()"
+            class="text-on-surface-variant hover:text-error"
+          >
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>
 
-        <form #generalForm="ngForm" (ngSubmit)="generalForm.valid && submitGeneralEvent()" class="space-y-4" novalidate>
+        <form
+          #generalForm="ngForm"
+          (ngSubmit)="generalForm.valid && submitGeneralEvent()"
+          class="space-y-4"
+          novalidate
+        >
           <div>
-            <label class="block text-sm font-medium text-on-surface mb-1">Event Type</label>
-            <select [(ngModel)]="generalEvent.event_type" name="g_type" required #gType="ngModel"
+            <label class="block text-sm font-medium text-on-surface mb-1"
+              >Event Type</label
+            >
+            <select
+              [(ngModel)]="generalEvent.event_type"
+              name="g_type"
+              required
+              #gType="ngModel"
               (change)="onGeneralEventTypeChange(generalEvent.event_type)"
               class="w-full px-3 py-2 border rounded-md bg-surface text-on-surface focus:outline-none transition-all"
-              [ngClass]="(gType?.invalid || !generalEvent.event_type) ? 'border-error ring-1 ring-error focus:ring-error' : 'border-outline focus:ring-primary focus:border-primary'">
+              [ngClass]="
+                gType?.invalid || !generalEvent.event_type
+                  ? 'border-error ring-1 ring-error focus:ring-error'
+                  : 'border-outline focus:ring-primary focus:border-primary'
+              "
+            >
               <option value="">Select event type...</option>
               <option value="Planting">Planting</option>
               <option value="Fertiliser">Fertiliser</option>
@@ -384,31 +981,94 @@
               <option value="Tilling">Tilling</option>
               <option value="Other">Other</option>
             </select>
-            <span *ngIf="gType?.invalid || !generalEvent.event_type" class="text-xs text-error font-medium mt-1 block">Event type is required</span>
+            <span
+              *ngIf="gType?.invalid || !generalEvent.event_type"
+              class="text-xs text-error font-medium mt-1 block"
+              >Event type is required</span
+            >
           </div>
 
-          <div *ngIf="generalEvent.event_type === 'Harvesting' || generalEvent.event_type === 'Tilling' || generalEvent.event_type === 'Other'" class="space-y-4">
+          <div
+            *ngIf="
+              generalEvent.event_type === 'Harvesting' ||
+              generalEvent.event_type === 'Tilling' ||
+              generalEvent.event_type === 'Other'
+            "
+            class="space-y-4"
+          >
             <div>
-              <label class="block text-sm font-medium text-on-surface mb-1">Date</label>
-              <input type="date" [(ngModel)]="generalEvent.date" name="g_date" required #gDate="ngModel"
+              <label class="block text-sm font-medium text-on-surface mb-1"
+                >Date</label
+              >
+              <input
+                type="date"
+                [(ngModel)]="generalEvent.date"
+                name="g_date"
+                required
+                #gDate="ngModel"
                 class="w-full px-3 py-2 border rounded-md bg-surface text-on-surface focus:outline-none transition-all"
-                [ngClass]="(gDate?.invalid || !generalEvent.date) ? 'border-error ring-1 ring-error focus:ring-error' : 'border-outline focus:ring-primary focus:border-primary'">
-              <span *ngIf="gDate?.invalid || !generalEvent.date" class="text-xs text-error font-medium mt-1 block">Date is required</span>
+                [ngClass]="
+                  gDate?.invalid || !generalEvent.date
+                    ? 'border-error ring-1 ring-error focus:ring-error'
+                    : 'border-outline focus:ring-primary focus:border-primary'
+                "
+              />
+              <span
+                *ngIf="gDate?.invalid || !generalEvent.date"
+                class="text-xs text-error font-medium mt-1 block"
+                >Date is required</span
+              >
             </div>
             <div>
-              <label class="block text-sm font-medium text-on-surface mb-1">Description / Notes</label>
-              <textarea [(ngModel)]="generalEvent.description" name="g_description" required #gDesc="ngModel"
+              <label class="block text-sm font-medium text-on-surface mb-1"
+                >Description / Notes</label
+              >
+              <textarea
+                [(ngModel)]="generalEvent.description"
+                name="g_description"
+                required
+                #gDesc="ngModel"
                 placeholder="Enter details about this event"
                 class="w-full px-3 py-2 border rounded-md bg-surface text-on-surface focus:outline-none transition-all"
-                [ngClass]="(gDesc?.invalid || (['Harvesting', 'Tilling', 'Other'].includes(generalEvent.event_type) && !generalEvent.description)) ? 'border-error ring-1 ring-error focus:ring-error' : 'border-outline focus:ring-primary focus:border-primary'"></textarea>
-              <span *ngIf="gDesc?.invalid || (['Harvesting', 'Tilling', 'Other'].includes(generalEvent.event_type) && !generalEvent.description)" class="text-xs text-error font-medium mt-1 block">Description is required</span>
+                [ngClass]="
+                  gDesc?.invalid ||
+                  (['Harvesting', 'Tilling', 'Other'].includes(
+                    generalEvent.event_type
+                  ) &&
+                    !generalEvent.description)
+                    ? 'border-error ring-1 ring-error focus:ring-error'
+                    : 'border-outline focus:ring-primary focus:border-primary'
+                "
+              ></textarea>
+              <span
+                *ngIf="
+                  gDesc?.invalid ||
+                  (['Harvesting', 'Tilling', 'Other'].includes(
+                    generalEvent.event_type
+                  ) &&
+                    !generalEvent.description)
+                "
+                class="text-xs text-error font-medium mt-1 block"
+                >Description is required</span
+              >
             </div>
           </div>
 
           <div class="pt-4 flex justify-end gap-3">
-            <button type="button" (click)="toggleGeneralEventForm()" class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md">Cancel</button>
-            <button type="submit" [disabled]="!generalForm.valid"
-              class="px-4 py-2 bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all">Save Record</button>
+            <button
+              type="button"
+              (click)="toggleGeneralEventForm()"
+              class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              [disabled]="!generalForm.valid"
+              class="px-4 py-2 bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            >
+              Save Record
+            </button>
           </div>
         </form>
       </div>
@@ -416,35 +1076,75 @@
 
     <!-- CTA: Record Event -->
     <section class="mb-12">
-      <button (click)="toggleGeneralEventForm()" class="w-full group bg-primary text-on-primary rounded-xl py-6 px-6 flex items-center justify-between shadow-2xl transition-all active:scale-95">
+      <button
+        (click)="toggleGeneralEventForm()"
+        class="w-full group bg-primary text-on-primary rounded-xl py-6 px-6 flex items-center justify-between shadow-2xl transition-all active:scale-95"
+      >
         <div class="flex flex-col items-start">
-          <span class="font-headline font-extrabold text-2xl tracking-tight">Record Event</span>
-          <span class="text-sm opacity-80 font-medium">Log new activity in the field</span>
+          <span class="font-headline font-extrabold text-2xl tracking-tight"
+            >Record Event</span
+          >
+          <span class="text-sm opacity-80 font-medium"
+            >Log new activity in the field</span
+          >
         </div>
-        <div class="w-12 h-12 rounded-xl bg-primary-container flex items-center justify-center group-hover:scale-110 transition-transform">
-          <span class="material-symbols-outlined text-white" style="font-variation-settings: 'wght' 700;">add</span>
+        <div
+          class="w-12 h-12 rounded-xl bg-primary-container flex items-center justify-center group-hover:scale-110 transition-transform"
+        >
+          <span
+            class="material-symbols-outlined text-white"
+            style="font-variation-settings: &quot;wght&quot; 700"
+            >add</span
+          >
         </div>
       </button>
 
       <div class="grid grid-cols-3 gap-3 mt-4">
-        <button (click)="togglePlantingForm()" class="flex flex-col items-center gap-2 p-4 bg-surface-container-low rounded-xl hover:bg-surface-container transition-colors">
+        <button
+          (click)="togglePlantingForm()"
+          class="flex flex-col items-center gap-2 p-4 bg-surface-container-low rounded-xl hover:bg-surface-container transition-colors"
+        >
           <span class="material-symbols-outlined text-secondary">crop</span>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-secondary">Planting</span>
+          <span
+            class="text-[10px] font-bold uppercase tracking-wider text-secondary"
+            >Planting</span
+          >
         </button>
-        <button (click)="toggleFertiliserForm()" class="flex flex-col items-center gap-2 p-4 bg-surface-container-low rounded-xl hover:bg-surface-container transition-colors">
-          <span class="material-symbols-outlined text-tertiary-container">water_drop</span>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-tertiary-container">Fertiliser</span>
+        <button
+          (click)="toggleFertiliserForm()"
+          class="flex flex-col items-center gap-2 p-4 bg-surface-container-low rounded-xl hover:bg-surface-container transition-colors"
+        >
+          <span class="material-symbols-outlined text-tertiary-container"
+            >water_drop</span
+          >
+          <span
+            class="text-[10px] font-bold uppercase tracking-wider text-tertiary-container"
+            >Fertiliser</span
+          >
         </button>
-        <button (click)="toggleSprayingForm()" class="flex flex-col items-center gap-2 p-4 bg-surface-container-low rounded-xl hover:bg-surface-container transition-colors">
-          <span class="material-symbols-outlined text-primary-container">science</span>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-primary-container">Spraying</span>
+        <button
+          (click)="toggleSprayingForm()"
+          class="flex flex-col items-center gap-2 p-4 bg-surface-container-low rounded-xl hover:bg-surface-container transition-colors"
+        >
+          <span class="material-symbols-outlined text-primary-container"
+            >science</span
+          >
+          <span
+            class="text-[10px] font-bold uppercase tracking-wider text-primary-container"
+            >Spraying</span
+          >
         </button>
       </div>
 
       <div class="grid grid-cols-1 mt-3">
-        <button (click)="toggleOrganicManureForm()" class="flex items-center justify-center gap-2 p-3 bg-tertiary-container text-white rounded-xl hover:bg-tertiary transition-colors shadow-sm">
+        <button
+          (click)="toggleOrganicManureForm()"
+          class="flex items-center justify-center gap-2 p-3 bg-tertiary-container text-white rounded-xl hover:bg-tertiary transition-colors shadow-sm"
+        >
           <span class="material-symbols-outlined">water_lux</span>
-          <span class="text-xs font-bold uppercase tracking-wider">Organic Manure / Slurry</span>
+          <span class="text-xs font-bold uppercase tracking-wider"
+            >Organic Manure / Slurry</span
+          >
         </button>
       </div>
     </section>
@@ -452,172 +1152,528 @@
     <!-- Timeline Section -->
     <section class="relative timeline-line">
       <div class="flex items-center justify-between mb-8">
-        <h3 class="font-headline font-bold text-xl text-on-surface">Activity Timeline</h3>
-        <span class="text-xs font-bold text-outline uppercase tracking-widest">March 2024</span>
+        <h3 class="font-headline font-bold text-xl text-on-surface">
+          Activity Timeline
+        </h3>
+        <span class="text-xs font-bold text-outline uppercase tracking-widest"
+          >March 2024</span
+        >
       </div>
 
       <div *ngIf="events.length > 0; else noEventsTemplate">
         <div *ngFor="let event of events" class="relative flex gap-6 mb-12">
           <!-- Timeline Item -->
-          <div class="z-10 w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-sm" [ngClass]="getEventColorClass(event.event_type)">
-            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">{{ getEventIcon(event.event_type) }}</span>
+          <div
+            class="z-10 w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-sm"
+            [ngClass]="getEventColorClass(event.event_type)"
+          >
+            <span
+              class="material-symbols-outlined"
+              style="font-variation-settings: &quot;FILL&quot; 1"
+              >{{ getEventIcon(event.event_type) }}</span
+            >
           </div>
 
           <div class="flex-1">
             <div class="flex items-center justify-between mb-1">
-              <span class="font-headline font-extrabold text-lg" [ngClass]="getEventTextColorClass(event.event_type)">{{ event.event_type }}</span>
+              <span
+                class="font-headline font-extrabold text-lg"
+                [ngClass]="getEventTextColorClass(event.event_type)"
+                >{{ event.event_type }}</span
+              >
               <div class="flex items-center gap-2">
-                <span class="text-xs font-medium text-on-surface-variant" *ngIf="editingEventId !== event.id">{{ event.date | date:'MMM dd, yyyy' }}</span>
-                <button *ngIf="editingEventId !== event.id" (click)="startEdit(event)" class="text-on-surface-variant hover:text-primary transition-colors">
-                  <span class="material-symbols-outlined text-[18px]">edit</span>
+                <span
+                  class="text-xs font-medium text-on-surface-variant"
+                  *ngIf="editingEventId !== event.id"
+                  >{{ event.date | date: "MMM dd, yyyy" }}</span
+                >
+                <button
+                  *ngIf="editingEventId !== event.id"
+                  (click)="startEdit(event)"
+                  class="text-on-surface-variant hover:text-primary transition-colors"
+                >
+                  <span class="material-symbols-outlined text-[18px]"
+                    >edit</span
+                  >
                 </button>
               </div>
             </div>
 
             <ng-container *ngIf="editingEventId !== event.id">
-<!-- Content Card -->
-            <div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm" [ngClass]="{'border-l-4 border-secondary': event.event_type.toLowerCase().includes('harvest'), 'bg-surface-container-low border-0 shadow-none': !event.event_type.toLowerCase().includes('harvest')}">
-              <p class="text-sm font-medium text-on-surface leading-relaxed" [ngClass]="{'mb-3': event.event_type.toLowerCase().includes('harvest'), 'text-on-surface-variant': !event.event_type.toLowerCase().includes('harvest')}">
-                {{ event.event_type === 'Planting' ? (event.description || ('Planted ' + event.mapp_number + ' (Variety: ' + event.eppo_code + ')')) : event.description }}
-              </p>
+              <!-- Content Card -->
+              <div
+                class="bg-surface-container-lowest p-5 rounded-xl shadow-sm"
+                [ngClass]="{
+                  'border-l-4 border-secondary': event.event_type
+                    .toLowerCase()
+                    .includes('harvest'),
+                  'bg-surface-container-low border-0 shadow-none':
+                    !event.event_type.toLowerCase().includes('harvest'),
+                }"
+              >
+                <p
+                  class="text-sm font-medium text-on-surface leading-relaxed"
+                  [ngClass]="{
+                    'mb-3': event.event_type.toLowerCase().includes('harvest'),
+                    'text-on-surface-variant': !event.event_type
+                      .toLowerCase()
+                      .includes('harvest'),
+                  }"
+                >
+                  {{
+                    event.event_type === "Planting"
+                      ? event.description ||
+                        "Planted " +
+                          event.mapp_number +
+                          " (Variety: " +
+                          event.eppo_code +
+                          ")"
+                      : event.description
+                  }}
+                </p>
 
-              <!-- Planting Details -->
-              <div *ngIf="event.event_type === 'Planting'" class="mt-3 bg-surface-container-lowest border border-outline-variant p-3 rounded-lg text-sm">
-                <div class="grid grid-cols-2 gap-2">
-                  <div><span class="text-on-surface-variant font-medium">Crop Type:</span> {{ event.mapp_number }}</div>
-                  <div><span class="text-on-surface-variant font-medium">Variety:</span> {{ event.eppo_code }}</div>
+                <!-- Planting Details -->
+                <div
+                  *ngIf="event.event_type === 'Planting'"
+                  class="mt-3 bg-surface-container-lowest border border-outline-variant p-3 rounded-lg text-sm"
+                >
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <span class="text-on-surface-variant font-medium"
+                        >Crop Type:</span
+                      >
+                      {{ event.mapp_number }}
+                    </div>
+                    <div>
+                      <span class="text-on-surface-variant font-medium"
+                        >Variety:</span
+                      >
+                      {{ event.eppo_code }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Dummy data specific to design references if matches -->
+                <div
+                  *ngIf="event.id && getFertiliserAppForEvent(event.id) as fa"
+                  class="mt-3 bg-surface-container-lowest border border-outline-variant p-3 rounded-lg text-sm"
+                >
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <span class="text-on-surface-variant font-medium"
+                        >Type:</span
+                      >
+                      {{ fa.fertiliser_type }}
+                    </div>
+                    <div>
+                      <span class="text-on-surface-variant font-medium"
+                        >Amount:</span
+                      >
+                      {{ fa.amount_applied }} kg/ha
+                    </div>
+                    <div *ngIf="fa.nitrogen_content">
+                      <span class="text-on-surface-variant font-medium"
+                        >N Content:</span
+                      >
+                      {{ fa.nitrogen_content }}%
+                    </div>
+                    <div *ngIf="fa.phosphorus_content">
+                      <span class="text-on-surface-variant font-medium"
+                        >P Content:</span
+                      >
+                      {{ fa.phosphorus_content }}%
+                    </div>
+                    <div
+                      *ngIf="fa.is_protected_urea"
+                      class="col-span-2 text-primary font-bold text-[10px] uppercase"
+                    >
+                      Protected Urea
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Spraying Details -->
+                <div
+                  *ngIf="event.event_type === 'Spraying'"
+                  class="mt-3 bg-surface-container-lowest border border-outline-variant p-3 rounded-lg text-sm"
+                >
+                  <div class="grid grid-cols-1 gap-1">
+                    <div>
+                      <span class="text-on-surface-variant font-medium"
+                        >MAPP:</span
+                      >
+                      {{ event.mapp_number }}
+                    </div>
+                    <div *ngIf="event.eppo_code">
+                      <span class="text-on-surface-variant font-medium"
+                        >EPPO Code:</span
+                      >
+                      {{ event.eppo_code }}
+                    </div>
+                    <div *ngIf="event.bbch_growth_stage">
+                      <span class="text-on-surface-variant font-medium"
+                        >BBCH Stage:</span
+                      >
+                      {{ event.bbch_growth_stage }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Organic Manure Details -->
+                <div
+                  *ngIf="
+                    event.id && getOrganicManureAppForEvent(event.id) as oma
+                  "
+                  class="mt-3 bg-surface-container-lowest border border-outline-variant p-3 rounded-lg text-sm"
+                >
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <span class="text-on-surface-variant font-medium"
+                        >Type:</span
+                      >
+                      {{ oma.manure_type }}
+                    </div>
+                    <div *ngIf="oma.volume_applied_m3_per_ha">
+                      <span class="text-on-surface-variant font-medium"
+                        >Vol:</span
+                      >
+                      {{ oma.volume_applied_m3_per_ha }} m³/ha
+                    </div>
+                    <div *ngIf="oma.weight_applied_tonnes_per_ha">
+                      <span class="text-on-surface-variant font-medium"
+                        >Weight:</span
+                      >
+                      {{ oma.weight_applied_tonnes_per_ha }} t/ha
+                    </div>
+                    <div *ngIf="oma.nitrogen_content_kg_per_unit">
+                      <span class="text-on-surface-variant font-medium"
+                        >N:</span
+                      >
+                      {{ oma.nitrogen_content_kg_per_unit }} kg/unit
+                    </div>
+                    <div
+                      *ngIf="oma.is_lesse_applied"
+                      class="col-span-2 text-primary font-bold text-[10px] uppercase"
+                    >
+                      LESSE Applied
+                    </div>
+                    <div
+                      *ngIf="!oma.is_lesse_applied && oma.equipment_used"
+                      class="col-span-2 text-on-surface-variant text-[10px]"
+                    >
+                      Equipment: {{ oma.equipment_used }}
+                    </div>
+                    <div
+                      *ngIf="
+                        !oma.is_lesse_applied && oma.lesse_exemption_reason
+                      "
+                      class="col-span-2 text-error font-medium text-[10px]"
+                    >
+                      Exemption: {{ oma.lesse_exemption_reason }}
+                    </div>
+                    <div class="col-span-2 text-on-surface-variant text-[10px]">
+                      Buffer: {{ oma.buffer_zone_distance_meters }}m
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  *ngIf="event.event_type.toLowerCase().includes('harvest')"
+                  class="flex gap-2"
+                >
+                  <div
+                    class="w-16 h-12 rounded bg-surface-variant flex items-center justify-center overflow-hidden"
+                  >
+                    <span
+                      class="material-symbols-outlined text-on-surface-variant"
+                      >image</span
+                    >
+                  </div>
+                  <div
+                    class="w-16 h-12 rounded bg-surface-variant flex items-center justify-center overflow-hidden"
+                  >
+                    <span
+                      class="material-symbols-outlined text-on-surface-variant"
+                      >image</span
+                    >
+                  </div>
+                </div>
+
+                <div
+                  *ngIf="
+                    event.event_type.toLowerCase().includes('fertilise') ||
+                    event.event_type.toLowerCase().includes('spray') ||
+                    event.event_type.toLowerCase().includes('water')
+                  "
+                  class="mt-3 flex items-center gap-4"
+                >
+                  <div class="flex items-center gap-1 text-tertiary-container">
+                    <span class="material-symbols-outlined text-sm"
+                      >check_circle</span
+                    >
+                    <span class="text-[10px] font-bold uppercase tracking-wider"
+                      >Applied</span
+                    >
+                  </div>
+                  <span
+                    class="text-[10px] font-bold text-outline uppercase tracking-wider"
+                    >Field ID: {{ event.field_id }}</span
+                  >
                 </div>
               </div>
-
-              <!-- Dummy data specific to design references if matches -->
-              <div *ngIf="event.id && getFertiliserAppForEvent(event.id) as fa" class="mt-3 bg-surface-container-lowest border border-outline-variant p-3 rounded-lg text-sm">
-                <div class="grid grid-cols-2 gap-2">
-                  <div><span class="text-on-surface-variant font-medium">Type:</span> {{ fa.fertiliser_type }}</div>
-                  <div><span class="text-on-surface-variant font-medium">Amount:</span> {{ fa.amount_applied }} kg/ha</div>
-                  <div *ngIf="fa.nitrogen_content"><span class="text-on-surface-variant font-medium">N Content:</span> {{ fa.nitrogen_content }}%</div>
-                  <div *ngIf="fa.phosphorus_content"><span class="text-on-surface-variant font-medium">P Content:</span> {{ fa.phosphorus_content }}%</div>
-                  <div *ngIf="fa.is_protected_urea" class="col-span-2 text-primary font-bold text-[10px] uppercase">Protected Urea</div>
-                </div>
-              </div>
-
-              <!-- Spraying Details -->
-              <div *ngIf="event.event_type === 'Spraying'" class="mt-3 bg-surface-container-lowest border border-outline-variant p-3 rounded-lg text-sm">
-                <div class="grid grid-cols-1 gap-1">
-                  <div><span class="text-on-surface-variant font-medium">MAPP:</span> {{ event.mapp_number }}</div>
-                  <div *ngIf="event.eppo_code"><span class="text-on-surface-variant font-medium">EPPO Code:</span> {{ event.eppo_code }}</div>
-                  <div *ngIf="event.bbch_growth_stage"><span class="text-on-surface-variant font-medium">BBCH Stage:</span> {{ event.bbch_growth_stage }}</div>
-                </div>
-              </div>
-
-              <!-- Organic Manure Details -->
-              <div *ngIf="event.id && getOrganicManureAppForEvent(event.id) as oma" class="mt-3 bg-surface-container-lowest border border-outline-variant p-3 rounded-lg text-sm">
-                <div class="grid grid-cols-2 gap-2">
-                  <div><span class="text-on-surface-variant font-medium">Type:</span> {{ oma.manure_type }}</div>
-                  <div *ngIf="oma.volume_applied_m3_per_ha"><span class="text-on-surface-variant font-medium">Vol:</span> {{ oma.volume_applied_m3_per_ha }} m³/ha</div>
-                  <div *ngIf="oma.weight_applied_tonnes_per_ha"><span class="text-on-surface-variant font-medium">Weight:</span> {{ oma.weight_applied_tonnes_per_ha }} t/ha</div>
-                  <div *ngIf="oma.nitrogen_content_kg_per_unit"><span class="text-on-surface-variant font-medium">N:</span> {{ oma.nitrogen_content_kg_per_unit }} kg/unit</div>
-                  <div *ngIf="oma.is_lesse_applied" class="col-span-2 text-primary font-bold text-[10px] uppercase">LESSE Applied</div>
-                  <div *ngIf="!oma.is_lesse_applied && oma.equipment_used" class="col-span-2 text-on-surface-variant text-[10px]">Equipment: {{ oma.equipment_used }}</div>
-                  <div *ngIf="!oma.is_lesse_applied && oma.lesse_exemption_reason" class="col-span-2 text-error font-medium text-[10px]">Exemption: {{ oma.lesse_exemption_reason }}</div>
-                  <div class="col-span-2 text-on-surface-variant text-[10px]">Buffer: {{ oma.buffer_zone_distance_meters }}m</div>
-                </div>
-              </div>
-
-              <div *ngIf="event.event_type.toLowerCase().includes('harvest')" class="flex gap-2">
-                 <div class="w-16 h-12 rounded bg-surface-variant flex items-center justify-center overflow-hidden">
-                    <span class="material-symbols-outlined text-on-surface-variant">image</span>
-                 </div>
-                 <div class="w-16 h-12 rounded bg-surface-variant flex items-center justify-center overflow-hidden">
-                    <span class="material-symbols-outlined text-on-surface-variant">image</span>
-                 </div>
-              </div>
-
-              <div *ngIf="event.event_type.toLowerCase().includes('fertilise') || event.event_type.toLowerCase().includes('spray') || event.event_type.toLowerCase().includes('water')" class="mt-3 flex items-center gap-4">
-                <div class="flex items-center gap-1 text-tertiary-container">
-                  <span class="material-symbols-outlined text-sm">check_circle</span>
-                  <span class="text-[10px] font-bold uppercase tracking-wider">Applied</span>
-                </div>
-                <span class="text-[10px] font-bold text-outline uppercase tracking-wider">Field ID: {{ event.field_id }}</span>
-              </div>
-            </div>
-</ng-container>
+            </ng-container>
             <ng-container *ngIf="editingEventId === event.id">
-              <div class="bg-surface-container-low p-5 rounded-xl border border-outline-variant mt-2">
+              <div
+                class="bg-surface-container-low p-5 rounded-xl border border-outline-variant mt-2"
+              >
                 <form (ngSubmit)="saveEdit(event)" class="flex flex-col gap-3">
                   <div>
-                    <label class="block text-xs font-medium text-on-surface mb-1">Date</label>
-                    <input type="date" [(ngModel)]="editFormData.date" name="editDate" class="w-full px-3 py-2 border border-outline rounded-md text-sm">
+                    <label
+                      class="block text-xs font-medium text-on-surface mb-1"
+                      >Date</label
+                    >
+                    <input
+                      type="date"
+                      [(ngModel)]="editFormData.date"
+                      name="editDate"
+                      class="w-full px-3 py-2 border border-outline rounded-md text-sm"
+                    />
                   </div>
                   <div>
-                    <label class="block text-xs font-medium text-on-surface mb-1">Description</label>
-                    <textarea [(ngModel)]="editFormData.description" name="editDesc" rows="2" class="w-full px-3 py-2 border border-outline rounded-md text-sm"></textarea>
+                    <label
+                      class="block text-xs font-medium text-on-surface mb-1"
+                      >Description</label
+                    >
+                    <textarea
+                      [(ngModel)]="editFormData.description"
+                      name="editDesc"
+                      rows="2"
+                      class="w-full px-3 py-2 border border-outline rounded-md text-sm"
+                    ></textarea>
                   </div>
 
                   <div *ngIf="event.event_type === 'Spraying'">
-                    <label class="block text-xs font-medium text-on-surface mb-1">MAPP Number</label>
-                    <input type="text" [(ngModel)]="editFormData.mapp_number" name="editMapp" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2">
+                    <label
+                      class="block text-xs font-medium text-on-surface mb-1"
+                      >MAPP Number</label
+                    >
+                    <input
+                      type="text"
+                      [(ngModel)]="editFormData.mapp_number"
+                      name="editMapp"
+                      class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2"
+                    />
 
-                    <label class="block text-xs font-medium text-on-surface mb-1">EPPO Code</label>
-                    <input type="text" [(ngModel)]="editFormData.eppo_code" name="editEppo" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2">
+                    <label
+                      class="block text-xs font-medium text-on-surface mb-1"
+                      >EPPO Code</label
+                    >
+                    <input
+                      type="text"
+                      [(ngModel)]="editFormData.eppo_code"
+                      name="editEppo"
+                      class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2"
+                    />
 
-                    <label class="block text-xs font-medium text-on-surface mb-1">BBCH Growth Stage</label>
-                    <input type="text" [(ngModel)]="editFormData.bbch_growth_stage" name="editBbch" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2">
+                    <label
+                      class="block text-xs font-medium text-on-surface mb-1"
+                      >BBCH Growth Stage</label
+                    >
+                    <input
+                      type="text"
+                      [(ngModel)]="editFormData.bbch_growth_stage"
+                      name="editBbch"
+                      class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2"
+                    />
                   </div>
 
                   <div *ngIf="event.event_type === 'Planting'">
-                    <label class="block text-xs font-medium text-on-surface mb-1">Crop Type</label>
-                    <input type="text" [(ngModel)]="editFormData.mapp_number" name="editCrop" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2">
+                    <label
+                      class="block text-xs font-medium text-on-surface mb-1"
+                      >Crop Type</label
+                    >
+                    <input
+                      type="text"
+                      [(ngModel)]="editFormData.mapp_number"
+                      name="editCrop"
+                      class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2"
+                    />
 
-                    <label class="block text-xs font-medium text-on-surface mb-1">Variety</label>
-                    <input type="text" [(ngModel)]="editFormData.eppo_code" name="editVariety" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2">
+                    <label
+                      class="block text-xs font-medium text-on-surface mb-1"
+                      >Variety</label
+                    >
+                    <input
+                      type="text"
+                      [(ngModel)]="editFormData.eppo_code"
+                      name="editVariety"
+                      class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2"
+                    />
                   </div>
 
-                  <div *ngIf="event.event_type.toLowerCase().includes('fertilise') && editFormData.fertiliserApplication">
-                    <label class="block text-xs font-medium text-on-surface mb-1">Type</label>
-                    <input type="text" [(ngModel)]="editFormData.fertiliserApplication.fertiliser_type" name="editFertType" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2">
+                  <div
+                    *ngIf="
+                      event.event_type.toLowerCase().includes('fertilise') &&
+                      editFormData.fertiliserApplication
+                    "
+                  >
+                    <label
+                      class="block text-xs font-medium text-on-surface mb-1"
+                      >Type</label
+                    >
+                    <input
+                      type="text"
+                      [(ngModel)]="
+                        editFormData.fertiliserApplication.fertiliser_type
+                      "
+                      name="editFertType"
+                      class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2"
+                    />
 
-                    <label class="block text-xs font-medium text-on-surface mb-1">Amount (kg/ha)</label>
-                    <input type="number" [(ngModel)]="editFormData.fertiliserApplication.amount_applied" name="editFertAmount" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2">
+                    <label
+                      class="block text-xs font-medium text-on-surface mb-1"
+                      >Amount (kg/ha)</label
+                    >
+                    <input
+                      type="number"
+                      [(ngModel)]="
+                        editFormData.fertiliserApplication.amount_applied
+                      "
+                      name="editFertAmount"
+                      class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2"
+                    />
 
                     <div class="flex gap-2 mb-2">
                       <div class="flex-1">
-                        <label class="block text-xs font-medium text-on-surface mb-1">N%</label>
-                        <input type="number" [(ngModel)]="editFormData.fertiliserApplication.nitrogen_content" name="editFertN" class="w-full px-3 py-2 border border-outline rounded-md text-sm">
+                        <label
+                          class="block text-xs font-medium text-on-surface mb-1"
+                          >N%</label
+                        >
+                        <input
+                          type="number"
+                          [(ngModel)]="
+                            editFormData.fertiliserApplication.nitrogen_content
+                          "
+                          name="editFertN"
+                          class="w-full px-3 py-2 border border-outline rounded-md text-sm"
+                        />
                       </div>
                       <div class="flex-1">
-                        <label class="block text-xs font-medium text-on-surface mb-1">P%</label>
-                        <input type="number" [(ngModel)]="editFormData.fertiliserApplication.phosphorus_content" name="editFertP" class="w-full px-3 py-2 border border-outline rounded-md text-sm">
+                        <label
+                          class="block text-xs font-medium text-on-surface mb-1"
+                          >P%</label
+                        >
+                        <input
+                          type="number"
+                          [(ngModel)]="
+                            editFormData.fertiliserApplication
+                              .phosphorus_content
+                          "
+                          name="editFertP"
+                          class="w-full px-3 py-2 border border-outline rounded-md text-sm"
+                        />
                       </div>
                     </div>
                   </div>
 
-                  <div *ngIf="(event.event_type.toLowerCase().includes('organic manure') || event.event_type.toLowerCase().includes('slurry')) && editFormData.organicManureApplication">
-                    <label class="block text-xs font-medium text-on-surface mb-1">Manure Type</label>
-                    <input type="text" [(ngModel)]="editFormData.organicManureApplication.manure_type" name="editManureType" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2">
+                  <div
+                    *ngIf="
+                      (event.event_type
+                        .toLowerCase()
+                        .includes('organic manure') ||
+                        event.event_type.toLowerCase().includes('slurry')) &&
+                      editFormData.organicManureApplication
+                    "
+                  >
+                    <label
+                      class="block text-xs font-medium text-on-surface mb-1"
+                      >Manure Type</label
+                    >
+                    <input
+                      type="text"
+                      [(ngModel)]="
+                        editFormData.organicManureApplication.manure_type
+                      "
+                      name="editManureType"
+                      class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2"
+                    />
 
                     <div class="flex gap-2 mb-2">
                       <div class="flex-1">
-                        <label class="block text-xs font-medium text-on-surface mb-1">Vol (m³/ha)</label>
-                        <input type="number" [(ngModel)]="editFormData.organicManureApplication.volume_applied_m3_per_ha" name="editManureVol" class="w-full px-3 py-2 border border-outline rounded-md text-sm">
+                        <label
+                          class="block text-xs font-medium text-on-surface mb-1"
+                          >Vol (m³/ha)</label
+                        >
+                        <input
+                          type="number"
+                          [(ngModel)]="
+                            editFormData.organicManureApplication
+                              .volume_applied_m3_per_ha
+                          "
+                          name="editManureVol"
+                          class="w-full px-3 py-2 border border-outline rounded-md text-sm"
+                        />
                       </div>
                       <div class="flex-1">
-                        <label class="block text-xs font-medium text-on-surface mb-1">Weight (t/ha)</label>
-                        <input type="number" [(ngModel)]="editFormData.organicManureApplication.weight_applied_tonnes_per_ha" name="editManureWeight" class="w-full px-3 py-2 border border-outline rounded-md text-sm">
+                        <label
+                          class="block text-xs font-medium text-on-surface mb-1"
+                          >Weight (t/ha)</label
+                        >
+                        <input
+                          type="number"
+                          [(ngModel)]="
+                            editFormData.organicManureApplication
+                              .weight_applied_tonnes_per_ha
+                          "
+                          name="editManureWeight"
+                          class="w-full px-3 py-2 border border-outline rounded-md text-sm"
+                        />
                       </div>
                     </div>
                     <div>
-                      <label class="block text-xs font-medium text-on-surface mb-1">Equipment Used</label>
-                      <input type="text" [(ngModel)]="editFormData.organicManureApplication.equipment_used" name="editManureEquip" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2">
+                      <label
+                        class="block text-xs font-medium text-on-surface mb-1"
+                        >Equipment Used</label
+                      >
+                      <input
+                        type="text"
+                        [(ngModel)]="
+                          editFormData.organicManureApplication.equipment_used
+                        "
+                        name="editManureEquip"
+                        class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2"
+                      />
                     </div>
                     <div>
-                      <label class="block text-xs font-medium text-on-surface mb-1">LESSE Exemption Reason</label>
-                      <textarea [(ngModel)]="editFormData.organicManureApplication.lesse_exemption_reason" name="editManureExempt" class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2"></textarea>
+                      <label
+                        class="block text-xs font-medium text-on-surface mb-1"
+                        >LESSE Exemption Reason</label
+                      >
+                      <textarea
+                        [(ngModel)]="
+                          editFormData.organicManureApplication
+                            .lesse_exemption_reason
+                        "
+                        name="editManureExempt"
+                        class="w-full px-3 py-2 border border-outline rounded-md text-sm mb-2"
+                      ></textarea>
                     </div>
                   </div>
 
                   <div class="flex justify-end gap-2 mt-2">
-                    <button type="button" (click)="cancelEdit()" class="px-3 py-1 text-sm text-primary font-medium hover:bg-surface-variant rounded-md">Cancel</button>
-                    <button type="submit" class="px-3 py-1 text-sm bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90">Save</button>
+                    <button
+                      type="button"
+                      (click)="cancelEdit()"
+                      class="px-3 py-1 text-sm text-primary font-medium hover:bg-surface-variant rounded-md"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      class="px-3 py-1 text-sm bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90"
+                    >
+                      Save
+                    </button>
                   </div>
                 </form>
               </div>
@@ -628,26 +1684,38 @@
     </section>
 
     <!-- Delete Section at the bottom right -->
-    <div class="flex flex-col items-end gap-3 pt-6 mt-8 border-t border-black/5 dark:border-white/5">
+    <div
+      class="flex flex-col items-end gap-3 pt-6 mt-8 border-t border-black/5 dark:border-white/5"
+    >
       <button
         (click)="showDeleteConfirm = !showDeleteConfirm"
         class="px-6 py-2.5 rounded-xl bg-error text-white font-bold text-sm hover:bg-error/90 transition-colors flex items-center gap-2"
         data-testid="delete-field-btn"
         id="delete-field-btn"
-        aria-label="Delete Field">
+        aria-label="Delete Field"
+      >
         <span class="material-symbols-outlined text-[20px]">delete</span>
         Delete Field
       </button>
 
       <!-- Inline Confirmation Panel -->
-      <div *ngIf="showDeleteConfirm" class="w-full max-w-md p-4 rounded-xl bg-surface-container-high border border-black/5 dark:border-white/10 space-y-4 animate-fadeIn" id="delete-confirm-panel" data-testid="delete-confirm-panel">
-        <p class="text-sm font-semibold text-on-surface">Are you sure you want to delete this field? This action cannot be undone.</p>
+      <div
+        *ngIf="showDeleteConfirm"
+        class="w-full max-w-md p-4 rounded-xl bg-surface-container-high border border-black/5 dark:border-white/10 space-y-4 animate-fadeIn"
+        id="delete-confirm-panel"
+        data-testid="delete-confirm-panel"
+      >
+        <p class="text-sm font-semibold text-on-surface">
+          Are you sure you want to delete this field? This action cannot be
+          undone.
+        </p>
         <div class="flex gap-3 justify-end">
           <button
             (click)="showDeleteConfirm = false"
             class="px-4 py-2 rounded-xl bg-surface-container-low text-on-surface text-xs font-bold hover:bg-surface-container-high transition-colors"
             data-testid="cancel-delete-field-btn"
-            id="cancel-delete-field-btn">
+            id="cancel-delete-field-btn"
+          >
             Cancel
           </button>
           <button
@@ -655,27 +1723,42 @@
             [disabled]="isSaving"
             class="px-4 py-2 rounded-xl bg-error text-white text-xs font-bold hover:bg-error/90 disabled:opacity-50 transition-colors flex items-center gap-1"
             data-testid="confirm-delete-field-btn"
-            id="confirm-delete-field-btn">
-            <span *ngIf="isSaving" class="material-symbols-outlined text-xs animate-spin">progress_activity</span>
+            id="confirm-delete-field-btn"
+          >
+            <span
+              *ngIf="isSaving"
+              class="material-symbols-outlined text-xs animate-spin"
+              >progress_activity</span
+            >
             Yes, Delete
           </button>
         </div>
       </div>
     </div>
-
   </div>
 
   <ng-template #loadingTemplate>
     <div class="flex flex-col items-center justify-center py-20">
-      <span class="material-symbols-outlined animate-spin text-primary text-4xl mb-4">progress_activity</span>
-      <p class="text-on-surface-variant font-medium">Loading field details...</p>
+      <span
+        class="material-symbols-outlined animate-spin text-primary text-4xl mb-4"
+        >progress_activity</span
+      >
+      <p class="text-on-surface-variant font-medium">
+        Loading field details...
+      </p>
     </div>
   </ng-template>
 
   <ng-template #noEventsTemplate>
-    <div class="bg-surface-container-low p-8 rounded-xl text-center border border-outline-variant border-dashed">
-      <span class="material-symbols-outlined text-outline text-4xl mb-2">event_busy</span>
-      <p class="text-on-surface-variant font-medium">No events recorded for this field yet.</p>
+    <div
+      class="bg-surface-container-low p-8 rounded-xl text-center border border-outline-variant border-dashed"
+    >
+      <span class="material-symbols-outlined text-outline text-4xl mb-2"
+        >event_busy</span
+      >
+      <p class="text-on-surface-variant font-medium">
+        No events recorded for this field yet.
+      </p>
     </div>
   </ng-template>
 </div>
