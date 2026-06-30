@@ -195,40 +195,77 @@ export class FieldMapEditorComponent
     }
   }
 
-  // Stub for PRD 24 auto-detection
-  // PRD Reference: 0016
-  autoDetectStub(): void {
-    if (this.currentLayer) {
-      this.map.removeLayer(this.currentLayer);
-    }
-
+  // Auto-detection using Overpass API
+  // PRD Reference: 0024
+  async autoDetectStub(): Promise<void> {
     const center = this.map.getCenter();
-    const offset = 0.005; // rough square
+    const query = `[out:json];(way["landuse"](around:50,${center.lat},${center.lng});relation["landuse"](around:50,${center.lat},${center.lng}););out geom;`;
 
-    const latlngs = [
-      [center.lat + offset, center.lng - offset],
-      [center.lat + offset, center.lng + offset],
-      [center.lat - offset, center.lng + offset],
-      [center.lat - offset, center.lng - offset],
-    ] as L.LatLngTuple[];
+    try {
+      const response = await fetch('https://overpass-api.de/api/interpreter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'data=' + encodeURIComponent(query),
+      });
 
-    const polygon = L.polygon(latlngs, {
-      color: '#1976d2',
-      weight: 2,
-      opacity: 0.8,
-      fillColor: '#1976d2',
-      fillOpacity: 0.3,
-    });
+      if (!response.ok) {
+        throw new Error(`Overpass API error: ${response.status}`);
+      }
 
-    polygon.addTo(this.map);
-    this.currentLayer = polygon;
-    this.updateGeoJsonFromLayer(polygon);
+      const data = await response.json();
 
-    if (this.isEditMode && !this.readonly) {
-      this.currentLayer.on('pm:update', () =>
-        this.updateGeoJsonFromLayer(this.currentLayer!),
-      );
+      if (data && data.elements && data.elements.length > 0) {
+        const element = data.elements[0];
+        let latlngs: L.LatLngExpression[] | L.LatLngExpression[][] = [];
+
+        if (element.type === 'way' && element.geometry) {
+          latlngs = element.geometry.map((node: any) => [node.lat, node.lon] as L.LatLngExpression);
+        } else if (element.type === 'relation' && element.members) {
+           // Basic relation handling - grab the outer ways
+           const relationLatLngs: L.LatLngExpression[][] = [];
+           for (const member of element.members) {
+             if (member.type === 'way' && member.role === 'outer' && member.geometry) {
+                relationLatLngs.push(member.geometry.map((node: any) => [node.lat, node.lon] as L.LatLngExpression));
+             }
+           }
+           latlngs = relationLatLngs;
+        }
+
+        if (latlngs.length > 0) {
+          if (this.currentLayer) {
+            this.map.removeLayer(this.currentLayer);
+          }
+
+          const polygon = L.polygon(latlngs, {
+            color: '#1976d2',
+            weight: 2,
+            opacity: 0.8,
+            fillColor: '#1976d2',
+            fillOpacity: 0.3,
+          });
+
+          polygon.addTo(this.map);
+          this.currentLayer = polygon;
+          this.updateGeoJsonFromLayer(polygon);
+
+          if (this.isEditMode && !this.readonly) {
+            this.currentLayer.on('pm:update', () =>
+              this.updateGeoJsonFromLayer(this.currentLayer!),
+            );
+          }
+          this.map.fitBounds(polygon.getBounds());
+          return;
+        }
+      }
+
+      console.log('No agricultural field boundary found at this location.');
+      alert('No field boundary could be automatically detected at this location.');
+
+    } catch (error) {
+      console.error('Error fetching data from Overpass API:', error);
+      alert('Failed to auto-detect boundary. Please try again or draw manually.');
     }
-    this.map.fitBounds(polygon.getBounds());
   }
 }
