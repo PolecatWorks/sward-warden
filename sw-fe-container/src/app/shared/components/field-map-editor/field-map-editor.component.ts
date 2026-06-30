@@ -12,6 +12,8 @@ import {
 import { CommonModule } from '@angular/common';
 import * as L from 'leaflet';
 import '@geoman-io/leaflet-geoman-free';
+// @ts-ignore
+import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 
 @Component({
   selector: 'app-field-map-editor',
@@ -100,6 +102,21 @@ export class FieldMapEditorComponent
     );
 
     tiles.addTo(this.map);
+
+    const provider = new OpenStreetMapProvider();
+    const searchControl = new (GeoSearchControl as any)({
+      provider: provider,
+      style: 'bar',
+      autoComplete: true,
+      autoCompleteDelay: 250,
+      showMarker: false,
+      retainZoomLevel: false,
+      animateZoom: true,
+      keepResult: true,
+      searchLabel: 'Enter address or location',
+    });
+
+    this.map.addControl(searchControl);
   }
 
   // PRD Reference: 0016
