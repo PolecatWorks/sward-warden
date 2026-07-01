@@ -247,8 +247,9 @@ export class SyncEngineService implements OnDestroy {
     const resolved = { ...payload };
 
     const resolveField = async (val: any, collection: any): Promise<any> => {
-      if (typeof val === 'string' && val.startsWith('-')) {
-        const doc = await collection.findOne({ selector: { id: val } }).exec();
+      const valStr = val !== undefined && val !== null ? val.toString() : '';
+      if (valStr.startsWith('-')) {
+        const doc = await collection.findOne({ selector: { id: valStr } }).exec();
         if (doc && doc.serverId !== undefined) {
           return doc.serverId;
         }
