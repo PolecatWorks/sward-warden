@@ -21,14 +21,14 @@ Since the majority of users manage a single farm, the application prioritizes a 
   - Fields list displays a "Farm" column.
 
 ## 3. Farm Management
-- **List & Card Layout:** Farm cards feature an image header, name, area, and edit pencil icon in the bottom drawer. Clicking the card navigates to the farm detail view.
+- **List & Card Layout:** Farm cards feature an image header, name, area, and edit pencil icon in the bottom drawer. Clicking the card navigates to the farm detail view. The edit pencil icon must stop click propagation and open an edit modal. Farm lists must expand to utilize the full available screen width, displaying up to 3 cards per row on larger screens in a responsive grid layout.
 - **Safe Deletion:** Farms can only be deleted from the Farm Details page (`/farms/:farmId`) via a red trash can icon revealing an inline confirmation. Deletion is blocked (FE & BE) if active fields remain attached.
-- **Empty State:** A full-width, center-aligned empty state card with a prominent "Add Farm" button.
+- **Empty State:** A full-width, center-aligned empty state card with a prominent "Add Farm" button. The empty state card must span the full page width and not be constrained by grid layouts to ensure consistent center alignment.
 
 ## 4. Field Management
-- **List & Card Layout:** Field list cards use the same visual pattern as farm cards. The list uses a responsive grid layout. Clicking the card navigates to the field detail view (`/fields/:fieldId`). No separate "View Details" button is permitted.
+- **List & Card Layout:** Field list cards use the same visual pattern as farm cards, featuring a top image header (using `field.image_url` if available, otherwise a default agricultural landscape image), followed by a bottom drawer with the field name, area, and edit pencil icon (which stops click propagation and opens the edit modal). Clicking elsewhere on the card navigates to the field detail view (`/fields/:fieldId`). No separate "View Details" button is permitted. The list uses a responsive grid layout, expanding to utilize the full available screen width and displaying up to 3 cards per row on larger screens.
 - **Field Deletion:** Deletion is strictly isolated to the Field Detail page via a trash can icon and inline confirmation.
-- **Empty State:** Center-aligned empty state card with a prominent "Add Field" button.
+- **Empty State:** Center-aligned empty state card with a prominent "Add Field" button. The empty state card must span the full page width and not be constrained by grid layouts to ensure consistent center alignment.
 - **Field Migration:** Users can edit field details and migrate a field to another farm via the Farm selector.
 
 ## 5. Creation Forms & Auto-Farm Logic

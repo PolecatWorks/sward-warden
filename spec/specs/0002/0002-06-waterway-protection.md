@@ -1,4 +1,4 @@
-# 0002-07 Waterway Protection Specification
+# 0002-06 Waterway Protection Specification
 
 **State**: Complete
 

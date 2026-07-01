@@ -1,4 +1,4 @@
-# 0002-06 Topology and Field Mapping Specification
+# 0002-05 Topology and Field Mapping Specification
 
 **State**: Complete
 

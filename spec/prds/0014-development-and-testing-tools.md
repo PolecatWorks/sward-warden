@@ -13,7 +13,7 @@ A standalone Rust CLI application (`tools/`) to populate the backend database wi
 ## 2. Dev User Authentication & Multi-User Testing
 Replaces the simplistic `default-user` fallback with explicit development-only authentication to properly test multi-tenant data segregation.
 - **Dev Login UI (`/login`):** A dev-only frontend view fetching available seeded users and allowing the developer to select a persona to log in. Includes an inline form to create new test users dynamically.
-- **User Deletion:** Provides a dev-only ability to delete a user (and cascade delete their data) via a UI trashcan icon and backend `DELETE /v0/users/{id}` endpoint.
+- **User Deletion:** Provides a dev-only ability to delete a user (and cascade delete their data) via a UI trashcan icon and backend `DELETE /v0/users/{id}` endpoint. Clicking delete must stop click propagation (not trigger login). The backend must clear the backend farms cache for that user. This capability is restricted to development environments and must return `403 Forbidden` in production.
 - **Header Switcher:** The main layout top bar provides a dropdown to instantly switch the active dev user, triggering a fresh JWT fetch and app reload.
 
 ## 3. Dev JWT Authentication
@@ -24,6 +24,8 @@ Brings the local dev environment closer to production architecture by using real
   - `GET /.well-known/jwks.json`: Exposes the public key for local Istio service mesh validation.
 - **Security Constraint:** Dev endpoints and key-generation logic are strictly disabled in production. They must be explicitly enabled via `debugging.enable_dev_auth = true` in config.
 - **Middleware:** Backend middleware parses the `Authorization: Bearer <token>` header, verifies the signature, and extracts claims (`sub`, `sward_roles`).
+- **Frontend HTTP Interceptor:** Update the HTTP interceptor to inject the JWT as an `Authorization: Bearer <token>` header on all outgoing API requests instead of using `X-User-ID` and `X-User-Role` headers.
+- **Token Expiration & 401 Handling:** Handle token expiration by clearing the token and redirecting the user back to the Dev Login UI if a `401 Unauthorized` response is received.
 
 ## 4. Integration Testing Pipeline Optimization
 Optimizations for the Robot Framework integration testing CI/CD pipeline.

@@ -16,10 +16,11 @@ This document defines the overarching application architecture for the sward man
 - **Application State (`AppState`):** Centralized strongly-typed state, injected into Axum handlers. Holds application configuration, Telemetry, and connection pools for PostgreSQL.
 - **App Framework & CLI:**
   - Application configuration is via YAML files, with secret files and environment variable overrides using `figment`.
-  - Application must fail fast if required configurations are missing or malformed (no default fallbacks).
+  - Application must fail fast if required configurations are missing or malformed (no default fallbacks, such as using `#[serde(default)]` or custom default deserializers; all configuration properties must be explicitly provided in configuration sources).
   - Application binary must feature CLI parsing: `serve`, `version`, `migrate`.
 - **Concurrency & Web Server:**
-  - Explicit Tokio runtime configuration (ThreadRuntime).
+  - Explicit Tokio runtime configuration via a `ThreadRuntime` struct (controlling thread count, stack size, and naming).
+  - Propagate shutdown signals across internal async tasks via a `tokio_util::sync::CancellationToken`.
   - Modular routing organization (e.g., separate files for `users`, `farms`, `fields`, etc.).
   - Unified error handling (`AppError` enum implementing `axum::response::IntoResponse`).
 - **Networking:**
@@ -52,9 +53,18 @@ The application must leverage **RxDB** to facilitate robust offline synchronizat
 ## 6. Startup, Health & Telemetry
 - **Startup Checks:** Asynchronous checks ensure dependencies (like Postgres) are reachable before binding the HTTP listener. Refuse to start if unreachable.
 - **HaMS Integration:** Serve health/lifecycle endpoints (`/hams/alive`, `/hams/ready`) on port 8079. Synchronous setup before async runtime initialization.
+  - Startup checks and HaMS setup must be wrapped in a centralized error handler that applies a configurable `fail_debug_delay` before exiting, allowing container inspection in Kubernetes.
+  - Initial health probes (e.g., database connectivity check) must be registered during the synchronous setup phase as non-blocking probes to avoid blocking tokio threads.
+  - Link the HaMS shutdown callback (triggered by SIGTERM/SIGINT) to the internal `CancellationToken` (calling `ct.cancel()`).
+  - Upon shutdown, HaMS must be explicitly deregistered from Prometheus and stopped to ensure a clean release of system resources.
 - **Metrics:** Expose HTTP request metrics automatically via `axum_prometheus`.
 
 ## 7. Deployment & Testing
 - **Deployment:** Packaged as Docker containers deployed to a Kubernetes cluster via Helm charts.
 - **Integration Tests:** Built with Robot Framework, covering all BREAD operations. Tests run with dynamic concurrency grouping to prevent cross-PR queuing and cleanly teardown resources.
 - **Workflow Optimization:** Skip integration tests automatically if PRs contain no relevant changes.
+- **Multi-Tenancy Verification Test Patterns:**
+  - *Data Isolation Test:* Create User A and User B. Create a farm for User A. Log in as User B and verify the farm list is empty. Log in as User A and verify the farm is visible.
+  - *Cross-Tenant Access Denial:* Attempt to access, update, or delete User A's farm or field directly by ID using User B's credentials. The system must return 403 Forbidden or 404 Not Found.
+  - *Admin Visibility Test:* Log in as an Admin user and verify that farms and fields for both User A and User B are visible via standard endpoints.
+  - *Asset Cascading Validation:* Verify that filtering by `user_id` on the `farms` table correctly cascades to all child entities (e.g., fields, events, farm records) so User A cannot see User B's data across all tables.
