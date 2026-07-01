@@ -56,6 +56,7 @@ import {
   SoilAnalysisDocType,
   FertilisationPlanDocType,
   FarmRecordDocType,
+  FertiliserApplicationDocType,
   OrganicManureApplicationDocType,
   ComplianceBreachDocType,
   SwardMovementDocType,
@@ -69,6 +70,7 @@ import {
   soilAnalysisSchema,
   fertilisationPlanSchema,
   farmRecordSchema,
+  fertiliserApplicationSchema,
   organicManureApplicationSchema,
   complianceBreachSchema,
   swardMovementSchema,
@@ -92,6 +94,7 @@ export type SwardCollections = {
   soil_analyses: RxCollection<SoilAnalysisDocType>;
   fertilisation_plans: RxCollection<FertilisationPlanDocType>;
   farm_records: RxCollection<FarmRecordDocType>;
+  fertiliser_applications: RxCollection<FertiliserApplicationDocType>;
   organic_manure_applications: RxCollection<OrganicManureApplicationDocType>;
   compliance_breaches: RxCollection<ComplianceBreachDocType>;
   sward_movements: RxCollection<SwardMovementDocType>;
@@ -208,6 +211,7 @@ export class RxdbService implements OnDestroy {
         soil_analyses: { schema: soilAnalysisSchema },
         fertilisation_plans: { schema: fertilisationPlanSchema },
         farm_records: { schema: farmRecordSchema },
+        fertiliser_applications: { schema: fertiliserApplicationSchema },
         organic_manure_applications: { schema: organicManureApplicationSchema },
         compliance_breaches: { schema: complianceBreachSchema },
         sward_movements: { schema: swardMovementSchema },
@@ -278,6 +282,13 @@ export class RxdbService implements OnDestroy {
     return this.db$.pipe(
       // PRD Reference: 0010
       switchMap((db) => from(Promise.resolve(db.farm_records))),
+    );
+  }
+
+  /** Observable emitting the fertiliser applications RxCollection. */
+  get fertiliserApplicationsCollection$(): Observable<RxCollection<FertiliserApplicationDocType>> {
+    return this.db$.pipe(
+      switchMap((db) => from(Promise.resolve(db.fertiliser_applications))),
     );
   }
 

@@ -1,5 +1,7 @@
 export interface FertiliserApplication {
-  id?: number;
+  id?: number | string;
+  localId?: string;
+  serverId?: number;
   event_id: number;
   fertiliser_type: string;
   amount_applied: number;
