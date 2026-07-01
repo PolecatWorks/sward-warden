@@ -45,6 +45,7 @@ None.
 - [0024 Field Topology Creation and Editing](./0024-field-topology-creation.md)
 - [0025 Modal Keyboard Accessibility](./0025-modal-keyboard-accessibility.md)
 - [0026 Storage Capacity Management](./0026-storage-capacity-management.md)
+- [0027 Integration Testing Pipeline Optimization](./0027-integration-testing-pipeline-optimization.md)
 
 ## PRD gaps
 
