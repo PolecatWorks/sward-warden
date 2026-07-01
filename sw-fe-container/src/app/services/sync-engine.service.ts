@@ -238,6 +238,46 @@ export class SyncEngineService implements OnDestroy {
     this.syncStateService.setSynced();
   }
 
+  /** Resolve local IDs (starting with '-') to server IDs in outbox payloads before sending. */
+  private async resolvePayloadReferences(
+    payload: any,
+    entityType: string,
+    db: SwardDatabase,
+  ): Promise<any> {
+    const resolved = { ...payload };
+
+    const resolveField = async (val: any, collection: any): Promise<any> => {
+      if (typeof val === 'string' && val.startsWith('-')) {
+        const doc = await collection.findOne({ selector: { id: val } }).exec();
+        if (doc && doc.serverId !== undefined) {
+          return doc.serverId;
+        }
+      }
+      return val;
+    };
+
+    if (resolved.farm_id !== undefined && (db as any).farms) {
+      resolved.farm_id = await resolveField(resolved.farm_id, (db as any).farms);
+    }
+    if (resolved.field_id !== undefined && (db as any).fields) {
+      resolved.field_id = await resolveField(resolved.field_id, (db as any).fields);
+    }
+    if (resolved.event_id !== undefined && (db as any).events) {
+      resolved.event_id = await resolveField(resolved.event_id, (db as any).events);
+    }
+    if (resolved.storage_id !== undefined && (db as any).inventory_storage) {
+      resolved.storage_id = await resolveField(resolved.storage_id, (db as any).inventory_storage);
+    }
+    if (resolved.id !== undefined) {
+      const collection = (db as any)[entityType];
+      if (collection) {
+        resolved.id = await resolveField(resolved.id, collection);
+      }
+    }
+
+    return resolved;
+  }
+
   /** Execute the HTTP request for a single outbox entry. */
   private async processEntry(
     entry: any,
@@ -245,7 +285,8 @@ export class SyncEngineService implements OnDestroy {
     headers: HttpHeaders,
     db: SwardDatabase,
   ): Promise<void> {
-    const payload = JSON.parse(entry.payload);
+    const rawPayload = JSON.parse(entry.payload);
+    const payload = await this.resolvePayloadReferences(rawPayload, entry.entityType, db);
     console.log(
       `SYNC ENGINE: processEntry action=${entry.actionType} entity=${entry.entityType} payload:`,
       payload,
