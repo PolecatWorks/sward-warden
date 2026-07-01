@@ -1,4 +1,4 @@
-# 0003-02 User Profile Management Specification
+# 0003-01 User Profile Management Specification
 
 **State**: Complete
 

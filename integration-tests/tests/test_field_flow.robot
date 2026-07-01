@@ -8,7 +8,7 @@ ${EXTERNAL_DNS_URL}
 ${BE_BASE_URL}
 
 *** Test Cases ***
-# PRD Reference: 0016
+# PRD Reference: 0003
 Field Creation and Deletion Flow
     [Documentation]    Test field creation and deletion flow end-to-end within a specific farm.
     [Teardown]    Teardown With Video
@@ -95,7 +95,7 @@ Field Creation and Deletion Flow
     # 10. Clean up farm via API
     ${delete_farm_response}=    DELETE    ${BE_BASE_URL}/v0/farms/${farm_id}    expected_status=204
 
-# PRD Reference: 0016
+# PRD Reference: 0003
 Auto Farm Creation Flow
     [Documentation]    Test that adding a field when no farms exist automatically creates the default farm in the frontend.
     [Teardown]    Teardown With Video

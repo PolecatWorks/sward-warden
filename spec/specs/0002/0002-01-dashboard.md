@@ -1,4 +1,4 @@
-# 0002-02 Dashboard Specification
+# 0002-01 Dashboard Specification
 
 **State**: Complete
 

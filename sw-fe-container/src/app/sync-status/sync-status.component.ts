@@ -67,7 +67,7 @@ export class SyncStatusComponent {
     this.syncState$ = this.syncStateService.syncState$;
   }
 
-  // PRD Reference: 0011
+  // PRD Reference: 0001
   forceSync(): void {
     // Attempting a force pull sync on click
     this.syncEngineService.forcePullSync().catch((err) => {

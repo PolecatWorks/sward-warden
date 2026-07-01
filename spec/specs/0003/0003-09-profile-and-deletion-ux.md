@@ -4,7 +4,7 @@
 Complete
 
 ## Source PRD
-[PRD 0003 - User Profile and Farms](../../prds/0003-user-profile-and-farms.md) — Profile Edit Interaction, Farm Deletion UI, Field Deletion UI
+[PRD 0003 - User Profile and Farms](../../prds/0003-core-domain-users-farms-fields.md) — Profile Edit Interaction, Farm Deletion UI, Field Deletion UI
 
 ## Overview
 

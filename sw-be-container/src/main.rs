@@ -181,7 +181,7 @@ fn main() -> Result<(), AppError> {
 mod tests {
     use super::*;
 
-    // PRD Reference: 0001, 0009
+    // PRD Reference: 0001
     #[test]
     fn test_cli_serve() {
         let cli = Cli::try_parse_from(&[
@@ -196,7 +196,7 @@ mod tests {
         assert_eq!(cli.command, Commands::Serve);
     }
 
-    // PRD Reference: 0001, 0009
+    // PRD Reference: 0001
     #[test]
     fn test_cli_version() {
         let cli = Cli::try_parse_from(&[
@@ -211,7 +211,7 @@ mod tests {
         assert_eq!(cli.command, Commands::Version);
     }
 
-    // PRD Reference: 0001, 0009
+    // PRD Reference: 0001
     #[test]
     fn test_cli_migrate() {
         let cli = Cli::try_parse_from(&[
@@ -226,7 +226,7 @@ mod tests {
         assert_eq!(cli.command, Commands::Migrate);
     }
 
-    // PRD Reference: 0001, 0009
+    // PRD Reference: 0001
     #[test]
     fn test_cli_invalid_command() {
         let cli = Cli::try_parse_from(&["sw-be", "invalid"]);

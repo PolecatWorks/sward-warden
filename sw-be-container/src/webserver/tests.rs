@@ -15,14 +15,14 @@ use url::Url;
 static PROMETHEUS_HANDLE: OnceLock<axum_prometheus::metrics_exporter_prometheus::PrometheusHandle> =
     OnceLock::new();
 
-// PRD Reference: 0001, 0009
+// PRD Reference: 0001
 fn init_prometheus() -> axum_prometheus::metrics_exporter_prometheus::PrometheusHandle {
     PROMETHEUS_HANDLE
         .get_or_init(|| PrometheusBuilder::new().install_recorder().unwrap())
         .clone()
 }
 
-// PRD Reference: 0001, 0009
+// PRD Reference: 0001
 fn get_test_state() -> AppState {
     let metric_handle = init_prometheus();
     let config = AppConfig {
@@ -73,7 +73,7 @@ fn get_test_state() -> AppState {
     AppState::new(config, metric_handle, db_pool, dev_jwt_keypair, None)
 }
 
-// PRD Reference: 0001, 0010, 0020
+// PRD Reference: 0001, 0014
 fn generate_test_jwt(state: &AppState, user_id: i64, role: &str) -> String {
     use jwt_simple::prelude::*;
     let keypair = state.dev_jwt_keypair.as_ref().unwrap();
@@ -87,7 +87,7 @@ fn generate_test_jwt(state: &AppState, user_id: i64, role: &str) -> String {
     keypair.sign(claims).unwrap()
 }
 
-// PRD Reference: 0001, 0009
+// PRD Reference: 0001
 #[tokio::test]
 async fn test_app_router_hello() {
     let state = get_test_state();
@@ -217,7 +217,7 @@ async fn test_sync_route_with_since_param() {
     assert_ne!(response.status(), StatusCode::BAD_REQUEST);
 }
 
-// PRD Reference: 0001, 0009
+// PRD Reference: 0001
 #[tokio::test]
 async fn test_cors_headers_present() {
     use tower_http::cors::CorsLayer;

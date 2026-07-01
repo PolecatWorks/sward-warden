@@ -10,16 +10,16 @@ import { RxdbService } from '../../services/rxdb/rxdb.service';
 import { AuthService } from '../../services/auth.service';
 import { SyncEngineService } from '../../services/sync-engine.service';
 
-// PRD Reference: 0016
+// PRD Reference: 0003
 describe('FieldsComponent', () => {
   let component: FieldsComponent;
   let fixture: ComponentFixture<FieldsComponent>;
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [
-        // PRD Reference: 0016
+        // PRD Reference: 0003
         provideRouter([]),
         {
           provide: ActivatedRoute,
@@ -72,37 +72,37 @@ describe('FieldsComponent', () => {
     fixture.detectChanges();
   });
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   it('should create', () => {
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     expect(component).toBeTruthy();
   });
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   it('should load farm details on init', () => {
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     expect(component.farm).toBeDefined();
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     expect(component.farm!.name).toBe('Sunrise Farm');
   });
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   it('should initialize farm editing form when opening edit modal', () => {
     component.openEditFarmModal();
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     expect(component.showEditFarmModal).toBeTrue();
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     expect(component.editFarmName).toBe('Sunrise Farm');
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     expect(component.editFarmLocation).toBe('Kerry, Ireland');
   });
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   it('should call updateFarm and refresh farm details on submit', () => {
     const farmService = TestBed.inject(FarmManagementService);
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     spyOn(farmService, 'updateFarm').and.callThrough();
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     spyOn(component, 'loadFarm').and.callThrough();
 
     component.openEditFarmModal();
@@ -111,18 +111,18 @@ describe('FieldsComponent', () => {
 
     component.editFarm();
 
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     expect(farmService.updateFarm).toHaveBeenCalledWith(1, {
       name: 'New Sunrise Farm',
       location: 'Cork, Ireland',
     });
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     expect(component.loadFarm).toHaveBeenCalled();
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     expect(component.showEditFarmModal).toBeFalse();
   });
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   it('should start inline editing with field details', () => {
     const field = {
       id: 42,
@@ -131,15 +131,15 @@ describe('FieldsComponent', () => {
       area_hectares: 8.5,
     };
     component.startEdit(field);
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     expect(component.editingFieldId).toBe(42);
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     expect(component.editFieldName).toBe('South Paddock');
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     expect(component.editFieldArea).toBe('8.5');
   });
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   it('should clear editing state on cancel', () => {
     const field = {
       id: 42,
@@ -149,20 +149,20 @@ describe('FieldsComponent', () => {
     };
     component.startEdit(field);
     component.cancelEdit();
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     expect(component.editingFieldId).toBeNull();
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     expect(component.editFieldName).toBe('');
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     expect(component.editFieldArea).toBe('');
   });
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   it('should call updateField and refresh list on saveField', () => {
     const farmService = TestBed.inject(FarmManagementService);
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     spyOn(farmService, 'updateField').and.callThrough();
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     spyOn(component, 'loadFields').and.callThrough();
 
     const field = {
@@ -179,7 +179,7 @@ describe('FieldsComponent', () => {
 
     component.saveField(field);
 
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     expect(farmService.updateField).toHaveBeenCalledWith(42, {
       id: 42,
       farm_id: 1,
@@ -188,9 +188,9 @@ describe('FieldsComponent', () => {
       land_use: 'grassland',
       geometry_geojson: undefined
     });
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     expect(component.loadFields).toHaveBeenCalled();
-    // PRD Reference: 0016
+    // PRD Reference: 0003
     expect(component.editingFieldId).toBeNull();
   });
 });
