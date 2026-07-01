@@ -13,7 +13,7 @@
     </a>
 
     <!-- Hero Section / Context -->
-    <section class="mb-6">
+    <section class="mb-6" *ngIf="!showEditFieldModal">
       <div class="flex items-end justify-between mb-2">
         <div class="flex items-center gap-2">
           <h2
@@ -80,11 +80,11 @@
     <!-- Edit Field Modal -->
     <div
       *ngIf="showEditFieldModal"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+      class="mb-6"
       id="edit-field-modal"
     >
       <div
-        class="bg-surface rounded-xl shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        class="bg-surface-container-low border border-outline-variant rounded-xl p-6 w-full"
       >
         <div class="flex justify-between items-center mb-4">
           <h3 class="font-headline font-bold text-xl text-on-surface">
