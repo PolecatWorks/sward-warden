@@ -46,6 +46,7 @@ None.
 - [0025 Modal Keyboard Accessibility](./0025-modal-keyboard-accessibility.md)
 - [0026 Storage Capacity Management](./0026-storage-capacity-management.md)
 - [0027 Integration Testing Pipeline Optimization](./0027-integration-testing-pipeline-optimization.md)
+- [0028 Account Suspension and Modules](./0028-account-suspension-and-modules.md)
 
 ## PRD gaps
 
@@ -54,7 +55,6 @@ Based on a review of the PRDs, the following features have not yet been implemen
 - **Team Members (PRD 0003)**: Team member management has not yet been fully discussed or defined, and is marked as a future TODO.
 - **Historical Audit Log (PRD 0006)**: Maintain a historical audit log of manual calibrations for storage prediction rates.
 - **Live Weather API Integration (PRD 0008)**: Weather information is currently provided via static datasets for the initial version. The API integration is planned for future phases.
-- **Account Suspension (PRD 0013)**: Ability to suspend or deactivate user accounts from the Administration Console.
 - **High-Density Grid/Point Cloud Topography (PRD 0021)**: Storage of raw, detailed topographical data (Approach 2) is a future consideration for advanced agronomic features.
 - **Modal Keyboard Accessibility (PRD 0025)**: The escape and enter to submit functions in modals are not universally applied (e.g. Storage Capacity) or not fully compliant with the "disabled submit button without changes" requirement.
 - **Official Government Data Auto-Detection (PRD 0024)**: Fetching official subsidized boundaries via Government APIs (e.g., UK RPA Land Parcels API or DAERA Open Data) using Single Business Identifier (SBI).
