@@ -49,6 +49,7 @@ The user interface should allow interaction with storage records.
 
 ### 7. Storage Visualization
 - Sward storage levels should be visualized using high-quality progress bars or circular gauges that match the premium dashboard aesthetic.
+- Buttons should adhere to the global "pill" style (`rounded-full`) for visual consistency across the app, ensuring alignment with other inventory management and export hubs.
 
 
 ### 8. Storage Capacity Tracking
