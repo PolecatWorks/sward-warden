@@ -78,13 +78,29 @@ export class ChemicalPesticideInventoryComponent implements OnInit {
   async submitForm(): Promise<void> {
     if (this.chemicalForm.valid) {
       try {
+        const formValue = this.chemicalForm.value;
+        const sanitizedValue = {
+          ...formValue,
+          farm_id:
+            formValue.farm_id !== null && formValue.farm_id !== ''
+              ? Number(formValue.farm_id)
+              : null,
+          quantity_on_hand:
+            formValue.quantity_on_hand !== null &&
+            formValue.quantity_on_hand !== ''
+              ? Number(formValue.quantity_on_hand)
+              : null,
+          active_ingredient: formValue.active_ingredient || null,
+          unit: formValue.unit || null,
+        };
+
         if (this.editingId) {
           await this.inventoryService.updateChemical(
             this.editingId,
-            this.chemicalForm.value,
+            sanitizedValue,
           );
         } else {
-          await this.inventoryService.addChemical(this.chemicalForm.value);
+          await this.inventoryService.addChemical(sanitizedValue);
         }
         this.closeForm();
       } catch (err) {
