@@ -92,7 +92,17 @@ export class FieldMapEditorComponent
       zoom: 13,
     });
 
-    const tiles = L.tileLayer(
+    const streetMap = L.tileLayer(
+      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {
+        maxZoom: 18,
+        minZoom: 3,
+        attribution:
+          '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      },
+    );
+
+    const satelliteMap = L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       {
         maxZoom: 18,
@@ -101,7 +111,14 @@ export class FieldMapEditorComponent
       },
     );
 
-    tiles.addTo(this.map);
+    streetMap.addTo(this.map);
+
+    const baseMaps = {
+      "Street Map": streetMap,
+      "Satellite Map": satelliteMap
+    };
+
+    L.control.layers(baseMaps).addTo(this.map);
 
     const provider = new EsriProvider();
     const searchControl = new (GeoSearchControl as any)({
