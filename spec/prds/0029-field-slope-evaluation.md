@@ -1,4 +1,8 @@
+<<<<<<<< HEAD:spec/prds/0029-field-slope-evaluation.md
 # PRD 0029: Field Slope Evaluation using WhiteboxTools
+========
+# PRD 0028: Field Slope Evaluation using WhiteboxTools
+>>>>>>>> 18e09fa (docs(prds): add PRD 0028 for field slope evaluation):spec/prds/0028-field-slope-evaluation.md
 
 ## 1. Overview
 

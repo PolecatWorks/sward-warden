@@ -119,7 +119,6 @@ export class FieldMapEditorComponent
     };
 
     L.control.layers(baseMaps).addTo(this.map);
-
     const provider = new EsriProvider();
     const searchControl = new (GeoSearchControl as any)({
       provider: provider,
