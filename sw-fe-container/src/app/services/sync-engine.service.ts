@@ -19,7 +19,7 @@ import { SyncStateService } from './sync-state.service';
 import { AuthService } from './auth.service';
 
 let localIdCounter = 0;
-// PRD Reference: 0011
+// PRD Reference: 0001
 function generateLocalId(): string {
   localIdCounter = (localIdCounter + 1) % 100;
   return `-${Date.now()}${localIdCounter.toString().padStart(2, '0')}`;
@@ -80,39 +80,39 @@ export class SyncEngineService implements OnDestroy {
   ) {
     // Sync triggers: online events + periodic timer + pending outbox inserts
     const onlineEvent$ = this.networkService.isOnline$.pipe(
-      // PRD Reference: 0011
+      // PRD Reference: 0001
       filter((online) => online),
     );
 
     const periodicSync$ = timer(0, SYNC_INTERVAL_MS).pipe(
-      // PRD Reference: 0011
+      // PRD Reference: 0001
       switchMap(() => this.networkService.isOnline$),
-      // PRD Reference: 0011
+      // PRD Reference: 0001
       filter((online) => online),
     );
 
     const outboxTrigger$ = this.rxdbService.db$.pipe(
-      // PRD Reference: 0011
+      // PRD Reference: 0001
       catchError(() => of(null)), // avoid app crash on db init failure
-      // PRD Reference: 0011
+      // PRD Reference: 0001
       filter((db) => db !== null),
-      // PRD Reference: 0011
+      // PRD Reference: 0001
       switchMap((db) => db!.outbox.find({ selector: { status: 'pending' } }).$),
-      // PRD Reference: 0011
+      // PRD Reference: 0001
       filter((entries) => entries.length > 0),
-      // PRD Reference: 0011
+      // PRD Reference: 0001
       debounceTime(500),
-      // PRD Reference: 0011
+      // PRD Reference: 0001
       switchMap(() => this.networkService.isOnline$),
-      // PRD Reference: 0011
+      // PRD Reference: 0001
       filter((online) => online),
     );
 
     this.subscription = merge(onlineEvent$, periodicSync$, outboxTrigger$)
       .pipe(
-        // PRD Reference: 0011
+        // PRD Reference: 0001
         filter(() => !this.rxdbService.fallbackToRest$.value),
-        // PRD Reference: 0011
+        // PRD Reference: 0001
         switchMap(() => from(this.fullSync())),
       )
       .subscribe();
@@ -123,7 +123,7 @@ export class SyncEngineService implements OnDestroy {
    * 1. Push: flush the outbox queue
    * 2. Pull: fetch delta changes from the be
    */
-  // PRD Reference: 0011
+  // PRD Reference: 0001
   async fullSync(): Promise<void> {
     if (this.syncInProgress || this.rxdbService.fallbackToRest$.value) {
       this.syncNeededAgain = true;
@@ -151,7 +151,7 @@ export class SyncEngineService implements OnDestroy {
   // ──────────────────────────────────────────────────────────
 
   /** Process all pending outbox entries in chronological order. */
-  // PRD Reference: 0011
+  // PRD Reference: 0001
   async processOutbox(): Promise<void> {
     if (this.rxdbService.fallbackToRest$.value) return;
 
@@ -357,7 +357,7 @@ export class SyncEngineService implements OnDestroy {
   // ──────────────────────────────────────────────────────────
 
   /** Fetch changed records from the be and upsert into local RxDB. */
-  // PRD Reference: 0011
+  // PRD Reference: 0001
   async pullSync(): Promise<void> {
     if (this.rxdbService.fallbackToRest$.value) return;
     const db = await firstValueFrom(this.rxdbService.db$);
@@ -430,32 +430,32 @@ export class SyncEngineService implements OnDestroy {
   // ──────────────────────────────────────────────────────────
 
   /** Get the last sync checkpoint from the metadata collection. */
-  // PRD Reference: 0011
+  // PRD Reference: 0001
   async getCheckpoint(db: SwardDatabase): Promise<string | null> {
     const doc = await (db as any).metadata.findOne(CHECKPOINT_KEY).exec();
     return doc?.value ?? null;
   }
 
   /** Get the user ID associated with the last successful sync. */
-  // PRD Reference: 0011
+  // PRD Reference: 0001
   async getLastSyncUserId(db: SwardDatabase): Promise<string | null> {
     const doc = await (db as any).metadata.findOne('lastSyncUserId').exec();
     return doc?.value ?? null;
   }
 
   /** Set the sync checkpoint and user ID in the metadata collection. */
-  // PRD Reference: 0011
+  // PRD Reference: 0001
   async setCheckpoint(
     db: SwardDatabase,
     checkpoint: string,
     userId: string = '',
   ): Promise<void> {
-    // PRD Reference: 0011
+    // PRD Reference: 0001
     await (db as any).metadata.upsert({
       key: CHECKPOINT_KEY,
       value: checkpoint,
     });
-    // PRD Reference: 0011
+    // PRD Reference: 0001
     await (db as any).metadata.upsert({
       key: 'lastSyncUserId',
       value: userId,
@@ -463,7 +463,7 @@ export class SyncEngineService implements OnDestroy {
   }
 
   /** Clear the sync checkpoint in the metadata collection to force a full fetch. */
-  // PRD Reference: 0011
+  // PRD Reference: 0001
   async clearCheckpoint(db: SwardDatabase): Promise<void> {
     const doc = await (db as any).metadata.findOne(CHECKPOINT_KEY).exec();
     if (doc) {
@@ -476,7 +476,7 @@ export class SyncEngineService implements OnDestroy {
   }
 
   /** Clear all local data collections (farms, fields, etc.) to prepare for a different user's sync. */
-  // PRD Reference: 0011
+  // PRD Reference: 0001
   async clearAllCollections(db: SwardDatabase): Promise<void> {
     const collections = [
       'farms',
@@ -503,7 +503,7 @@ export class SyncEngineService implements OnDestroy {
   }
 
   /** Force a sync by clearing the checkpoint and pulling all data from the server. */
-  // PRD Reference: 0011
+  // PRD Reference: 0001
   async forcePullSync(): Promise<void> {
     if (this.syncInProgress || this.rxdbService.fallbackToRest$.value) {
       this.syncNeededAgain = true;
@@ -1496,7 +1496,7 @@ export class SyncEngineService implements OnDestroy {
     return serverTime >= localTime || !hasPending;
   }
 
-  // PRD Reference: 0011
+  // PRD Reference: 0001
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
   }

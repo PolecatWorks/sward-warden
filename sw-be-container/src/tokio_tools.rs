@@ -29,7 +29,7 @@ impl Default for ThreadRuntime {
     }
 }
 
-// PRD Reference: 0001, 0009
+// PRD Reference: 0001
 pub fn rt_multithreaded(runtime: &ThreadRuntime) -> Result<Runtime, AppError> {
     if runtime.threads == 0 {
         runtime::Builder::new_current_thread()
@@ -92,7 +92,7 @@ mod tests {
     use std::time::Duration;
     use tokio::time::sleep;
 
-    // PRD Reference: 0001, 0009
+    // PRD Reference: 0001
     #[test]
     fn test_rt_multithreaded_current_thread() {
         let runtime = ThreadRuntime {
@@ -105,7 +105,7 @@ mod tests {
         assert_eq!(result, 42);
     }
 
-    // PRD Reference: 0001, 0009
+    // PRD Reference: 0001
     #[test]
     fn test_rt_multithreaded_multi_thread() {
         let runtime = ThreadRuntime {
@@ -118,7 +118,7 @@ mod tests {
         assert_eq!(result, 42);
     }
 
-    // PRD Reference: 0001, 0009
+    // PRD Reference: 0001
     #[test]
     fn test_run_in_tokio_success() {
         let runtime = ThreadRuntime::default();
@@ -127,7 +127,7 @@ mod tests {
         assert_eq!(result.unwrap(), 100);
     }
 
-    // PRD Reference: 0001, 0009
+    // PRD Reference: 0001
     #[test]
     fn test_run_in_tokio_with_cancel_success() {
         let runtime = ThreadRuntime::default();
@@ -139,7 +139,7 @@ mod tests {
         assert_eq!(result.unwrap(), 200);
     }
 
-    // PRD Reference: 0001, 0009
+    // PRD Reference: 0001
     #[test]
     fn test_run_in_tokio_with_cancel_cancelled() {
         let runtime = ThreadRuntime::default();

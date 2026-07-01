@@ -29,12 +29,12 @@ use tracing::{Level, info};
 use crate::error::AppError;
 use crate::state::AppState;
 
-// PRD Reference: 0001, 0009
+// PRD Reference: 0001
 pub async fn hello_handler() -> Result<Json<serde_json::Value>, AppError> {
     Ok(Json(serde_json::json!({ "message": "hello" })))
 }
 
-// PRD Reference: 0001, 0009
+// PRD Reference: 0001
 // Central API Router
 pub fn app_router(state: AppState) -> Router {
     let mut router = Router::new()
@@ -157,7 +157,7 @@ pub fn app_router(state: AppState) -> Router {
     router.with_state(state)
 }
 
-// PRD Reference: 0001, 0009
+// PRD Reference: 0001
 pub async fn start_app_api(state: AppState, ct: CancellationToken) -> Result<(), AppError> {
     let mut cors_layer = CorsLayer::new();
 

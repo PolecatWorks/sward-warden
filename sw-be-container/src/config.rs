@@ -112,7 +112,7 @@ mod tests {
     use super::*;
     use std::env;
 
-    // PRD Reference: 0001, 0009
+    // PRD Reference: 0001
     #[test]
     fn test_config_load_without_credentials() {
         // Ensure no env vars are interfering
@@ -136,7 +136,7 @@ mod tests {
         assert!(config.database.url.password.is_none());
     }
 
-    // PRD Reference: 0001, 0009
+    // PRD Reference: 0001
     #[test]
     fn test_config_load_with_env_vars() {
         unsafe {
@@ -159,7 +159,7 @@ mod tests {
         assert_eq!(config.database.url.password.as_deref(), Some("envpass"));
     }
 
-    // PRD Reference: 0001, 0009
+    // PRD Reference: 0001
     #[test]
     fn test_config_load_with_file_secrets() {
         use std::fs;

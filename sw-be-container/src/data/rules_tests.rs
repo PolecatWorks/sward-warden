@@ -35,7 +35,7 @@ mod tests {
         }
     }
 
-    // PRD Reference: 0001, 0009
+    // PRD Reference: 0001
     #[test]
     fn test_validate_organic_manure_lesse_required_pig_slurry() {
         let farm = get_test_farm();
@@ -76,7 +76,7 @@ mod tests {
         }
     }
 
-    // PRD Reference: 0001, 0009
+    // PRD Reference: 0001
     #[test]
     fn test_validate_organic_manure_lesse_exemption_valid() {
         let farm = get_test_farm();
@@ -114,7 +114,7 @@ mod tests {
         assert!(matches!(result, ValidationResult::Valid));
     }
 
-    // PRD Reference: 0001, 0009
+    // PRD Reference: 0001
     #[test]
     fn test_validate_organic_manure_lesse_required_2026() {
         let farm = get_test_farm();

@@ -53,7 +53,7 @@ impl SpatialService {
         Ok(())
     }
 
-    // PRD Reference: 0001, 0009
+    // PRD Reference: 0001
     pub async fn get_buffer_geometries_geojson(
         pool: &PgPool,
         distance_meters: f64,

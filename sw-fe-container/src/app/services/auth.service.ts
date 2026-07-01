@@ -9,7 +9,7 @@ export class AuthService {
 
   constructor() {}
 
-  // PRD Reference: 0020
+  // PRD Reference: 0014
   login(userId: string, token?: string): void {
     localStorage.setItem(this.USER_KEY, userId);
     if (token) {
@@ -19,23 +19,23 @@ export class AuthService {
     }
   }
 
-  // PRD Reference: 0020
+  // PRD Reference: 0014
   logout(): void {
     localStorage.removeItem(this.USER_KEY);
     localStorage.removeItem(this.JWT_KEY);
   }
 
-  // PRD Reference: 0020
+  // PRD Reference: 0014
   getUserId(): string | null {
     return localStorage.getItem(this.USER_KEY);
   }
 
-  // PRD Reference: 0020
+  // PRD Reference: 0014
   getToken(): string | null {
     return localStorage.getItem(this.JWT_KEY);
   }
 
-  // PRD Reference: 0020
+  // PRD Reference: 0014
   isLoggedIn(): boolean {
     // For local dev, a user is logged in if they have the ID (fallback) and ideally the token.
     // However, some old tests might only set the user ID, so we check the ID for backward compatibility,

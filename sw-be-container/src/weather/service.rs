@@ -5,7 +5,7 @@ use chrono::{DateTime, Utc};
 pub struct WeatherService;
 
 impl WeatherService {
-    // PRD Reference: 0001, 0009
+    // PRD Reference: 0001
     pub async fn get_forecast(_lat: f64, _lon: f64) -> Result<Vec<WeatherData>, AppError> {
         // In the future, this would call a real weather API
         Ok(get_static_forecast())

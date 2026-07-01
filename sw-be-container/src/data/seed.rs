@@ -3,7 +3,7 @@ use chrono::Utc;
 use sqlx::{PgPool, QueryBuilder};
 use tracing::info;
 
-// PRD Reference: 0014, 0017
+// PRD Reference: 0014
 pub async fn seed_database(pool: &PgPool, user_id: i64) -> Result<(), AppError> {
     info!("Seeding database for user_id: {}", user_id);
 

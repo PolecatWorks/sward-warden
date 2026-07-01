@@ -37,25 +37,25 @@ export class SyncStateService {
       this.networkService.isOnline$,
       this.syncActive$,
     ]).pipe(
-      // PRD Reference: 0011
+      // PRD Reference: 0001
       map(([isOnline, isSyncing]): SyncState => {
         if (!isOnline) return 'offline';
         if (isSyncing) return 'syncing';
         return 'synced';
       }),
-      // PRD Reference: 0011
+      // PRD Reference: 0001
       distinctUntilChanged(),
     );
   }
 
   /** Called by the sync engine when sync operations begin. */
-  // PRD Reference: 0011
+  // PRD Reference: 0001
   setSyncing(): void {
     this.syncActive$.next(true);
   }
 
   /** Called by the sync engine when sync operations complete. */
-  // PRD Reference: 0011
+  // PRD Reference: 0001
   setSynced(): void {
     this.syncActive$.next(false);
   }
