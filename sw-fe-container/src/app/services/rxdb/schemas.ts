@@ -92,6 +92,21 @@ export interface FertilisationPlanDocType {
   updatedAt: string;
 }
 
+export interface FertiliserApplicationDocType {
+  id: string;
+  serverId?: number;
+  event_id: number;
+  fertiliser_type: string;
+  amount_applied: number;
+  nitrogen_content?: number;
+  phosphorus_content?: number;
+  is_protected_urea?: boolean;
+  buffer_zone_confirmed?: boolean;
+  evidence_of_control?: string;
+  syncStatus: SyncStatus;
+  updatedAt: string;
+}
+
 export interface OrganicManureApplicationDocType {
   id: string;
   serverId?: number;
@@ -318,6 +333,33 @@ export const fertilisationPlanSchema: RxJsonSchema<FertilisationPlanDocType> = {
     'syncStatus',
     'updatedAt',
   ],
+  indexes: ['syncStatus', 'updatedAt'],
+};
+
+export const fertiliserApplicationSchema: RxJsonSchema<FertiliserApplicationDocType> = {
+  version: 0,
+  primaryKey: 'id',
+  type: 'object',
+  properties: {
+    id: { type: 'string', maxLength: 64 },
+    serverId: { type: 'number' },
+    event_id: { type: 'number' },
+    fertiliser_type: { type: 'string' },
+    amount_applied: { type: 'number' },
+    nitrogen_content: { type: 'number' },
+    phosphorus_content: { type: 'number' },
+    is_protected_urea: { type: 'boolean' },
+    buffer_zone_confirmed: { type: 'boolean' },
+    evidence_of_control: { type: 'string' },
+    syncStatus: {
+      type: 'string',
+      maxLength: 16,
+      enum: ['pending', 'synced', 'error'],
+      default: 'pending',
+    },
+    updatedAt: { type: 'string', maxLength: 32 },
+  },
+  required: ['id', 'event_id', 'fertiliser_type', 'amount_applied', 'syncStatus', 'updatedAt'],
   indexes: ['syncStatus', 'updatedAt'],
 };
 

@@ -30,6 +30,7 @@ import { AnnualFertilisationAccountsComponent } from './annual-fertilisation-acc
 import { GeneralFarmRecordsExportComponent } from './general-farm-records-export/general-farm-records-export.component';
 import { SoilAnalysisReportsComponent } from './soil-analysis-reports/soil-analysis-reports.component';
 import { ImportExportReportingComponent } from './import-export-reporting/import-export-reporting.component';
+import { ErrorPageComponent } from './error-page/error-page.component';
 
 import { authGuard } from './services/auth.guard';
 import { LoginComponent } from './login/login.component';
@@ -109,6 +110,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
     ],
   },
+  { path: 'error', component: ErrorPageComponent },
   // Catch-all
   { path: '**', redirectTo: '/home' },
 ];

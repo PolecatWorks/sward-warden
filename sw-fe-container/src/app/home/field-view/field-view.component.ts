@@ -342,12 +342,12 @@ export class FieldViewComponent implements OnInit {
         this.editFormData.fertiliserApplication
       ) {
         dependentRequests++;
-        // Notice fertiliser applications are currently using apiUrl directly in service, they use id, not localId.
-        // Wait, the id returned by getFertiliserApplications is serverId usually, let's just use it.
-        const faId = this.editFormData.fertiliserApplication.id;
+        const faId = this.editFormData.fertiliserApplication.localId ?? this.editFormData.fertiliserApplication.id;
+        const serverId = this.editFormData.fertiliserApplication.serverId;
         this.farmService
           .updateFertiliserApplication(
-            faId,
+            faId!.toString(),
+            serverId,
             this.editFormData.fertiliserApplication,
           )
           .subscribe(checkCompletion);

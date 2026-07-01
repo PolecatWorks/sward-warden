@@ -400,6 +400,10 @@ export class SyncEngineService implements OnDestroy {
         response.fertilisation_plans || [],
       );
       await this.upsertFarmRecords(db, response.farm_records || []);
+      await this.upsertFertiliserApplications(
+        db,
+        response.fertiliser_applications || [],
+      );
       await this.upsertOrganicManureApplications(
         db,
         response.organic_manure_applications || [],
@@ -1033,6 +1037,82 @@ export class SyncEngineService implements OnDestroy {
   // ──────────────────────────────────────────────────────────
 
   /** Update a local RxDB document's syncStatus. */
+
+  private async upsertFertiliserApplications(
+    db: SwardDatabase,
+    serverApps: any[],
+  ): Promise<void> {
+    if (!serverApps || serverApps.length === 0) return;
+    const serverIds = serverApps.map((a) => a.id);
+    const existingDocs = await db.fertiliser_applications
+      .find({ selector: { serverId: { $in: serverIds } } })
+      .exec();
+    const existingMap = new Map(existingDocs.map((d) => [d.serverId, d]));
+
+    const toUpsert: any[] = [];
+    const idsToRemove: string[] = [];
+
+    for (const sApp of serverApps) {
+      const localDoc = existingMap.get(sApp.id);
+
+      if (sApp.is_deleted) {
+        if (localDoc && localDoc.syncStatus !== 'pending') {
+          idsToRemove.push(localDoc.id);
+        }
+        continue;
+      }
+
+      if (localDoc) {
+        const localUpdatedAt = new Date(localDoc.updatedAt).getTime();
+        const serverUpdatedAt = sApp.updated_at
+          ? new Date(sApp.updated_at).getTime()
+          : 0;
+        if (
+          localDoc.syncStatus === 'pending' &&
+          localUpdatedAt > serverUpdatedAt
+        ) {
+          continue;
+        }
+        toUpsert.push({
+          ...localDoc.toJSON(),
+          event_id: sApp.event_id,
+          fertiliser_type: sApp.fertiliser_type,
+          amount_applied: sApp.amount_applied,
+          nitrogen_content: sApp.nitrogen_content,
+          phosphorus_content: sApp.phosphorus_content,
+          is_protected_urea: sApp.is_protected_urea,
+          buffer_zone_confirmed: sApp.buffer_zone_confirmed,
+          evidence_of_control: sApp.evidence_of_control,
+          syncStatus: 'synced',
+          updatedAt: sApp.updated_at,
+        });
+      } else {
+        toUpsert.push({
+          id: `server-${sApp.id}`,
+          serverId: sApp.id,
+          event_id: sApp.event_id,
+          fertiliser_type: sApp.fertiliser_type,
+          amount_applied: sApp.amount_applied,
+          nitrogen_content: sApp.nitrogen_content,
+          phosphorus_content: sApp.phosphorus_content,
+          is_protected_urea: sApp.is_protected_urea,
+          buffer_zone_confirmed: sApp.buffer_zone_confirmed,
+          evidence_of_control: sApp.evidence_of_control,
+          syncStatus: 'synced',
+          updatedAt: sApp.updated_at || new Date().toISOString(),
+        });
+      }
+    }
+
+    if (toUpsert.length > 0) {
+      await db.fertiliser_applications.bulkUpsert(toUpsert);
+    }
+    if (idsToRemove.length > 0) {
+      await db.fertiliser_applications
+        .find({ selector: { id: { $in: idsToRemove } } })
+        .remove();
+    }
+  }
 
   private async upsertFarmRecords(
     db: SwardDatabase,

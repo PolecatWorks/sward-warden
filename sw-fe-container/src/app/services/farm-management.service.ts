@@ -23,6 +23,7 @@ import {
   FertilisationPlanDocType,
   OutboxEntityType,
   FarmRecordDocType,
+  FertiliserApplicationDocType,
   OrganicManureApplicationDocType,
   ComplianceBreachDocType,
   SwardMovementDocType,
@@ -815,14 +816,24 @@ export class FarmManagementService {
 
   // PRD Reference: 0003
   getFertiliserApplications(): Observable<FertiliserApplication[]> {
-    return this.apiUrl$.pipe(
-      // PRD Reference: 0003
-      switchMap((apiUrl) =>
-        this.http.get<FertiliserApplication[]>(
-          `${apiUrl}/fertiliser_applications`,
-          { headers: this.getHeaders() },
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        // PRD Reference: 0003
+        switchMap((apiUrl) =>
+          this.http.get<FertiliserApplication[]>(
+            `${apiUrl}/fertiliser_applications`,
+            { headers: this.getHeaders() },
+          ),
         ),
+      );
+    }
+    return this.rxdbService.db$.pipe(
+      // PRD Reference: 0003
+      switchMap(
+        (db) => db.fertiliser_applications.find().$ as Observable<FertiliserApplicationDocType[]>,
       ),
+      // PRD Reference: 0003
+      map((docs) => docs.map((doc) => this.fertiliserApplicationDocToModel(doc))),
     );
   }
 
@@ -830,33 +841,106 @@ export class FarmManagementService {
   addFertiliserApplication(
     application: FertiliserApplication,
   ): Observable<FertiliserApplication> {
-    return this.apiUrl$.pipe(
-      // PRD Reference: 0003
-      switchMap((apiUrl) =>
-        this.http.post<FertiliserApplication>(
-          `${apiUrl}/fertiliser_applications`,
-          application,
-          { headers: this.getHeaders() },
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        // PRD Reference: 0003
+        switchMap((apiUrl) =>
+          this.http.post<FertiliserApplication>(
+            `${apiUrl}/fertiliser_applications`,
+            application,
+            { headers: this.getHeaders() },
+          ),
         ),
-      ),
+      );
+    }
+    return this.insertEntity<FertiliserApplicationDocType, FertiliserApplication>(
+      'fertiliser_applications',
+      {
+        serverId: typeof application.id === 'number' ? application.id : undefined,
+        event_id: application.event_id,
+        fertiliser_type: application.fertiliser_type,
+        amount_applied: application.amount_applied,
+        nitrogen_content: application.nitrogen_content,
+        phosphorus_content: application.phosphorus_content,
+        is_protected_urea: application.is_protected_urea,
+        buffer_zone_confirmed: application.buffer_zone_confirmed,
+        evidence_of_control: application.evidence_of_control,
+      },
+      {
+        event_id: application.event_id,
+        fertiliser_type: application.fertiliser_type,
+        amount_applied: application.amount_applied,
+        nitrogen_content: application.nitrogen_content,
+        phosphorus_content: application.phosphorus_content,
+        is_protected_urea: application.is_protected_urea,
+        buffer_zone_confirmed: application.buffer_zone_confirmed,
+        evidence_of_control: application.evidence_of_control,
+      },
+      (doc) => this.fertiliserApplicationDocToModel(doc),
     );
   }
 
   // PRD Reference: 0003
   updateFertiliserApplication(
-    id: number | string,
+    localId: string,
+    serverId: number | string | undefined,
     application: Partial<FertiliserApplication>,
   ): Observable<FertiliserApplication> {
-    return this.apiUrl$.pipe(
-      // PRD Reference: 0003
-      switchMap((apiUrl) =>
-        this.http.put<FertiliserApplication>(
-          `${apiUrl}/fertiliser_applications/${id}`,
-          application,
-          { headers: this.getHeaders() },
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        // PRD Reference: 0003
+        switchMap((apiUrl) =>
+          this.http.put<FertiliserApplication>(
+            `${apiUrl}/fertiliser_applications/${serverId ?? localId}`,
+            application,
+            { headers: this.getHeaders() },
+          ),
         ),
-      ),
+      );
+    }
+    const updates: any = {};
+    const outboxPayload: any = {};
+
+    if (application.fertiliser_type !== undefined)
+      updates.fertiliser_type = outboxPayload.fertiliser_type = application.fertiliser_type;
+    if (application.amount_applied !== undefined)
+      updates.amount_applied = outboxPayload.amount_applied = application.amount_applied;
+    if (application.nitrogen_content !== undefined)
+      updates.nitrogen_content = outboxPayload.nitrogen_content = application.nitrogen_content;
+    if (application.phosphorus_content !== undefined)
+      updates.phosphorus_content = outboxPayload.phosphorus_content = application.phosphorus_content;
+    if (application.is_protected_urea !== undefined)
+      updates.is_protected_urea = outboxPayload.is_protected_urea = application.is_protected_urea;
+    if (application.buffer_zone_confirmed !== undefined)
+      updates.buffer_zone_confirmed = outboxPayload.buffer_zone_confirmed = application.buffer_zone_confirmed;
+    if (application.evidence_of_control !== undefined)
+      updates.evidence_of_control = outboxPayload.evidence_of_control = application.evidence_of_control;
+
+    return this.updateEntity<FertiliserApplicationDocType, FertiliserApplication>(
+      'fertiliser_applications',
+      localId,
+      serverId,
+      updates,
+      outboxPayload,
+      (doc) => this.fertiliserApplicationDocToModel(doc),
     );
+  }
+
+  private fertiliserApplicationDocToModel(doc: FertiliserApplicationDocType): FertiliserApplication {
+    return {
+      id: doc.serverId ?? doc.id,
+      localId: doc.id,
+      serverId: doc.serverId,
+      event_id: doc.event_id,
+      fertiliser_type: doc.fertiliser_type,
+      amount_applied: doc.amount_applied,
+      nitrogen_content: doc.nitrogen_content,
+      phosphorus_content: doc.phosphorus_content,
+      is_protected_urea: doc.is_protected_urea,
+      buffer_zone_confirmed: doc.buffer_zone_confirmed,
+      evidence_of_control: doc.evidence_of_control,
+      updated_at: doc.updatedAt,
+    };
   }
 
   // Organic Manure Applications
