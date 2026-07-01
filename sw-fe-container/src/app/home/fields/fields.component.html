@@ -216,6 +216,16 @@
           <button
             *ngIf="field.id"
             class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-full transition-colors flex items-center justify-center"
+            [routerLink]="farmId > 0 ? ['/farms', farmId, 'topology'] : ['/farms', field.farm_id, 'topology']"
+            (click)="$event.stopPropagation()"
+            [attr.aria-label]="'Topology Map for ' + field.name"
+            [attr.data-testid]="'topology-field-card-btn-' + field.id"
+          >
+            <span class="material-symbols-outlined text-sm">map</span>
+          </button>
+          <button
+            *ngIf="field.id"
+            class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-full transition-colors flex items-center justify-center"
             (click)="startEdit(field); $event.stopPropagation()"
             [attr.aria-label]="'Edit ' + field.name"
           >
