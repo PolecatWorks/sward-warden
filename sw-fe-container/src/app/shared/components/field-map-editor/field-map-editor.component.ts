@@ -112,7 +112,6 @@ export class FieldMapEditorComponent
     );
 
     streetMap.addTo(this.map);
-
     const baseMaps = {
       "Street Map": streetMap,
       "Satellite Map": satelliteMap
