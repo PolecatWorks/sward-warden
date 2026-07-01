@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
 import * as L from 'leaflet';
 import '@geoman-io/leaflet-geoman-free';
 // @ts-ignore
-import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
+import { GeoSearchControl, EsriProvider } from 'leaflet-geosearch';
 
 @Component({
   selector: 'app-field-map-editor',
@@ -103,7 +103,7 @@ export class FieldMapEditorComponent
 
     tiles.addTo(this.map);
 
-    const provider = new OpenStreetMapProvider();
+    const provider = new EsriProvider();
     const searchControl = new (GeoSearchControl as any)({
       provider: provider,
       style: 'bar',
