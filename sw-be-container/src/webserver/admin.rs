@@ -52,7 +52,7 @@ pub async fn admin_list_events(
     Ok(Json(events))
 }
 
-// PRD Reference: 0013, 0018
+// PRD Reference: 0013
 pub async fn admin_list_audit_logs(
     _: auth::SupportOnly,
     State(state): State<AppState>,
@@ -63,7 +63,7 @@ pub async fn admin_list_audit_logs(
     Ok(Json(logs))
 }
 
-// PRD Reference: 0013, 0018
+// PRD Reference: 0013
 pub async fn log_admin_action(
     pool: &sqlx::PgPool,
     user_id: Option<i64>,

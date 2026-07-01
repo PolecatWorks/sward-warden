@@ -68,7 +68,7 @@ where
     )))
 }
 
-// PRD Reference: 0001, 0009
+// PRD Reference: 0001
 pub async fn run_startup_checks(
     config: &AppConfig,
     db_pool: &sqlx::PgPool,
@@ -107,7 +107,7 @@ mod tests {
     use std::sync::{Arc, Mutex};
     use std::time::Duration;
 
-    // PRD Reference: 0001, 0009
+    // PRD Reference: 0001
     #[tokio::test]
     async fn test_run_check_success_first_try() {
         let config = StartupCheckConfig {
@@ -124,7 +124,7 @@ mod tests {
         assert_eq!(result.unwrap(), 42);
     }
 
-    // PRD Reference: 0001, 0009
+    // PRD Reference: 0001
     #[tokio::test]
     async fn test_run_check_success_after_retries() {
         let config = StartupCheckConfig {
@@ -154,7 +154,7 @@ mod tests {
         assert_eq!(*attempts.lock().unwrap(), 3);
     }
 
-    // PRD Reference: 0001, 0009
+    // PRD Reference: 0001
     #[tokio::test]
     async fn test_run_check_failure() {
         let config = StartupCheckConfig {

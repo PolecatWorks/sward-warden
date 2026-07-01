@@ -33,7 +33,7 @@ use crate::webserver::start_app_api;
 pub const NAME: &str = env!("CARGO_PKG_NAME");
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-// PRD Reference: 0001, 0009
+// PRD Reference: 0001
 pub async fn service_cancellable(
     ct: CancellationToken,
     config: AppConfig,

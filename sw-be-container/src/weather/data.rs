@@ -11,7 +11,7 @@ pub struct WeatherData {
     pub condition: String,
 }
 
-// PRD Reference: 0001, 0009
+// PRD Reference: 0001
 pub fn get_static_forecast() -> Vec<WeatherData> {
     let now = Utc::now();
     vec![

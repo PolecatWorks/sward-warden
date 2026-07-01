@@ -91,7 +91,7 @@ impl FromRequestParts<AppState> for UserId {
     }
 }
 
-// PRD Reference: 0001, 0010, 0020
+// PRD Reference: 0001, 0014
 async fn extract_jwt_claims(
     parts: &mut Parts,
     state: &AppState,
@@ -157,7 +157,7 @@ pub async fn get_user_role(pool: &sqlx::PgPool, user_id: i64) -> Option<String> 
         .map(|(role, _)| role)
 }
 
-// PRD Reference: 0013, 0018
+// PRD Reference: 0013
 pub async fn check_is_admin(pool: &sqlx::PgPool, user_id: i64) -> bool {
     get_user_role(pool, user_id)
         .await

@@ -63,10 +63,10 @@ export class FieldMapEditorComponent
 
   constructor() {}
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   ngOnInit() {}
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   ngAfterViewInit() {
     this.initMap();
     if (this.geojson) {
@@ -78,14 +78,14 @@ export class FieldMapEditorComponent
     }
   }
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   ngOnDestroy() {
     if (this.map) {
       this.map.remove();
     }
   }
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   private initMap(): void {
     this.map = L.map(this.mapElement.nativeElement, {
       center: [54.5, -6.5], // Default center
@@ -134,7 +134,7 @@ export class FieldMapEditorComponent
     this.map.addControl(searchControl);
   }
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   private setupGeoman(): void {
     this.map.pm.addControls({
       position: 'topleft',
@@ -174,7 +174,7 @@ export class FieldMapEditorComponent
     });
   }
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   private loadGeoJson(geoJsonString: string): void {
     try {
       const geojsonObj = JSON.parse(geoJsonString);
@@ -210,7 +210,7 @@ export class FieldMapEditorComponent
     }
   }
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   private updateGeoJsonFromLayer(layer: L.Layer): void {
     try {
       let geojson;
@@ -228,7 +228,7 @@ export class FieldMapEditorComponent
   }
 
   // Auto-detection using Overpass API
-  // PRD Reference: 0024
+  // PRD Reference: 0008
   async autoDetectStub(): Promise<void> {
     const center = this.map.getCenter();
     const query = `[out:json];(way["landuse"](around:50,${center.lat},${center.lng});relation["landuse"](around:50,${center.lat},${center.lng}););out geom;`;
