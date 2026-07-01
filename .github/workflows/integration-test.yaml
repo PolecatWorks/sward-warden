@@ -234,7 +234,7 @@ jobs:
         uses: actions/checkout@v4
         continue-on-error: true
         with:
-          ref: gh-pages
+          ref: refs/heads/gh-pages
           path: gh-pages-dir
           fetch-depth: 1
 
