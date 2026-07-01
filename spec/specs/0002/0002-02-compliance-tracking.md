@@ -1,4 +1,4 @@
-# 0002-03 Compliance Tracking Specification
+# 0002-02 Compliance Tracking Specification
 
 **State**: Complete
 

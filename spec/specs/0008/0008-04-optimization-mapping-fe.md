@@ -31,5 +31,5 @@ This specification covers the comprehensive fe implementation integrating optimi
 ## Technical Details
 - Implemented in `sw-fe-container` using Angular and Tailwind CSS.
 - Map components should be designed for performance, especially when rendering complex GeoJSON (buffer zones, topologies).
-- Ensure the Bento layout and Map view are fully responsive across mobile, tablet, and desktop (referencing PRD 0012 guidelines).
+- Ensure the Bento layout and Map view are fully responsive across mobile, tablet, and desktop (referencing PRD 0002 guidelines).
 - Integrate with be endpoints defined in specs `0008-01`, `0008-02`, and `0008-03`.

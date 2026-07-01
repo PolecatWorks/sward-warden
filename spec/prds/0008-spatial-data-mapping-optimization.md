@@ -9,10 +9,10 @@ This document defines the requirements for the application's spatial capabilitie
   - *Primary:* AI/Satellite imagery API (e.g., Farmdok) detects boundaries via click.
   - *Secondary:* Fetch official boundaries via Government APIs (e.g., UK RPA) using a Single Business Identifier (SBI).
 - **Manual Tools:** Users can manually draw, edit vertices (drag handles), snap to adjacent boundaries, and delete points.
-- **Undefined Boundaries:** If a boundary is unknown, a single point representing the field center is permitted until defined.
+- **Undefined Boundaries:** If a boundary is unknown, a single point representing the field center is permitted until defined. This single point representation has no relationship to the field's area, and all fields must have a defined area regardless of whether their boundary is a point or polygon.
 - **Viewing Modes:**
   - *Field View:* Active field colored distinctly, farm bounds centered.
-  - *Farm View:* Shows the extent of all fields in the farm with a suitable buffer context.
+  - *Farm View:* Shows the extent of all fields in the farm with a suitable buffer context (e.g. 1 km). These bounds must be recorded on the farm definition object and persisted, updating dynamically as fields are added/removed or as farm geometry is modified.
 
 ## 2. Topographical Data Analysis
 Evaluating the slope and elevation of a field is critical for determining runoff risk and ensuring compliance.
@@ -36,6 +36,7 @@ Evaluating the slope and elevation of a field is critical for determining runoff
   - Automatically prevent scheduling/logging applications if heavy rain is forecast within 48 hours or if current conditions prohibit spreading.
 
 ## 5. UI/UX Mapping Visualizations
+- **Topology View Access:** A "Topology View" button must be provided in the Farm Detail view's Quick Actions section, navigating directly to the topology mapping interface for that farm.
 - **Integrated Map View:** Premium, high-contrast map interface. Polygons clearly styled with translucent fill and high-contrast strokes.
 - **Topology Toggles:** Users can toggle layers like Soil Type, Risk Level, and Historical Application. High-risk slopes and vulnerable zones are visually flagged.
 - **Optimization Bento:** Suggested plans presented in Bento-style dashboards explaining the "Reasoning" (e.g., "Optimal Weather Window").

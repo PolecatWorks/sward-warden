@@ -1,4 +1,4 @@
-# 0005-05 Compliance Penalty Matrix Specification
+# 0005-04 Compliance Penalty Matrix Specification
 
 **State**: Complete
 

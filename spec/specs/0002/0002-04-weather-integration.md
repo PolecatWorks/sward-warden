@@ -1,4 +1,4 @@
-# 0002-05 Weather Integration Specification
+# 0002-04 Weather Integration Specification
 
 **State**: Complete
 
