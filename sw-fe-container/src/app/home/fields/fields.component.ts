@@ -50,7 +50,7 @@ export class FieldsComponent implements OnInit {
   isSaving: boolean = false;
   errorMessage: string | null = null;
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   get totalArea(): number {
     return this.fields.reduce(
       (acc, field) => acc + (field.area_hectares || 0),
@@ -66,7 +66,7 @@ export class FieldsComponent implements OnInit {
     private syncEngineService: SyncEngineService,
   ) {}
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   ngOnInit(): void {
     this.loadFarms();
     this.route.paramMap.subscribe((params) => {
@@ -95,7 +95,7 @@ export class FieldsComponent implements OnInit {
   }
 
   @HostListener('document:keydown.escape', ['$event'])
-  // PRD Reference: 0016, 0025
+  // PRD Reference: 0002, 0003
   handleEscape(event: KeyboardEvent) {
     if (this.showAddForm) {
       this.toggleAddForm();
@@ -108,7 +108,7 @@ export class FieldsComponent implements OnInit {
     }
   }
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   loadFarms(): void {
     this.farmService.getFarms().subscribe((farms) => {
       this.farms = farms;
@@ -120,35 +120,35 @@ export class FieldsComponent implements OnInit {
     });
   }
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   loadFarm(): void {
     this.farmService.getFarms().subscribe((farms) => {
       this.farm = farms.find((f) => f.id === this.farmId);
     });
   }
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   loadFields(): void {
     this.farmService.getFields().subscribe((allFields) => {
       this.fields = allFields.filter((f) => f.farm_id === this.farmId);
     });
   }
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   loadAllFields(): void {
     this.farmService.getFields().subscribe((allFields) => {
       this.fields = allFields;
     });
   }
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   getFarmName(farmId: number | string | undefined): string {
     if (!farmId) return 'Unknown Farm';
     const farm = this.farms.find((f) => f.id === Number(farmId));
     return farm ? farm.name : 'Unknown Farm';
   }
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   async addField(): Promise<void> {
     if (this.newFieldName && this.newFieldArea) {
       const area = parseFloat(this.newFieldArea);
@@ -162,7 +162,7 @@ export class FieldsComponent implements OnInit {
           return;
         } else {
           // Auto-create a default farm for the user if they don't have one
-          // PRD Reference: 0003, 0016
+          // PRD Reference: 0003
           const currentUserId = this.authService.getUserId() || '1';
           try {
             const user = await firstValueFrom(
@@ -241,12 +241,12 @@ export class FieldsComponent implements OnInit {
     }
   }
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   toggleAddForm(): void {
     this.showAddForm = !this.showAddForm;
   }
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   deleteField(id: number): void {
     this.farmService.deleteEntity('fields', id).subscribe(() => {
       if (this.farmId) {
@@ -257,7 +257,7 @@ export class FieldsComponent implements OnInit {
     });
   }
 
-  // PRD Reference: 0016, 0025
+  // PRD Reference: 0002, 0003
   startEdit(field: Field): void {
     this.editingFieldId = field.id || null;
     this.editFieldName = field.name;
@@ -273,7 +273,7 @@ export class FieldsComponent implements OnInit {
     this.originalEditFieldFarmId = this.editFieldFarmId;
   }
 
-  // PRD Reference: 0025
+  // PRD Reference: 0002
   hasFieldEditChanges(): boolean {
     return (
       this.editFieldName !== this.originalEditFieldName ||
@@ -285,7 +285,7 @@ export class FieldsComponent implements OnInit {
     );
   }
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   cancelEdit(): void {
     this.editingFieldId = null;
     this.editFieldName = '';
@@ -295,7 +295,7 @@ export class FieldsComponent implements OnInit {
     this.editFieldFarmId = 0;
   }
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   saveField(field: Field): void {
     if (
       !field.id ||
@@ -326,7 +326,7 @@ export class FieldsComponent implements OnInit {
     });
   }
 
-  // PRD Reference: 0016, 0025
+  // PRD Reference: 0002, 0003
   saveFieldFromList(): void {
     if (
       !this.editingFieldId ||
@@ -342,7 +342,7 @@ export class FieldsComponent implements OnInit {
     this.saveField(field);
   }
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   openEditFarmModal(): void {
     if (!this.farm) return;
     this.editFarmName = this.farm.name;
@@ -353,7 +353,7 @@ export class FieldsComponent implements OnInit {
     this.showEditFarmModal = true;
   }
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   hasEditChanges(): boolean {
     return (
       this.editFarmName !== this.originalEditFarmName ||
@@ -361,7 +361,7 @@ export class FieldsComponent implements OnInit {
     );
   }
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   closeEditFarmModal(): void {
     this.showEditFarmModal = false;
     this.editFarmName = '';
@@ -369,7 +369,7 @@ export class FieldsComponent implements OnInit {
     this.errorMessage = null;
   }
 
-  // PRD Reference: 0016
+  // PRD Reference: 0003
   editFarm(): void {
     if (
       !this.farm ||

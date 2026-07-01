@@ -22,7 +22,7 @@ export const devAuthInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   return next(newReq).pipe(
-    // PRD Reference: 0020
+    // PRD Reference: 0014
     catchError((error: HttpErrorResponse) => {
       // Catch authentication/authorization errors and route to the error page
       if (error.status === 401 || error.status === 403) {

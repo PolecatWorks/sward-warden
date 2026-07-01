@@ -15,7 +15,7 @@ use crate::state::AppState;
 use crate::webserver::start_app_api;
 use crate::{NAME, VERSION};
 
-// PRD Reference: 0001, 0009
+// PRD Reference: 0001
 pub async fn service_cancellable(
     ct: CancellationToken,
     config: AppConfig,
@@ -71,7 +71,7 @@ pub async fn service_cancellable(
     Ok(())
 }
 
-// PRD Reference: 0001, 0009
+// PRD Reference: 0001
 // Wrapper for startup tools to avoid direct crate access issues if needed
 async fn startup_tools_run(config: &AppConfig, db_pool: &sqlx::PgPool) -> Result<(), AppError> {
     crate::startup_tools::run_startup_checks(config, db_pool).await
