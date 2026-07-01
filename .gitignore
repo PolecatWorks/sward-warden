@@ -2,3 +2,4 @@
 **/reports/
 integration-tests/venv
 venv/
+node_modules

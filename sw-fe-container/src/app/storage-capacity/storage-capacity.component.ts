@@ -123,7 +123,7 @@ export class StorageCapacityComponent implements OnInit, OnDestroy {
         uuid: newId,
         name: val.name,
         storage_type: val.storage_type,
-        capacity_volume: val.capacity_volume,
+        capacity_volume: Number(val.capacity_volume),
         is_covered: val.is_covered,
         farm_id: val.farm_id ? Number(val.farm_id) : null,
         syncStatus: 'pending',
@@ -149,7 +149,7 @@ export class StorageCapacityComponent implements OnInit, OnDestroy {
         await doc.patch({
           name: val.name,
           storage_type: val.storage_type,
-          capacity_volume: val.capacity_volume,
+          capacity_volume: Number(val.capacity_volume),
           is_covered: val.is_covered,
           farm_id: val.farm_id ? Number(val.farm_id) : null,
           syncStatus: 'pending',
