@@ -99,7 +99,12 @@ export class InventoryChemicalsService {
       name: chemical.name!,
       mapp_number: chemical.mapp_number!,
       active_ingredient: chemical.active_ingredient,
-      quantity_on_hand: chemical.quantity_on_hand,
+      quantity_on_hand:
+        chemical.quantity_on_hand !== null &&
+        chemical.quantity_on_hand !== undefined &&
+        (chemical.quantity_on_hand as any) !== ''
+          ? Number(chemical.quantity_on_hand)
+          : undefined,
       unit: chemical.unit,
       syncStatus: 'pending',
       updatedAt: new Date().toISOString(),
@@ -110,7 +115,12 @@ export class InventoryChemicalsService {
       name: chemical.name,
       mapp_number: chemical.mapp_number,
       active_ingredient: chemical.active_ingredient,
-      quantity_on_hand: chemical.quantity_on_hand,
+      quantity_on_hand:
+        chemical.quantity_on_hand !== null &&
+        chemical.quantity_on_hand !== undefined &&
+        (chemical.quantity_on_hand as any) !== ''
+          ? Number(chemical.quantity_on_hand)
+          : undefined,
       unit: chemical.unit,
     });
 
@@ -152,7 +162,11 @@ export class InventoryChemicalsService {
             : doc.active_ingredient,
         quantity_on_hand:
           updates.quantity_on_hand !== undefined
-            ? updates.quantity_on_hand
+            ? updates.quantity_on_hand !== null &&
+              updates.quantity_on_hand !== undefined &&
+              (updates.quantity_on_hand as any) !== ''
+              ? Number(updates.quantity_on_hand)
+              : undefined
             : doc.quantity_on_hand,
         unit: updates.unit !== undefined ? updates.unit : doc.unit,
       });
