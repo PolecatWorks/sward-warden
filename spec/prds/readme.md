@@ -47,6 +47,7 @@ None.
 - [0026 Storage Capacity Management](./0026-storage-capacity-management.md)
 - [0027 Integration Testing Pipeline Optimization](./0027-integration-testing-pipeline-optimization.md)
 - [0028 Account Suspension and Modules](./0028-account-suspension-and-modules.md)
+- [0029 Field Slope Evaluation](./0029-field-slope-evaluation.md)
 
 ## PRD gaps
 
