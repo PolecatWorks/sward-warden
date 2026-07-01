@@ -121,3 +121,5 @@ Specifications under PRD 0008 (Spatial Optimization) require the PostGIS extensi
 | [0024-02 GeoJSON Geometry Transition](./0024/0024-02-geojson-geometry.md) | Complete |
 | [0020-03 Drop X-User-ID Header Support](./0020/0020-03-drop-x-user-id.md) | Complete |
 | [0025-01 Modal Keyboard Accessibility](./0025/0025-01-modal-keyboard-accessibility.md) | Complete |
+| [0028-01 Account Suspension Backend Integration](./0028/0028-01-account-suspension.md) | In Progress |
+| [0028-02 Module Subscriptions Frontend](./0028/0028-02-module-subscriptions.md) | In Progress |
