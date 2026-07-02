@@ -25,7 +25,7 @@ export const devAuthInterceptor: HttpInterceptorFn = (req, next) => {
     // PRD Reference: 0020
     catchError((error: HttpErrorResponse) => {
       // Catch authentication/authorization errors and route to the error page
-      if (error.status === 401 || error.status === 403) {
+      if ((error.status === 401 || error.status === 403) && authService.getToken()) {
         const errorMsg =
           error.error?.error ||
           'Authentication failed. Please check your credentials or access rights.';
