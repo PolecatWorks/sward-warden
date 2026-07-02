@@ -16,19 +16,12 @@ Setup Suite
     New Browser    chromium    headless=true
     New Context
 
-Setup Mock Login
+Setup UI Login
     [Arguments]    ${user_id}
-    # Mock the login state by setting localStorage manually before navigation
-    # Fetch a real dev JWT token for this user to allow frontend-backend API requests
-    ${user_id_int}=     Convert To Integer    ${user_id}
-    &{auth_payload}=    Create Dictionary    user_id=${user_id_int}    role=user
-    ${auth_resp}=       POST    ${BE_BASE_URL}/dev/auth/token    json=${auth_payload}    expected_status=200
-    ${token}=           Set Variable    ${auth_resp.json()['access_token']}
-
-    New Page       ${FE_BASE_URL}
-    Evaluate JavaScript    ${None}    () => localStorage.setItem('agent-user-id', '${user_id}')
-    Evaluate JavaScript    ${None}    () => localStorage.setItem('dev-jwt-token', '${token}')
-    Go To       ${FE_BASE_URL}
+    New Page       ${FE_BASE_URL}/login
+    Wait For Elements State    css=[data-testid="user-login-${user_id}"]    visible    timeout=15s
+    Click          css=[data-testid="user-login-${user_id}"]
+    Wait For Elements State    css=app-home    visible    timeout=15s
 
 *** Test Cases ***
 
@@ -43,8 +36,7 @@ Module Access Restriction Verification
     ${user_id}=         Convert To String    ${create_resp.json()['id']}
 
     # 2. Log in via the frontend
-    Setup Mock Login    ${user_id}
-    Go To               ${FE_BASE_URL}/home
+    Setup UI Login    ${user_id}
 
     # 3. Assert that the "Reporting" navigation link is not visible in the sidebar
     Get Element States    aside >> text=Reporting    not contains    visible
@@ -84,8 +76,7 @@ Module Subscription Granted Verification
     ${update_resp}=     PUT    ${BE_BASE_URL}/v0/users/${user_id}    json=${grant_payload}    headers=${admin_headers}    expected_status=200
 
     # 3. Log in via the frontend
-    Setup Mock Login    ${user_id}
-    Go To               ${FE_BASE_URL}/home
+    Setup UI Login    ${user_id}
     Sleep    3s
 
     # 4. Assert that the "Reporting" navigation link is now visible in the sidebar
