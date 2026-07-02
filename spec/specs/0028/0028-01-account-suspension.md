@@ -61,9 +61,25 @@ This specification details the backend schema and logic changes required to supp
 - Update `list_users`, `get_user`, `create_user`, and `update_user` to correctly join and aggregate the `modules` array and handle the `is_suspended` boolean.
 - During `update_user`, implement logic to insert/delete rows in `user_modules` based on the provided array of module names.
 
-## 4. Tasks
+## 4. Integration Testing (Robot Framework)
+To guarantee the backend correctly enforces these rules, the following Robot test journeys must be implemented in `integration-tests/tests/test_account_suspension.robot`:
+
+- **Account Suspension Cycle API Verification:**
+  - Create a test user and verify successful API calls (e.g., fetching profile).
+  - Use an Admin API call to update the user to `is_suspended = true`.
+  - Attempt the profile fetch again and assert a `403 Forbidden` response.
+  - Update the user to `is_suspended = false`.
+  - Attempt the profile fetch again and assert a `200 OK` response.
+
+- **Suspension Data Sync Block Verification:**
+  - Create a suspended test user.
+  - Attempt to send an outbox mutation payload to the `POST /v0/sync/push` endpoint.
+  - Assert the request is rejected with `403 Forbidden` and no database mutation occurs.
+
+## 5. Tasks
 - [ ] Create `0020_account_suspension_and_modules.sql` migration.
 - [ ] Update `User` model in `models.rs`.
 - [ ] Implement suspension check in `auth.rs`.
 - [ ] Implement module check and filtering in `sync.rs`.
 - [ ] Update `users.rs` queries to handle `is_suspended` and `modules` relations.
+- [ ] Implement `integration-tests/tests/test_account_suspension.robot`.

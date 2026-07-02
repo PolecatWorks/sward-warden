@@ -16,7 +16,7 @@ pub mod weather;
 
 use axum::{
     Json, Router,
-    routing::{delete, get, post, put},
+    routing::{delete, get, put},
 };
 use axum_prometheus::PrometheusMetricLayer;
 use tokio_util::sync::CancellationToken;

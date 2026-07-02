@@ -18,7 +18,7 @@ pub async fn list_users(State(state): State<AppState>) -> Result<Json<Vec<User>>
     }
 
     let users =
-        sqlx::query_as::<_, User>("SELECT id, name, email, role, phone, description FROM users")
+        sqlx::query_as::<_, User>("SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id GROUP BY u.id")
             .fetch_all(&state.db_pool)
             .await;
     Ok(Json(users?))
@@ -29,17 +29,38 @@ pub async fn create_user(
     State(state): State<AppState>,
     Json(user): Json<User>,
 ) -> Result<Json<User>, AppError> {
-    let new_user = sqlx::query_as::<_, User>(
-        "INSERT INTO users (name, email, role, phone, description) VALUES ($1, $2, $3, $4, $5) RETURNING id, name, email, role, phone, description",
+    let mut tx = state.db_pool.begin().await?;
+    let new_user: User = sqlx::query_as(
+        "INSERT INTO users (name, email, role, phone, description, is_suspended) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, name, email, role, phone, description, is_suspended, NULL AS modules",
     )
     .bind(&user.name)
     .bind(&user.email)
     .bind(&user.role)
     .bind(&user.phone)
     .bind(&user.description)
+    .bind(user.is_suspended)
+    .fetch_one(&mut *tx)
+    .await?;
+
+    if let Some(modules) = &user.modules {
+        for module in modules {
+            sqlx::query("INSERT INTO user_modules (user_id, module_id) SELECT $1, id FROM modules WHERE name = $2")
+                .bind(new_user.id)
+                .bind(module)
+                .execute(&mut *tx)
+                .await?;
+        }
+    }
+    tx.commit().await?;
+
+    let final_user = sqlx::query_as::<_, User>(
+        "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.id = $1 GROUP BY u.id",
+    )
+    .bind(new_user.id)
     .fetch_one(&state.db_pool)
-    .await;
-    Ok(Json(new_user?))
+    .await?;
+
+    Ok(Json(final_user))
 }
 
 // References more than 3 PRDs
@@ -48,12 +69,12 @@ pub async fn get_user(
     axum::extract::Path(id): axum::extract::Path<i64>,
 ) -> Result<Json<User>, AppError> {
     let user = sqlx::query_as::<_, User>(
-        "SELECT id, name, email, role, phone, description FROM users WHERE id = $1",
+        "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.id = $1 GROUP BY u.id",
     )
     .bind(id)
     .fetch_one(&state.db_pool)
-    .await;
-    Ok(Json(user?))
+    .await?;
+    Ok(Json(user))
 }
 
 // References more than 3 PRDs
@@ -62,18 +83,42 @@ pub async fn update_user(
     axum::extract::Path(id): axum::extract::Path<i64>,
     Json(user): Json<User>,
 ) -> Result<Json<User>, AppError> {
-    let updated_user = sqlx::query_as::<_, User>(
-        "UPDATE users SET name = $1, email = $2, role = $3, phone = $4, description = $5 WHERE id = $6 RETURNING id, name, email, role, phone, description",
+    let mut tx = state.db_pool.begin().await?;
+
+    sqlx::query(
+        "UPDATE users SET name = $1, email = $2, role = $3, phone = $4, description = $5, is_suspended = $6 WHERE id = $7",
     )
     .bind(&user.name)
     .bind(&user.email)
     .bind(&user.role)
     .bind(&user.phone)
     .bind(&user.description)
+    .bind(user.is_suspended)
+    .bind(id)
+    .execute(&mut *tx)
+    .await?;
+
+    if let Some(modules) = &user.modules {
+        sqlx::query("DELETE FROM user_modules WHERE user_id = $1").bind(id).execute(&mut *tx).await?;
+        for module in modules {
+            sqlx::query("INSERT INTO user_modules (user_id, module_id) SELECT $1, id FROM modules WHERE name = $2")
+                .bind(id)
+                .bind(module)
+                .execute(&mut *tx)
+                .await?;
+        }
+    }
+
+    tx.commit().await?;
+
+    let updated_user = sqlx::query_as::<_, User>(
+        "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.id = $1 GROUP BY u.id",
+    )
     .bind(id)
     .fetch_one(&state.db_pool)
-    .await;
-    Ok(Json(updated_user?))
+    .await?;
+
+    Ok(Json(updated_user))
 }
 
 // References more than 3 PRDs
