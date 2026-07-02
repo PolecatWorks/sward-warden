@@ -19,7 +19,7 @@ impl FromRequestParts<AppState> for AdminOnly {
         let auth_info = get_user_auth_info(&state.db_pool, user_id).await;
 
         if let Some((_, true)) = auth_info {
-             return Err(AppError::Forbidden("Account is suspended".to_string()));
+            return Err(AppError::Forbidden("Account is suspended".to_string()));
         }
 
         if role.is_none() {
@@ -51,7 +51,7 @@ impl FromRequestParts<AppState> for SupportOnly {
         let auth_info = get_user_auth_info(&state.db_pool, user_id).await;
 
         if let Some((_, true)) = auth_info {
-             return Err(AppError::Forbidden("Account is suspended".to_string()));
+            return Err(AppError::Forbidden("Account is suspended".to_string()));
         }
 
         if role.is_none() {
@@ -84,7 +84,7 @@ impl FromRequestParts<AppState> for UserId {
 
         let auth_info = get_user_auth_info(&state.db_pool, user_id).await;
         if let Some((_, true)) = auth_info {
-             return Err(AppError::Forbidden("Account is suspended".to_string()));
+            return Err(AppError::Forbidden("Account is suspended".to_string()));
         }
 
         Ok(UserId(user_id))
@@ -152,7 +152,9 @@ pub async fn get_user_auth_info(pool: &sqlx::PgPool, user_id: i64) -> Option<(St
 
 // References more than 3 PRDs
 pub async fn get_user_role(pool: &sqlx::PgPool, user_id: i64) -> Option<String> {
-    get_user_auth_info(pool, user_id).await.map(|(role, _)| role)
+    get_user_auth_info(pool, user_id)
+        .await
+        .map(|(role, _)| role)
 }
 
 // PRD Reference: 0013, 0018

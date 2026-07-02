@@ -1,6 +1,7 @@
 use crate::error::AppError;
 use crate::models::User;
 use crate::state::AppState;
+use crate::webserver::auth::UserId;
 use axum::{Json, extract::State};
 
 // References more than 3 PRDs
@@ -66,6 +67,7 @@ pub async fn create_user(
 // References more than 3 PRDs
 pub async fn get_user(
     State(state): State<AppState>,
+    _caller: UserId,
     axum::extract::Path(id): axum::extract::Path<i64>,
 ) -> Result<Json<User>, AppError> {
     let user = sqlx::query_as::<_, User>(
@@ -99,7 +101,10 @@ pub async fn update_user(
     .await?;
 
     if let Some(modules) = &user.modules {
-        sqlx::query("DELETE FROM user_modules WHERE user_id = $1").bind(id).execute(&mut *tx).await?;
+        sqlx::query("DELETE FROM user_modules WHERE user_id = $1")
+            .bind(id)
+            .execute(&mut *tx)
+            .await?;
         for module in modules {
             sqlx::query("INSERT INTO user_modules (user_id, module_id) SELECT $1, id FROM modules WHERE name = $2")
                 .bind(id)
