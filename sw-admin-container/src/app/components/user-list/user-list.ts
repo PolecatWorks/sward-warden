@@ -34,4 +34,38 @@ export class UserListComponent implements OnInit {
       }
     });
   }
+
+  toggleSuspension(user: User): void {
+    const updatedUser = { ...user, is_suspended: !user.is_suspended };
+    this.userService.updateUser(user.id, updatedUser).subscribe({
+      next: (updated) => {
+        this.users.update(users => users.map(u => u.id === updated.id ? updated : u));
+      },
+      error: (err) => {
+        console.error('Failed to update suspension status', err);
+      }
+    });
+  }
+
+  toggleModule(user: User, moduleName: string): void {
+    const currentModules = user.modules || [];
+    const hasModule = currentModules.includes(moduleName);
+
+    let newModules;
+    if (hasModule) {
+      newModules = currentModules.filter(m => m !== moduleName);
+    } else {
+      newModules = [...currentModules, moduleName];
+    }
+
+    const updatedUser = { ...user, modules: newModules };
+    this.userService.updateUser(user.id, updatedUser).subscribe({
+      next: (updated) => {
+        this.users.update(users => users.map(u => u.id === updated.id ? updated : u));
+      },
+      error: (err) => {
+        console.error('Failed to update modules', err);
+      }
+    });
+  }
 }

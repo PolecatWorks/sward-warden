@@ -16,13 +16,14 @@ impl FromRequestParts<AppState> for AdminOnly {
     ) -> Result<Self, Self::Rejection> {
         let (user_id, mut role) = extract_jwt_claims(parts, state).await?;
 
-        // Fallback to DB role if JWT doesn't explicitly have it or just to ensure syncing
-        // Actually, we should probably trust the JWT claims.
-        // Let's use the DB role if we have the user ID to ensure it matches up,
-        // or just use the JWT custom claim. Since PRD says "extract the sub and custom role claims",
-        // we'll primarily use the JWT claim, but we could also check DB if JWT doesn't have it.
+        let auth_info = get_user_auth_info(&state.db_pool, user_id).await;
+
+        if let Some((_, true)) = auth_info {
+            return Err(AppError::Forbidden("Account is suspended".to_string()));
+        }
+
         if role.is_none() {
-            role = get_user_role(&state.db_pool, user_id).await;
+            role = auth_info.map(|(r, _)| r);
         }
 
         let role_str = role.unwrap_or_else(|| "user".to_string());
@@ -47,8 +48,14 @@ impl FromRequestParts<AppState> for SupportOnly {
     ) -> Result<Self, Self::Rejection> {
         let (user_id, mut role) = extract_jwt_claims(parts, state).await?;
 
+        let auth_info = get_user_auth_info(&state.db_pool, user_id).await;
+
+        if let Some((_, true)) = auth_info {
+            return Err(AppError::Forbidden("Account is suspended".to_string()));
+        }
+
         if role.is_none() {
-            role = get_user_role(&state.db_pool, user_id).await;
+            role = auth_info.map(|(r, _)| r);
         }
 
         let role_str = role.unwrap_or_else(|| "user".to_string());
@@ -74,6 +81,12 @@ impl FromRequestParts<AppState> for UserId {
         state: &AppState,
     ) -> Result<Self, Self::Rejection> {
         let (user_id, _) = extract_jwt_claims(parts, state).await?;
+
+        let auth_info = get_user_auth_info(&state.db_pool, user_id).await;
+        if let Some((_, true)) = auth_info {
+            return Err(AppError::Forbidden("Account is suspended".to_string()));
+        }
+
         Ok(UserId(user_id))
     }
 }
@@ -128,14 +141,20 @@ async fn extract_jwt_claims(
     Ok((user_id, role))
 }
 
-// References more than 3 PRDs
-pub async fn get_user_role(pool: &sqlx::PgPool, user_id: i64) -> Option<String> {
-    sqlx::query_scalar::<_, String>("SELECT role::text FROM users WHERE id = $1")
+pub async fn get_user_auth_info(pool: &sqlx::PgPool, user_id: i64) -> Option<(String, bool)> {
+    sqlx::query_as::<_, (String, bool)>("SELECT role::text, is_suspended FROM users WHERE id = $1")
         .bind(user_id)
         .fetch_optional(pool)
         .await
         .ok()
         .flatten()
+}
+
+// References more than 3 PRDs
+pub async fn get_user_role(pool: &sqlx::PgPool, user_id: i64) -> Option<String> {
+    get_user_auth_info(pool, user_id)
+        .await
+        .map(|(role, _)| role)
 }
 
 // PRD Reference: 0013, 0018

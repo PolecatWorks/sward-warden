@@ -14,12 +14,16 @@ pub enum Role {
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct User {
+    #[serde(default)]
     pub id: i64,
     pub name: String,
     pub email: String,
     pub role: Role,
     pub phone: Option<String>,
     pub description: Option<String>,
+    #[serde(default)]
+    pub is_suspended: bool,
+    pub modules: Option<Vec<String>>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]

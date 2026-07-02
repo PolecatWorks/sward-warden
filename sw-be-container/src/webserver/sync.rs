@@ -24,6 +24,13 @@ pub async fn delta_sync(
 
     let is_admin = crate::webserver::auth::check_is_admin(&state.db_pool, user_id).await;
 
+    let has_reports_module = sqlx::query_scalar::<_, bool>(
+        "SELECT EXISTS(SELECT 1 FROM user_modules um JOIN modules m ON um.module_id = m.id WHERE um.user_id = $1 AND m.name = 'reports_and_analysis')"
+    )
+    .bind(user_id)
+    .fetch_one(&state.db_pool)
+    .await?;
+
     let farms = if is_admin {
         sqlx::query_as::<_, Farm>(
             "SELECT id, user_id, name, location, has_derogation, updated_at, is_deleted FROM farms WHERE updated_at > $1"
@@ -82,7 +89,7 @@ pub async fn delta_sync(
         .bind(since)
         .fetch_all(&state.db_pool)
         .await?
-    } else {
+    } else if has_reports_module {
         sqlx::query_as::<_, FarmRecord>(
             "SELECT fr.id, fr.farm_id, fr.agricultural_area, fr.manure_storage_capacity, fr.year, fr.has_derogation, fr.updated_at, fr.is_deleted FROM farm_records fr JOIN farms fa ON fr.farm_id = fa.id WHERE fa.user_id = $1 AND fr.updated_at > $2"
         )
@@ -90,6 +97,8 @@ pub async fn delta_sync(
         .bind(since)
         .fetch_all(&state.db_pool)
         .await?
+    } else {
+        vec![]
     };
 
     let soil_analyses = if is_admin {
@@ -99,7 +108,7 @@ pub async fn delta_sync(
         .bind(since)
         .fetch_all(&state.db_pool)
         .await?
-    } else {
+    } else if has_reports_module {
         sqlx::query_as::<_, SoilAnalysis>(
             "SELECT sa.id, sa.field_id, sa.sample_date, sa.ph_level, sa.phosphorus_index, sa.potassium_index, sa.magnesium_index, sa.updated_at, sa.is_deleted FROM soil_analyses sa JOIN fields f ON sa.field_id = f.id JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = $1 AND sa.updated_at > $2"
         )
@@ -107,6 +116,8 @@ pub async fn delta_sync(
         .bind(since)
         .fetch_all(&state.db_pool)
         .await?
+    } else {
+        vec![]
     };
 
     let fertilisation_plans = if is_admin {
