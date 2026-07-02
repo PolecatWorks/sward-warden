@@ -35,27 +35,42 @@ export class EntityExplorerComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    let obs;
     if (tab === 'farms') {
-      obs = this.entityService.getFarms();
+      this.entityService.getFarms().subscribe({
+        next: (data) => {
+          this.farms.set(data);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.error.set(`Failed to load ${tab}`);
+          this.loading.set(false);
+          console.error(err);
+        }
+      });
     } else if (tab === 'fields') {
-      obs = this.entityService.getFields();
+      this.entityService.getFields().subscribe({
+        next: (data) => {
+          this.fields.set(data);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.error.set(`Failed to load ${tab}`);
+          this.loading.set(false);
+          console.error(err);
+        }
+      });
     } else {
-      obs = this.entityService.getEvents();
+      this.entityService.getEvents().subscribe({
+        next: (data) => {
+          this.events.set(data);
+          this.loading.set(false);
+        },
+        error: (err) => {
+          this.error.set(`Failed to load ${tab}`);
+          this.loading.set(false);
+          console.error(err);
+        }
+      });
     }
-
-    obs.subscribe({
-      next: (data) => {
-        if (tab === 'farms') this.farms.set(data as Farm[]);
-        else if (tab === 'fields') this.fields.set(data as Field[]);
-        else this.events.set(data as Event[]);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.error.set(`Failed to load ${tab}`);
-        this.loading.set(false);
-        console.error(err);
-      }
-    });
   }
 }
