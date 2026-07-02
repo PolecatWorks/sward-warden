@@ -18,7 +18,7 @@ Setup Suite
 
 Setup UI Login
     [Arguments]    ${user_id}
-    New Page       ${FE_BASE_URL}/login
+    New Page       ${EXTERNAL_DNS_URL}/login
     Wait For Elements State    css=[data-testid="user-login-${user_id}"]    visible    timeout=15s
     Click          css=[data-testid="user-login-${user_id}"]
     Wait For Elements State    css=app-home    visible    timeout=15s
@@ -42,7 +42,7 @@ Module Access Restriction Verification
     Get Element States    aside >> text=Reporting    not contains    visible
 
     # 4. Attempt to manually navigate to the /reporting URL
-    Go To               ${FE_BASE_URL}/reporting
+    Go To               ${EXTERNAL_DNS_URL}/reporting
 
     # Wait for potential redirect
     Sleep    2s
