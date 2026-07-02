@@ -5,4 +5,6 @@ export interface User {
   role?: string;
   phone?: string;
   description?: string;
+  is_suspended?: boolean;
+  modules?: string[] | null;
 }

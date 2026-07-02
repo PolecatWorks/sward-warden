@@ -21,6 +21,8 @@
           <th>Name</th>
           <th>Email</th>
           <th>Role</th>
+          <th>Suspended</th>
+          <th>Modules</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -33,6 +35,22 @@
             <span class="role-badge" [ngClass]="user.role">
               {{ user.role }}
             </span>
+          </td>
+          <td>
+            <span class="status-badge" [ngClass]="user.is_suspended ? 'suspended' : 'active'">
+              {{ user.is_suspended ? 'Suspended' : 'Active' }}
+            </span>
+            <button class="btn-small" (click)="toggleSuspension(user)">
+              {{ user.is_suspended ? 'Unsuspend' : 'Suspend' }}
+            </button>
+          </td>
+          <td>
+            <div class="module-tags">
+              <span class="module-tag" *ngFor="let mod of user.modules">{{ mod }}</span>
+            </div>
+            <button class="btn-small" (click)="toggleModule(user, 'reports_and_analysis')">
+              Toggle Reports
+            </button>
           </td>
           <td>
             <button class="btn-icon" title="Edit">Edit</button>

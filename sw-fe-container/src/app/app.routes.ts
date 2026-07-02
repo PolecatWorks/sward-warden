@@ -32,12 +32,18 @@ import { SoilAnalysisReportsComponent } from './soil-analysis-reports/soil-analy
 import { ImportExportReportingComponent } from './import-export-reporting/import-export-reporting.component';
 
 import { authGuard } from './services/auth.guard';
+import { moduleGuard } from './services/module.guard';
 import { LoginComponent } from './login/login.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'fertilisation-plans', component: FertilisationPlansComponent },
-  { path: 'soil-analysis-results', component: SoilAnalysisResults },
+  {
+    path: 'soil-analysis-results',
+    component: SoilAnalysisResults,
+    canActivate: [moduleGuard],
+    data: { module: 'reports_and_analysis' }
+  },
   {
     path: '',
     component: MainLayoutComponent,
@@ -83,26 +89,41 @@ export const routes: Routes = [
       },
 
       // ── Reporting & Export (parent + children) ──
-      { path: 'reporting', component: ReportingAndExportComponent },
+      {
+        path: 'reporting',
+        component: ReportingAndExportComponent,
+        canActivate: [moduleGuard],
+        data: { module: 'reports_and_analysis' }
+      },
       {
         path: 'reporting/digital-pesticide',
         component: DigitalPesticideExportComponent,
+        canActivate: [moduleGuard],
+        data: { module: 'reports_and_analysis' }
       },
       {
         path: 'reporting/annual-fertilisation',
         component: AnnualFertilisationAccountsComponent,
+        canActivate: [moduleGuard],
+        data: { module: 'reports_and_analysis' }
       },
       {
         path: 'reporting/general-farm-records',
         component: GeneralFarmRecordsExportComponent,
+        canActivate: [moduleGuard],
+        data: { module: 'reports_and_analysis' }
       },
       {
         path: 'reporting/soil-analysis',
         component: SoilAnalysisReportsComponent,
+        canActivate: [moduleGuard],
+        data: { module: 'reports_and_analysis' }
       },
       {
         path: 'reporting/import-export',
         component: ImportExportReportingComponent,
+        canActivate: [moduleGuard],
+        data: { module: 'reports_and_analysis' }
       },
 
       // ── Default redirect ──

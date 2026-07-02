@@ -20,6 +20,8 @@ pub struct User {
     pub role: Role,
     pub phone: Option<String>,
     pub description: Option<String>,
+    pub is_suspended: bool,
+    pub modules: Option<Vec<String>>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
