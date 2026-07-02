@@ -7,6 +7,8 @@ export interface User {
   name: string;
   email: string;
   role: 'user' | 'support' | 'admin';
+  is_suspended?: boolean;
+  modules?: string[];
 }
 
 @Injectable({
@@ -18,5 +20,9 @@ export class UserService {
 
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>(`${this.apiUrl}/users`);
+  }
+
+  updateUser(id: number, user: Partial<User>): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/users/${id}`, user);
   }
 }

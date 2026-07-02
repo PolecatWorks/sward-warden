@@ -37,11 +37,13 @@
           <span class="font-['Work_Sans'] font-bold text-sm tracking-tight">Inventory</span>
         </a>
 
-        <a routerLink="/reporting" routerLinkActive="sidebar-active"
-           class="sidebar-item flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 hover:bg-black/5 dark:hover:bg-white/5 group">
-          <span class="material-symbols-outlined text-2xl opacity-60 group-hover:opacity-100 transition-opacity">summarize</span>
-          <span class="font-['Work_Sans'] font-bold text-sm tracking-tight">Reporting</span>
-        </a>
+        <ng-container *ngIf="(currentUser$ | async)?.modules?.includes('reports_and_analysis')">
+          <a routerLink="/reporting" routerLinkActive="sidebar-active"
+             class="sidebar-item flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 hover:bg-black/5 dark:hover:bg-white/5 group">
+            <span class="material-symbols-outlined text-2xl opacity-60 group-hover:opacity-100 transition-opacity">summarize</span>
+            <span class="font-['Work_Sans'] font-bold text-sm tracking-tight">Reporting</span>
+          </a>
+        </ng-container>
       </nav>
 
       <div class="mt-auto pt-12">
@@ -130,11 +132,13 @@
           <span class="material-symbols-outlined nav-icon">inventory_2</span>
           <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Inventory</span>
         </a>
-        <a routerLink="/reporting" routerLinkActive="nav-active"
-           class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
-          <span class="material-symbols-outlined nav-icon">summarize</span>
-          <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Reporting</span>
-        </a>
+        <ng-container *ngIf="(currentUser$ | async)?.modules?.includes('reports_and_analysis')">
+          <a routerLink="/reporting" routerLinkActive="nav-active"
+             class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
+            <span class="material-symbols-outlined nav-icon">summarize</span>
+            <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Reporting</span>
+          </a>
+        </ng-container>
       </div>
     </nav>
   </div>

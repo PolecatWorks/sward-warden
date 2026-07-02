@@ -24,10 +24,29 @@ This specification details the frontend changes required to support module route
   - Display the list of active modules as inline tags.
   - Add action buttons or a modal dialog to toggle suspension status and check/uncheck module subscriptions.
 
-## 4. Tasks
+## 4. Integration Testing (Robot Framework)
+To guarantee the frontend correctly enforces these rules, the following Robot test journeys must be implemented in `integration-tests/tests/test_module_subscriptions.robot`:
+
+- **Module Access Restriction Verification:**
+  - Create a test user without the `reports_and_analysis` module.
+  - Log in via the frontend.
+  - Assert that the "Reporting" navigation link is not visible in the sidebar.
+  - Attempt to manually navigate to the `/reporting` URL.
+  - Assert the route guard redirects the user back to the `/home` view.
+  - Verify via backend API that a sync payload for this user contains empty arrays for `soil_analyses` and `farm_records`.
+
+- **Module Subscription Granted Verification:**
+  - Create a test user without the `reports_and_analysis` module.
+  - Using an Admin API call, grant the user the `reports_and_analysis` module.
+  - Log in via the frontend (or trigger a profile refresh).
+  - Assert that the "Reporting" navigation link is now visible in the sidebar.
+  - Click the link and assert successful navigation to the Reporting view.
+
+## 5. Tasks
 - [ ] Implement `module.guard.ts` in `sw-fe-container`.
 - [ ] Apply `module.guard.ts` to reporting and analysis routes in `app.routes.ts`.
 - [ ] Update `MainLayoutComponent` navigation to be module-aware.
 - [ ] Update `sw-admin-container` `User` interface.
 - [ ] Update `UserListComponent` to display suspension and module states.
 - [ ] Implement toggle actions for suspension and modules in `UserListComponent` and connect them to backend API.
+- [ ] Implement `integration-tests/tests/test_module_subscriptions.robot`.
