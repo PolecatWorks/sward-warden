@@ -78,6 +78,10 @@ spec:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts: {{- include "sward-warden.volumeMounts" . | nindent 12 }}
       volumes:
         {{- include "sward-warden.volumes" . | nindent 8 }}

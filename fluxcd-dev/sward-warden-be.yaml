@@ -77,6 +77,13 @@ spec:
       repository: ghcr.io/polecatworks/sward-warden-be
       tag: main
       pullPolicy: Always
+    resources:
+      requests:
+        cpu: 10m
+        memory: 128Mi
+      limits:
+        cpu: 100m
+        memory: 256Mi
     config:
       webservice:
         address: http://0.0.0.0:8080/sward

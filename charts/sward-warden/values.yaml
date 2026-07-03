@@ -22,6 +22,7 @@ readinessProbe:
 lifecycle: {}
 initContainer:
   env: []
+resources: {}
 image:
   repository: sward-warden-be
   pullPolicy: IfNotPresent
