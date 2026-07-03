@@ -47,13 +47,26 @@
       </nav>
 
       <div class="mt-auto pt-12">
-        <div class="p-6 rounded-[2rem] bg-primary text-white relative overflow-hidden">
-          <div class="relative z-10">
-            <h4 class="font-bold text-lg leading-tight mb-1">Local Mode</h4>
-            <p class="text-[10px] opacity-80 uppercase tracking-widest font-black">Syncing Enabled</p>
+        <ng-container *ngIf="syncState$ | async as syncState">
+          <div class="p-6 rounded-[2rem] text-white relative overflow-hidden transition-colors duration-300"
+               [ngClass]="{
+                 'bg-primary': syncState === 'synced' || syncState === 'syncing',
+                 'bg-amber-600': syncState === 'offline'
+               }">
+            <div class="relative z-10">
+              <h4 class="font-bold text-lg leading-tight mb-1">Local Mode</h4>
+              <p class="text-[10px] opacity-80 uppercase tracking-widest font-black mb-1">
+                <ng-container *ngIf="syncState === 'synced'">Synced</ng-container>
+                <ng-container *ngIf="syncState === 'syncing'">Syncing...</ng-container>
+                <ng-container *ngIf="syncState === 'offline'">Offline</ng-container>
+              </p>
+              <p *ngIf="lastSyncTime$ | async as lastSync" class="text-[10px] opacity-60 font-medium">
+                Last sync: {{ lastSync | date:'medium' }}
+              </p>
+            </div>
+            <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
           </div>
-          <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
-        </div>
+        </ng-container>
       </div>
     </div>
   </aside>

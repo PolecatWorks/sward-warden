@@ -29,8 +29,14 @@ export class SyncStateService {
   /** Internal subject tracking whether a sync operation is active. */
   private readonly syncActive$ = new BehaviorSubject<boolean>(false);
 
+  /** Internal subject tracking the last successful sync time. */
+  private readonly _lastSyncTime$ = new BehaviorSubject<Date | null>(null);
+
   /** The current sync state, derived from network status and sync activity. */
   readonly syncState$: Observable<SyncState>;
+
+  /** The last successful sync time. */
+  readonly lastSyncTime$: Observable<Date | null> = this._lastSyncTime$.asObservable();
 
   constructor(private networkService: NetworkService) {
     this.syncState$ = combineLatest([
@@ -58,5 +64,10 @@ export class SyncStateService {
   // PRD Reference: 0001
   setSynced(): void {
     this.syncActive$.next(false);
+  }
+
+  /** Called by the sync engine to set the last successful sync time. */
+  setLastSyncTime(date: Date | null): void {
+    this._lastSyncTime$.next(date);
   }
 }
