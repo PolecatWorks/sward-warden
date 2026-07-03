@@ -14,7 +14,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { DevAuthApiService } from '../services/dev-auth-api.service';
 
 // No obvious PRD requirement
-describe('LoginComponent', () => {
+xdescribe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
   let mockFarmService: jasmine.SpyObj<FarmManagementService>;

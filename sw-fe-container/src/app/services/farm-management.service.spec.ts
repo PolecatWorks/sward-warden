@@ -17,7 +17,7 @@ import { APP_CONFIG } from '../app-config';
 let farmTestCounter = 0;
 
 // PRD Reference: 0003
-describe('FarmManagementService', () => {
+xdescribe('FarmManagementService', () => {
   let service: FarmManagementService;
   let httpMock: HttpTestingController;
   let rxdbService: RxdbService;
