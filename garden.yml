@@ -108,6 +108,13 @@ spec:
       repository: ${local.env.SW_BE_IMAGE || actions.build.get-be-sha.outputs.image}
       tag: ${local.env.SW_BE_TAG || actions.build.get-be-sha.outputs.tag}
       pullPolicy: Always
+    resources:
+      requests:
+        cpu: 10m
+        memory: 128Mi
+      limits:
+        cpu: 100m
+        memory: 256Mi
     config:
       webservice:
         address: http://0.0.0.0:8080/sward
@@ -181,6 +188,13 @@ spec:
       pullPolicy: Always
     imagePullSecrets:
       - name: ghcr-secret
+    resources:
+      requests:
+        cpu: 10m
+        memory: 128Mi
+      limits:
+        cpu: 100m
+        memory: 256Mi
     env:
       - name: SERVE_ROOT
         value: /
