@@ -68,3 +68,7 @@ The application must leverage **RxDB** to facilitate robust offline synchronizat
   - *Cross-Tenant Access Denial:* Attempt to access, update, or delete User A's farm or field directly by ID using User B's credentials. The system must return 403 Forbidden or 404 Not Found.
   - *Admin Visibility Test:* Log in as an Admin user and verify that farms and fields for both User A and User B are visible via standard endpoints.
   - *Asset Cascading Validation:* Verify that filtering by `user_id` on the `farms` table correctly cascades to all child entities (e.g., fields, events, farm records) so User A cannot see User B's data across all tables.
+
+## 8. Database Migrations
+- **Tooling:** Uses `sqlx` migrations.
+- **Rollback Support:** All schema changes must provide explicit rollback functionality. Migrations must exist as pairs: `<version>_<name>.up.sql` and `<version>_<name>.down.sql` to support both applying (`sqlx migrate run`) and reverting (`sqlx migrate revert`) schema changes.
