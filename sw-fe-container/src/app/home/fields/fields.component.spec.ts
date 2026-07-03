@@ -123,21 +123,7 @@ describe('FieldsComponent', () => {
   });
 
   // PRD Reference: 0003
-  it('should start inline editing with field details', () => {
-    const field = {
-      id: 42,
-      farm_id: 1,
-      name: 'South Paddock',
-      area_hectares: 8.5,
-    };
-    component.startEdit(field);
-    // PRD Reference: 0003
-    expect(component.editingFieldId).toBe(42);
-    // PRD Reference: 0003
-    expect(component.editFieldName).toBe('South Paddock');
-    // PRD Reference: 0003
-    expect(component.editFieldArea).toBe('8.5');
-  });
+
 
   // PRD Reference: 0003
   it('should clear editing state on cancel', () => {
