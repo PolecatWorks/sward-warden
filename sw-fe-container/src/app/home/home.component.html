@@ -101,12 +101,35 @@
 
   <!-- Bottom Section: Quick Links & Summaries (Bento Grid) -->
   <section class="px-6 grid grid-cols-2 gap-4 mb-6">
-    <!-- Inventory Summary -->
-    <div class="bg-surface-container-low p-6 rounded-xl flex flex-col justify-between aspect-square cursor-pointer hover:bg-surface-container transition-colors" routerLink="/inventory/storage">
-      <span class="material-symbols-outlined text-primary mb-4" style="font-variation-settings: 'FILL' 1;">water_drop</span>
-      <div>
-        <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Slurry Storage</p>
-        <p class="text-xl font-bold editorial-headline text-primary">65% Full</p>
+    <!-- Inventory Summary (Top 5 Storages) -->
+    <div class="bg-surface-container-low p-6 rounded-xl flex flex-col aspect-square cursor-pointer hover:bg-surface-container transition-colors" routerLink="/inventory/storage">
+      <div class="flex items-center justify-between mb-4">
+        <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">water_drop</span>
+        <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Storage Capacity</p>
+      </div>
+
+      <div class="flex-1 flex items-end justify-center gap-2 mt-2">
+        <ng-container *ngIf="(topStorages$ | async) as topStorages">
+          <div *ngIf="topStorages.length === 0" class="text-center w-full text-on-surface-variant text-sm flex flex-col items-center justify-center">
+             <span>No Storage Added</span>
+          </div>
+          <div *ngFor="let tank of topStorages"
+               class="relative flex flex-col justify-end w-8 sm:w-10 bg-outline/20 rounded-t-md overflow-hidden group"
+               [style.height.%]="(tank.capacity_volume / maxStorageVolume) * 100"
+               title="{{ tank.name }}: {{ tank.capacity_volume }} m³ ({{ tank.fillPercentage }}% full)">
+
+            <!-- Tooltip simulation on hover, could be standard title attribute but standardizing visually is better -->
+
+            <div class="w-full bg-primary/80 transition-all duration-500 ease-in-out"
+                 [style.height.%]="tank.fillPercentage">
+            </div>
+
+            <!-- Percentage text overlay if there's enough space, or keep it clean -->
+            <div class="absolute inset-0 flex items-end justify-center pb-1 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+              <span class="text-[8px] font-bold text-white drop-shadow-md">{{ tank.fillPercentage }}%</span>
+            </div>
+          </div>
+        </ng-container>
       </div>
     </div>
     <!-- Upcoming Events -->
