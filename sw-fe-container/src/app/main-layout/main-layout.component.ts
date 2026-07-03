@@ -13,6 +13,7 @@ import { FarmManagementService } from '../services/farm-management.service';
 import { DevAuthApiService } from '../services/dev-auth-api.service';
 import { User } from '../models/user';
 import { Observable, shareReplay } from 'rxjs';
+import { SyncStateService, SyncState } from '../services/sync-state.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -29,6 +30,8 @@ import { Observable, shareReplay } from 'rxjs';
 })
 export class MainLayoutComponent implements OnInit {
   readonly fallbackToRest$: Observable<boolean>;
+  readonly syncState$: Observable<SyncState>;
+  readonly lastSyncTime$: Observable<Date | null>;
   currentUser$!: Observable<User>;
   users$: Observable<User[]> | undefined;
 
@@ -38,8 +41,11 @@ export class MainLayoutComponent implements OnInit {
     private farmManagementService: FarmManagementService,
     private devAuthApi: DevAuthApiService,
     private router: Router,
+    private syncStateService: SyncStateService,
   ) {
     this.fallbackToRest$ = this.rxdbService.fallbackToRest$;
+    this.syncState$ = this.syncStateService.syncState$;
+    this.lastSyncTime$ = this.syncStateService.lastSyncTime$;
   }
 
   // No obvious PRD requirement

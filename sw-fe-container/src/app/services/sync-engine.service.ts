@@ -78,6 +78,16 @@ export class SyncEngineService implements OnDestroy {
     private authService: AuthService,
     private http: HttpClient,
   ) {
+    // Load initial lastSyncTime from RxDB
+    this.rxdbService.db$.subscribe(async (db) => {
+      if (db) {
+        const doc = await (db as any).metadata.findOne('lastSyncTime').exec();
+        if (doc && doc.value) {
+          this.syncStateService.setLastSyncTime(new Date(doc.value));
+        }
+      }
+    });
+
     // Sync triggers: online events + periodic timer + pending outbox inserts
     const onlineEvent$ = this.networkService.isOnline$.pipe(
       // PRD Reference: 0001
@@ -460,6 +470,14 @@ export class SyncEngineService implements OnDestroy {
       key: 'lastSyncUserId',
       value: userId,
     });
+
+    // Update last sync time
+    const now = new Date();
+    await (db as any).metadata.upsert({
+      key: 'lastSyncTime',
+      value: now.toISOString(),
+    });
+    this.syncStateService.setLastSyncTime(now);
   }
 
   /** Clear the sync checkpoint in the metadata collection to force a full fetch. */
