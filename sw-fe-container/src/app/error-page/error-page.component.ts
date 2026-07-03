@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-error-page',
@@ -8,8 +9,12 @@ import { Router } from '@angular/router';
 })
 export class ErrorPageComponent {
   errorMessage: string = 'An unexpected error occurred.';
+  isAuthError: boolean = false;
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+  ) {
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras.state as { error?: string };
     if (state && state.error) {
@@ -21,9 +26,22 @@ export class ErrorPageComponent {
         this.errorMessage = historyState.error;
       }
     }
+
+    if (
+      this.errorMessage.includes('Authentication failed') ||
+      this.errorMessage.includes('credentials') ||
+      this.errorMessage.includes('access rights')
+    ) {
+      this.isAuthError = true;
+    }
   }
 
   goHome() {
-    this.router.navigate(['/home']);
+    if (this.isAuthError) {
+      this.authService.logout();
+      this.router.navigate(['/login']);
+    } else {
+      this.router.navigate(['/home']);
+    }
   }
 }

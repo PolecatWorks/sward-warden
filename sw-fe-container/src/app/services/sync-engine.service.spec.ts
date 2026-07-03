@@ -582,6 +582,8 @@ describe('SyncEngineService', () => {
 
   // PRD Reference: 0011
   it('should do full sync without since when no checkpoint exists', async () => {
+    const db = await firstValueFrom(rxdbService.db$);
+    await service.setCheckpoint(db, null as any); // Clear checkpoint from previous test
     const pullPromise = service.pullSync();
     await new Promise((resolve) => setTimeout(resolve, 50));
 
