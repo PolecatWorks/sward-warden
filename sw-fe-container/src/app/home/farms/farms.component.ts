@@ -1,7 +1,7 @@
 import { combineLatest } from 'rxjs';
 import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { FarmManagementService } from '../../services/farm-management.service';
 import { LoggerService } from '../../services/logger.service';
 import { Farm } from '../../models/farm';
@@ -27,11 +27,17 @@ export class FarmsComponent implements OnInit {
   constructor(
     private farmService: FarmManagementService,
     private logger: LoggerService,
+    private router: Router,
+    private route: ActivatedRoute,
   ) {}
 
   // PRD Reference: 0003
   ngOnInit(): void {
     this.loadFarms();
+    this.route.url.subscribe((urlSegments) => {
+      const isNew = urlSegments.some((segment) => segment.path === 'new');
+      this.showAddFarmModal = isNew;
+    });
   }
 
   @HostListener('document:keydown.escape', ['$event'])
@@ -39,9 +45,6 @@ export class FarmsComponent implements OnInit {
   handleEscape(event: KeyboardEvent) {
     if (this.showAddFarmModal) {
       this.closeAddFarmModal();
-    }
-    if (this.editingFarmId !== null) {
-      this.cancelEdit();
     }
   }
 
@@ -87,9 +90,10 @@ export class FarmsComponent implements OnInit {
       next: () => {
         this.newFarmName = '';
         this.newFarmLocation = '';
-        this.showAddFarmModal = false;
         this.isSaving = false;
         this.loadFarms();
+        this.showAddFarmModal = true;
+        this.closeAddFarmModal();
       },
       error: (err) => {
         this.errorMessage = 'Failed to add farm. Please try again.';
@@ -98,12 +102,6 @@ export class FarmsComponent implements OnInit {
       },
     });
   }
-
-  editingFarmId: number | null = null;
-  editFarmName: string = '';
-  editFarmLocation: string = '';
-  originalEditFarmName: string = '';
-  originalEditFarmLocation: string = '';
 
   // PRD Reference: 0003
   openAddFarmModal(): void {
@@ -118,60 +116,8 @@ export class FarmsComponent implements OnInit {
     this.showAddFarmModal = false;
     this.newFarmName = '';
     this.newFarmLocation = '';
-  }
-
-  // PRD Reference: 0003
-  startEdit(farm: Farm): void {
-    this.editingFarmId = farm.id || null;
-    this.editFarmName = farm.name;
-    this.editFarmLocation = farm.location;
-    this.originalEditFarmName = farm.name;
-    this.originalEditFarmLocation = farm.location;
-  }
-
-  // PRD Reference: 0003
-  hasEditChanges(): boolean {
-    return (
-      this.editFarmName !== this.originalEditFarmName ||
-      this.editFarmLocation !== this.originalEditFarmLocation
-    );
-  }
-
-  // PRD Reference: 0003
-  cancelEdit(): void {
-    this.editingFarmId = null;
-    this.editFarmName = '';
-    this.editFarmLocation = '';
-  }
-
-  // PRD Reference: 0003
-  saveFarmFromList(): void {
-    if (
-      !this.editingFarmId ||
-      !this.editFarmName ||
-      !this.editFarmLocation ||
-      !this.hasEditChanges()
-    ) {
-      return;
+    if (this.router.url.endsWith('/new')) {
+      this.router.navigate(['/farms']);
     }
-
-    const updatedData: Partial<Farm> = {
-      name: this.editFarmName,
-      location: this.editFarmLocation,
-    };
-
-    this.isSaving = true;
-    this.farmService.updateFarm(this.editingFarmId, updatedData).subscribe({
-      next: () => {
-        this.cancelEdit();
-        this.isSaving = false;
-        this.loadFarms();
-      },
-      error: (err) => {
-        this.errorMessage = 'Failed to update farm. Please try again.';
-        this.isSaving = false;
-        this.logger.error('Error updating farm:', err);
-      },
-    });
   }
 }

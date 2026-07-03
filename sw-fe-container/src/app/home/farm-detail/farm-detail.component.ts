@@ -82,6 +82,9 @@ export class FarmDetailComponent implements OnInit {
         } else {
           // Filter active fields belonging to this farm
           this.fields = fields.filter((f) => f.farm_id === this.farmId);
+          if (this.router.url.endsWith('/edit')) {
+            this.openEditFarmModal();
+          }
         }
         this.isLoading = false;
       },
@@ -117,6 +120,9 @@ export class FarmDetailComponent implements OnInit {
     this.showEditFarmModal = false;
     this.editFarmName = '';
     this.editFarmLocation = '';
+    if (this.router.url.endsWith('/edit')) {
+      this.router.navigate(['/farms', this.farmId]);
+    }
   }
 
   // PRD Reference: 0003
