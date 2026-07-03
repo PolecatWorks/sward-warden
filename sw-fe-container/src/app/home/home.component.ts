@@ -7,6 +7,12 @@ import { User } from '../models/user';
 import { Farm } from '../models/farm';
 import { Observable, BehaviorSubject, of, combineLatest } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
+import { RxdbService } from '../services/rxdb/rxdb.service';
+import { InventoryStorageDocType } from '../services/rxdb/schemas';
+
+export interface TopStorage extends InventoryStorageDocType {
+  fillPercentage: number;
+}
 
 export interface Alert {
   id: string;
@@ -42,9 +48,13 @@ export class HomeComponent implements OnInit {
   > = of([]);
   globalAlerts$: Observable<Alert[]> = of([]);
 
+  topStorages$: Observable<TopStorage[]> = of([]);
+  maxStorageVolume: number = 100;
+
   constructor(
     private authService: AuthService,
     private farmManagementService: FarmManagementService,
+    private rxdbService: RxdbService,
   ) {}
 
   // No obvious PRD requirement
@@ -68,6 +78,19 @@ export class HomeComponent implements OnInit {
 
     // Mock Data initialization
     this.initMockData();
+
+    this.rxdbService.db$.subscribe((db) => {
+      db.inventory_storage.find().$.subscribe((storages) => {
+        const sorted = [...storages].sort((a, b) => b.capacity_volume - a.capacity_volume).slice(0, 5);
+        const top = sorted.map((s, index) => ({
+          ...s,
+          fillPercentage: 30 + (index * 15) % 60, // Mock fill percentage as no backend volume tracking exists
+        }));
+
+        this.maxStorageVolume = top.length > 0 ? Math.max(...top.map(s => s.capacity_volume)) : 100;
+        this.topStorages$ = of(top);
+      });
+    });
   }
 
   // No obvious PRD requirement
