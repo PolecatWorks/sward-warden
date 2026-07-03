@@ -29,7 +29,7 @@ describe('LoginComponent', () => {
       'addUser',
       'deleteUser',
     ]);
-    mockAuthService = jasmine.createSpyObj('AuthService', ['login']);
+    mockAuthService = jasmine.createSpyObj('AuthService', ['login', 'logout']);
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
     mockDevAuthApi = jasmine.createSpyObj('DevAuthApiService', ['getToken']);
     mockDevAuthApi.getToken.and.returnValue(of({ access_token: 'fake-token' }));

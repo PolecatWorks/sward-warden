@@ -40,6 +40,10 @@ export class LoginComponent implements OnInit {
 
   // No obvious PRD requirement
   ngOnInit(): void {
+    // Clear any existing session when landing on the login page
+    // This prevents background sync loops that could redirect to /error
+    this.authService.logout();
+
     this.createUserForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
