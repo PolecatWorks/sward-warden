@@ -57,6 +57,7 @@ export const routes: Routes = [
       // ── Farm Hierarchy ──
       { path: 'farms', component: FarmsComponent },
       { path: 'farms/:farmId', component: FarmDetailComponent },
+      { path: 'farms/:farmId/fields/new', component: FieldsComponent },
       { path: 'farms/:farmId/fields', component: FieldsComponent },
       {
         path: 'farms/:farmId/compliance',
@@ -65,6 +66,8 @@ export const routes: Routes = [
       { path: 'farms/:farmId/topology', component: TopologyMappingComponent },
       { path: 'farms/:id/movements', component: SwardMovementsComponent },
       { path: 'fields', component: FieldsComponent },
+      { path: 'fields/new', component: FieldsComponent },
+      { path: 'fields/:fieldId/edit', component: FieldViewComponent },
       { path: 'fields/:fieldId', component: FieldViewComponent },
 
       // ── Farm Management ──
