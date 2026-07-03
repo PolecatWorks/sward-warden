@@ -54,6 +54,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0003-15 Auto-Farm Creation Name Resolution](./0003/0003-15-auto-farm-creation-name-resolution.md) | Complete | PRD 0003 |
 | [0003-16 Empty State Alignment](./0003/0003-16-empty-state-alignment.md) | Complete | PRD 0003 |
 | [0003-17 Technical Specification: Field Creation & Edit Farm Selector enhancements](./0003/0003-17-field-creation-edit-farm-selector.md) | Complete | PRD 0003 |
+| [0003-18 Field List Editing and Creation Alignment Specification](./0003/0003-18-field-list-editing-and-creation-alignment.md) | Complete | PRD 0003 |
 | [0004-01 General Farm Records Specification](./0004/0004-01-general-farm-records.md) | Complete | PRD 0004 |
 | [0004-02 Fertiliser Application Records Specification](./0004/0004-02-fertiliser-application-records.md) | Complete | PRD 0004 |
 | [0004-03 Fertilisation Plan Specification](./0004/0004-03-fertilisation-plan.md) | Complete | PRD 0004 |

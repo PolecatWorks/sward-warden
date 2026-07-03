@@ -1,4 +1,4 @@
-<div class="px-6 pt-4 max-w-2xl mx-auto">
+<div [class]="showEditFieldModal ? 'px-6 pt-4 w-full mx-auto' : 'px-6 pt-4 max-w-2xl mx-auto'">
   <div *ngIf="field; else loadingTemplate">
     <a
       [routerLink]="['/farms', field.farm_id, 'fields']"
@@ -1076,7 +1076,7 @@
     </div>
 
     <!-- CTA: Record Event -->
-    <section class="mb-12">
+    <section class="mb-12" *ngIf="!showEditFieldModal">
       <button
         (click)="toggleGeneralEventForm()"
         class="w-full group bg-primary text-on-primary rounded-xl py-6 px-6 flex items-center justify-between shadow-2xl transition-all active:scale-95"
@@ -1151,7 +1151,7 @@
     </section>
 
     <!-- Timeline Section -->
-    <section class="relative timeline-line">
+    <section class="relative timeline-line" *ngIf="!showEditFieldModal">
       <div class="flex items-center justify-between mb-8">
         <h3 class="font-headline font-bold text-xl text-on-surface">
           Activity Timeline

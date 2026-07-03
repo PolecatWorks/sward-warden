@@ -1,6 +1,6 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { FarmManagementService } from '../../services/farm-management.service';
 import { RxdbService } from '../../services/rxdb/rxdb.service';
 import { AuthService } from '../../services/auth.service';
@@ -26,6 +26,7 @@ export class FieldsComponent implements OnInit {
   newFieldName: string = '';
   newFieldArea: string = '';
   newFieldGeometry_geojson: string = '';
+  newFieldLandUse: string = 'grassland';
   showAddForm: boolean = false;
 
   editingFieldId: number | null = null;
@@ -64,6 +65,7 @@ export class FieldsComponent implements OnInit {
     private rxdbService: RxdbService,
     private authService: AuthService,
     private syncEngineService: SyncEngineService,
+    private router: Router,
   ) {}
 
   // PRD Reference: 0003
@@ -80,6 +82,11 @@ export class FieldsComponent implements OnInit {
         this.farm = undefined;
         this.loadAllFields();
       }
+    });
+
+    this.route.url.subscribe((urlSegments) => {
+      const isNew = urlSegments.some((segment) => segment.path === 'new');
+      this.showAddForm = isNew;
     });
 
     // Automatically reload fields when local DB fallback status changes
@@ -179,25 +186,6 @@ export class FieldsComponent implements OnInit {
             const createdFarm = await firstValueFrom(
               this.farmService.addFarm(newFarm),
             );
-            // Trigger push sync so it creates it on the backend, this is needed because
-            // RxDB might just queue it in the outbox but the field might need the serverID
-            // Actually RxDB will assign a local ID, but since we're using offline-first,
-            // we should let RxDB handle the relation with local IDs. Wait, the backend
-            // might reject the field if it references a local ID. Let's sync so the farm gets a serverId.
-            // Note: forcePullSync just pulls. The outbox is processed in the background or when sync Needed.
-            // The cleanest way is to use the REST API directly to avoid local ID race conditions for fields.
-            // The farmService.addFarm handles both REST (if fallback) and RxDB (if not).
-            // By the time `addFarm` completes, if it's REST it has an ID, if it's RxDB it has an ID (local or server).
-            // The sync engine runs continuously. We will await a short time or manually trigger processOutbox if available.
-            // Since we can't easily trigger a synchronous push, if we are in RxDB mode,
-            // the createdFarm.id is a string like "local_...". The backend API for Field expects a BIGINT.
-            // This suggests RxDB architecture needs server ID resolution first.
-            // However, looking closely at farmService, it might just be better to let RxDB sync handle it.
-            // But we must wait for the sync to complete to get the real serverID.
-            // As a workaround, we will use the REST API explicitly here if we have to.
-            // Actually, we can just rely on the syncEngineService triggering sync periodically.
-
-            // Let's manually invoke the sync engine's full sync loop which includes pushing.
             await this.syncEngineService.fullSync();
 
             // Reload farms to get the serverId if synced
@@ -220,6 +208,7 @@ export class FieldsComponent implements OnInit {
         farm_id: targetFarmId || 0,
         name: this.newFieldName,
         area_hectares: area,
+        land_use: this.newFieldLandUse,
         geometry_geojson: this.newFieldGeometry_geojson.trim() || undefined,
       };
 
@@ -232,10 +221,8 @@ export class FieldsComponent implements OnInit {
         } else {
           this.loadAllFields();
         }
-        this.newFieldName = '';
-        this.newFieldArea = '';
-        this.newFieldGeometry_geojson = '';
-        this.showAddForm = false;
+        this.showAddForm = true;
+        this.toggleAddForm();
         this.errorMessage = null;
       });
     }
@@ -244,6 +231,19 @@ export class FieldsComponent implements OnInit {
   // PRD Reference: 0003
   toggleAddForm(): void {
     this.showAddForm = !this.showAddForm;
+    if (!this.showAddForm) {
+      this.newFieldName = '';
+      this.newFieldArea = '';
+      this.newFieldGeometry_geojson = '';
+      this.newFieldLandUse = 'grassland';
+      if (this.router.url.endsWith('/new')) {
+        if (this.farmId) {
+          this.router.navigate(['/farms', this.farmId, 'fields']);
+        } else {
+          this.router.navigate(['/fields']);
+        }
+      }
+    }
   }
 
   // PRD Reference: 0003

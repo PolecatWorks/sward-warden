@@ -139,6 +139,9 @@ export class FieldViewComponent implements OnInit {
   loadFieldDetails(): void {
     this.farmService.getField(this.fieldId).subscribe((field) => {
       this.field = field;
+      if (this.router.url.endsWith('/edit')) {
+        this.openEditFieldModal();
+      }
     });
   }
 
@@ -210,6 +213,9 @@ export class FieldViewComponent implements OnInit {
     this.editFieldFarmId = 0;
     this.editFieldGeometry_geojson = '';
     this.errorMessage = null;
+    if (this.router.url.endsWith('/edit')) {
+      this.router.navigate(['/fields', this.fieldId]);
+    }
   }
 
   // PRD Reference: 0003
