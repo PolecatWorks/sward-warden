@@ -13,13 +13,17 @@ Setup User And Farm
     [Documentation]    Finds or creates a base user and creates exactly one Farm 1 for them.
     ${users_res}=    GET    ${BE_BASE_URL}/v0/users    expected_status=200
     ${users}=    Set Variable    ${users_res.json()}
-    ${users_len}=    Get Length    ${users}
-    IF    ${users_len} == 0
+    ${user_id}=    Set Variable    ${None}
+    FOR    ${u}    IN    @{users}
+        IF    not ${u['is_suspended']}
+            ${user_id}=    Convert To String    ${u['id']}
+            BREAK
+        END
+    END
+    IF    '${user_id}' == '${None}'
         &{user_data}=    Create Dictionary    name=Demo User    email=user1@example.com    role=user
         ${user_res}=    POST    ${BE_BASE_URL}/v0/users    json=${user_data}    expected_status=200
         ${user_id}=    Convert To String    ${user_res.json()['id']}
-    ELSE
-        ${user_id}=    Convert To String    ${users[0]['id']}
     END
 
     # Clean up any existing Farm 1 for this user to prevent strict mode violations

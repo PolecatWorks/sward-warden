@@ -56,6 +56,8 @@ export const routes: Routes = [
 
       // ── Farm Hierarchy ──
       { path: 'farms', component: FarmsComponent },
+      { path: 'farms/new', component: FarmsComponent },
+      { path: 'farms/:farmId/edit', component: FarmDetailComponent },
       { path: 'farms/:farmId', component: FarmDetailComponent },
       { path: 'farms/:farmId/fields/new', component: FieldsComponent },
       { path: 'farms/:farmId/fields', component: FieldsComponent },
