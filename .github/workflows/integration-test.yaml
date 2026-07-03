@@ -75,7 +75,16 @@ jobs:
       - name: Prepare Image Variables
         run: |
           REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          PR_NUMBER="${{ github.event.pull_request.number || github.event.inputs.pr_number || github.run_id }}"
+          if [ "${{ github.event_name }}" == "merge_group" ]; then
+            HEAD_REF="${{ github.event.merge_group.head_ref }}"
+            if [[ $HEAD_REF =~ pr-([0-9]+)- ]]; then
+              PR_NUMBER="${BASH_REMATCH[1]}"
+            else
+              PR_NUMBER="${{ github.run_id }}"
+            fi
+          else
+            PR_NUMBER="${{ github.event.pull_request.number || github.event.inputs.pr_number || github.run_id }}"
+          fi
           echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
           echo "ARCH=$(uname -m)" >> $GITHUB_ENV
 
@@ -334,10 +343,8 @@ jobs:
       - name: Copy Test Results to GH Pages Staging
         if: always()
         run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            TARGET_DIR="pr/${{ github.event.pull_request.number }}"
-          elif [ "${{ github.event_name }}" == "merge_group" ]; then
-            TARGET_DIR="merge-group/${{ github.run_id }}"
+          if [ "${{ github.event_name }}" == "pull_request" ] || [ "${{ github.event_name }}" == "merge_group" ]; then
+            TARGET_DIR="pr/${{ env.PR_NUMBER }}"
           else
             TARGET_DIR="main"
           fi
@@ -359,13 +366,13 @@ jobs:
           keep_files: false
 
       - name: Comment PR with Report Link
-        if: always() && github.event_name == 'pull_request'
+        if: always() && (github.event_name == 'pull_request' || github.event_name == 'merge_group')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Ensure repo name formatting is correct for the URL
           REPO_NAME=$(echo "${{ github.event.repository.name }}")
-          REPORT_URL="https://${{ github.repository_owner }}.github.io/${REPO_NAME}/pr/${{ github.event.pull_request.number }}/log.html"
+          REPORT_URL="https://${{ github.repository_owner }}.github.io/${REPO_NAME}/pr/${{ env.PR_NUMBER }}/log.html"
 
           # Properly format body with newlines
           COMMENT_BODY="### 🤖 Robot Framework Test Results
@@ -377,10 +384,10 @@ jobs:
           _Note: This report will be retained for 7 days._"
 
           # Use gh cli to check for existing comments to avoid spamming the PR
-          EXISTING_COMMENT=$(gh pr view ${{ github.event.pull_request.number }} --json comments --jq ".comments[] | select(.body | contains(\"${REPORT_URL}\")) | .id" | head -n 1)
+          EXISTING_COMMENT=$(gh pr view ${{ env.PR_NUMBER }} --json comments --jq ".comments[] | select(.body | contains(\"${REPORT_URL}\")) | .id" | head -n 1)
 
           if [ -z "$EXISTING_COMMENT" ]; then
-            gh pr comment ${{ github.event.pull_request.number }} --body "$COMMENT_BODY"
+            gh pr comment ${{ env.PR_NUMBER }} --body "$COMMENT_BODY"
           else
             echo "Already commented with the report link."
           fi
