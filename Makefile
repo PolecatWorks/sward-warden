@@ -186,7 +186,7 @@ squash-gh-pages:
 	echo "Creating base commit..."; \
 	PRE_COMMIT_ALLOW_NO_CONFIG=1 git commit --no-verify -m "Squashed history older than 8 days"; \
 	echo "Rebasing recent commits onto the new base..."; \
-	git rebase --onto temp-branch $$HASH gh-pages; \
+	git rebase -Xtheirs --onto temp-branch $$HASH gh-pages; \
 	echo "Cleaning up temp branch..."; \
 	git branch -D temp-branch; \
 	echo "Force pushing to origin..."; \
