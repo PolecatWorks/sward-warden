@@ -8,11 +8,12 @@ import { LoggerService } from '../../services/logger.service';
 import { Farm } from '../../models/farm';
 import { Field } from '../../models/field';
 import { FormsModule } from '@angular/forms';
+import { WeatherIntegrationComponent } from '../../weather-integration/weather-integration.component';
 
 @Component({
   selector: 'app-farm-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, WeatherIntegrationComponent],
   templateUrl: './farm-detail.component.html',
   styleUrl: './farm-detail.component.css',
 })
