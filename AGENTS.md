@@ -20,7 +20,7 @@ This file describes the workflow and development patterns for our agents to foll
 - Read and understand the PRDs and specs thoroughly before writing code.
 - Analyze PRDs for ambiguities and contradictions; raise issues or resolve them if found.
 - As you pick up new guidance on workflow or best practices, capture it in this `agents.md` file or within the PRD files appropriately.
-- If you have a new requirement update the prd files.
+- If you have a new requirement or are defining what the application does based on user requests, you must update the PRD files to reflect the user requirement.
 - Do not update prd files and spec files in the same pr.
 - Do not update spec file content and code in the same PR. However, it is expected that the status of the spec file (e.g. changing from "Open" to "Complete") is modified at the same time as code is modified, to allow code and spec files to remain in sync.
 - Only implement 1 spec file at a time in a PR.
