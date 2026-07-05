@@ -6,23 +6,36 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
+  FormsModule,
 } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { InventoryChemicalsService } from '../services/inventory-chemicals.service';
 import { InventoryChemicalDocType } from '../services/rxdb/schemas';
 
 @Component({
   standalone: true,
   selector: 'app-chemical-pesticide-inventory',
-  imports: [CommonModule, RouterLink, ReactiveFormsModule],
+  imports: [CommonModule, RouterLink, ReactiveFormsModule, FormsModule],
   templateUrl: './chemical-pesticide-inventory.component.html',
   styleUrl: './chemical-pesticide-inventory.component.css',
 })
 export class ChemicalPesticideInventoryComponent implements OnInit {
   chemicals$!: Observable<InventoryChemicalDocType[]>;
+  filteredChemicals$!: Observable<InventoryChemicalDocType[]>;
   showForm = false;
   chemicalForm!: FormGroup;
   editingId: string | null = null;
+
+  searchQuery$ = new BehaviorSubject<string>('');
+
+  get searchQuery(): string {
+    return this.searchQuery$.value;
+  }
+
+  set searchQuery(value: string) {
+    this.searchQuery$.next(value);
+  }
 
   constructor(
     private inventoryService: InventoryChemicalsService,
@@ -32,6 +45,18 @@ export class ChemicalPesticideInventoryComponent implements OnInit {
   // PRD Reference: 0006
   ngOnInit(): void {
     this.chemicals$ = this.inventoryService.getChemicals();
+    this.filteredChemicals$ = combineLatest([
+      this.chemicals$,
+      this.searchQuery$
+    ]).pipe(
+      map(([chemicals, query]) => {
+        if (!query.trim()) {
+          return chemicals;
+        }
+        const lowerQuery = query.toLowerCase().trim();
+        return chemicals.filter(chem => chem.name.toLowerCase().includes(lowerQuery));
+      })
+    );
     this.initForm();
   }
 

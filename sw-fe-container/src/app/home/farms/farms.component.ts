@@ -23,6 +23,17 @@ export class FarmsComponent implements OnInit {
   isLoading: boolean = false;
   isSaving: boolean = false;
   errorMessage: string | null = null;
+  searchQuery: string = '';
+
+  get filteredFarms(): Farm[] {
+    if (!this.searchQuery.trim()) {
+      return this.farms;
+    }
+    const query = this.searchQuery.toLowerCase().trim();
+    return this.farms.filter((farm) =>
+      farm.name.toLowerCase().includes(query)
+    );
+  }
 
   constructor(
     private farmService: FarmManagementService,
