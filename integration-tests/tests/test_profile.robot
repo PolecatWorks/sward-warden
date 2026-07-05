@@ -23,14 +23,14 @@ Edit Profile
     Wait For Elements State    id=edit-profile-btn    visible    timeout=10s
     Sleep    2s
 
-    # Click the pencil icon to open the edit modal
+    # Click the pencil icon to open the edit form
     Click    id=edit-profile-btn    button=left
 
-    # Wait for the modal to appear
+    # Wait for the inline form to appear
     Wait For Elements State    id=edit-name    visible    timeout=5s
     Sleep    1s
 
-    # Fill in the edit profile form in the modal
+    # Fill in the edit profile form
     Fill Text    id=edit-name    Test Name
     Fill Text    id=edit-email    test@test.com
     Fill Text    id=edit-phone    +44 7700 900077
@@ -39,11 +39,11 @@ Edit Profile
     # Submit the form
     Click    id=save-edit-profile-btn    button=left
 
-    # Wait for the modal to close
+    # Wait for the form to close
     Wait For Elements State    id=save-edit-profile-btn    detached    timeout=5s
     Sleep    1s
 
-    # Reload and re-open the modal to verify persistence
+    # Reload and re-open the form to verify persistence
     Reload
     Wait For Elements State    id=edit-profile-btn    visible    timeout=10s
     Sleep    2s
@@ -57,5 +57,5 @@ Edit Profile
     Get Property    id=edit-phone    value    ==    +44 7700 900077
     Get Property    id=edit-description    value    ==    This is a test description
 
-    # Close the modal
+    # Close the form
     Click    id=cancel-edit-profile-btn    button=left
