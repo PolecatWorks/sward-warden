@@ -83,3 +83,44 @@ Once the backend calculates the runoff paths, the Angular frontend needs to disp
 1. **Data Acquisition Spike:** Download a sample LiDAR DEM from OpenDataNI for a specific test farm.
 2. **Algorithm Prototype:** Create an isolated Rust script using `whitebox-tools` to prove we can generate a flow accumulation raster from the sample DEM.
 3. **Database Setup:** Load the DAERA River Segments shapefile into the local PostGIS database.
+
+## 7. Detailed Pipeline: Identifying Receiving Waterways for a Specific Field
+
+To specifically address the requirement of determining which waterways a specific field contributes to via runoff, two primary approaches can be employed using the recommended WhiteboxTools and PostGIS stack.
+
+### Approach 1: Downslope Flowpath Tracing (High Precision)
+This approach traces the exact path of water from a field down to the river.
+
+1. **Seed Point Generation:** Extract the field's polygon geometry from the database. Generate "seed points" within this polygon. These could be the field centroid, the lowest elevation point within the field, or evenly distributed points along the downhill edge of the field boundary.
+2. **Trace Downslope Flowpaths:** Use the WhiteboxTools `trace_downslope_flowpaths` tool.
+   - **Inputs:** The seed points (Vector) and the D8 Flow Pointer raster (generated during hydrological conditioning).
+   - **Output:** Vector linestrings representing the exact path water will take from the field across the landscape until it reaches the edge of the DEM or a sink (typically the river).
+3. **Spatial Intersection (PostGIS):**
+   - Import the generated flowpath linestrings into PostGIS.
+   - Execute a spatial join against the DAERA waterways table to find intersections:
+     ```sql
+     SELECT DISTINCT w.river_name, w.water_body_id, ST_Distance(f.geom, w.geom) as distance_to_waterway
+     FROM waterways w
+     JOIN field_runoff_paths p ON ST_Intersects(p.geom, w.geom)
+     JOIN fields f ON f.id = p.field_id
+     WHERE p.field_id = 'target_field_id';
+     ```
+4. **Risk Assessment:** The length of the flowpath before intersection determines the immediate risk (e.g., short paths indicate high vulnerability to fertilizer runoff reaching the water).
+
+### Approach 2: Catchment/Watershed Delineation (High Performance)
+Instead of tracing downwards from every field, this approach maps the entire contributing area for each waterway section upwards. This is often more scalable for a whole-farm or regional analysis.
+
+1. **Waterway Pour Points:** Identify the river networks in the DEM. "Snap" these vector lines to the highest values of the Flow Accumulation raster to create accurate "pour points" (outlets).
+2. **Watershed Delineation:** Use the WhiteboxTools `watershed` tool.
+   - **Inputs:** The D8 Flow Pointer raster and the snapped waterway pour points.
+   - **Output:** A raster (or vectorized polygons) where every pixel/polygon is assigned the ID of the specific waterway pour point it flows into.
+3. **Spatial Containment (PostGIS):**
+   - Import the watershed polygons into PostGIS.
+   - For any given field, a simple Point-in-Polygon (or Polygon Intersection) query instantly identifies its receiving waterway:
+     ```sql
+     SELECT w.river_name
+     FROM watersheds ws
+     JOIN waterways w ON ws.pour_point_id = w.id
+     JOIN fields f ON ST_Intersects(f.geom, ws.geom)
+     WHERE f.id = 'target_field_id';
+     ```
