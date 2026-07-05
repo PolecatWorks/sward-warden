@@ -136,6 +136,36 @@ $(ROBOT_VENV)/bin/robot:
 	$(ROBOT_VENV)/bin/pip install robotframework robotframework-requests robotframework-browser
 	$(ROBOT_VENV)/bin/python -m Browser.entry init
 
+# --- GitHub Pages Cleanup ---
+.PHONY: squash-gh-pages
+squash-gh-pages:
+	@set -e; \
+	if [ "$$CONFIRM_SQUASH" != "true" ]; then \
+		echo "ERROR: You must set CONFIRM_SQUASH=true to execute this action."; \
+		exit 1; \
+	fi; \
+	echo "Checking out gh-pages..."; \
+	git checkout gh-pages; \
+	git pull origin gh-pages || true; \
+	echo "Squashing history older than 2 weeks on gh-pages..."; \
+	HASH=$$(git log --before="2 weeks ago" --format="%h" -1); \
+	if [ -z "$$HASH" ]; then \
+		echo "Could not find a commit older than 2 weeks. Exiting."; \
+		exit 1; \
+	fi; \
+	echo "Found commit: $$HASH"; \
+	echo "Creating temporary orphan branch at $$HASH..."; \
+	git checkout --orphan temp-branch $$HASH; \
+	echo "Creating base commit..."; \
+	git commit -m "Squashed history older than 2 weeks"; \
+	echo "Rebasing recent commits onto the new base..."; \
+	git rebase --onto temp-branch $$HASH gh-pages; \
+	echo "Cleaning up temp branch..."; \
+	git branch -D temp-branch; \
+	echo "Force pushing to origin..."; \
+	git push -f origin gh-pages; \
+	echo "Done."
+
 # --- Service Waiting Targets ---
 .PHONY: wait-all
 wait-all: $(ROBOT_VENV)/bin/robot
