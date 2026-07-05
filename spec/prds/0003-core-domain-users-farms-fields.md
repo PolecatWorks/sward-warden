@@ -5,7 +5,7 @@ This document defines the requirements for managing the core agricultural entiti
 
 ## 1. User Profile Management
 - **Hero-Style Profile:** A premium profile view accessible via a top bar avatar icon located on the top right on all devices.
-- **Inline Editing:** The profile page features a pencil icon button next to the user's name opening a modal dialog to update name, email, phone, and description. Avoid always-visible editable inputs.
+- **Inline Editing:** The profile page features a pencil icon button next to the user's name that hides the view state and replaces it with an inline, full-width edit form to update name, email, phone, and description. Modal dialogs are discouraged for editing entities on mobile devices.
 - **Privacy:** General users cannot list or view other users in the system (`GET /users` must be restricted).
 - **Team Members:** (TODO) Team member management is planned for a future phase.
 
