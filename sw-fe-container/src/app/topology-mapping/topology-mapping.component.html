@@ -1,4 +1,10 @@
 <div class="p-6 bg-slate-900 rounded-[40px] shadow-2xl border border-slate-800 overflow-hidden">
+  <div class="mb-4">
+    <a *ngIf="farmId" [routerLink]="['/farms', farmId]" class="inline-flex items-center text-slate-400 hover:text-white transition-colors text-sm font-medium">
+      <span class="material-symbols-outlined text-sm mr-1">arrow_back</span>
+      Back to Farm
+    </a>
+  </div>
   <div class="flex items-center justify-between mb-6">
     <div>
       <h2 class="text-2xl font-bold text-white tracking-tight">Interactive Topology Map</h2>
