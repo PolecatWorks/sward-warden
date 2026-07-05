@@ -317,9 +317,40 @@ jobs:
               body: `🚀 SW-BE Docker image published for testing!\n\n**Image Name:** \`${process.env.REGISTRY}/${process.env.IMAGE_NAME_LOWERCASE}:pr-${context.issue.number}\``
             })
 
+  docs:
+    name: Generate Rust Docs
+    needs: check-paths
+    if: needs.check-paths.outputs.backend == 'true' && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgeos-dev
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Generate Rust Docs
+        working-directory: sw-be-container
+        run: cargo doc --no-deps
+
+      - name: Publish to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./sw-be-container/target/doc
+          destination_dir: docs/rust
+          keep_files: true
+
   ci-success:
     name: SW-BE CI Success
-    needs: [check-paths, check-image, merge]
+    needs: [check-paths, check-image, merge, docs]
     if: always() && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
