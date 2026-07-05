@@ -27,5 +27,5 @@ A flexible system to gate access to specific features (modules).
 - **Module Mapping:** A many-to-many relationship mapping users to enabled modules.
 - **Initial Module:** `reports_and_analysis` (gates access to reporting exports and soil analysis).
 - **Backend Enforcement:** The delta sync engine inspects active modules and omits data belonging to disabled modules (e.g., skips syncing `soil_analyses` if the module is inactive).
-- **Frontend Enforcement:** Route guards prevent navigation to module-specific pages, and the sidebar dynamically hides related links.
+- **Frontend Enforcement:** Route guards prevent navigation to module-specific pages, and the sidebar dynamically disables and greys-out related links.
 - **Admin Control:** Administrators manage a user's enabled modules via the Administration Console.

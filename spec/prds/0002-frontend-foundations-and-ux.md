@@ -26,6 +26,7 @@ All user-facing modules must adhere to a premium design system:
 - **Bento Grid:** Used for dashboards and overviews to provide a modern, organized hierarchy.
 - **Card-Based UI:** Minimalist cards with subtle shadows and rounded corners (at least `xl` or `2xl`).
 - **Navigation Order:** Home, Fields, Farms, Inventory, Reporting.
+- **Navigation State Visibility:** Navigation items must be visibly distinct based on availability. Available items must be fully visible (solid colors, full opacity), while unavailable modules (e.g., unsubscribed features) must remain in the UI but be styled in a greyed-out/disabled state, rather than being completely hidden.
 - **Micro-Animations:** Subtle interactions (e.g., `scale-95` on active states, hover transitions).
 - **Glassmorphism:** Bottom navigation bar with `backdrop-blur`.
 
