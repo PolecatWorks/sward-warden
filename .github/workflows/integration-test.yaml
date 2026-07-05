@@ -239,47 +239,6 @@ jobs:
           echo "SW_FE_TAG: $SW_FE_TAG"
           echo "PR_NUMBER: $PR_NUMBER"
 
-      - name: Checkout gh-pages (Shallow)
-        uses: actions/checkout@v4
-        continue-on-error: true
-        with:
-          ref: refs/heads/gh-pages
-          path: gh-pages-dir
-          fetch-depth: 1
-
-      - name: Prepare GH Pages Base and Prune
-        run: |
-          mkdir -p ./gh-pages-publish
-
-          # Copy existing gh-pages content if it exists (and is not an empty dir)
-          if [ -d "gh-pages-dir" ] && [ "$(ls -A gh-pages-dir)" ]; then
-            cp -r gh-pages-dir/* ./gh-pages-publish/ || true
-          fi
-
-          # Prune PR reports older than 7 days using Python to avoid git mtime issues
-          python3 -c '
-          import os, time, shutil
-          now = time.time()
-          pr_dir = "./gh-pages-publish/pr"
-          if os.path.exists(pr_dir):
-              for entry in os.listdir(pr_dir):
-                  path = os.path.join(pr_dir, entry)
-                  if os.path.isdir(path):
-                      ts_file = os.path.join(path, ".timestamp")
-                      if os.path.exists(ts_file):
-                          try:
-                              with open(ts_file, "r") as f:
-                                  ts = float(f.read().strip())
-                                  if now - ts > 7 * 24 * 3600:
-                                      print(f"Pruning old PR report: {path}")
-                                      shutil.rmtree(path)
-                          except Exception as e:
-                              print(f"Error checking timestamp for {path}: {e}")
-          '
-
-          # Remove the gh-pages git folder from publish dir so it doesn't get published as a submodule
-          rm -rf ./gh-pages-publish/.git
-          rm -rf gh-pages-dir
 
       - name: Wait for Docker Images
         run: |
@@ -339,6 +298,50 @@ jobs:
           name: robot-test-results
           path: ./robot-results
           retention-days: 3
+
+      - name: Checkout gh-pages (Shallow)
+        uses: actions/checkout@v4
+        if: always()
+        continue-on-error: true
+        with:
+          ref: refs/heads/gh-pages
+          path: gh-pages-dir
+          fetch-depth: 1
+
+      - name: Prepare GH Pages Base and Prune
+        if: always()
+        run: |
+          mkdir -p ./gh-pages-publish
+
+          # Copy existing gh-pages content if it exists (and is not an empty dir)
+          if [ -d "gh-pages-dir" ] && [ "$(ls -A gh-pages-dir)" ]; then
+            cp -r gh-pages-dir/* ./gh-pages-publish/ || true
+          fi
+
+          # Prune PR reports older than 7 days using Python to avoid git mtime issues
+          python3 -c '
+          import os, time, shutil
+          now = time.time()
+          pr_dir = "./gh-pages-publish/pr"
+          if os.path.exists(pr_dir):
+              for entry in os.listdir(pr_dir):
+                  path = os.path.join(pr_dir, entry)
+                  if os.path.isdir(path):
+                      ts_file = os.path.join(path, ".timestamp")
+                      if os.path.exists(ts_file):
+                          try:
+                              with open(ts_file, "r") as f:
+                                  ts = float(f.read().strip())
+                                  if now - ts > 7 * 24 * 3600:
+                                      print(f"Pruning old PR report: {path}")
+                                      shutil.rmtree(path)
+                          except Exception as e:
+                              print(f"Error checking timestamp for {path}: {e}")
+          '
+
+          # Remove the gh-pages git folder from publish dir so it doesn't get published as a submodule
+          rm -rf ./gh-pages-publish/.git
+          rm -rf gh-pages-dir
 
       - name: Copy Test Results to GH Pages Staging
         if: always()
