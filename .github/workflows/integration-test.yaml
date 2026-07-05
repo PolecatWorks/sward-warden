@@ -223,7 +223,7 @@ jobs:
           kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
           kubectl label namespace $NAMESPACE istio-injection=enabled --overwrite
           # Create a mock secret for sw-be (required by Helm chart)
-          kubectl create secret generic sw-be -n $NAMESPACE --from-literal=database_username=mock-user --from-literal=database_password=mock-password --dry-run=client -o yaml | kubectl apply -f -
+          kubectl create secret generic sw-be -n $NAMESPACE --from-literal=database_username=mock-user --from-literal=database_password=mock-password --dry-run=client -o yaml | kubectl apply -f - # pragma: allowlist secret
           # Create docker-registry secret for pulling private images
           kubectl create secret docker-registry ghcr-secret -n $NAMESPACE \
             --docker-server=ghcr.io \
@@ -299,52 +299,10 @@ jobs:
           path: ./robot-results
           retention-days: 3
 
-      - name: Checkout gh-pages (Shallow)
-        uses: actions/checkout@v4
+      - name: Deploy Reports to GitHub Pages
         if: always()
-        continue-on-error: true
-        with:
-          ref: refs/heads/gh-pages
-          path: gh-pages-dir
-          fetch-depth: 1
-
-      - name: Prepare GH Pages Base and Prune
-        if: always()
-        run: |
-          mkdir -p ./gh-pages-publish
-
-          # Copy existing gh-pages content if it exists (and is not an empty dir)
-          if [ -d "gh-pages-dir" ] && [ "$(ls -A gh-pages-dir)" ]; then
-            cp -r gh-pages-dir/* ./gh-pages-publish/ || true
-          fi
-
-          # Prune PR reports older than 7 days using Python to avoid git mtime issues
-          python3 -c '
-          import os, time, shutil
-          now = time.time()
-          pr_dir = "./gh-pages-publish/pr"
-          if os.path.exists(pr_dir):
-              for entry in os.listdir(pr_dir):
-                  path = os.path.join(pr_dir, entry)
-                  if os.path.isdir(path):
-                      ts_file = os.path.join(path, ".timestamp")
-                      if os.path.exists(ts_file):
-                          try:
-                              with open(ts_file, "r") as f:
-                                  ts = float(f.read().strip())
-                                  if now - ts > 7 * 24 * 3600:
-                                      print(f"Pruning old PR report: {path}")
-                                      shutil.rmtree(path)
-                          except Exception as e:
-                              print(f"Error checking timestamp for {path}: {e}")
-          '
-
-          # Remove the gh-pages git folder from publish dir so it doesn't get published as a submodule
-          rm -rf ./gh-pages-publish/.git
-          rm -rf gh-pages-dir
-
-      - name: Copy Test Results to GH Pages Staging
-        if: always()
+        env:
+          PR_NUMBER: ${{ env.PR_NUMBER }}
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ] || [ "${{ github.event_name }}" == "merge_group" ]; then
             TARGET_DIR="pr/${{ env.PR_NUMBER }}"
@@ -352,21 +310,67 @@ jobs:
             TARGET_DIR="main"
           fi
 
-          # Remove target dir so we can replace it with fresh results
-          rm -rf "./gh-pages-publish/$TARGET_DIR"
-          mkdir -p "./gh-pages-publish/$TARGET_DIR"
-          cp -r ./robot-results/* "./gh-pages-publish/$TARGET_DIR/" || true
+          # Configure Git
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Write timestamp for pruning
-          date +%s > "./gh-pages-publish/$TARGET_DIR/.timestamp"
+          # Clone gh-pages branch in a separate folder
+          git clone --branch gh-pages https://x-token-auth:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages-repo
 
-      - name: Deploy Reports to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        if: always()
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./gh-pages-publish
-          keep_files: false
+          # Run a retry loop for copying, committing, and pushing
+          for i in {1..5}; do
+            echo "Attempt $i to publish test results..."
+
+            # Clean and update the target dir inside the cloned repo
+            rm -rf gh-pages-repo/$TARGET_DIR
+            mkdir -p gh-pages-repo/$TARGET_DIR
+            cp -r ./robot-results/* gh-pages-repo/$TARGET_DIR/ || true
+            date +%s > gh-pages-repo/$TARGET_DIR/.timestamp
+
+            # Prune PR reports older than 7 days using Python
+            python3 -c 'import sys, textwrap; exec(textwrap.dedent(sys.argv[1]))' '
+            import os, time, shutil
+            now = time.time()
+            pr_dir = "gh-pages-repo/pr"
+            if os.path.exists(pr_dir):
+                for entry in os.listdir(pr_dir):
+                    path = os.path.join(pr_dir, entry)
+                    if os.path.isdir(path):
+                        ts_file = os.path.join(path, ".timestamp")
+                        if os.path.exists(ts_file):
+                            try:
+                                with open(ts_file, "r") as f:
+                                    ts = float(f.read().strip())
+                                    if now - ts > 7 * 24 * 3600:
+                                        print(f"Pruning old PR report: {path}")
+                                        shutil.rmtree(path)
+                            except Exception as e:
+                                print(f"Error checking timestamp for {path}: {e}")
+            '
+
+            # Commit and push
+            cd gh-pages-repo
+            git add .
+            if git diff --quiet && git diff --staged --quiet; then
+              echo "No changes to commit."
+              cd ..
+              break
+            fi
+
+            git commit -m "Deploy reports for PR ${{ env.PR_NUMBER }} / $TARGET_DIR"
+
+            if git push origin gh-pages; then
+              echo "Successfully deployed!"
+              cd ..
+              break
+            fi
+
+            echo "Push failed, pulling latest changes and retrying..."
+            git pull --rebase origin gh-pages
+            cd ..
+
+            sleep 5
+          done
 
       - name: Comment PR with Report Link
         if: always() && (github.event_name == 'pull_request' || github.event_name == 'merge_group')
