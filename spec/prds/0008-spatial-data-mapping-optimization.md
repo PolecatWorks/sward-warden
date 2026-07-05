@@ -38,6 +38,7 @@ Evaluating the slope and elevation of a field is critical for determining runoff
 
 ## 5. UI/UX Mapping Visualizations
 - **Topology View Access:** A "Topology View" button must be provided in the Farm Detail view's Quick Actions section, navigating directly to the topology mapping interface for that farm.
+- **Topology View Navigation:** A back button must be provided on the Topology Map view to allow users to navigate back to the Farm Detail view.
 - **Integrated Map View:** Premium, high-contrast map interface. Polygons clearly styled with translucent fill and high-contrast strokes.
 - **Topology Toggles:** Users can toggle layers like Soil Type, Risk Level, and Historical Application. High-risk slopes and vulnerable zones are visually flagged.
 - **Optimization Bento:** Suggested plans presented in Bento-style dashboards explaining the "Reasoning" (e.g., "Optimal Weather Window").
