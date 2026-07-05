@@ -182,7 +182,7 @@ squash-gh-pages:
 		> prune.py; \
 	python3 prune.py; \
 	rm prune.py; \
-	git add -A; \
+	git add -u; \
 	echo "Creating base commit..."; \
 	PRE_COMMIT_ALLOW_NO_CONFIG=1 git commit --no-verify -m "Squashed history older than 8 days"; \
 	echo "Rebasing recent commits onto the new base..."; \
