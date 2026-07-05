@@ -143,7 +143,7 @@ export class FieldMapEditorComponent
       dragMode: false,
       cutPolygon: false,
       removalMode: true,
-      drawMarker: false,
+      drawMarker: true,
       drawCircleMarker: false,
       drawPolyline: false,
       drawRectangle: false,
@@ -194,7 +194,7 @@ export class FieldMapEditorComponent
       }
 
       layer.addTo(this.map);
-      this.map.fitBounds(layer.getBounds());
+      this.map.fitBounds(layer.getBounds(), { maxZoom: 16 });
 
       const layers = layer.getLayers();
       if (layers.length > 0) {
