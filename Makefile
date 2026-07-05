@@ -161,25 +161,27 @@ squash-gh-pages:
 	echo "Creating temporary orphan branch at $$HASH..."; \
 	git checkout --orphan temp-branch $$HASH; \
 	echo "Removing content older than 8 days..."; \
-	python3 -c ' \
-import os, time, shutil \
-now = time.time() \
-for folder in ["pr", "merge-group"]: \
-    if os.path.exists(folder): \
-        for entry in os.listdir(folder): \
-            path = os.path.join(folder, entry) \
-            if os.path.isdir(path): \
-                ts_file = os.path.join(path, ".timestamp") \
-                if os.path.exists(ts_file): \
-                    try: \
-                        with open(ts_file, "r") as f: \
-                            ts = float(f.read().strip()) \
-                            if now - ts > 8 * 24 * 3600: \
-                                print(f"Pruning old folder: {path}") \
-                                shutil.rmtree(path) \
-                    except Exception as e: \
-                        print(f"Error checking {path}: {e}") \
-'; \
+	printf '%s\n' \
+		'import os, time, shutil' \
+		'now = time.time()' \
+		'for folder in ["pr", "merge-group"]:' \
+		'    if os.path.exists(folder):' \
+		'        for entry in os.listdir(folder):' \
+		'            path = os.path.join(folder, entry)' \
+		'            if os.path.isdir(path):' \
+		'                ts_file = os.path.join(path, ".timestamp")' \
+		'                if os.path.exists(ts_file):' \
+		'                    try:' \
+		'                        with open(ts_file, "r") as f:' \
+		'                            ts = float(f.read().strip())' \
+		'                            if now - ts > 8 * 24 * 3600:' \
+		'                                print(f"Pruning old folder: {path}")' \
+		'                                shutil.rmtree(path)' \
+		'                    except Exception as e:' \
+		'                        print(f"Error checking {path}: {e}")' \
+		> prune.py; \
+	python3 prune.py; \
+	rm prune.py; \
 	git add -A; \
 	echo "Creating base commit..."; \
 	PRE_COMMIT_ALLOW_NO_CONFIG=1 git commit --no-verify -m "Squashed history older than 8 days"; \
