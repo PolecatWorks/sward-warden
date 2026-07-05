@@ -147,17 +147,38 @@ squash-gh-pages:
 	echo "Checking out gh-pages..."; \
 	git checkout gh-pages; \
 	git pull origin gh-pages || true; \
-	echo "Squashing history older than 2 weeks on gh-pages..."; \
-	HASH=$$(git log --before="2 weeks ago" --format="%h" -1); \
+	echo "Squashing history older than 8 days on gh-pages..."; \
+	HASH=$$(git log --before="8 days ago" --format="%h" -1); \
 	if [ -z "$$HASH" ]; then \
-		echo "Could not find a commit older than 2 weeks. Exiting."; \
+		echo "Could not find a commit older than 8 days. Exiting."; \
 		exit 1; \
 	fi; \
 	echo "Found commit: $$HASH"; \
 	echo "Creating temporary orphan branch at $$HASH..."; \
 	git checkout --orphan temp-branch $$HASH; \
+	echo "Removing content older than 8 days..."; \
+	python3 -c ' \
+import os, time, shutil \
+now = time.time() \
+for folder in ["pr", "merge-group"]: \
+    if os.path.exists(folder): \
+        for entry in os.listdir(folder): \
+            path = os.path.join(folder, entry) \
+            if os.path.isdir(path): \
+                ts_file = os.path.join(path, ".timestamp") \
+                if os.path.exists(ts_file): \
+                    try: \
+                        with open(ts_file, "r") as f: \
+                            ts = float(f.read().strip()) \
+                            if now - ts > 8 * 24 * 3600: \
+                                print(f"Pruning old folder: {path}") \
+                                shutil.rmtree(path) \
+                    except Exception as e: \
+                        print(f"Error checking {path}: {e}") \
+'; \
+	git add -A; \
 	echo "Creating base commit..."; \
-	git commit -m "Squashed history older than 2 weeks"; \
+	PRE_COMMIT_ALLOW_NO_CONFIG=1 git commit --no-verify -m "Squashed history older than 8 days"; \
 	echo "Rebasing recent commits onto the new base..."; \
 	git rebase --onto temp-branch $$HASH gh-pages; \
 	echo "Cleaning up temp branch..."; \
