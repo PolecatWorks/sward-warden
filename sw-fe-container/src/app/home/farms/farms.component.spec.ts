@@ -165,7 +165,7 @@ describe('FarmsComponent', () => {
       fixture.detectChanges();
       component.openAddFarmModal();
       fixture.detectChanges();
-      const modal = fixture.nativeElement.querySelector('[role="dialog"]');
+      const modal = fixture.nativeElement.querySelector('#add-farm-modal');
       // PRD Reference: 0003
       expect(modal).toBeTruthy();
     });

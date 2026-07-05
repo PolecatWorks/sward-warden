@@ -9,6 +9,8 @@ import { Farm } from '../../models/farm';
 import { Field } from '../../models/field';
 import { FormsModule } from '@angular/forms';
 import { WeatherIntegrationComponent } from '../../weather-integration/weather-integration.component';
+import { resizeImage } from '../../utils/image-utils';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-farm-detail',
@@ -28,8 +30,10 @@ export class FarmDetailComponent implements OnInit {
   showEditFarmModal: boolean = false;
   editFarmName: string = '';
   editFarmLocation: string = '';
+  editFarmPhoto: string | null = null;
   originalEditFarmName: string = '';
   originalEditFarmLocation: string = '';
+  originalEditFarmPhoto: string | null = null;
 
   showDeleteConfirm: boolean = false;
 
@@ -97,13 +101,28 @@ export class FarmDetailComponent implements OnInit {
     });
   }
 
+  async onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      try {
+        const { maxWidth, maxHeight, quality } = environment.imageConfig;
+        this.editFarmPhoto = await resizeImage(file, maxWidth, maxHeight, quality);
+      } catch (error) {
+        this.logger.error('Error resizing image:', error);
+        this.errorMessage = 'Failed to process image. Please try again.';
+      }
+    }
+  }
+
   // PRD Reference: 0003
   openEditFarmModal(): void {
     if (!this.farm) return;
     this.editFarmName = this.farm.name;
     this.editFarmLocation = this.farm.location;
+    this.editFarmPhoto = this.farm.photo || null;
     this.originalEditFarmName = this.farm.name;
     this.originalEditFarmLocation = this.farm.location;
+    this.originalEditFarmPhoto = this.farm.photo || null;
     this.errorMessage = null;
     this.showEditFarmModal = true;
   }
@@ -112,7 +131,8 @@ export class FarmDetailComponent implements OnInit {
   hasEditChanges(): boolean {
     return (
       this.editFarmName !== this.originalEditFarmName ||
-      this.editFarmLocation !== this.originalEditFarmLocation
+      this.editFarmLocation !== this.originalEditFarmLocation ||
+      this.editFarmPhoto !== this.originalEditFarmPhoto
     );
   }
 
@@ -121,6 +141,7 @@ export class FarmDetailComponent implements OnInit {
     this.showEditFarmModal = false;
     this.editFarmName = '';
     this.editFarmLocation = '';
+    this.editFarmPhoto = null;
     if (this.router.url.endsWith('/edit')) {
       this.router.navigate(['/farms', this.farmId]);
     }
@@ -141,6 +162,10 @@ export class FarmDetailComponent implements OnInit {
       name: this.editFarmName,
       location: this.editFarmLocation,
     };
+
+    if (this.editFarmPhoto !== this.originalEditFarmPhoto) {
+      updatedData.photo = this.editFarmPhoto || undefined;
+    }
 
     this.isSaving = true;
     this.farmService.updateFarm(this.farm.id!, updatedData).subscribe({

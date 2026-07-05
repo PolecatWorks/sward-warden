@@ -21,6 +21,7 @@ Since the majority of users manage a single farm, the application prioritizes a 
   - Fields list displays a "Farm" column.
 
 ## 3. Farm Management
+- **Farm Photo Upload:** Users can upload a photo for their farm. The image is resized client-side to save bandwidth and storage and sent as a base64 string to the backend. The photo will be shown on the farm card on the list view (with fallbacks to default imagery) and on the farm detail view.
 - **List & Card Layout:** Farm cards feature an image header, name, area, and edit pencil icon in the bottom drawer. Clicking the card navigates to the farm detail view. The edit pencil icon must stop click propagation and open an edit modal. Farm lists must expand to utilize the full available screen width, displaying up to 3 cards per row on larger screens in a responsive grid layout.
 - **Safe Deletion:** Farms can only be deleted from the Farm Details page (`/farms/:farmId`) via a red trash can icon revealing an inline confirmation. Deletion is blocked (FE & BE) if active fields remain attached.
 - **Empty State:** A full-width, center-aligned empty state card with a prominent "Add Farm" button. The empty state card must span the full page width and not be constrained by grid layouts to ensure consistent center alignment.
