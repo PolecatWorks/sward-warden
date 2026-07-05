@@ -370,9 +370,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Ensure repo name formatting is correct for the URL
-          REPO_NAME=$(echo "${{ github.event.repository.name }}")
-          REPORT_URL="https://${{ github.repository_owner }}.github.io/${REPO_NAME}/pr/${{ env.PR_NUMBER }}/log.html"
+          # Ensure repo name formatting is correct for the URL (lowercase owner and repo name)
+          REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2 | tr '[:upper:]' '[:lower:]')
+          OWNER_NAME=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPORT_URL="https://${OWNER_NAME}.github.io/${REPO_NAME}/pr/${{ env.PR_NUMBER }}/log.html"
 
           # Properly format body with newlines
           COMMENT_BODY="### 🤖 Robot Framework Test Results
