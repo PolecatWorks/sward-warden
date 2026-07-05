@@ -16,6 +16,7 @@ This document defines the requirements for the application's spatial capabilitie
 
 ## 2. Topographical Data Analysis
 Evaluating the slope and elevation of a field is critical for determining runoff risk and ensuring compliance.
+- **Runoff Pathway Analysis:** To assess contamination risks, the system evaluates where surface water flows off a field. It traces downslope flowpaths from fields and maps these paths against regional waterway networks (e.g., DAERA river segments) to identify the specific receiving waterbodies that a field contributes to.
 - **Data Acquisition (DEM):** Transitioning away from commercial point-sampling APIs, the system utilizes high-resolution LiDAR Digital Elevation Models (DEMs), such as the DAERA Topographic LiDAR dataset.
 - **WhiteboxTools Processing:** The backend invokes WhiteboxTools (written in Rust) to perform high-density raster processing on the local DEM tile cropped to the field's bounding box.
 - **Metric Aggregation (Summary Storage):** The cell-level data is aggregated and stored as scalar values on the `fields` table to ensure rapid querying without massive storage overhead:
