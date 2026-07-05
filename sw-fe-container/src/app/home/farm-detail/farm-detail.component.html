@@ -19,6 +19,21 @@
 
   <!-- Hero Section -->
   <section class="space-y-4" *ngIf="farm && !showEditFarmModal">
+    <!-- Header Image -->
+    <div
+      *ngIf="farm.photo"
+      class="w-full h-48 md:h-64 rounded-xl overflow-hidden shadow-sm relative group mb-6"
+    >
+      <img
+        [src]="farm.photo"
+        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        alt="{{ farm.name }} Photo"
+      />
+      <div
+        class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"
+      ></div>
+    </div>
+
     <div class="flex justify-between items-start">
       <div class="flex flex-col gap-1">
         <p
@@ -363,6 +378,30 @@
         class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
         required
       />
+    </div>
+    <div>
+      <label
+        for="edit-farm-photo-input"
+        class="block text-sm font-medium text-on-surface mb-1"
+        >Farm Photo (optional)</label
+      >
+      <input
+        id="edit-farm-photo-input"
+        type="file"
+        accept="image/*"
+        (change)="onFileSelected($event)"
+        class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+      />
+      <div
+        *ngIf="editFarmPhoto"
+        class="mt-2 h-20 w-32 relative rounded overflow-hidden"
+      >
+        <img
+          [src]="editFarmPhoto"
+          class="object-cover w-full h-full"
+          alt="Preview"
+        />
+      </div>
     </div>
     <div class="pt-4 flex justify-end gap-3">
       <button

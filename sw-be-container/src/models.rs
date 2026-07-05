@@ -33,6 +33,7 @@ pub struct Farm {
     pub name: String,
     pub location: String,
     pub has_derogation: Option<bool>,
+    pub photo: Option<String>,
     pub updated_at: Option<DateTime<Utc>>,
     pub is_deleted: Option<bool>,
 }

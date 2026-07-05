@@ -205,7 +205,15 @@ export class RxdbService implements OnDestroy {
       });
 
       await db.addCollections({
-        farms: { schema: farmSchema },
+        farms: {
+          schema: farmSchema,
+          migrationStrategies: {
+            1: function(oldDoc) {
+              oldDoc.photo = null;
+              return oldDoc;
+            }
+          }
+        },
         fields: { schema: fieldSchema },
         events: { schema: eventSchema },
         soil_analyses: { schema: soilAnalysisSchema },

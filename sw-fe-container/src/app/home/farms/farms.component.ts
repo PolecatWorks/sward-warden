@@ -6,6 +6,8 @@ import { FarmManagementService } from '../../services/farm-management.service';
 import { LoggerService } from '../../services/logger.service';
 import { Farm } from '../../models/farm';
 import { FormsModule } from '@angular/forms';
+import { resizeImage } from '../../utils/image-utils';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-farms',
@@ -19,6 +21,7 @@ export class FarmsComponent implements OnInit {
   farmFieldCounts: { [farmId: string]: number } = {};
   newFarmName: string = '';
   newFarmLocation: string = '';
+  newFarmPhoto: string | null = null;
   showAddFarmModal: boolean = false;
   isLoading: boolean = false;
   isSaving: boolean = false;
@@ -85,6 +88,19 @@ export class FarmsComponent implements OnInit {
     });
   }
 
+  async onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      try {
+        const { maxWidth, maxHeight, quality } = environment.imageConfig;
+        this.newFarmPhoto = await resizeImage(file, maxWidth, maxHeight, quality);
+      } catch (error) {
+        this.logger.error('Error resizing image:', error);
+        this.errorMessage = 'Failed to process image. Please try again.';
+      }
+    }
+  }
+
   // PRD Reference: 0003
   addFarm(): void {
     if (!this.newFarmName || !this.newFarmLocation || this.isSaving) {
@@ -96,11 +112,16 @@ export class FarmsComponent implements OnInit {
       location: this.newFarmLocation,
     };
 
+    if (this.newFarmPhoto) {
+      newFarm.photo = this.newFarmPhoto;
+    }
+
     this.isSaving = true;
     this.farmService.addFarm(newFarm).subscribe({
       next: () => {
         this.newFarmName = '';
         this.newFarmLocation = '';
+        this.newFarmPhoto = null;
         this.isSaving = false;
         this.loadFarms();
         this.showAddFarmModal = true;
@@ -118,6 +139,7 @@ export class FarmsComponent implements OnInit {
   openAddFarmModal(): void {
     this.newFarmName = '';
     this.newFarmLocation = '';
+    this.newFarmPhoto = null;
     this.errorMessage = null;
     this.showAddFarmModal = true;
   }
@@ -127,6 +149,7 @@ export class FarmsComponent implements OnInit {
     this.showAddFarmModal = false;
     this.newFarmName = '';
     this.newFarmLocation = '';
+    this.newFarmPhoto = null;
     if (this.router.url.endsWith('/new')) {
       this.router.navigate(['/farms']);
     }

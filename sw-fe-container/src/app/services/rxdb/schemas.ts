@@ -30,6 +30,7 @@ export interface FarmDocType {
   name: string;
   location: string;
   has_derogation?: boolean;
+  photo?: string | null;
   syncStatus: SyncStatus;
   updatedAt: string;
 }
@@ -186,7 +187,7 @@ export const inventoryStorageSchema: RxJsonSchema<InventoryStorageDocType> = {
 };
 
 export const farmSchema: RxJsonSchema<FarmDocType> = {
-  version: 0,
+  version: 1,
   primaryKey: 'id',
   type: 'object',
   properties: {
@@ -196,6 +197,7 @@ export const farmSchema: RxJsonSchema<FarmDocType> = {
     name: { type: 'string' },
     location: { type: 'string' },
     has_derogation: { type: 'boolean' },
+    photo: { type: ['string', 'null'] },
     syncStatus: {
       type: 'string',
       maxLength: 16,

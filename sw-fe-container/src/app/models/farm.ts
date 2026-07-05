@@ -4,5 +4,6 @@ export interface Farm {
   name: string;
   location: string;
   has_derogation?: boolean;
+  photo?: string;
   updated_at?: string;
 }
