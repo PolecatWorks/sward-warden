@@ -150,7 +150,11 @@ squash-gh-pages:
 	echo "Squashing history older than 8 days on gh-pages..."; \
 	HASH=$$(git log --before="8 days ago" --format="%h" -1); \
 	if [ -z "$$HASH" ]; then \
-		echo "Could not find a commit older than 8 days. Exiting."; \
+		echo "No commits older than 8 days found. Falling back to the oldest commit..."; \
+		HASH=$$(git log --reverse --format="%h" | head -n 1); \
+	fi; \
+	if [ -z "$$HASH" ]; then \
+		echo "Could not find any commits. Exiting."; \
 		exit 1; \
 	fi; \
 	echo "Found commit: $$HASH"; \
