@@ -2,27 +2,62 @@
   <!-- Top Section: Immediate Actions -->
   <section class="px-6 pt-8 pb-8 overflow-hidden">
     <div class="relative">
-      <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-secondary mb-2 block">Command Center</span>
-      <h2 class="editorial-headline text-5xl font-black text-primary leading-[0.9] tracking-tighter mb-6">Hello<span *ngIf="(currentUser$ | async)?.name as name">, {{ name.split(' ')[0] }}</span></h2>
+      <p
+        class="text-[10px] uppercase tracking-[0.2em] font-bold text-secondary mb-2"
+      >
+        Command Center
+      </p>
+      <h1
+        class="text-4xl font-black text-primary font-['Work_Sans'] tracking-tight mb-2"
+      >
+        Hello<span *ngIf="(currentUser$ | async)?.name as name"
+          >, {{ name.split(" ")[0] }}</span
+        >
+      </h1>
+      <p class="text-on-surface-variant font-medium mb-8">
+        Overview of your operations and alerts.
+      </p>
 
       <!-- Daily Action Traffic Light Widget -->
-      <div class="rounded-2xl p-6 mb-6 flex items-start gap-4 shadow-sm border border-black/5"
-           [ngClass]="{
-             'bg-green-50 dark:bg-green-900/20 text-green-900 dark:text-green-100 border-green-200 dark:border-green-800': trafficLightStatus === 'green',
-             'bg-amber-50 dark:bg-amber-900/20 text-amber-900 dark:text-amber-100 border-amber-200 dark:border-amber-800': trafficLightStatus === 'yellow',
-             'bg-red-50 dark:bg-red-900/20 text-red-900 dark:text-red-100 border-red-200 dark:border-red-800': trafficLightStatus === 'red'
-           }">
-        <span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;"
-              [ngClass]="{
-                'text-green-600 dark:text-green-400': trafficLightStatus === 'green',
-                'text-amber-600 dark:text-amber-400': trafficLightStatus === 'yellow',
-                'text-red-600 dark:text-red-400': trafficLightStatus === 'red'
-              }">
-          {{ trafficLightStatus === 'green' ? 'check_circle' : trafficLightStatus === 'yellow' ? 'warning' : 'cancel' }}
+      <div
+        class="rounded-2xl p-6 mb-6 flex items-start gap-4 shadow-sm border border-black/5"
+        [ngClass]="{
+          'bg-green-50 dark:bg-green-900/20 text-green-900 dark:text-green-100 border-green-200 dark:border-green-800':
+            trafficLightStatus === 'green',
+          'bg-amber-50 dark:bg-amber-900/20 text-amber-900 dark:text-amber-100 border-amber-200 dark:border-amber-800':
+            trafficLightStatus === 'yellow',
+          'bg-red-50 dark:bg-red-900/20 text-red-900 dark:text-red-100 border-red-200 dark:border-red-800':
+            trafficLightStatus === 'red',
+        }"
+      >
+        <span
+          class="material-symbols-outlined text-4xl"
+          style="font-variation-settings: &quot;FILL&quot; 1"
+          [ngClass]="{
+            'text-green-600 dark:text-green-400':
+              trafficLightStatus === 'green',
+            'text-amber-600 dark:text-amber-400':
+              trafficLightStatus === 'yellow',
+            'text-red-600 dark:text-red-400': trafficLightStatus === 'red',
+          }"
+        >
+          {{
+            trafficLightStatus === "green"
+              ? "check_circle"
+              : trafficLightStatus === "yellow"
+                ? "warning"
+                : "cancel"
+          }}
         </span>
         <div>
           <h3 class="editorial-headline text-xl font-bold mb-1">
-            {{ trafficLightStatus === 'green' ? 'Good to Spread' : trafficLightStatus === 'yellow' ? 'Proceed with Caution' : 'Spreading Prohibited' }}
+            {{
+              trafficLightStatus === "green"
+                ? "Good to Spread"
+                : trafficLightStatus === "yellow"
+                  ? "Proceed with Caution"
+                  : "Spreading Prohibited"
+            }}
           </h3>
           <p class="text-sm opacity-90">{{ trafficLightMessage }}</p>
         </div>
@@ -30,11 +65,13 @@
 
       <!-- Global Alerts -->
       <div class="space-y-3 mb-6" *ngIf="(globalAlerts$ | async)?.length">
-         <div *ngFor="let alert of globalAlerts$ | async"
-              class="flex items-center gap-3 p-4 rounded-xl bg-error/10 border border-error/20 text-error">
-             <span class="material-symbols-outlined">gavel</span>
-             <p class="font-bold text-sm">{{ alert.message }}</p>
-         </div>
+        <div
+          *ngFor="let alert of globalAlerts$ | async"
+          class="flex items-center gap-3 p-4 rounded-xl bg-error/10 border border-error/20 text-error"
+        >
+          <span class="material-symbols-outlined">gavel</span>
+          <p class="font-bold text-sm">{{ alert.message }}</p>
+        </div>
       </div>
     </div>
   </section>
@@ -42,110 +79,193 @@
   <!-- Middle Section: Contextual Context (Single vs Multi-Farm) -->
   <section class="px-6 mb-12">
     <div class="flex items-baseline justify-between mb-6">
-      <h3 class="editorial-headline text-2xl font-bold text-primary">Action Required</h3>
+      <h3 class="editorial-headline text-2xl font-bold text-primary">
+        Action Required
+      </h3>
     </div>
 
     <!-- Multi-Farm View -->
     <div *ngIf="isMultiFarm$ | async; else singleFarmView" class="space-y-4">
-      <div *ngFor="let group of groupedAlerts$ | async" class="bg-surface-container-lowest rounded-xl p-5 shadow-sm border border-surface-variant/30 transition-all hover:scale-[1.01] cursor-pointer" [routerLink]="['/farms', group.farmId]">
+      <div
+        *ngFor="let group of groupedAlerts$ | async"
+        class="bg-surface-container-lowest rounded-xl p-5 shadow-sm border border-surface-variant/30 transition-all hover:scale-[1.01] cursor-pointer"
+        [routerLink]="['/farms', group.farmId]"
+      >
         <div class="flex justify-between items-center mb-3">
-           <h4 class="editorial-headline text-lg font-bold text-primary">{{ group.farmName }}</h4>
-           <span class="bg-error/10 text-error px-2 py-1 rounded-md text-xs font-bold">{{ group.alerts.length }} Issues</span>
+          <h4 class="editorial-headline text-lg font-bold text-primary">
+            {{ group.farmName }}
+          </h4>
+          <span
+            class="bg-error/10 text-error px-2 py-1 rounded-md text-xs font-bold"
+            >{{ group.alerts.length }} Issues</span
+          >
         </div>
         <ul class="space-y-2">
-          <li *ngFor="let alert of group.alerts" class="flex items-start gap-2 text-sm text-on-surface-variant">
-             <span class="material-symbols-outlined text-[16px] mt-0.5"
-                   [class.text-error]="alert.type === 'critical'"
-                   [class.text-amber-500]="alert.type === 'warning'">
-                {{ alert.type === 'critical' ? 'error' : 'warning' }}
-             </span>
-             <span><strong *ngIf="alert.fieldName">{{ alert.fieldName }}:</strong> {{ alert.message }}</span>
+          <li
+            *ngFor="let alert of group.alerts"
+            class="flex items-start gap-2 text-sm text-on-surface-variant"
+          >
+            <span
+              class="material-symbols-outlined text-[16px] mt-0.5"
+              [class.text-error]="alert.type === 'critical'"
+              [class.text-amber-500]="alert.type === 'warning'"
+            >
+              {{ alert.type === "critical" ? "error" : "warning" }}
+            </span>
+            <span
+              ><strong *ngIf="alert.fieldName">{{ alert.fieldName }}:</strong>
+              {{ alert.message }}</span
+            >
           </li>
         </ul>
       </div>
-      <div *ngIf="(groupedAlerts$ | async)?.length === 0" class="text-center p-8 bg-surface-container-lowest rounded-xl border border-surface-variant/30">
-        <span class="material-symbols-outlined text-4xl text-green-500 mb-2">task_alt</span>
-        <p class="text-on-surface-variant font-medium">All farms are compliant and operating normally.</p>
+      <div
+        *ngIf="(groupedAlerts$ | async)?.length === 0"
+        class="text-center p-8 bg-surface-container-lowest rounded-xl border border-surface-variant/30"
+      >
+        <span class="material-symbols-outlined text-4xl text-green-500 mb-2"
+          >task_alt</span
+        >
+        <p class="text-on-surface-variant font-medium">
+          All farms are compliant and operating normally.
+        </p>
       </div>
     </div>
 
     <!-- Single-Farm View -->
     <ng-template #singleFarmView>
-       <div class="space-y-3">
-         <ng-container *ngIf="groupedAlerts$ | async as groups">
-           <ng-container *ngIf="groups.length > 0; else noAlerts">
-             <div *ngFor="let alert of groups[0]?.alerts"
-                  class="flex items-start gap-3 p-4 rounded-xl shadow-sm border border-surface-variant/30"
-                  [ngClass]="{'bg-error/5 border-error/20': alert.type === 'critical', 'bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800': alert.type === 'warning'}">
-                 <span class="material-symbols-outlined shrink-0"
-                       [class.text-error]="alert.type === 'critical'"
-                       [class.text-amber-500]="alert.type === 'warning'">
-                    {{ alert.type === 'critical' ? 'error' : 'warning' }}
-                 </span>
-                 <div>
-                    <h5 *ngIf="alert.fieldName" class="font-bold text-sm text-on-surface mb-0.5">{{ alert.fieldName }}</h5>
-                    <p class="text-sm text-on-surface-variant">{{ alert.message }}</p>
-                 </div>
-             </div>
-           </ng-container>
-           <ng-template #noAlerts>
-              <div class="text-center p-8 bg-surface-container-lowest rounded-xl border border-surface-variant/30">
-                <span class="material-symbols-outlined text-4xl text-green-500 mb-2">task_alt</span>
-                <p class="text-on-surface-variant font-medium">No critical alerts for your fields.</p>
+      <div class="space-y-3">
+        <ng-container *ngIf="groupedAlerts$ | async as groups">
+          <ng-container *ngIf="groups.length > 0; else noAlerts">
+            <div
+              *ngFor="let alert of groups[0]?.alerts"
+              class="flex items-start gap-3 p-4 rounded-xl shadow-sm border border-surface-variant/30"
+              [ngClass]="{
+                'bg-error/5 border-error/20': alert.type === 'critical',
+                'bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800':
+                  alert.type === 'warning',
+              }"
+            >
+              <span
+                class="material-symbols-outlined shrink-0"
+                [class.text-error]="alert.type === 'critical'"
+                [class.text-amber-500]="alert.type === 'warning'"
+              >
+                {{ alert.type === "critical" ? "error" : "warning" }}
+              </span>
+              <div>
+                <h5
+                  *ngIf="alert.fieldName"
+                  class="font-bold text-sm text-on-surface mb-0.5"
+                >
+                  {{ alert.fieldName }}
+                </h5>
+                <p class="text-sm text-on-surface-variant">
+                  {{ alert.message }}
+                </p>
               </div>
-           </ng-template>
-         </ng-container>
-       </div>
+            </div>
+          </ng-container>
+          <ng-template #noAlerts>
+            <div
+              class="text-center p-8 bg-surface-container-lowest rounded-xl border border-surface-variant/30"
+            >
+              <span
+                class="material-symbols-outlined text-4xl text-green-500 mb-2"
+                >task_alt</span
+              >
+              <p class="text-on-surface-variant font-medium">
+                No critical alerts for your fields.
+              </p>
+            </div>
+          </ng-template>
+        </ng-container>
+      </div>
     </ng-template>
   </section>
 
   <!-- Bottom Section: Quick Links & Summaries (Bento Grid) -->
   <section class="px-6 grid grid-cols-2 gap-4 mb-6">
     <!-- Inventory Summary (Top 5 Storages) -->
-    <div class="bg-surface-container-low p-6 rounded-xl flex flex-col aspect-square cursor-pointer hover:bg-surface-container transition-colors" routerLink="/inventory/storage">
+    <div
+      class="bg-surface-container-low p-6 rounded-xl flex flex-col aspect-square cursor-pointer hover:bg-surface-container transition-colors"
+      routerLink="/inventory/storage"
+    >
       <div class="flex items-center justify-between mb-4">
-        <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">water_drop</span>
-        <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Storage Capacity</p>
+        <span
+          class="material-symbols-outlined text-primary"
+          style="font-variation-settings: &quot;FILL&quot; 1"
+          >water_drop</span
+        >
+        <p
+          class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold"
+        >
+          Storage Capacity
+        </p>
       </div>
 
       <div class="flex-1 flex items-end justify-center gap-2 mt-2">
-        <ng-container *ngIf="(topStorages$ | async) as topStorages">
-          <div *ngIf="topStorages.length === 0" class="text-center w-full text-on-surface-variant text-sm flex flex-col items-center justify-center">
-             <span>No Storage Added</span>
+        <ng-container *ngIf="topStorages$ | async as topStorages">
+          <div
+            *ngIf="topStorages.length === 0"
+            class="text-center w-full text-on-surface-variant text-sm flex flex-col items-center justify-center"
+          >
+            <span>No Storage Added</span>
           </div>
-          <div *ngFor="let tank of topStorages"
-               class="relative flex flex-col justify-end w-8 sm:w-10 bg-outline/20 rounded-t-md overflow-hidden group"
-               [style.height.%]="(tank.capacity_volume / maxStorageVolume) * 100"
-               title="{{ tank.name }}: {{ tank.capacity_volume }} m³ ({{ tank.fillPercentage }}% full)">
-
+          <div
+            *ngFor="let tank of topStorages"
+            class="relative flex flex-col justify-end w-8 sm:w-10 bg-outline/20 rounded-t-md overflow-hidden group"
+            [style.height.%]="(tank.capacity_volume / maxStorageVolume) * 100"
+            title="{{ tank.name }}: {{ tank.capacity_volume }} m³ ({{
+              tank.fillPercentage
+            }}% full)"
+          >
             <!-- Tooltip simulation on hover, could be standard title attribute but standardizing visually is better -->
 
-            <div class="w-full bg-primary/80 transition-all duration-500 ease-in-out"
-                 [style.height.%]="tank.fillPercentage">
-            </div>
+            <div
+              class="w-full bg-primary/80 transition-all duration-500 ease-in-out"
+              [style.height.%]="tank.fillPercentage"
+            ></div>
 
             <!-- Percentage text overlay if there's enough space, or keep it clean -->
-            <div class="absolute inset-0 flex items-end justify-center pb-1 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-              <span class="text-[8px] font-bold text-white drop-shadow-md">{{ tank.fillPercentage }}%</span>
+            <div
+              class="absolute inset-0 flex items-end justify-center pb-1 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              <span class="text-[8px] font-bold text-white drop-shadow-md"
+                >{{ tank.fillPercentage }}%</span
+              >
             </div>
           </div>
         </ng-container>
       </div>
     </div>
     <!-- Upcoming Events -->
-    <div class="bg-primary text-white p-6 rounded-xl flex flex-col justify-between aspect-square cursor-pointer hover:opacity-90 transition-opacity" routerLink="/fields">
-      <span class="material-symbols-outlined text-primary-fixed-dim mb-4" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+    <div
+      class="bg-primary text-white p-6 rounded-xl flex flex-col justify-between aspect-square cursor-pointer hover:opacity-90 transition-opacity"
+      routerLink="/fields"
+    >
+      <span
+        class="material-symbols-outlined text-primary-fixed-dim mb-4"
+        style="font-variation-settings: &quot;FILL&quot; 1"
+        >calendar_month</span
+      >
       <div>
-        <p class="text-[10px] uppercase tracking-widest opacity-70 font-bold">Upcoming</p>
-        <p class="text-lg font-bold editorial-headline leading-tight mt-1">2 Planned Applications</p>
+        <p class="text-[10px] uppercase tracking-widest opacity-70 font-bold">
+          Upcoming
+        </p>
+        <p class="text-lg font-bold editorial-headline leading-tight mt-1">
+          2 Planned Applications
+        </p>
       </div>
     </div>
   </section>
 
   <!-- Profile Actions / Quick Links -->
   <section class="px-6 space-y-3">
-    <button class="w-full py-4 bg-surface-container-high text-on-surface font-bold editorial-headline tracking-wide active:scale-95 transition-transform rounded-xl"
-      routerLink="/reporting">
+    <button
+      class="w-full py-4 bg-surface-container-high text-on-surface font-bold editorial-headline tracking-wide active:scale-95 transition-transform rounded-xl"
+      routerLink="/reporting"
+    >
       Export Annual Report
     </button>
   </section>
