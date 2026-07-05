@@ -25,7 +25,7 @@ initContainer:
 resources: {}
 image:
   repository: sward-warden-be
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   tag: latest
 service:
   type: ClusterIP
