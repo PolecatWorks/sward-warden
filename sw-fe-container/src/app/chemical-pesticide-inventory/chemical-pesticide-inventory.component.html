@@ -110,9 +110,32 @@
       </form>
     </div>
 
+    <!-- Search & Filter (Glassmorphism Context) -->
+    <div class="mb-8 flex gap-3 px-4 pt-4">
+      <div class="relative flex-1">
+        <span
+          class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline"
+          >search</span
+        >
+        <input
+          class="w-full pl-12 pr-4 py-4 bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-primary placeholder:text-outline-variant"
+          placeholder="Find a product..."
+          type="text"
+          aria-label="Search products"
+          [(ngModel)]="searchQuery"
+        />
+      </div>
+      <button
+        class="bg-surface-container-high p-4 rounded-xl text-primary"
+        aria-label="Filter products"
+      >
+        <span class="material-symbols-outlined">filter_list</span>
+      </button>
+    </div>
+
     <!-- Digital Shelf -->
     <div class="divide-y divide-surface-variant">
-      <ng-container *ngIf="chemicals$ | async as chemicals">
+      <ng-container *ngIf="filteredChemicals$ | async as chemicals">
         <div
           *ngIf="chemicals.length === 0"
           class="p-8 text-center text-on-surface-variant"

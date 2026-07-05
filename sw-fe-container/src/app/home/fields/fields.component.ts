@@ -50,6 +50,17 @@ export class FieldsComponent implements OnInit {
   originalEditFarmLocation: string = '';
   isSaving: boolean = false;
   errorMessage: string | null = null;
+  searchQuery: string = '';
+
+  get filteredFields(): Field[] {
+    if (!this.searchQuery.trim()) {
+      return this.fields;
+    }
+    const query = this.searchQuery.toLowerCase().trim();
+    return this.fields.filter(
+      (field) => field.name.toLowerCase().includes(query)
+    );
+  }
 
   // PRD Reference: 0003
   get totalArea(): number {
