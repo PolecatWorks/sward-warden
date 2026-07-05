@@ -2,10 +2,18 @@
   <!-- Header -->
   <header class="mb-8 flex justify-between items-center">
     <div>
-      <h1 class="font-headline font-extrabold text-3xl text-on-surface tracking-tight">Compliance Penalty Matrix</h1>
-      <p class="text-on-surface-variant font-medium">Monitoring audit breaches and estimated penalties</p>
+      <h1
+        class="font-headline font-extrabold text-3xl text-on-surface tracking-tight"
+      >
+        Compliance Penalty Matrix
+      </h1>
+      <p class="text-on-surface-variant font-medium">
+        Monitoring audit breaches and estimated penalties
+      </p>
     </div>
-    <div class="flex items-center gap-2 px-4 py-2 bg-surface-variant rounded-full text-on-surface-variant font-semibold text-sm">
+    <div
+      class="flex items-center gap-2 px-4 py-2 bg-surface-variant rounded-full text-on-surface-variant font-semibold text-sm"
+    >
       <span class="material-symbols-outlined text-lg">shield_with_heart</span>
       <span>Farm Assurance</span>
     </div>
@@ -13,54 +21,97 @@
 
   <!-- Summary Card -->
   <section class="mb-8">
-    <div class="bg-primary text-on-primary rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+    <div
+      class="bg-primary text-on-primary rounded-2xl p-8 shadow-2xl relative overflow-hidden"
+    >
       <div class="relative z-10">
-        <h2 class="text-lg font-medium opacity-90 mb-2">Estimated Support Reduction</h2>
+        <h2 class="text-lg font-medium opacity-90 mb-2">
+          Estimated Support Reduction
+        </h2>
         <div class="flex items-baseline gap-2">
-          <span class="text-6xl font-headline font-black">{{ (totalPenalty$ | async) }}%</span>
+          <span class="text-6xl font-headline font-black"
+            >{{ totalPenalty$ | async }}%</span
+          >
           <span class="text-xl opacity-80">Total Potential Fine</span>
         </div>
         <p class="mt-4 text-sm opacity-90 max-w-md">
-          Based on logged breaches over the rolling 3-year period. Potential fines can reach up to 50% loss of total support.
+          Based on logged breaches over the rolling 3-year period. Potential
+          fines can reach up to 50% loss of total support.
         </p>
       </div>
       <!-- Decorative element -->
-      <div class="absolute -right-12 -bottom-12 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+      <div
+        class="absolute -right-12 -bottom-12 w-64 h-64 bg-white/10 rounded-full blur-3xl"
+      ></div>
     </div>
   </section>
 
   <!-- Breaches List -->
   <section class="space-y-6">
     <div class="flex items-center justify-between">
-      <h3 class="font-headline font-bold text-xl text-on-surface">Compliance History</h3>
-      <span class="text-sm font-medium text-primary">{{ (breaches$ | async)?.length || 0 }} Entries</span>
+      <h3 class="font-headline font-bold text-xl text-on-surface">
+        Compliance History
+      </h3>
+      <span class="text-sm font-medium text-primary"
+        >{{ (breaches$ | async)?.length || 0 }} Entries</span
+      >
     </div>
 
-    <div *ngIf="(breaches$ | async) as breaches; else loading">
-      <div *ngIf="breaches.length === 0" class="bg-surface-variant/30 border-2 border-dashed border-outline/30 rounded-2xl p-12 text-center">
-        <span class="material-symbols-outlined text-5xl text-on-surface-variant/40 mb-4">check_circle</span>
-        <p class="text-on-surface-variant font-medium">No compliance breaches found. Your farm is fully compliant!</p>
+    <div *ngIf="breaches$ | async as breaches; else loading">
+      <div
+        *ngIf="breaches.length === 0"
+        class="bg-surface-variant/30 border-2 border-dashed border-outline/30 rounded-2xl p-12 text-center"
+      >
+        <span
+          class="material-symbols-outlined text-5xl text-on-surface-variant/40 mb-4"
+          >check_circle</span
+        >
+        <p class="text-on-surface-variant font-medium">
+          No compliance breaches found. Your farm is fully compliant!
+        </p>
       </div>
 
       <div class="grid gap-4">
-        <div *ngFor="let breach of breaches" class="bg-surface border border-outline/20 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:shadow-lg transition-all group">
+        <div
+          *ngFor="let breach of breaches"
+          class="bg-surface border border-outline/20 rounded-xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:shadow-lg transition-all group"
+        >
           <div class="flex gap-4 items-start">
-            <div [class]="'px-3 py-1 rounded-full text-xs font-bold border ' + getSeverityClass(breach.severity)">
+            <div
+              [class]="
+                'px-3 py-1 rounded-full text-xs font-bold border ' +
+                getSeverityClass(breach.severity)
+              "
+            >
               {{ breach.severity }}
             </div>
             <div>
-              <h4 class="font-bold text-on-surface text-lg leading-tight">{{ breach.breach_type }}</h4>
-              <div class="flex items-center gap-3 mt-1 text-sm text-on-surface-variant">
+              <h4 class="font-bold text-on-surface text-lg leading-tight">
+                {{ breach.breach_type }}
+              </h4>
+              <div
+                class="flex items-center gap-3 mt-1 text-sm text-on-surface-variant"
+              >
                 <span class="flex items-center gap-1">
-                  <span class="material-symbols-outlined text-base">calendar_today</span>
-                  {{ breach.breach_date | date:'mediumDate' }}
+                  <span class="material-symbols-outlined text-base"
+                    >calendar_today</span
+                  >
+                  {{ breach.breach_date | date: "mediumDate" }}
                 </span>
-                <span *ngIf="breach.is_repeat" class="flex items-center gap-1 text-error font-bold">
-                  <span class="material-symbols-outlined text-base">history</span>
+                <span
+                  *ngIf="breach.is_repeat"
+                  class="flex items-center gap-1 text-error font-bold"
+                >
+                  <span class="material-symbols-outlined text-base"
+                    >history</span
+                  >
                   Repeat Breach
                 </span>
               </div>
-              <p *ngIf="breach.notes" class="mt-3 text-sm opacity-80 leading-relaxed italic border-l-2 border-outline/30 pl-3">
+              <p
+                *ngIf="breach.notes"
+                class="mt-3 text-sm opacity-80 leading-relaxed italic border-l-2 border-outline/30 pl-3"
+              >
                 "{{ breach.notes }}"
               </p>
             </div>
@@ -68,10 +119,19 @@
 
           <div class="flex flex-col items-end gap-2 shrink-0">
             <div class="text-right">
-              <span class="text-2xl font-black text-on-surface">-{{ breach.estimated_penalty_percentage }}%</span>
-              <p class="text-[10px] uppercase tracking-wider font-black text-on-surface-variant">Penalty</p>
+              <span class="text-2xl font-black text-on-surface"
+                >-{{ breach.estimated_penalty_percentage }}%</span
+              >
+              <p
+                class="text-[10px] uppercase tracking-wider font-black text-on-surface-variant"
+              >
+                Penalty
+              </p>
             </div>
-            <div *ngIf="breach.mandatory_training_required" class="flex items-center gap-1 bg-secondary/10 text-secondary px-3 py-1 rounded-lg text-xs font-bold">
+            <div
+              *ngIf="breach.mandatory_training_required"
+              class="flex items-center gap-1 bg-secondary/10 text-secondary px-3 py-1 rounded-lg text-xs font-bold"
+            >
               <span class="material-symbols-outlined text-sm">school</span>
               {{ breach.mandatory_training_required }}
             </div>
@@ -82,7 +142,9 @@
 
     <ng-template #loading>
       <div class="flex justify-center p-12">
-        <div class="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+        <div
+          class="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"
+        ></div>
       </div>
     </ng-template>
   </section>

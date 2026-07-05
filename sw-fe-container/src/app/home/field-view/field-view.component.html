@@ -1,4 +1,10 @@
-<div [class]="showEditFieldModal ? 'px-6 pt-4 w-full mx-auto' : 'px-6 pt-4 max-w-2xl mx-auto'">
+<div
+  [class]="
+    showEditFieldModal
+      ? 'px-6 pt-4 w-full mx-auto'
+      : 'px-6 pt-4 max-w-2xl mx-auto'
+  "
+>
   <div *ngIf="field; else loadingTemplate">
     <a
       [routerLink]="['/farms', field.farm_id, 'fields']"
@@ -78,11 +84,7 @@
     </section>
 
     <!-- Edit Field Form (Non-Modal) -->
-    <div
-      *ngIf="showEditFieldModal"
-      class="mb-6"
-      id="edit-field-modal"
-    >
+    <div *ngIf="showEditFieldModal" class="mb-6" id="edit-field-modal">
       <div
         class="bg-surface-container-low border border-outline-variant rounded-xl p-6 w-full"
       >
@@ -203,7 +205,6 @@
         </form>
       </div>
     </div>
-
 
     <!-- Fertiliser Application Form Modal -->
     <div

@@ -1,25 +1,25 @@
 <main class="px-6 pt-4 space-y-8 pb-4">
   <!-- Hero Section / Statistics Overview -->
-  <section class="space-y-4" *ngIf="!showAddFarmModal">
-    <div class="flex flex-col gap-1">
-      <p
-        class="text-on-surface-variant font-medium text-sm tracking-wide uppercase"
-      >
-        Operational Overview
-      </p>
+  <section class="mb-8" *ngIf="!showAddFarmModal">
+    <p
+      class="text-[10px] uppercase tracking-[0.2em] font-bold text-secondary mb-2"
+    >
+      Operational Overview
+    </p>
+    <div class="flex items-center gap-2 mb-2">
       <h1
-        class="text-4xl font-extrabold text-primary tracking-tighter"
+        class="text-4xl font-black text-primary font-['Work_Sans'] tracking-tight"
         id="portfolio-heading"
       >
         Your Portfolio
       </h1>
-      <p
-        class="text-xs text-on-surface-variant font-bold uppercase tracking-wider mt-1"
-        id="farms-count-subtitle"
-      >
-        {{ farms.length }} {{ farms.length === 1 ? "Farm" : "Farms" }}
-      </p>
     </div>
+    <p
+      class="text-on-surface-variant font-medium mb-8"
+      id="farms-count-subtitle"
+    >
+      {{ farms.length }} {{ farms.length === 1 ? "Farm" : "Farms" }}
+    </p>
   </section>
 
   <!-- Error Banner -->
@@ -219,40 +219,91 @@
   </div>
 </main>
 
-  <!-- Add Farm Form (Non-Modal) -->
-  <div
-    *ngIf="showAddFarmModal"
-    class="bg-surface-container-low border border-outline-variant rounded-xl p-6 w-full mb-6"
-    id="add-farm-modal"
-  >
-    <div class="flex justify-between items-center mb-4">
-      <h3 id="add-farm-modal-title" class="font-headline font-bold text-xl text-on-surface">Add New Farm</h3>
-      <button (click)="closeAddFarmModal()" id="close-modal-btn" class="text-on-surface-variant hover:text-error">
-        <span class="material-symbols-outlined">close</span>
+<!-- Add Farm Form (Non-Modal) -->
+<div
+  *ngIf="showAddFarmModal"
+  class="bg-surface-container-low border border-outline-variant rounded-xl p-6 w-full mb-6"
+  id="add-farm-modal"
+>
+  <div class="flex justify-between items-center mb-4">
+    <h3
+      id="add-farm-modal-title"
+      class="font-headline font-bold text-xl text-on-surface"
+    >
+      Add New Farm
+    </h3>
+    <button
+      (click)="closeAddFarmModal()"
+      id="close-modal-btn"
+      class="text-on-surface-variant hover:text-error"
+    >
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+  <form (ngSubmit)="addFarm()" class="space-y-4">
+    <div
+      *ngIf="errorMessage"
+      class="p-3 bg-error-container text-on-error-container rounded-md text-sm"
+      id="add-farm-error"
+    >
+      {{ errorMessage }}
+    </div>
+    <div>
+      <label
+        for="farm-name-input"
+        class="block text-sm font-medium text-on-surface mb-1"
+        >Farm Name</label
+      >
+      <input
+        id="farm-name-input"
+        type="text"
+        [(ngModel)]="newFarmName"
+        name="farmName"
+        (keydown.enter)="addFarm()"
+        placeholder="e.g. Sunny Brook Farm"
+        class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+        required
+      />
+    </div>
+    <div>
+      <label
+        for="farm-location-input"
+        class="block text-sm font-medium text-on-surface mb-1"
+        >Location</label
+      >
+      <input
+        id="farm-location-input"
+        type="text"
+        [(ngModel)]="newFarmLocation"
+        name="farmLocation"
+        (keydown.enter)="addFarm()"
+        placeholder="e.g. County Down, Northern Ireland"
+        class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+        required
+      />
+    </div>
+    <div class="pt-4 flex justify-end gap-3">
+      <button
+        type="button"
+        (click)="closeAddFarmModal()"
+        id="cancel-modal-btn"
+        class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        id="save-farm-btn"
+        [disabled]="!newFarmName || !newFarmLocation || isSaving"
+        class="px-4 py-2 bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90 disabled:opacity-50 flex items-center gap-2"
+      >
+        <span
+          *ngIf="isSaving"
+          class="material-symbols-outlined text-sm animate-spin"
+          >progress_activity</span
+        >
+        {{ isSaving ? "Saving..." : "Save Farm" }}
       </button>
     </div>
-    <form (ngSubmit)="addFarm()" class="space-y-4">
-      <div
-        *ngIf="errorMessage"
-        class="p-3 bg-error-container text-on-error-container rounded-md text-sm"
-        id="add-farm-error"
-      >
-        {{ errorMessage }}
-      </div>
-      <div>
-        <label for="farm-name-input" class="block text-sm font-medium text-on-surface mb-1">Farm Name</label>
-        <input id="farm-name-input" type="text" [(ngModel)]="newFarmName" name="farmName" (keydown.enter)="addFarm()" placeholder="e.g. Sunny Brook Farm" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface" required />
-      </div>
-      <div>
-        <label for="farm-location-input" class="block text-sm font-medium text-on-surface mb-1">Location</label>
-        <input id="farm-location-input" type="text" [(ngModel)]="newFarmLocation" name="farmLocation" (keydown.enter)="addFarm()" placeholder="e.g. County Down, Northern Ireland" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface" required />
-      </div>
-      <div class="pt-4 flex justify-end gap-3">
-        <button type="button" (click)="closeAddFarmModal()" id="cancel-modal-btn" class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md">Cancel</button>
-        <button type="submit" id="save-farm-btn" [disabled]="!newFarmName || !newFarmLocation || isSaving" class="px-4 py-2 bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90 disabled:opacity-50 flex items-center gap-2">
-          <span *ngIf="isSaving" class="material-symbols-outlined text-sm animate-spin">progress_activity</span>
-          {{ isSaving ? "Saving..." : "Save Farm" }}
-        </button>
-      </div>
-    </form>
-  </div>
+  </form>
+</div>

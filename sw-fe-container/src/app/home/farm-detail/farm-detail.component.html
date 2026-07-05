@@ -1,4 +1,10 @@
-<main [class]="showEditFarmModal ? 'px-6 pt-4 w-full mx-auto space-y-8 pb-4' : 'px-6 pt-4 max-w-2xl mx-auto space-y-8 pb-4'">
+<main
+  [class]="
+    showEditFarmModal
+      ? 'px-6 pt-4 w-full mx-auto space-y-8 pb-4'
+      : 'px-6 pt-4 max-w-2xl mx-auto space-y-8 pb-4'
+  "
+>
   <!-- Back Navigation -->
   <div class="flex items-center gap-2" *ngIf="!showEditFarmModal">
     <a
@@ -297,8 +303,17 @@
   id="edit-farm-modal"
 >
   <div class="flex justify-between items-center mb-4">
-    <h3 id="edit-farm-modal-title" class="font-headline font-bold text-xl text-on-surface">Edit Farm</h3>
-    <button (click)="closeEditFarmModal()" class="text-on-surface-variant hover:text-error" aria-label="Close form">
+    <h3
+      id="edit-farm-modal-title"
+      class="font-headline font-bold text-xl text-on-surface"
+    >
+      Edit Farm
+    </h3>
+    <button
+      (click)="closeEditFarmModal()"
+      class="text-on-surface-variant hover:text-error"
+      aria-label="Close form"
+    >
       <span class="material-symbols-outlined">close</span>
     </button>
   </div>
@@ -311,17 +326,59 @@
       {{ errorMessage }}
     </div>
     <div>
-      <label for="edit-farm-name-input" class="block text-sm font-medium text-on-surface mb-1">Farm Name</label>
-      <input id="edit-farm-name-input" type="text" [(ngModel)]="editFarmName" name="farmName" (keydown.enter)="editFarm()" placeholder="e.g. Sunny Brook Farm" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface" required />
+      <label
+        for="edit-farm-name-input"
+        class="block text-sm font-medium text-on-surface mb-1"
+        >Farm Name</label
+      >
+      <input
+        id="edit-farm-name-input"
+        type="text"
+        [(ngModel)]="editFarmName"
+        name="farmName"
+        (keydown.enter)="editFarm()"
+        placeholder="e.g. Sunny Brook Farm"
+        class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+        required
+      />
     </div>
     <div>
-      <label for="edit-farm-location-input" class="block text-sm font-medium text-on-surface mb-1">Location</label>
-      <input id="edit-farm-location-input" type="text" [(ngModel)]="editFarmLocation" name="farmLocation" (keydown.enter)="editFarm()" placeholder="e.g. County Down, Northern Ireland" class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface" required />
+      <label
+        for="edit-farm-location-input"
+        class="block text-sm font-medium text-on-surface mb-1"
+        >Location</label
+      >
+      <input
+        id="edit-farm-location-input"
+        type="text"
+        [(ngModel)]="editFarmLocation"
+        name="farmLocation"
+        (keydown.enter)="editFarm()"
+        placeholder="e.g. County Down, Northern Ireland"
+        class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+        required
+      />
     </div>
     <div class="pt-4 flex justify-end gap-3">
-      <button type="button" (click)="closeEditFarmModal()" class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md">Cancel</button>
-      <button type="submit" [disabled]="!editFarmName || !editFarmLocation || isSaving || !hasEditChanges()" class="px-4 py-2 bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90 disabled:opacity-50 flex items-center gap-2">
-        <span *ngIf="isSaving" class="material-symbols-outlined text-sm animate-spin">progress_activity</span>
+      <button
+        type="button"
+        (click)="closeEditFarmModal()"
+        class="px-4 py-2 text-primary font-medium hover:bg-surface-variant rounded-md"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        [disabled]="
+          !editFarmName || !editFarmLocation || isSaving || !hasEditChanges()
+        "
+        class="px-4 py-2 bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90 disabled:opacity-50 flex items-center gap-2"
+      >
+        <span
+          *ngIf="isSaving"
+          class="material-symbols-outlined text-sm animate-spin"
+          >progress_activity</span
+        >
         {{ isSaving ? "Saving..." : "Save Changes" }}
       </button>
     </div>
