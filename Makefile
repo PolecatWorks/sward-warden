@@ -159,6 +159,7 @@ squash-gh-pages:
 	fi; \
 	echo "Found commit: $$HASH"; \
 	echo "Creating temporary orphan branch at $$HASH..."; \
+	git branch -D temp-branch || true; \
 	git checkout --orphan temp-branch $$HASH; \
 	echo "Removing content older than 8 days..."; \
 	printf '%s\n' \
