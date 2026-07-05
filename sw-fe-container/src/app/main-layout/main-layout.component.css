@@ -1,6 +1,12 @@
 /* ── Sidebar Nav Item ── */
 .sidebar-item {
-  color: #77574d;
+  color: #1a1c1a;
+}
+
+.sidebar-item.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+  cursor: not-allowed;
 }
 
 .sidebar-item.sidebar-active {
@@ -8,19 +14,21 @@
   color: #ffffff;
 }
 
-.sidebar-item.sidebar-active span {
-  opacity: 1;
-}
-
 @media (prefers-color-scheme: dark) {
   .sidebar-item {
-    color: #c2c9bb;
+    color: #ffffff;
   }
 }
 
 /* ── Bottom Nav Item Base ── */
 .nav-item {
-  color: #77574d;
+  color: #1a1c1a;
+}
+
+.nav-item.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+  cursor: not-allowed;
 }
 
 .nav-item .nav-icon {
@@ -46,7 +54,7 @@
 
 @media (prefers-color-scheme: dark) {
   .nav-item {
-    color: #c2c9bb;
+    color: #ffffff;
   }
   .nav-item:not(.nav-active):hover {
     background-color: #2d302d;
