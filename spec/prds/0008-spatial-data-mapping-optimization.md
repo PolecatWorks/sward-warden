@@ -4,7 +4,7 @@
 This document defines the requirements for the application's spatial capabilities, including field topology creation, topographical data analysis, mapping visualizations, weather integration, and the intelligent optimization engine. It consolidates PRDs 0008, 0021, 0024, and 0029 into a unified spatial strategy.
 
 ## 1. Field Topology Creation and Editing
-- **Map-Based Generation:** Users can define field boundaries via an interactive map interface using GeoJSON polygons (`GEOGRAPHY(Polygon, 4326)` in PostGIS).
+- **Map-Based Generation:** Users can define field boundaries via an interactive map interface using GeoJSON polygons or points (`GEOMETRY(Geometry, 4326)` in PostGIS).
 - **Auto-Generation:**
   - *Primary:* AI/Satellite imagery API (e.g., Farmdok) detects boundaries via click.
   - *Secondary:* Fetch official boundaries via Government APIs (e.g., UK RPA) using a Single Business Identifier (SBI).
