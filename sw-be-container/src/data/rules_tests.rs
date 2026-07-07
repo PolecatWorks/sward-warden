@@ -11,6 +11,7 @@ mod tests {
             name: "Test Farm".to_string(),
             location: "Test Location".to_string(),
             has_derogation: Some(false),
+            photo: None,
             updated_at: None,
             is_deleted: Some(false),
         }
