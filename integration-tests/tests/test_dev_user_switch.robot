@@ -31,7 +31,7 @@ Setup User And Farm
     ${farms_res}=    GET    ${BE_BASE_URL}/v0/farms    headers=${headers}    expected_status=200
     ${farms}=    Set Variable    ${farms_res.json()}
     FOR    ${farm}    IN    @{farms}
-        IF    '${farm['name']}' == 'Farm 1'
+        IF    $farm['name'] == 'Farm 1'
             Run Keyword And Ignore Error    DELETE    ${BE_BASE_URL}/v0/farms/${farm['id']}    headers=${headers}    expected_status=204
         END
     END
