@@ -26,18 +26,18 @@ Create Fields with Different Topologies
 
     # 2. Create a field with a Polygon
     ${polygon_geojson}=    Set Variable    {"type":"Polygon","coordinates":[[[-6.5,54.5],[-6.4,54.5],[-6.4,54.6],[-6.5,54.6],[-6.5,54.5]]]}
-    &{field_poly}=    Create Dictionary    id=${0}    farm_id=${farm_id}    name=Polygon Field    area_hectares=10.0    geometry_geojson=${polygon_geojson}
+    &{field_poly}=    Create Dictionary    id=${0}    farm_id=${farm_id}    name=Polygon Field    area_hectares=${10.0}    geometry_geojson=${polygon_geojson}
     ${res_poly}=    POST    ${BE_BASE_URL}/v0/fields    headers=${headers}    json=${field_poly}    expected_status=200
     Should Contain    ${res_poly.json()['geometry_geojson']}    Polygon
 
     # 3. Create a field with a Point
     ${point_geojson}=    Set Variable    {"type":"Point","coordinates":[-6.5,54.5]}
-    &{field_point}=    Create Dictionary    id=${0}    farm_id=${farm_id}    name=Point Field    area_hectares=5.0    geometry_geojson=${point_geojson}
+    &{field_point}=    Create Dictionary    id=${0}    farm_id=${farm_id}    name=Point Field    area_hectares=${5.0}    geometry_geojson=${point_geojson}
     ${res_point}=    POST    ${BE_BASE_URL}/v0/fields    headers=${headers}    json=${field_point}    expected_status=200
     Should Contain    ${res_point.json()['geometry_geojson']}    Point
 
     # 4. Create a field with no geometry (None/empty)
-    &{field_none}=    Create Dictionary    id=${0}    farm_id=${farm_id}    name=No Geo Field    area_hectares=2.5
+    &{field_none}=    Create Dictionary    id=${0}    farm_id=${farm_id}    name=No Geo Field    area_hectares=${2.5}
     ${res_none}=    POST    ${BE_BASE_URL}/v0/fields    headers=${headers}    json=${field_none}    expected_status=200
     Should Be Equal    ${res_none.json()['geometry_geojson']}    ${None}
 
@@ -47,5 +47,8 @@ Create Fields with Different Topologies
     Length Should Be    ${fields}    3
 
     # Clean up
+    DELETE    ${BE_BASE_URL}/v0/fields/${res_poly.json()['id']}    headers=${headers}    expected_status=204
+    DELETE    ${BE_BASE_URL}/v0/fields/${res_point.json()['id']}    headers=${headers}    expected_status=204
+    DELETE    ${BE_BASE_URL}/v0/fields/${res_none.json()['id']}    headers=${headers}    expected_status=204
     DELETE    ${BE_BASE_URL}/v0/farms/${farm_id}    headers=${headers}    expected_status=204
     DELETE    ${BE_BASE_URL}/v0/users/${user_id}    expected_status=204
