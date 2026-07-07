@@ -37,9 +37,10 @@
           <span class="font-['Work_Sans'] font-bold text-sm tracking-tight">Inventory</span>
         </a>
 
-        <a *ngIf="(currentUser$ | async)?.modules?.includes('reports_and_analysis')"
-           routerLink="/reporting"
+        <a [routerLink]="(currentUser$ | async)?.modules?.includes('reports_and_analysis') ? '/reporting' : null"
            routerLinkActive="sidebar-active"
+           [class.disabled]="!(currentUser$ | async)?.modules?.includes('reports_and_analysis')"
+           [attr.title]="!(currentUser$ | async)?.modules?.includes('reports_and_analysis') ? 'Module not subscribed' : null"
            class="sidebar-item flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 hover:bg-black/5 dark:hover:bg-white/5 group">
           <span class="material-symbols-outlined text-2xl transition-opacity">summarize</span>
           <span class="font-['Work_Sans'] font-bold text-sm tracking-tight">Reporting</span>
@@ -145,9 +146,10 @@
           <span class="material-symbols-outlined nav-icon">inventory_2</span>
           <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Inventory</span>
         </a>
-        <a *ngIf="(currentUser$ | async)?.modules?.includes('reports_and_analysis')"
-           routerLink="/reporting"
+        <a [routerLink]="(currentUser$ | async)?.modules?.includes('reports_and_analysis') ? '/reporting' : null"
            routerLinkActive="nav-active"
+           [class.disabled]="!(currentUser$ | async)?.modules?.includes('reports_and_analysis')"
+           [attr.title]="!(currentUser$ | async)?.modules?.includes('reports_and_analysis') ? 'Module not subscribed' : null"
            class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
           <span class="material-symbols-outlined nav-icon">summarize</span>
           <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Reporting</span>
