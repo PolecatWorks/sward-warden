@@ -31,6 +31,7 @@ mod tests {
             max_slope: None,
             geometry_geojson: None,
             updated_at: None,
+            image_url: None,
             is_deleted: Some(false),
         }
     }

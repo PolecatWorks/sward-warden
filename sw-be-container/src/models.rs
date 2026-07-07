@@ -53,6 +53,8 @@ pub struct Field {
     pub geometry_geojson: Option<String>,
     pub updated_at: Option<DateTime<Utc>>,
     pub is_deleted: Option<bool>,
+    #[sqlx(default)]
+    pub image_url: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
