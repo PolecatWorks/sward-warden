@@ -14,10 +14,8 @@
   color: #ffffff;
 }
 
-@media (prefers-color-scheme: dark) {
-  .sidebar-item {
-    color: #ffffff;
-  }
+.dark .sidebar-item {
+  color: #ffffff;
 }
 
 /* ── Bottom Nav Item Base ── */
@@ -52,11 +50,9 @@
   background-color: #f4f4f0;
 }
 
-@media (prefers-color-scheme: dark) {
-  .nav-item {
-    color: #ffffff;
-  }
-  .nav-item:not(.nav-active):hover {
-    background-color: #2d302d;
-  }
+.dark .nav-item {
+  color: #ffffff;
+}
+.dark .nav-item:not(.nav-active):hover {
+  background-color: #2d302d;
 }
