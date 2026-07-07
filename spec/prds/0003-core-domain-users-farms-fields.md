@@ -41,3 +41,12 @@ Since the majority of users manage a single farm, the application prioritizes a 
 
 ## 6. Security & Ownership Enforcement
 - **Backend Verification:** The backend strictly enforces that users can only list, view, create, update, or delete farms and fields that they own, enforced via the secure user identity extracted from the token.
+
+## 7. User Journeys
+The following end-to-end user journeys validate the core domain capabilities. These flows are tested in the automated robot test suite:
+
+- **Profile Edit Flow (`test_profile.robot`)**: Users can navigate to their profile page, trigger the inline edit form (which replaces the view state without using a modal), update their personal details (Name, Email, Phone, Description), and save the changes. The test verifies that these modifications persist upon page reload.
+- **Farm Creation & Deletion Flow (`test_farm_flow.robot`)**: Users can add a new farm by providing a name and location via a modal triggered from a central "Add Farm" button. Once created, the farm is verified in both the UI list and the backend API. Users can subsequently navigate to the farm's details and successfully delete it, ensuring it is removed completely.
+- **Farm Deletion Blocking & Migration (`test_farm_flow.robot`)**: The system protects against orphaned data by blocking the deletion of a farm that contains active fields. The user must first migrate the field to another farm via the "Edit Field" form before the original farm can be safely deleted.
+- **Field Creation & Deletion Flow (`test_field_flow.robot`)**: Under a specific farm, users can create a new field by specifying its name and area. After creation, we specifically confirm that exactly a single field is created and that it is accurately reflected in both the UI and backend. Users can then navigate to the field's detail page to safely delete it.
+- **Auto Farm Creation Flow (`test_field_flow.robot`)**: To optimize the beginner experience, a brand new user (with zero farms) who attempts to add a field will automatically have a default farm (e.g., "User's Farm") created in the background by the system to house that new field, without requiring explicit farm creation steps.
