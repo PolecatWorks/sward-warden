@@ -38,8 +38,9 @@ Module Access Restriction Verification
     # 2. Log in via the frontend
     Setup UI Login    ${user_id}
 
-    # 3. Assert that the "Reporting" navigation link is not visible in the sidebar
-    Get Element States    aside >> text=Reporting    not contains    visible
+    # 3. Assert that the "Reporting" navigation link is visible but disabled
+    Wait For Elements State    aside >> text=Reporting    visible    timeout=10s
+    Get Attribute    css=aside a:has-text("Reporting")    class    contains    disabled
 
     # 4. Attempt to manually navigate to the /reporting URL
     Go To               ${EXTERNAL_DNS_URL}/reporting
@@ -79,9 +80,9 @@ Module Subscription Granted Verification
     Setup UI Login    ${user_id}
     Sleep    3s
 
-    # 4. Assert that the "Reporting" navigation link is now visible in the sidebar
+    # 4. Assert that the "Reporting" navigation link is now active (non-disabled)
     # We must wait for RxDB to pull the user profile, which might take a moment
-    Wait For Elements State    aside >> text=Reporting    visible    timeout=20s
+    Wait For Elements State    css=aside a:not(.disabled) >> text=Reporting    visible    timeout=20s
 
     # 5. Click the link and assert successful navigation to the Reporting view
     Click               aside >> text=Reporting
