@@ -54,7 +54,7 @@ Sward Movement Creation Flow
     FOR    ${movement}    IN    @{movements}
         ${current_consignee}=    Evaluate    $movement.get('consignee_name', '')
         ${current_farm_id}=    Evaluate    str($movement.get('farm_id', ''))
-        IF    '${current_consignee}' == '${consignee_name}' and '${current_farm_id}' == '${TEST_FARM_ID}'
+        IF    $current_consignee == $consignee_name and str($current_farm_id) == str($TEST_FARM_ID)
             ${found_movement}=    Set Variable    ${True}
             BREAK
         END

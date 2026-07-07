@@ -45,7 +45,7 @@ Storage Capacity E2E Flow
 
     # Note: we test leaving farm_id unassigned for now to avoid needing to select dynamic options
 
-    Click    text=Save    button=left
+    Click    button[type="submit"]    button=left
 
     # 4. Verify storage appears in list and syncs
     Wait For Elements State    text=${lagoon_name}    visible    timeout=15s

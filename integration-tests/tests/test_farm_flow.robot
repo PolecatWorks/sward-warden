@@ -50,7 +50,7 @@ Farm Creation and Deletion Flow
     ${found_farm}=    Set Variable    ${False}
     ${farm_id}=    Set Variable    ${EMPTY}
     FOR    ${farm}    IN    @{farms}
-        IF    '${farm['name']}' == '${farm_name}'
+        IF    $farm['name'] == $farm_name
             ${found_farm}=    Set Variable    ${True}
             ${farm_id}=    Set Variable    ${farm['id']}
             BREAK
@@ -81,7 +81,7 @@ Farm Creation and Deletion Flow
 
     ${found_farm_after}=    Set Variable    ${False}
     FOR    ${farm}    IN    @{farms_after}
-        IF    '${farm['name']}' == '${farm_name}'
+        IF    $farm['name'] == $farm_name
             ${found_farm_after}=    Set Variable    ${True}
             BREAK
         END

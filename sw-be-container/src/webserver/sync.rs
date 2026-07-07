@@ -33,14 +33,14 @@ pub async fn delta_sync(
 
     let farms = if is_admin {
         sqlx::query_as::<_, Farm>(
-            "SELECT id, user_id, name, location, has_derogation, updated_at, is_deleted FROM farms WHERE updated_at > $1"
+            "SELECT id, user_id, name, location, has_derogation, photo, updated_at, is_deleted FROM farms WHERE updated_at > $1"
         )
         .bind(since)
         .fetch_all(&state.db_pool)
         .await?
     } else {
         sqlx::query_as::<_, Farm>(
-            "SELECT id, user_id, name, location, has_derogation, updated_at, is_deleted FROM farms WHERE user_id = $1 AND updated_at > $2"
+            "SELECT id, user_id, name, location, has_derogation, photo, updated_at, is_deleted FROM farms WHERE user_id = $1 AND updated_at > $2"
         )
         .bind(user_id)
         .bind(since)

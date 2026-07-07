@@ -52,7 +52,7 @@ Verify REST Fallback and Warning Banner on Database Failure
     ${found_farm}=    Set Variable    ${False}
     ${farm_id}=    Set Variable    ${EMPTY}
     FOR    ${farm}    IN    @{farms}
-        IF    '${farm['name']}' == '${farm_name}'
+        IF    $farm['name'] == $farm_name
             ${found_farm}=    Set Variable    ${True}
             ${farm_id}=    Set Variable    ${farm['id']}
             BREAK
