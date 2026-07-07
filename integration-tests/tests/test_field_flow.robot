@@ -54,7 +54,7 @@ Field Creation and Deletion Flow
     ${found_field}=    Set Variable    ${False}
     ${field_id}=    Set Variable    ${EMPTY}
     FOR    ${field}    IN    @{fields}
-        IF    '${field['name']}' == '${field_name}' and '${field['farm_id']}' == '${farm_id}'
+        IF    $field['name'] == $field_name and str($field['farm_id']) == str($farm_id)
             ${found_field}=    Set Variable    ${True}
             ${field_id}=    Set Variable    ${field['id']}
             BREAK
@@ -85,7 +85,7 @@ Field Creation and Deletion Flow
 
     ${found_field_after}=    Set Variable    ${False}
     FOR    ${field}    IN    @{fields_after}
-        IF    '${field['name']}' == '${field_name}' and '${field['farm_id']}' == '${farm_id}'
+        IF    $field['name'] == $field_name and str($field['farm_id']) == str($farm_id)
             ${found_field_after}=    Set Variable    ${True}
             BREAK
         END

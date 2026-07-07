@@ -11,8 +11,12 @@ import {
   RxCollection,
   RxStorage,
   removeRxDatabase,
+  addRxPlugin,
 } from 'rxdb';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
+import { RxDBMigrationPlugin } from 'rxdb/plugins/migration-schema';
+
+addRxPlugin(RxDBMigrationPlugin);
 import {
   Observable,
   from,
