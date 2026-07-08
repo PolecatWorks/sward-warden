@@ -32,11 +32,4 @@ Optimizations for the Robot Framework integration testing CI/CD pipeline.
 - **Shallow Clone:** The GitHub Actions checkout for the `gh-pages` branch (used for test reports) must use `fetch-depth: 1` to prevent slow historical checkouts.
 - **Parallelization:** Move the `gh-pages` checkout, preparation, and old PR pruning steps to run before or concurrently with the integration tests, decoupling them from post-test processing to minimize total workflow time.
 - **Rust Documentation:** Generate Rust backend documentation (`cargo doc --no-deps`) and publish to the `gh-pages` branch (`docs/rust` directory) during the CI publish process (e.g., in `.github/workflows/sw-be-docker-publish.yml`). Ensure previous files are kept (`keep_files: true`).
-- **E2E UI & Backend Verification Journey:** The integration testing suite must include a comprehensive end-to-end journey test that validates UI and Backend synchronization:
-  - The journey must use the UI to create a farm and a field.
-  - It must confirm the newly created farm and field exist via the UI.
-  - It must confirm the newly created farm and field exist via the backend API.
-  - It must delete the field via the API, force a UI sync, and confirm it is removed from the UI.
-  - It must delete the farm via the API, force a UI sync, and confirm it is removed from the UI.
-  - It must create a new farm via the API and confirm it is visible in the UI.
-  - It must create a new field via the API and confirm it is visible in the UI.
+- **E2E UI & Backend Verification Journey (`test_ui_api_sync.robot`)**: The integration testing suite must include a comprehensive end-to-end journey test that validates UI and Backend synchronization. Users can use the UI to create a farm and a field, and the test confirms their existence in both the UI and backend API. The test then deletes the field and farm via the API, forces a UI sync to ensure removal from the UI, and finally creates a new farm and field via the API to confirm they are visible in the UI.
