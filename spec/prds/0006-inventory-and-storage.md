@@ -40,3 +40,8 @@ This document outlines the requirements for tracking agricultural inventory, spe
 - **LESSE Tracking:** Track Low Emission Sward Spreading Equipment (dribble bars, trailing shoes, soil injection).
 - **Exceptions:** Log exemptions (e.g., inverted splash plates) and justification (e.g., impractical due to field slope).
 - **FE Requirements:** Premium card-based UI highlighting LESSE compatibility and active statuses.
+
+## 6. User Journeys
+The following user journeys validate inventory and storage capacity tracking:
+
+- **Storage Capacity E2E Journey (`test_storage_capacity.robot`)**: The integration testing suite must include an end-to-end storage capacity tracking journey. The journey must pre-create a farm via the API, log in to the UI, and navigate to the `Inventory > Storage Capacity` section. It must trigger the add storage action, fill in details (name, storage type, volume, and covered status), and save it. It must verify the storage facility appears in the UI list with the correct details, confirm it is synced and exists in the backend API, and then trigger deletion. It must confirm the storage is removed from the UI list and is no longer returned by the backend API.

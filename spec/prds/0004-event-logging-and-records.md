@@ -42,3 +42,9 @@ This document outlines the requirements for logging agricultural events (Plantin
 
 ### Soil Analysis Results
 - Required when applying P-rich organic manures (>0.25 kg total P per 1 kg total N) or anaerobic digestate to prove crop requirement for additional phosphorus.
+
+## 3. User Journeys
+The following user journeys validate event logging and compliance tracking:
+
+- **Immediate Validation and Form UX Journey (`test_validation_flow.robot`)**: The integration testing suite must include an event logging validation journey. The journey must use the API to pre-create a farm and field, login to the UI, and navigate to the field's detail page. It must click the "Planting" quick action button, and verify that the "Log Planting" modal immediately shows red validation error borders on required fields (Crop Type and Variety) and disables the submit button. It must then fill the Crop Type field, confirm its red border is cleared while the submit button remains disabled, fill the Variety field, confirm its red border is cleared and the submit button is enabled, click Save, and verify the modal closes and the event appears in the timeline.
+- **Sward Movement Creation Journey (`test_sward_movements.robot`)**: The integration testing suite must include an end-to-end sward movement journey. The journey must pre-create a parent farm via the API, log in to the UI, and navigate to the farm's sward movements page. It must select "export" type, fill in quantity, date, manure type, consignee details, and transporter name, and submit the form. It must verify the movement appears in the UI list and confirms via the backend API that the sward movement record is persisted.

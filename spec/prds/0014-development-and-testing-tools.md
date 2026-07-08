@@ -32,7 +32,7 @@ Optimizations for the Robot Framework integration testing CI/CD pipeline.
 - **Shallow Clone:** The GitHub Actions checkout for the `gh-pages` branch (used for test reports) must use `fetch-depth: 1` to prevent slow historical checkouts.
 - **Parallelization:** Move the `gh-pages` checkout, preparation, and old PR pruning steps to run before or concurrently with the integration tests, decoupling them from post-test processing to minimize total workflow time.
 - **Rust Documentation:** Generate Rust backend documentation (`cargo doc --no-deps`) and publish to the `gh-pages` branch (`docs/rust` directory) during the CI publish process (e.g., in `.github/workflows/sw-be-docker-publish.yml`). Ensure previous files are kept (`keep_files: true`).
-- **E2E UI & Backend Verification Journey:** The integration testing suite must include a comprehensive end-to-end journey test that validates UI and Backend synchronization:
+- **E2E UI & Backend Verification Journey (`test_ui_api_sync.robot`)**: The integration testing suite must include a comprehensive end-to-end journey test that validates UI and Backend synchronization:
   - The journey must use the UI to create a farm and a field.
   - It must confirm the newly created farm and field exist via the UI.
   - It must confirm the newly created farm and field exist via the backend API.
@@ -40,3 +40,8 @@ Optimizations for the Robot Framework integration testing CI/CD pipeline.
   - It must delete the farm via the API, force a UI sync, and confirm it is removed from the UI.
   - It must create a new farm via the API and confirm it is visible in the UI.
   - It must create a new field via the API and confirm it is visible in the UI.
+
+## 5. User Journeys
+The following user journeys validate development and testing capabilities:
+
+- **Dev User Switch and Sync Invalidation Journey (`test_dev_user_switch.robot`)**: The integration testing suite must include a development user switching and data sync isolation journey. The journey must pre-create a farm ("Farm 1") via the API for a first user, log in to the UI as that user, and verify the farm is visible on the Farms page. It must register a second user via the UI, use the header user-switcher dropdown to switch to the second user, and verify the Farms page reloads to show an empty state ("No farms yet"). It must then switch back to the first user via the dropdown and verify "Farm 1" is visible again. Finally, the journey must simulate an out-of-band user change by manually modifying local storage values (user ID and token) to a newly created user with no farms, trigger a force sync by clicking the sync status UI indicator, and verify that the UI refreshes to show an empty state ("No farms yet") and "Farm 1" is removed.

@@ -43,3 +43,8 @@ Evaluating the slope and elevation of a field is critical for determining runoff
 - **Topology Toggles:** Users can toggle layers like Soil Type, Risk Level, and Historical Application. High-risk slopes and vulnerable zones are visually flagged.
 - **Optimization Bento:** Suggested plans presented in Bento-style dashboards explaining the "Reasoning" (e.g., "Optimal Weather Window").
 - **Weather Timeline:** Specialized horizontal timeline displaying the "Safe Spreading Window".
+
+## 6. User Journeys
+The following user journeys validate spatial mapping capabilities:
+
+- **Field Topology Creation Journey (`test_field_topology.robot`)**: The integration testing suite must include a spatial data mapping journey. The journey must create a test user and farm via the API. It must then verify that the backend API successfully creates and returns fields with various topologies: one containing a Polygon GeoJSON geometry, one with a Point GeoJSON geometry, and one with no geometry (null). It must verify that listing the fields returns all three fields and then clean up all created resources.
