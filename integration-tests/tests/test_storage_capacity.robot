@@ -37,7 +37,7 @@ Storage Capacity E2E Flow
     # 2. Click Add Storage button
     Click    text=Add Storage    button=left
 
-    # 3. Fill storage details in Form
+    # 3. Fill storage details in Form and save via explicit submit button
     Fill Text    input[formcontrolname="name"]    ${lagoon_name}
     Select Options By    select[formcontrolname="storage_type"]    value    liquid
     Fill Text    input[formcontrolname="capacity_volume"]    ${lagoon_capacity}
@@ -53,16 +53,49 @@ Storage Capacity E2E Flow
 
     Sleep    3s    # wait for sync to happen in background
 
-    # Verify it exists in backend
+    # Verify it exists in backend and there's only 1
     ${response}=    GET    ${BE_BASE_URL}/v0/inventory-storage    expected_status=200
     ${storage_response}=    Set Variable    ${response.json()}
-    # Ensure there's at least one storage
-    Should Not Be Empty    ${storage_response}
+    ${found_count}=    Set Variable    ${0}
+    FOR    ${s}    IN    @{storage_response}
+        IF    $s['name'] == $lagoon_name
+            ${found_count}=    Evaluate    ${found_count} + 1
+        END
+    END
+    Should Be Equal As Integers    ${found_count}    1    Expected exactly 1 storage, but found ${found_count}
+
+    # 4b. Create another storage but submit via Enter key
+    ${lagoon_name_enter}=    Set Variable    Lagoon Enter ${random}
+    Click    text=Add Storage    button=left
+    Fill Text    input[formcontrolname="name"]    ${lagoon_name_enter}
+    Select Options By    select[formcontrolname="storage_type"]    value    liquid
+    Fill Text    input[formcontrolname="capacity_volume"]    ${lagoon_capacity}
+    Press Keys    input[formcontrolname="capacity_volume"]    Enter
+    Wait For Elements State    text=${lagoon_name_enter}    visible    timeout=15s
+    Sleep    3s
+
+    ${response_enter}=    GET    ${BE_BASE_URL}/v0/inventory-storage    expected_status=200
+    ${storage_response_enter}=    Set Variable    ${response_enter.json()}
+    ${found_enter_count}=    Set Variable    ${0}
+    FOR    ${s}    IN    @{storage_response_enter}
+        IF    $s['name'] == $lagoon_name_enter
+            ${found_enter_count}=    Evaluate    ${found_enter_count} + 1
+        END
+    END
+    Should Be Equal As Integers    ${found_enter_count}    1    Expected exactly 1 storage for enter key submit, but found ${found_enter_count}
+
+    # Cleanup enter key storage
+    ${promise_enter}=    Promise To    Wait For Alert    action=accept
+    Click    css=.bg-surface-container-lowest:has(h3:has-text("${lagoon_name_enter}")) button[title="Delete"]    button=left
+    Wait For    ${promise_enter}
+    Wait For Elements State    text=${lagoon_name_enter}    detached    timeout=5s
+    Sleep    3s
 
     # 5. Delete storage
     # Handle JS confirm dialog before clicking
-    Handle Future Dialogs    action=accept
+    ${promise}=    Promise To    Wait For Alert    action=accept
     Click    css=.bg-surface-container-lowest:has(h3:has-text("${lagoon_name}")) button[title="Delete"]    button=left
+    Wait For    ${promise}
 
     # Verify removal from UI
     Wait For Elements State    text=${lagoon_name}    detached    timeout=5s

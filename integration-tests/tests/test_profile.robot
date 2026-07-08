@@ -36,7 +36,7 @@ Edit Profile
     Fill Text    id=edit-phone    +44 7700 900077
     Fill Text    id=edit-description    This is a test description
 
-    # Submit the form
+    # Submit the form using explicit save button click
     Click    id=save-edit-profile-btn    button=left
 
     # Wait for the form to close
@@ -56,6 +56,25 @@ Edit Profile
     Get Property    id=edit-email    value    ==    test@test.com
     Get Property    id=edit-phone    value    ==    +44 7700 900077
     Get Property    id=edit-description    value    ==    This is a test description
+
+    # Now change values and submit using Enter key
+    Fill Text    id=edit-name    Enter Key Name
+    Fill Text    id=edit-email    enterkey@test.com
+    Press Keys    id=edit-email    Enter
+
+    Wait For Elements State    id=save-edit-profile-btn    detached    timeout=5s
+    Sleep    1s
+
+    # Reload and verify
+    Reload
+    Wait For Elements State    id=edit-profile-btn    visible    timeout=10s
+    Sleep    2s
+    Click    id=edit-profile-btn    button=left
+    Wait For Elements State    id=edit-name    visible    timeout=5s
+    Sleep    1s
+
+    Get Property    id=edit-name    value    ==    Enter Key Name
+    Get Property    id=edit-email    value    ==    enterkey@test.com
 
     # Close the form
     Click    id=cancel-edit-profile-btn    button=left
