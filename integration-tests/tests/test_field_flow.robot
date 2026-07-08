@@ -51,16 +51,15 @@ Field Creation and Deletion Flow
     ${list_response}=    GET    ${BE_BASE_URL}/v0/fields    expected_status=200
     ${fields}=    Set Variable    ${list_response.json()}
 
-    ${found_field}=    Set Variable    ${False}
+    ${found_count}=    Set Variable    ${0}
     ${field_id}=    Set Variable    ${EMPTY}
     FOR    ${field}    IN    @{fields}
         IF    $field['name'] == $field_name and str($field['farm_id']) == str($farm_id)
-            ${found_field}=    Set Variable    ${True}
+            ${found_count}=    Evaluate    ${found_count} + 1
             ${field_id}=    Set Variable    ${field['id']}
-            BREAK
         END
     END
-    Should Be True    ${found_field}    Field not found in API response
+    Should Be Equal As Integers    ${found_count}    1    Expected exactly 1 field, but found ${found_count}
 
     # 7. Go to field details page for deletion
     Go To    ${EXTERNAL_DNS_URL}/fields/${field_id}
@@ -147,5 +146,6 @@ Auto Farm Creation Flow
     # Clean up field and farm via API
     ${fields_response}=    GET    ${BE_BASE_URL}/v0/fields    headers=${headers}    expected_status=200
     ${fields}=    Set Variable    ${fields_response.json()}
+    Length Should Be    ${fields}    1    Expected exactly 1 field to be created for the new user, but found a different count
     DELETE    ${BE_BASE_URL}/v0/fields/${fields[0]['id']}    headers=${headers}    expected_status=204
     DELETE    ${BE_BASE_URL}/v0/farms/${farms[0]['id']}    headers=${headers}    expected_status=204
