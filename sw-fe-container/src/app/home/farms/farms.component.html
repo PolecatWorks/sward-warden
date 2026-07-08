@@ -265,7 +265,6 @@
         type="text"
         [(ngModel)]="newFarmName"
         name="farmName"
-        (keydown.enter)="addFarm()"
         placeholder="e.g. Sunny Brook Farm"
         class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
         required
@@ -282,7 +281,6 @@
         type="text"
         [(ngModel)]="newFarmLocation"
         name="farmLocation"
-        (keydown.enter)="addFarm()"
         placeholder="e.g. County Down, Northern Ireland"
         class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
         required
