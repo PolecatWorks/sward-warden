@@ -90,6 +90,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0006-08 Inventory Database Schema Design](./0006/0006-08-inventory-schema-design.md) | Complete | PRD 0006 |
 | [0006-09 Storage Capacity Backend Implementation](./0006/0006-09-storage-capacity-be.md) | Complete | PRD 0006 |
 | [0006-10 Storage Capacity Frontend Implementation](./0006/0006-10-storage-capacity-fe.md) | Complete | PRD 0006 |
+| [0006-11 Test Submission Methods for Inventory and Storage](./0006/0006-11-test-submission-methods.md) | Complete | PRD 0006 |
 | [0008-01 Optimization Engine Core Specification](./0008/0008-01-optimization-engine-core.md) | Complete | PRD 0008 |
 | [0008-02 Weather Integration Data Specification](./0008/0008-02-weather-integration-data.md) | Complete | PRD 0008 |
 | [0008-03 Topology and Waterway Data Specification](./0008/0008-03-topology-and-waterway-data.md) | Complete | PRD 0008 |
