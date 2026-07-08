@@ -56,6 +56,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0003-17 Technical Specification: Field Creation & Edit Farm Selector enhancements](./0003/0003-17-field-creation-edit-farm-selector.md) | Complete | PRD 0003 |
 | [0003-18 Field List Editing and Creation Alignment Specification](./0003/0003-18-field-list-editing-and-creation-alignment.md) | Complete | PRD 0003 |
 | [0003-19 Farm List Editing and Creation Alignment Specification](./0003/0003-19-farm-list-editing-and-creation-alignment.md) | Complete | PRD 0003 |
+| [0003-20 Core Form Submission & Double Submit Prevention](./0003/0003-20-record-submission-prevention.md) | Complete | PRD 0003 |
 | [0004-01 General Farm Records Specification](./0004/0004-01-general-farm-records.md) | Complete | PRD 0004 |
 | [0004-02 Fertiliser Application Records Specification](./0004/0004-02-fertiliser-application-records.md) | Complete | PRD 0004 |
 | [0004-03 Fertilisation Plan Specification](./0004/0004-03-fertilisation-plan.md) | Complete | PRD 0004 |
@@ -67,6 +68,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0004-09 Organic Materials Tracking and Record Entry UX](./0004/0004-09-organic-materials-tracking.md) | Complete | PRD 0004 |
 | [0004-10 Field Event Logging UX and Validation](./0004/0004-10-field-event-logging-ux-and-validation.md) | Complete | PRD 0004 |
 | [0004-11 Immediate Validation Highlighting](./0004/0004-11-immediate-validation-highlighting.md) | Complete | PRD 0004 |
+| [0004-12 Event Form Submission & Double Submit Prevention](./0004/0004-12-event-submission-prevention.md) | Complete | PRD 0004 |
 | [0005-01 Spraying (Pesticide Use) Records Specification](./0005/0005-01-spraying-records.md) | Complete | PRD 0005 |
 | [0005-02 Chemical Fertiliser Management Specification](./0005/0005-02-chemical-fertiliser-management.md) | Complete | PRD 0005 |
 | [0005-03 Sward and Organic Manure Management Specification](./0005/0005-03-slurry-and-organic-manure-management.md) | Complete | PRD 0005 |
