@@ -1,0 +1,56 @@
+name: Helm Release
+
+on:
+  push:
+    tags:
+      - "*.*.*"
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  release:
+    name: Release Helm Chart
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: lower-repo
+        name: Repository to lowercase
+        run: |
+          echo "repository=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
+
+      - uses: azure/setup-helm@v4.2.0
+
+      - name: Lint Helm Chart
+        run: helm lint charts/sward-warden
+
+      - name: Update Chart Versions
+        run: |
+          # Validate SemVer
+          if [[ ! "${{ github.ref_name }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: Tag '${{ github.ref_name }}' is not valid SemVer (e.g. 1.0.0)"
+            exit 1
+          fi
+
+          # Update the chart version to the release tag
+          sed -i "s/^version: .*/version: ${{ github.ref_name }}/" charts/sward-warden/Chart.yaml
+          echo "Updated sward-warden Version:"
+          grep "^version:" charts/sward-warden/Chart.yaml
+
+      - name: Push Helm chart to OCI for sward-warden
+        uses: bsord/helm-push@v4
+        with:
+          chart-folder: charts/sward-warden
+          useOCIRegistry: true
+          registry-url: oci://ghcr.io/${{ steps.lower-repo.outputs.repository }}/helm
+          username: ${{ github.actor }}
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          force: true
