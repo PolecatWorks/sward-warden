@@ -31,7 +31,7 @@ jobs:
       - name: Determine UI Content SHA
         id: ui-content
         run: |
-          UI_SHA=$(git log -1 --format=%H -- sw-fe-container/ .github/workflows/sw-fe-docker-publish.yml)
+          UI_SHA=$(git log -1 --format=%H ${{ github.ref_name }} -- sw-fe-container/ .github/workflows/sw-fe-docker-publish.yml)
           echo "Determined ui content SHA: $UI_SHA"
           echo "UI_SHA=$UI_SHA" >> $GITHUB_ENV
 

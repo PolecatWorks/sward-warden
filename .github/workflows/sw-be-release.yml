@@ -31,7 +31,7 @@ jobs:
       - name: Determine Backend Content SHA
         id: backend-content
         run: |
-          BACKEND_SHA=$(git log -1 --format=%H -- sw-be-container/ .github/workflows/sw-be-docker-publish.yml)
+          BACKEND_SHA=$(git log -1 --format=%H ${{ github.ref_name }} -- sw-be-container/ .github/workflows/sw-be-docker-publish.yml)
           echo "Determined backend content SHA: $BACKEND_SHA"
           echo "BACKEND_SHA=$BACKEND_SHA" >> $GITHUB_ENV
 
