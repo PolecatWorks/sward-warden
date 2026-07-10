@@ -76,7 +76,12 @@ spec:
       contents:
         app-config.json: |
           {
-            "apiUrl": "/sward"
+            "apiPath": "/sward/v0",
+            "logLevel": "INFO",
+            "otel": {
+              "collectorUrl": "/otel",
+              "logLevel": "info"
+            }
           }
 ---
 # apiVersion: helm.toolkit.fluxcd.io/v2
