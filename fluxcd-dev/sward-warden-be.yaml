@@ -69,6 +69,9 @@ spec:
   values:
     imagePullSecrets:
       - name: ghcr-docker-auth
+    env:
+      - name: RUST_LOG
+        value: info
     initContainer:
       env:
         - name: SP_BE__DEBUGGING__FAIL_DEBUG_DELAY
