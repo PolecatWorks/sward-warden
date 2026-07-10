@@ -10,6 +10,13 @@ spec:
     - istio-ingress/k8s-gateway
     - mesh # applies to all the sidecars in the mesh
   http:
+    - name: sward-warden-be
+      match:
+        - uri:
+            prefix: /sward
+      route:
+        - destination:
+            host: sward-warden-be
     - name: sward-warden-fe
       match:
         - uri:
@@ -24,10 +31,3 @@ spec:
     #   route:
     #     - destination:
     #         host: mfe-shell-nginx-view
-    - name: sward-warden-be
-      match:
-        - uri:
-            prefix: /sward
-      route:
-        - destination:
-            host: sward-warden-be
