@@ -56,7 +56,11 @@ fn get_test_state() -> AppState {
             timeout: std::time::Duration::from_secs(1),
             enabled: false,
         },
-        debugging: crate::config::DebuggingConfig::default(),
+        debugging: crate::config::DebuggingConfig {
+            fail_debug_delay: std::time::Duration::from_secs(0),
+            environment: "testing".to_string(),
+            enable_dev_auth: false,
+        },
     };
 
     let db_pool = sqlx::postgres::PgPoolOptions::new()

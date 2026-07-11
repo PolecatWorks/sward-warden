@@ -51,12 +51,11 @@ where
     s.serialize_str(&format!("{:?}", hams))
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone, Default)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct DebuggingConfig {
     #[serde(with = "humantime_serde")]
-    pub fail_debug_delay: Option<Duration>,
-    pub environment: Option<String>,
-    #[serde(default)]
+    pub fail_debug_delay: Duration,
+    pub environment: String,
     pub enable_dev_auth: bool,
 }
 
@@ -205,7 +204,8 @@ mod tests {
         writeln!(file, "  stack_size: 3000000").unwrap();
         writeln!(file, "  name: default").unwrap();
         writeln!(file, "debugging:").unwrap();
-        writeln!(file, "  fail_debug_delay: null").unwrap();
+        writeln!(file, "  fail_debug_delay: 0s").unwrap();
+        writeln!(file, "  environment: testing").unwrap();
         writeln!(file, "  enable_dev_auth: false").unwrap();
 
         let config = AppConfig::load(&test_config_path, &test_dir).unwrap();

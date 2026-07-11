@@ -54,7 +54,7 @@ fn main() -> Result<(), AppError> {
 
             let result = (|| -> Result<(), AppError> {
                 let config = AppConfig::load(&cli.config_path, &cli.secrets_dir)?;
-                delay = config.debugging.fail_debug_delay;
+                delay = Some(config.debugging.fail_debug_delay);
 
                 println!(
                     "Config:\n{}",
@@ -135,14 +135,12 @@ fn main() -> Result<(), AppError> {
                 println!("Migrations completed successfully.");
                 Ok(())
             }) {
-                if let Some(d) = delay {
-                    tracing::error!(
-                        "Migrate failed: {}. Sleeping for {:?} before exiting...",
-                        e,
-                        d
-                    );
-                    std::thread::sleep(d);
-                }
+                tracing::error!(
+                    "Migrate failed: {}. Sleeping for {:?} before exiting...",
+                    e,
+                    delay
+                );
+                std::thread::sleep(delay);
                 return Err(e);
             }
         }
@@ -165,10 +163,12 @@ fn main() -> Result<(), AppError> {
                     })?;
                 seed::seed_database(&db_pool, *user_id).await
             }) {
-                if let Some(d) = delay {
-                    tracing::error!("Seed failed: {}. Sleeping for {:?} before exiting...", e, d);
-                    std::thread::sleep(d);
-                }
+                tracing::error!(
+                    "Seed failed: {}. Sleeping for {:?} before exiting...",
+                    e,
+                    delay
+                );
+                std::thread::sleep(delay);
                 return Err(e);
             }
         }
