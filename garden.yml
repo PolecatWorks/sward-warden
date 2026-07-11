@@ -136,7 +136,7 @@ spec:
         stack_size: 3000000
         name: "default"
       debugging:
-        fail_debug_delay: null
+        fail_debug_delay: 0s
         environment: "testing"
         enable_dev_auth: true
 

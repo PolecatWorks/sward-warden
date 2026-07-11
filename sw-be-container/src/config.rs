@@ -111,9 +111,12 @@ mod tests {
     use super::*;
     use std::env;
 
+    static ENV_MUTEX: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
     // PRD Reference: 0001
     #[test]
     fn test_config_load_without_credentials() {
+        let _lock = ENV_MUTEX.lock().unwrap();
         // Ensure no env vars are interfering
         unsafe {
             env::remove_var("SP_BE__DATABASE__URL__USERNAME");
@@ -138,6 +141,7 @@ mod tests {
     // PRD Reference: 0001
     #[test]
     fn test_config_load_with_env_vars() {
+        let _lock = ENV_MUTEX.lock().unwrap();
         unsafe {
             env::set_var("SP_BE__DATABASE__URL__USERNAME", "envuser");
             env::set_var("SP_BE__DATABASE__URL__PASSWORD", "envpass");
@@ -161,6 +165,7 @@ mod tests {
     // PRD Reference: 0001
     #[test]
     fn test_config_load_with_file_secrets() {
+        let _lock = ENV_MUTEX.lock().unwrap();
         use std::fs;
         use std::io::Write;
 
