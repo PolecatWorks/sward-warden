@@ -79,7 +79,7 @@ where
                 Err(AppError::Cancelled)
             },
             z = my_function => {
-                eprintln!("Completed function");
+                info!("Completed function");
                 z
             },
         }
