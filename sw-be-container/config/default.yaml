@@ -26,5 +26,5 @@ runtime:
   name: "default"
 debugging:
   enable_dev_auth: true
-  fail_debug_delay: null
+  fail_debug_delay: 0s
   environment: "development"

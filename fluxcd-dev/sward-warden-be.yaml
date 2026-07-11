@@ -108,7 +108,9 @@ spec:
         stack_size: 3000000
         name: "default"
       debugging:
-        fail_debug_delay: null
+        fail_debug_delay: 60s
+        environment: "development"
+        enable_dev_auth: true
 
     volumes:
       - name: config
