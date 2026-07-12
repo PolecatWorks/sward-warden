@@ -48,6 +48,7 @@ The application must leverage **RxDB** to facilitate robust offline synchronizat
 - **Local-First Data Flow:** FE writes to local storage (RxDB) immediately. Background service syncs to Postgres when connection is restored.
 - **Outbox Pattern:** Offline actions are queued in an "Outbox" table and processed via Web Background Sync.
 - **Delta Sync:** Postgres tables feature `updated_at` and `is_deleted` columns. FE pulls only modified records since the "Last Sync Checkpoint".
+- **Concurrent DB Operations:** RxDB data manipulations for sync processing (such as clearing local collections or upserting delta changes) should utilize concurrent executions (e.g. `Promise.all`) to avoid sequential I/O overhead.
 - **Self-Healing:** Intercept initialization errors, auto-wipe corrupted local databases, and gracefully degrade to online-only API calls if storage is blocked.
 
 ## 6. Startup, Health & Telemetry
