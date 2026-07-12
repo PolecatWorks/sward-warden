@@ -3,6 +3,8 @@ import { ActivatedRoute, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 
 import { OptimizationEngineComponent } from './optimization-engine.component';
+import { LoggerService } from '../services/logger.service';
+import { APP_CONFIG } from '../app-config';
 import { OptimizationService } from '../services/optimization.service';
 import { WeatherService } from '../services/weather.service';
 
@@ -18,6 +20,8 @@ describe('OptimizationEngineComponent', () => {
         { provide: ActivatedRoute, useValue: {} },
         // No obvious PRD requirement
         provideRouter([]),
+        { provide: APP_CONFIG, useValue: { apiPath: "/api", logLevel: "DEBUG" } },
+        LoggerService,
         {
           provide: OptimizationService,
           useValue: {

@@ -1,3 +1,4 @@
+import { LoggerService } from '../../../services/logger.service';
 import {
   Component,
   Input,
@@ -61,7 +62,7 @@ export class FieldMapEditorComponent
   private map!: L.Map;
   private currentLayer: L.Layer | null = null;
 
-  constructor() {}
+  constructor(private logger: LoggerService) {}
 
   // PRD Reference: 0003
   ngOnInit() {}
@@ -206,7 +207,7 @@ export class FieldMapEditorComponent
         }
       }
     } catch (e) {
-      console.error('Invalid GeoJSON string', e);
+      this.logger.error('Invalid GeoJSON string', e);
     }
   }
 
@@ -223,7 +224,7 @@ export class FieldMapEditorComponent
         this.geojsonChange.emit(JSON.stringify(geom));
       }
     } catch (e) {
-      console.error('Error generating GeoJSON from layer', e);
+      this.logger.error('Error generating GeoJSON from layer', e);
     }
   }
 
@@ -292,11 +293,11 @@ export class FieldMapEditorComponent
         }
       }
 
-      console.log('No agricultural field boundary found at this location.');
+      this.logger.log('No agricultural field boundary found at this location.');
       alert('No field boundary could be automatically detected at this location.');
 
     } catch (error) {
-      console.error('Error fetching data from Overpass API:', error);
+      this.logger.error('Error fetching data from Overpass API:', error);
       alert('Failed to auto-detect boundary. Please try again or draw manually.');
     }
   }

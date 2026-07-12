@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MainLayoutComponent } from './main-layout.component';
+import { LoggerService } from '../services/logger.service';
+import { APP_CONFIG } from '../app-config';
 import { RxdbService } from '../services/rxdb/rxdb.service';
 import { AuthService } from '../services/auth.service';
 import { FarmManagementService } from '../services/farm-management.service';
@@ -68,6 +70,8 @@ describe('MainLayoutComponent', () => {
       providers: [
         // No obvious PRD requirement
         provideRouter([]),
+        { provide: APP_CONFIG, useValue: { apiPath: "/api", logLevel: "DEBUG" } },
+        LoggerService,
         { provide: RxdbService, useValue: rxdbServiceSpy },
         { provide: AuthService, useValue: authServiceSpy },
         { provide: FarmManagementService, useValue: farmServiceSpy },

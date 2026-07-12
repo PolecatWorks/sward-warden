@@ -10,6 +10,7 @@ import { Farm } from '../../models/farm';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { FieldMapEditorComponent } from '../../shared/components/field-map-editor/field-map-editor.component';
+import { LoggerService } from '../../services/logger.service';
 
 @Component({
   selector: 'app-fields',
@@ -77,6 +78,7 @@ export class FieldsComponent implements OnInit {
     private authService: AuthService,
     private syncEngineService: SyncEngineService,
     private router: Router,
+    private logger: LoggerService,
   ) {}
 
   // PRD Reference: 0003
@@ -207,7 +209,7 @@ export class FieldsComponent implements OnInit {
             targetFarmId = syncedFarm?.id || createdFarm.id || 0;
             this.farms = updatedFarms;
           } catch (error) {
-            console.error('Failed to create default farm:', error);
+            this.logger.error('Failed to create default farm:', error);
             this.errorMessage =
               'Failed to create default farm. Please try again.';
             return;
@@ -406,7 +408,7 @@ export class FieldsComponent implements OnInit {
       error: (err) => {
         this.errorMessage = 'Failed to update farm. Please try again.';
         this.isSaving = false;
-        console.error('Error updating farm:', err);
+        this.logger.error('Error updating farm:', err);
       },
     });
   }

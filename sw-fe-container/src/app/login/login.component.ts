@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { LoggerService } from '../services/logger.service';
 import {
   FormBuilder,
   FormGroup,
@@ -36,6 +37,7 @@ export class LoginComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private fb: FormBuilder,
+    private logger: LoggerService,
   ) {}
 
   // No obvious PRD requirement
@@ -57,7 +59,7 @@ export class LoginComponent implements OnInit {
       switchMap(() =>
         this.farmManagementService.getUsers().pipe(
           catchError((err) => {
-            console.error('Error fetching users:', err);
+            this.logger.error('Error fetching users:', err);
             // No obvious PRD requirement
             setTimeout(() => {
               this.errorMsg =
@@ -79,7 +81,7 @@ export class LoginComponent implements OnInit {
           this.router.navigate(['/home']);
         },
         error: (err) => {
-          console.error('Failed to get Dev JWT token:', err);
+          this.logger.error('Failed to get Dev JWT token:', err);
           this.errorMsg =
             'Failed to get dev authentication token. Is dev auth enabled in backend?';
         },
@@ -102,7 +104,7 @@ export class LoginComponent implements OnInit {
       },
       error: (err) => {
         this.errorMsg = 'Failed to delete user. Please try again.';
-        console.error('Error deleting user:', err);
+        this.logger.error('Error deleting user:', err);
       },
     });
   }
@@ -139,7 +141,7 @@ export class LoginComponent implements OnInit {
         this.isSubmitting = false;
         this.errorMsg =
           'Failed to create user. Please ensure the backend is running and details are correct.';
-        console.error('Error creating user:', err);
+        this.logger.error('Error creating user:', err);
       },
     });
   }

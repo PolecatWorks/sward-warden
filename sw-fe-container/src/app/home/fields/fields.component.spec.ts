@@ -5,6 +5,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { of, BehaviorSubject } from 'rxjs';
 
 import { FieldsComponent } from './fields.component';
+import { LoggerService } from '../../services/logger.service';
+import { APP_CONFIG } from '../../app-config';
 import { FarmManagementService } from '../../services/farm-management.service';
 import { RxdbService } from '../../services/rxdb/rxdb.service';
 import { AuthService } from '../../services/auth.service';
@@ -21,18 +23,22 @@ describe('FieldsComponent', () => {
       providers: [
         // PRD Reference: 0003
         provideRouter([]),
+        { provide: APP_CONFIG, useValue: { apiPath: "/api", logLevel: "DEBUG" } },
+        LoggerService,
         {
           provide: ActivatedRoute,
           useValue: {
             paramMap: of({
               get: (key: string) => (key === 'farmId' ? '1' : null),
             }),
+            url: of([]),
           },
         },
         {
           provide: RxdbService,
           useValue: {
             fallbackToRest$: new BehaviorSubject<boolean>(false),
+            db$: new BehaviorSubject<any>(null),
           },
         },
         {

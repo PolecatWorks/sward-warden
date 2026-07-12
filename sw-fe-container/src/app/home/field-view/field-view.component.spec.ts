@@ -5,6 +5,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 
 import { FieldViewComponent } from './field-view.component';
+import { LoggerService } from '../../services/logger.service';
+import { APP_CONFIG } from '../../app-config';
 import { FarmManagementService } from '../../services/farm-management.service';
 
 // PRD Reference: 0003
@@ -18,12 +20,15 @@ describe('FieldViewComponent', () => {
       providers: [
         // PRD Reference: 0003
         provideRouter([]),
+        { provide: APP_CONFIG, useValue: { apiPath: "/api", logLevel: "DEBUG" } },
+        LoggerService,
         {
           provide: ActivatedRoute,
           useValue: {
             paramMap: of({
               get: (key: string) => (key === 'fieldId' ? '1' : null),
             }),
+            url: of([]),
           },
         },
         {

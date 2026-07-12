@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
 import { HomeComponent } from './home.component';
+import { LoggerService } from '../services/logger.service';
+import { APP_CONFIG } from '../app-config';
 import { FarmManagementService } from '../services/farm-management.service';
 import { AuthService } from '../services/auth.service';
 import { of } from 'rxjs';
@@ -32,6 +34,8 @@ describe('HomeComponent', () => {
         { provide: ActivatedRoute, useValue: {} },
         // No obvious PRD requirement
         provideRouter([]),
+        { provide: APP_CONFIG, useValue: { apiPath: "/api", logLevel: "DEBUG" } },
+        LoggerService,
         { provide: FarmManagementService, useValue: mockFarmService },
         { provide: AuthService, useValue: mockAuthService },
       ],

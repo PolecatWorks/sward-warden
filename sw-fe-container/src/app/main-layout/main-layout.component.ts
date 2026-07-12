@@ -1,3 +1,4 @@
+import { LoggerService } from '../services/logger.service';
 import { Component, OnInit } from '@angular/core';
 import {
   Router,
@@ -41,6 +42,7 @@ export class MainLayoutComponent implements OnInit {
     private farmManagementService: FarmManagementService,
     private devAuthApi: DevAuthApiService,
     private router: Router,
+    private logger: LoggerService,
     private syncStateService: SyncStateService,
   ) {
     this.fallbackToRest$ = this.rxdbService.fallbackToRest$;
@@ -83,7 +85,7 @@ export class MainLayoutComponent implements OnInit {
                 this.reloadPage();
               },
               error: (err) => {
-                console.error(
+                this.logger.error(
                   'Failed to get Dev JWT token on user switch:',
                   err,
                 );
@@ -97,7 +99,7 @@ export class MainLayoutComponent implements OnInit {
         }
       },
       error: (err) => {
-        console.error('Failed to fetch user list during switch:', err);
+        this.logger.error('Failed to fetch user list during switch:', err);
         this.authService.login(userIdStr);
         this.reloadPage();
       },

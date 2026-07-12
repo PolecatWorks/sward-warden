@@ -1,0 +1,2 @@
+- [ ] Fix flaky RxDB tests (COL23 error) caused by state bleeding across test suites in the RxDB memory adapter.
+- [ ] Fix 'Cannot read properties of undefined (reading subscribe)' in routing related tests that lack complete ActivatedRoute mocking.

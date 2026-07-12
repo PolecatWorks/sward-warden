@@ -1,3 +1,4 @@
+import { LoggerService } from '../services/logger.service';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -18,7 +19,10 @@ export class OptimizationEngineComponent implements OnInit {
   suggestions: OptimizationSuggestion[] = [];
   isLoading = true;
 
-  constructor(private optimizationService: OptimizationService) {}
+  constructor(
+    private optimizationService: OptimizationService,
+    private logger: LoggerService
+  ) {}
 
   // No obvious PRD requirement
   ngOnInit() {
@@ -29,7 +33,7 @@ export class OptimizationEngineComponent implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Failed to load suggestions', err);
+        this.logger.error('Failed to load suggestions', err);
         this.isLoading = false;
       },
     });
