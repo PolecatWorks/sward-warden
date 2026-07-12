@@ -39,10 +39,10 @@ pub async fn create_user(
     .await?;
 
     if let Some(modules) = &user.modules {
-        for module in modules {
-            sqlx::query("INSERT INTO user_modules (user_id, module_id) SELECT $1, id FROM modules WHERE name = $2")
+        if !modules.is_empty() {
+            sqlx::query("INSERT INTO user_modules (user_id, module_id) SELECT $1, id FROM modules WHERE name = ANY($2)")
                 .bind(new_user.id)
-                .bind(module)
+                .bind(modules)
                 .execute(&mut *tx)
                 .await?;
         }
@@ -100,10 +100,10 @@ pub async fn update_user(
             .bind(id)
             .execute(&mut *tx)
             .await?;
-        for module in modules {
-            sqlx::query("INSERT INTO user_modules (user_id, module_id) SELECT $1, id FROM modules WHERE name = $2")
+        if !modules.is_empty() {
+            sqlx::query("INSERT INTO user_modules (user_id, module_id) SELECT $1, id FROM modules WHERE name = ANY($2)")
                 .bind(id)
-                .bind(module)
+                .bind(modules)
                 .execute(&mut *tx)
                 .await?;
         }
