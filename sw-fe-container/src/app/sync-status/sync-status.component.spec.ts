@@ -1,3 +1,5 @@
+import { LoggerService } from '../services/logger.service';
+import { APP_CONFIG } from '../app-config';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BehaviorSubject } from 'rxjs';
 import { SyncStatusComponent } from './sync-status.component';
@@ -30,6 +32,8 @@ describe('SyncStatusComponent', () => {
           provide: SyncEngineService,
           useValue: syncEngineServiceSpy,
         },
+        { provide: APP_CONFIG, useValue: { apiPath: "/api", logLevel: "DEBUG" } },
+        LoggerService,
       ],
     }).compileComponents();
 

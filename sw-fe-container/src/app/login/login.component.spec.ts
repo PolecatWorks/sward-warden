@@ -1,3 +1,5 @@
+import { LoggerService } from '../services/logger.service';
+import { APP_CONFIG } from '../app-config';
 import {
   ComponentFixture,
   TestBed,
@@ -48,6 +50,8 @@ xdescribe('LoginComponent', () => {
         { provide: AuthService, useValue: mockAuthService },
         { provide: Router, useValue: mockRouter },
         { provide: DevAuthApiService, useValue: mockDevAuthApi },
+        { provide: APP_CONFIG, useValue: { apiPath: "/api", logLevel: "DEBUG" } },
+        LoggerService,
       ],
     }).compileComponents();
 

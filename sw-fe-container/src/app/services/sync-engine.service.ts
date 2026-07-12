@@ -18,6 +18,7 @@ import { NetworkService } from './network.service';
 import { SyncStateService } from './sync-state.service';
 import { AuthService } from './auth.service';
 import { generateLocalId } from '../utils/local-id';
+import { LoggerService } from './logger.service';
 import { FarmManagementService } from './farm-management.service';
 import { OutboxDocType } from './rxdb/schemas';
 
@@ -70,6 +71,7 @@ export class SyncEngineService implements OnDestroy {
     private syncStateService: SyncStateService,
     private farmService: FarmManagementService,
     private authService: AuthService,
+    private logger: LoggerService,
     private http: HttpClient,
   ) {
     // Load initial lastSyncTime from RxDB
@@ -170,7 +172,7 @@ export class SyncEngineService implements OnDestroy {
     if (pendingEntries.length === 0) {
       return;
     }
-    console.log(
+    this.logger.log(
       'SYNC ENGINE: Found pending entries:',
       pendingEntries.map((e) => ({
         id: e.id,
@@ -210,7 +212,7 @@ export class SyncEngineService implements OnDestroy {
         await this.processEntry(entry, apiUrl, headers, db);
         await entry.remove();
       } catch (error: any) {
-        console.error(
+        this.logger.error(
           `SYNC ENGINE: Error processing entry ${entry.id}:`,
           error,
         );
@@ -292,7 +294,7 @@ export class SyncEngineService implements OnDestroy {
   ): Promise<void> {
     const rawPayload = JSON.parse(entry.payload);
     const payload = await this.resolvePayloadReferences(rawPayload, entry.entityType, db);
-    console.log(
+    this.logger.log(
       `SYNC ENGINE: processEntry action=${entry.actionType} entity=${entry.entityType} payload:`,
       payload,
     );
@@ -306,11 +308,11 @@ export class SyncEngineService implements OnDestroy {
 
     switch (entry.actionType) {
       case 'POST': {
-        console.log(`SYNC ENGINE: Sending POST to ${apiUrl}/${endpoint}`);
+        this.logger.log(`SYNC ENGINE: Sending POST to ${apiUrl}/${endpoint}`);
         const response = await firstValueFrom(
           this.http.post<any>(`${apiUrl}/${endpoint}`, payload, { headers }),
         );
-        console.log(`SYNC ENGINE: POST response:`, response);
+        this.logger.log(`SYNC ENGINE: POST response:`, response);
         if (response?.id) {
           await this.updateLocalDocServerId(
             db,
@@ -323,22 +325,22 @@ export class SyncEngineService implements OnDestroy {
       }
       case 'DELETE': {
         const serverId = payload.id;
-        console.log(
+        this.logger.log(
           `SYNC ENGINE: Sending DELETE to ${apiUrl}/${endpoint}/${serverId}`,
         );
         if (serverId) {
           await firstValueFrom(
             this.http.delete(`${apiUrl}/${endpoint}/${serverId}`, { headers }),
           );
-          console.log(`SYNC ENGINE: DELETE successful`);
+          this.logger.log(`SYNC ENGINE: DELETE successful`);
         } else {
-          console.warn(`SYNC ENGINE: DELETE skipped, no serverId`);
+          this.logger.warn(`SYNC ENGINE: DELETE skipped, no serverId`);
         }
         break;
       }
       case 'PUT': {
         const serverId = payload.id;
-        console.log(
+        this.logger.log(
           `SYNC ENGINE: Sending PUT to ${apiUrl}/${endpoint}/${serverId}`,
         );
         if (serverId) {
@@ -347,9 +349,9 @@ export class SyncEngineService implements OnDestroy {
               headers,
             }),
           );
-          console.log(`SYNC ENGINE: PUT successful`);
+          this.logger.log(`SYNC ENGINE: PUT successful`);
         } else {
-          console.warn(`SYNC ENGINE: PUT skipped, no serverId`);
+          this.logger.warn(`SYNC ENGINE: PUT skipped, no serverId`);
         }
         break;
       }
@@ -374,7 +376,7 @@ export class SyncEngineService implements OnDestroy {
     let checkpoint = await this.getCheckpoint(db);
 
     if (lastSyncUserId && lastSyncUserId !== currentUserId) {
-      console.warn(
+      this.logger.warn(
         `SYNC ENGINE: User changed from ${lastSyncUserId} to ${currentUserId}. Invaliding checkpoint and performing full refresh.`,
       );
       await this.clearCheckpoint(db);
@@ -528,7 +530,7 @@ export class SyncEngineService implements OnDestroy {
       const currentUserId = this.authService.getUserId() || '';
       const lastSyncUserId = await this.getLastSyncUserId(db);
       if (lastSyncUserId && lastSyncUserId !== currentUserId) {
-        console.warn(
+        this.logger.warn(
           `SYNC ENGINE (Force): User changed from ${lastSyncUserId} to ${currentUserId}. Invaliding checkpoint and performing full refresh.`,
         );
         await this.clearCheckpoint(db);

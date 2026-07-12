@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable, Optional } from '@angular/core';
 import { APP_CONFIG, AppConfig } from '../app-config';
 
 enum LogLevel {
@@ -14,8 +14,8 @@ enum LogLevel {
 export class LoggerService {
   private level: LogLevel;
 
-  constructor(@Inject(APP_CONFIG) private config: AppConfig) {
-    this.level = this.parseLogLevel(config.logLevel);
+  constructor(@Optional() @Inject(APP_CONFIG) private config: AppConfig | null) {
+    this.level = this.parseLogLevel(config?.logLevel || 'INFO');
   }
 
   // No obvious PRD requirement

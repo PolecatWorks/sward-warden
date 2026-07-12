@@ -1,3 +1,5 @@
+import { LoggerService } from '../logger.service';
+import { APP_CONFIG } from '../../app-config';
 import { TestBed } from '@angular/core/testing';
 import {
   RxdbService,
@@ -25,6 +27,8 @@ describe('RxdbService', () => {
         RxdbService,
         { provide: RXDB_STORAGE, useFactory: () => getRxStorageMemory() },
         { provide: RXDB_DB_NAME, useValue: testDbName },
+        { provide: APP_CONFIG, useValue: { apiPath: "/api", logLevel: "DEBUG" } },
+        LoggerService,
       ],
     });
     service = TestBed.inject(RxdbService);

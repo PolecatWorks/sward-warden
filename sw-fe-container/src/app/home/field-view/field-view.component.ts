@@ -10,6 +10,7 @@ import { FertiliserApplication } from '../../models/fertiliser-application';
 import { OrganicManureApplication } from '../../models/organic-manure-application';
 import { Farm } from '../../models/farm';
 import { FieldMapEditorComponent } from '../../shared/components/field-map-editor/field-map-editor.component';
+import { LoggerService } from '../../services/logger.service';
 
 @Component({
   selector: 'app-field-view',
@@ -108,6 +109,7 @@ export class FieldViewComponent implements OnInit {
     private farmService: FarmManagementService,
     private datePipe: DatePipe,
     private router: Router,
+    private logger: LoggerService,
   ) {}
 
   @HostListener('document:keydown.escape', ['$event'])
@@ -157,7 +159,7 @@ export class FieldViewComponent implements OnInit {
       error: (err) => {
         this.isSaving = false;
         this.errorMessage = 'Failed to delete field. Please try again.';
-        console.error('Error deleting field:', err);
+        this.logger.error('Error deleting field:', err);
       },
     });
   }
@@ -169,7 +171,7 @@ export class FieldViewComponent implements OnInit {
         this.farms = farms;
       },
       error: (err) => {
-        console.error('Error loading farms:', err);
+        this.logger.error('Error loading farms:', err);
       },
     });
   }
@@ -249,7 +251,7 @@ export class FieldViewComponent implements OnInit {
       error: (err) => {
         this.errorMessage = 'Failed to update field. Please try again.';
         this.isSaving = false;
-        console.error('Error updating field:', err);
+        this.logger.error('Error updating field:', err);
       },
     });
   }

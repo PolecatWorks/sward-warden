@@ -1,3 +1,5 @@
+import { LoggerService } from './logger.service';
+import { APP_CONFIG } from '../app-config';
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import {
@@ -41,6 +43,8 @@ describe('SyncEngineService', () => {
         SyncEngineService,
         RxdbService,
         SyncStateService,
+        { provide: APP_CONFIG, useValue: { apiPath: "/api", logLevel: "DEBUG" } },
+        LoggerService,
         {
           provide: FarmManagementService,
           useValue: {
@@ -72,7 +76,7 @@ describe('SyncEngineService', () => {
     service.ngOnDestroy();
     httpMock.verify();
     const db = await firstValueFrom(rxdbService.db$);
-    await db.remove();
+    if (db) { await service.setCheckpoint(db, null as any); await db.remove(); }
   });
 
   // PRD Reference: 0001

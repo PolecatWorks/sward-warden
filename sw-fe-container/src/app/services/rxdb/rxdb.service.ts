@@ -1,3 +1,4 @@
+import { LoggerService } from '../logger.service';
 import {
   Injectable,
   OnDestroy,
@@ -135,6 +136,7 @@ export class RxdbService implements OnDestroy {
   constructor(
     @Optional() @Inject(RXDB_STORAGE) storage: RxStorage<any, any> | null,
     @Optional() @Inject(RXDB_DB_NAME) dbName: string | null,
+    private logger: LoggerService,
   ) {
     this.storage = storage || getRxStorageDexie();
     let userId: string | null = null;
@@ -155,21 +157,21 @@ export class RxdbService implements OnDestroy {
     try {
       return await this.tryCreateDatabase();
     } catch (err) {
-      console.warn(
+      this.logger.warn(
         'RxDB Database initialization failed. Attempting self-healing/wipe...',
         err,
       );
       try {
         // Attempt to wipe the existing database
         await removeRxDatabase(this.dbName, this.storage);
-        console.log(
+        this.logger.log(
           'RxDB Database successfully wiped. Re-attempting initialization.',
         );
 
         // Re-try database creation
         return await this.tryCreateDatabase();
       } catch (retryErr) {
-        console.error(
+        this.logger.error(
           'RxDB Database initialization failed on second attempt. Falling back to REST mode.',
           retryErr,
         );

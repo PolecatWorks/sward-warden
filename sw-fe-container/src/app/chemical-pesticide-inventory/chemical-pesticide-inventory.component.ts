@@ -12,6 +12,7 @@ import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { InventoryChemicalsService } from '../services/inventory-chemicals.service';
 import { InventoryChemicalDocType } from '../services/rxdb/schemas';
+import { LoggerService } from '../services/logger.service';
 
 @Component({
   standalone: true,
@@ -40,6 +41,7 @@ export class ChemicalPesticideInventoryComponent implements OnInit {
   constructor(
     private inventoryService: InventoryChemicalsService,
     private fb: FormBuilder,
+    private logger: LoggerService,
   ) {}
 
   // PRD Reference: 0006
@@ -129,7 +131,7 @@ export class ChemicalPesticideInventoryComponent implements OnInit {
         }
         this.closeForm();
       } catch (err) {
-        console.error('Failed to save chemical', err);
+        this.logger.error('Failed to save chemical', err);
       }
     }
   }
@@ -140,7 +142,7 @@ export class ChemicalPesticideInventoryComponent implements OnInit {
       try {
         await this.inventoryService.deleteChemical(id);
       } catch (err) {
-        console.error('Failed to delete chemical', err);
+        this.logger.error('Failed to delete chemical', err);
       }
     }
   }

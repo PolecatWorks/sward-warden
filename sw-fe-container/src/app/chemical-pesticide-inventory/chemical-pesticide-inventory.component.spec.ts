@@ -1,3 +1,4 @@
+import { LoggerService } from '../services/logger.service';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -16,7 +17,8 @@ describe('ChemicalPesticideInventoryComponent', () => {
         { provide: ActivatedRoute, useValue: {} },
         // PRD Reference: 0006
         provideRouter([]),
-        { provide: APP_CONFIG, useValue: { apiPath: '/v0' } },
+        { provide: APP_CONFIG, useValue: { apiPath: "/v0", logLevel: "DEBUG" } },
+        LoggerService,
       ],
       imports: [ChemicalPesticideInventoryComponent, HttpClientTestingModule],
     }).compileComponents();

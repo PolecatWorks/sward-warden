@@ -8,6 +8,7 @@ import { Farm } from '../models/farm';
 import { Observable, BehaviorSubject, of, combineLatest } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { RxdbService } from '../services/rxdb/rxdb.service';
+import { LoggerService } from '../services/logger.service';
 import { InventoryStorageDocType } from '../services/rxdb/schemas';
 
 export interface TopStorage extends InventoryStorageDocType {
@@ -55,6 +56,7 @@ export class HomeComponent implements OnInit {
     private authService: AuthService,
     private farmManagementService: FarmManagementService,
     private rxdbService: RxdbService,
+    private logger: LoggerService,
   ) {}
 
   // No obvious PRD requirement
@@ -66,7 +68,7 @@ export class HomeComponent implements OnInit {
 
     this.farms$ = this.farmManagementService.getFarms().pipe(
       catchError((err) => {
-        console.error('Failed to load farms', err);
+        this.logger.error('Failed to load farms', err);
         return of([]);
       }),
     );
