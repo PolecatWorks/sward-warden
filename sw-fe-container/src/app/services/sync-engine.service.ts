@@ -255,7 +255,9 @@ export class SyncEngineService implements OnDestroy {
     const resolveField = async (val: any, collection: any): Promise<any> => {
       const valStr = val !== undefined && val !== null ? val.toString() : '';
       if (valStr.startsWith('-')) {
-        const doc = await collection.findOne({ selector: { id: valStr } }).exec();
+        const doc = await collection
+          .findOne({ selector: { id: valStr } })
+          .exec();
         if (doc && doc.serverId !== undefined) {
           return doc.serverId;
         }
@@ -264,16 +266,28 @@ export class SyncEngineService implements OnDestroy {
     };
 
     if (resolved.farm_id !== undefined && (db as any).farms) {
-      resolved.farm_id = await resolveField(resolved.farm_id, (db as any).farms);
+      resolved.farm_id = await resolveField(
+        resolved.farm_id,
+        (db as any).farms,
+      );
     }
     if (resolved.field_id !== undefined && (db as any).fields) {
-      resolved.field_id = await resolveField(resolved.field_id, (db as any).fields);
+      resolved.field_id = await resolveField(
+        resolved.field_id,
+        (db as any).fields,
+      );
     }
     if (resolved.event_id !== undefined && (db as any).events) {
-      resolved.event_id = await resolveField(resolved.event_id, (db as any).events);
+      resolved.event_id = await resolveField(
+        resolved.event_id,
+        (db as any).events,
+      );
     }
     if (resolved.storage_id !== undefined && (db as any).inventory_storage) {
-      resolved.storage_id = await resolveField(resolved.storage_id, (db as any).inventory_storage);
+      resolved.storage_id = await resolveField(
+        resolved.storage_id,
+        (db as any).inventory_storage,
+      );
     }
     if (resolved.id !== undefined) {
       const collection = (db as any)[entityType];
@@ -293,7 +307,11 @@ export class SyncEngineService implements OnDestroy {
     db: SwardDatabase,
   ): Promise<void> {
     const rawPayload = JSON.parse(entry.payload);
-    const payload = await this.resolvePayloadReferences(rawPayload, entry.entityType, db);
+    const payload = await this.resolvePayloadReferences(
+      rawPayload,
+      entry.entityType,
+      db,
+    );
     this.logger.log(
       `SYNC ENGINE: processEntry action=${entry.actionType} entity=${entry.entityType} payload:`,
       payload,
@@ -505,15 +523,17 @@ export class SyncEngineService implements OnDestroy {
       'sward_movements',
       'outbox',
     ];
-    for (const name of collections) {
-      const col = (db as any)[name];
-      if (col) {
-        const docs = await col.find().exec();
-        if (docs && docs.length > 0) {
-          await col.bulkRemove(docs.map((d: any) => d.id));
+    await Promise.all(
+      collections.map(async (name) => {
+        const col = (db as any)[name];
+        if (col) {
+          const docs = await col.find().exec();
+          if (docs && docs.length > 0) {
+            await col.bulkRemove(docs.map((d: any) => d.id));
+          }
         }
-      }
-    }
+      }),
+    );
   }
 
   /** Force a sync by clearing the checkpoint and pulling all data from the server. */
