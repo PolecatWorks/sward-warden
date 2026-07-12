@@ -17,13 +17,7 @@ import { InventoryChemicalDocType } from './rxdb/schemas';
 import { NetworkService } from './network.service';
 import { SyncStateService } from './sync-state.service';
 import { AuthService } from './auth.service';
-
-let localIdCounter = 0;
-// PRD Reference: 0001
-function generateLocalId(): string {
-  localIdCounter = (localIdCounter + 1) % 100;
-  return `-${Date.now()}${localIdCounter.toString().padStart(2, '0')}`;
-}
+import { generateLocalId } from '../utils/local-id';
 import { FarmManagementService } from './farm-management.service';
 import { OutboxDocType } from './rxdb/schemas';
 

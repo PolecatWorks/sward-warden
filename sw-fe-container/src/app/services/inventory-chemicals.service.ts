@@ -4,13 +4,7 @@ import { RxdbService, SwardDatabase } from './rxdb/rxdb.service';
 import { InventoryChemicalDocType, OutboxEntityType } from './rxdb/schemas';
 import { SyncEngineService } from './sync-engine.service';
 import { AuthService } from './auth.service';
-
-let localIdCounter = 0;
-// PRD Reference: 0006
-function generateLocalId(): string {
-  localIdCounter = (localIdCounter + 1) % 100;
-  return `-${Date.now()}${localIdCounter.toString().padStart(2, '0')}`;
-}
+import { generateLocalId } from '../utils/local-id';
 
 @Injectable({
   providedIn: 'root',

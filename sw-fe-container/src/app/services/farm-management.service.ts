@@ -32,13 +32,7 @@ import { RxDocument } from 'rxdb';
 import { APP_CONFIG, AppConfig } from '../app-config';
 import { Inject } from '@angular/core';
 import { of } from 'rxjs';
-
-let localIdCounter = 0;
-// PRD Reference: 0003
-function generateLocalId(): string {
-  localIdCounter = (localIdCounter + 1) % 100;
-  return `-${Date.now()}${localIdCounter.toString().padStart(2, '0')}`;
-}
+import { generateLocalId } from '../utils/local-id';
 
 @Injectable({
   providedIn: 'root',
