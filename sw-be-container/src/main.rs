@@ -39,13 +39,17 @@ pub enum Commands {
     },
 }
 
+fn init_logging(fallback_level: &str) {
+    let env_filter = tracing_subscriber::EnvFilter::try_from_default_env()
+        .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new(fallback_level));
+
+    tracing_subscriber::fmt()
+        .with_env_filter(env_filter)
+        .init();
+}
+
 // References more than 3 PRDs
 fn main() -> Result<(), AppError> {
-    // Initialize structured logging
-    tracing_subscriber::fmt()
-        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
-        .init();
-
     let cli = Cli::parse();
 
     match &cli.command {
@@ -53,7 +57,13 @@ fn main() -> Result<(), AppError> {
             let mut delay = None;
 
             let result = (|| -> Result<(), AppError> {
-                let config = AppConfig::load(&cli.config_path, &cli.secrets_dir)?;
+                let config = AppConfig::load(&cli.config_path, &cli.secrets_dir).map_err(|e| {
+                    init_logging("info");
+                    tracing::error!("Failed to load config: {}", e);
+                    AppError::Message(format!("Failed to load config: {}", e))
+                })?;
+                init_logging(&config.debugging.log_level);
+
                 delay = Some(config.debugging.fail_debug_delay);
 
                 println!(
@@ -107,10 +117,17 @@ fn main() -> Result<(), AppError> {
             }
         }
         Commands::Version => {
+            init_logging("info");
             println!("sw-be {}", VERSION);
         }
         Commands::Migrate => {
-            let config = AppConfig::load(&cli.config_path, &cli.secrets_dir)?;
+            let config = AppConfig::load(&cli.config_path, &cli.secrets_dir).map_err(|e| {
+                init_logging("info");
+                tracing::error!("Failed to load config: {}", e);
+                AppError::Message(format!("Failed to load config: {}", e))
+            })?;
+            init_logging(&config.debugging.log_level);
+
             println!(
                 "Config:\n{}",
                 serde_yaml::to_string(&config)
@@ -145,7 +162,13 @@ fn main() -> Result<(), AppError> {
             }
         }
         Commands::Seed { user_id } => {
-            let config = AppConfig::load(&cli.config_path, &cli.secrets_dir)?;
+            let config = AppConfig::load(&cli.config_path, &cli.secrets_dir).map_err(|e| {
+                init_logging("info");
+                tracing::error!("Failed to load config: {}", e);
+                AppError::Message(format!("Failed to load config: {}", e))
+            })?;
+            init_logging(&config.debugging.log_level);
+
             println!(
                 "Config:\n{}",
                 serde_yaml::to_string(&config)

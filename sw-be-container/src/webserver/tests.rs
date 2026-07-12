@@ -60,6 +60,7 @@ fn get_test_state() -> AppState {
             fail_debug_delay: std::time::Duration::from_secs(0),
             environment: "testing".to_string(),
             enable_dev_auth: false,
+            log_level: "info".to_string(),
         },
     };
 
