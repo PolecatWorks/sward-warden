@@ -45,3 +45,11 @@ Optimizations for the Robot Framework integration testing CI/CD pipeline.
 The following user journeys validate development and testing capabilities:
 
 - **Dev User Switch and Sync Invalidation Journey (`test_dev_user_switch.robot`)**: The integration testing suite must include a development user switching and data sync isolation journey. The journey must pre-create a farm ("Farm 1") via the API for a first user, log in to the UI as that user, and verify the farm is visible on the Farms page. It must register a second user via the UI, use the header user-switcher dropdown to switch to the second user, and verify the Farms page reloads to show an empty state ("No farms yet"). It must then switch back to the first user via the dropdown and verify "Farm 1" is visible again. Finally, the journey must simulate an out-of-band user change by manually modifying local storage values (user ID and token) to a newly created user with no farms, trigger a force sync by clicking the sync status UI indicator, and verify that the UI refreshes to show an empty state ("No farms yet") and "Farm 1" is removed.
+
+## 6. Client Telemetry & Observability
+To ensure production observability of client-side events, a robust client log transport system is implemented.
+- **Configurable Log Levels:** Each user profile (`users` table) contains a `client_log_level` string (e.g., DEBUG, INFO, WARN, ERROR). The client dynamically adjusts its internal `LoggerService` level to match this value upon authentication or sync.
+- **Admin Control:** Administrators can adjust a user's client log level dynamically from the Support/Admin console (`sw-admin-container`).
+- **Offline-First Queue:** The frontend `LoggerService` intercepts calls to `log()`, `info()`, `warn()`, and `error()`. It writes these logs to a persistent local IndexedDB store (`Dexie`), with a hard limit of 1,000 logs (dropping the oldest automatically).
+- **Log Flushing:** A background process attempts to flush logs to the backend `/v0/client-logs` endpoint every 60 seconds, provided the device is online. Logs are successfully cleared from IndexedDB upon a 2xx response.
+- **Backend Logging:** The Rust backend processes these incoming batches, outputting them to standard out (`stdout`) via the `tracing` framework for ingestion by standard log aggregators.

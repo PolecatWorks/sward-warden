@@ -10,6 +10,7 @@ import { map, catchError } from 'rxjs/operators';
 import { RxdbService } from '../services/rxdb/rxdb.service';
 import { LoggerService } from '../services/logger.service';
 import { InventoryStorageDocType } from '../services/rxdb/schemas';
+import { LoggerService } from '../services/logger.service';
 
 export interface TopStorage extends InventoryStorageDocType {
   fillPercentage: number;
@@ -64,6 +65,11 @@ export class HomeComponent implements OnInit {
     const userId = this.authService.getUserId();
     if (userId) {
       this.currentUser$ = this.farmManagementService.getUser(userId);
+      this.currentUser$.subscribe(user => {
+        if (user && user.client_log_level) {
+          this.logger.setLogLevel(user.client_log_level);
+        }
+      });
     }
 
     this.farms$ = this.farmManagementService.getFarms().pipe(

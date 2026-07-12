@@ -14,7 +14,7 @@ pub async fn list_users(State(state): State<AppState>) -> Result<Json<Vec<User>>
     }
 
     let users =
-        sqlx::query_as::<_, User>("SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id GROUP BY u.id")
+        sqlx::query_as::<_, User>("SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, u.client_log_level, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id GROUP BY u.id")
             .fetch_all(&state.db_pool)
             .await;
     Ok(Json(users?))
@@ -26,8 +26,9 @@ pub async fn create_user(
     Json(user): Json<User>,
 ) -> Result<Json<User>, AppError> {
     let mut tx = state.db_pool.begin().await?;
+    let log_level = if user.client_log_level.is_empty() { "INFO" } else { &user.client_log_level };
     let new_user: User = sqlx::query_as(
-        "INSERT INTO users (name, email, role, phone, description, is_suspended) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, name, email, role, phone, description, is_suspended, NULL AS modules",
+        "INSERT INTO users (name, email, role, phone, description, is_suspended, client_log_level) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, name, email, role, phone, description, is_suspended, client_log_level, NULL AS modules",
     )
     .bind(&user.name)
     .bind(&user.email)
@@ -35,6 +36,7 @@ pub async fn create_user(
     .bind(&user.phone)
     .bind(&user.description)
     .bind(user.is_suspended)
+    .bind(log_level)
     .fetch_one(&mut *tx)
     .await?;
 
@@ -66,7 +68,7 @@ pub async fn get_user(
     axum::extract::Path(id): axum::extract::Path<i64>,
 ) -> Result<Json<User>, AppError> {
     let user = sqlx::query_as::<_, User>(
-        "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.id = $1 GROUP BY u.id",
+        "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, u.client_log_level, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.id = $1 GROUP BY u.id",
     )
     .bind(id)
     .fetch_one(&state.db_pool)
@@ -82,8 +84,10 @@ pub async fn update_user(
 ) -> Result<Json<User>, AppError> {
     let mut tx = state.db_pool.begin().await?;
 
+    let log_level = if user.client_log_level.is_empty() { "INFO" } else { &user.client_log_level };
+
     sqlx::query(
-        "UPDATE users SET name = $1, email = $2, role = $3, phone = $4, description = $5, is_suspended = $6 WHERE id = $7",
+        "UPDATE users SET name = $1, email = $2, role = $3, phone = $4, description = $5, is_suspended = $6, client_log_level = $7 WHERE id = $8",
     )
     .bind(&user.name)
     .bind(&user.email)
@@ -91,6 +95,7 @@ pub async fn update_user(
     .bind(&user.phone)
     .bind(&user.description)
     .bind(user.is_suspended)
+    .bind(log_level)
     .bind(id)
     .execute(&mut *tx)
     .await?;

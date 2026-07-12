@@ -7,4 +7,5 @@ export interface User {
   description?: string;
   is_suspended?: boolean;
   modules?: string[] | null;
+  client_log_level?: string;
 }

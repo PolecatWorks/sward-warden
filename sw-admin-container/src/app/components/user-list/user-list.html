@@ -23,6 +23,7 @@
           <th>Role</th>
           <th>Suspended</th>
           <th>Modules</th>
+          <th>Log Level</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -51,6 +52,14 @@
             <button class="btn-small" (click)="toggleModule(user, 'reports_and_analysis')">
               Toggle Reports
             </button>
+          </td>
+          <td>
+            <select [value]="user.client_log_level || 'INFO'" (change)="updateLogLevel(user, $event)">
+              <option value="DEBUG">DEBUG</option>
+              <option value="INFO">INFO</option>
+              <option value="WARN">WARN</option>
+              <option value="ERROR">ERROR</option>
+            </select>
           </td>
           <td>
             <button class="btn-icon" title="Edit">Edit</button>
