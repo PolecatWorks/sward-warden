@@ -31,6 +31,7 @@ Evaluating the slope and elevation of a field is critical for determining runoff
 
 ## 4. Intelligent Optimization Engine
 - **Nutrient Calculation:** Suggest optimal application rates based on crop needs, soil analysis, and manure nutrient content.
+  - *Technical Debt:* The nutrient calculation currently omits a check for the soil test date because `soil_test_date` is not in the `Field` model. Future implementation requires adding this field to the database schema (`fields` table), the `Field` model in the backend, and updating the frontend forms to include it.
 - **Strategic Planning:** Identify the best fields for application to maximize nutrient uptake and minimize runoff risk.
 - **Weather Integration:**
   - Incorporate live/forecast weather data (initially static datasets, transitioning to APIs).

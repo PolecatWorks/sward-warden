@@ -34,7 +34,9 @@ impl OptimizationEngine {
                 }
             }
 
-            // Simplified: ignore soil test date for now as it's not in the Field model
+            // TODO: The soil test date check is currently missing because `soil_test_date` is not in the `Field` model.
+            // Addressing this requires modifying the `Field` model, the database schema (adding the column to the `fields` table),
+            // and the frontend forms to include a soil test date field. This affects multiple systems and is tracked as technical debt.
             score += 0.1;
 
             suggestions.push(OptimizationSuggestion {
