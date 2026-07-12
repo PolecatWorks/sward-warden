@@ -57,6 +57,7 @@ pub struct DebuggingConfig {
     pub fail_debug_delay: Duration,
     pub environment: String,
     pub enable_dev_auth: bool,
+    pub log_level: String,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -212,6 +213,7 @@ mod tests {
         writeln!(file, "  fail_debug_delay: 0s").unwrap();
         writeln!(file, "  environment: testing").unwrap();
         writeln!(file, "  enable_dev_auth: false").unwrap();
+        writeln!(file, "  log_level: info").unwrap();
 
         let config = AppConfig::load(&test_config_path, &test_dir).unwrap();
 

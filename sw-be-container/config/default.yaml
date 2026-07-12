@@ -28,3 +28,4 @@ debugging:
   enable_dev_auth: true
   fail_debug_delay: 0s
   environment: "development"
+  log_level: "info"

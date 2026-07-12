@@ -16,7 +16,7 @@ This document defines the overarching application architecture for the sward man
 - **Application State (`AppState`):** Centralized strongly-typed state, injected into Axum handlers. Holds application configuration, Telemetry, and connection pools for PostgreSQL.
 - **App Framework & CLI:**
   - Application configuration is via YAML files, with secret files and environment variable overrides using `figment`.
-  - Application must fail fast if required configurations are missing or malformed (no default fallbacks, such as using `#[serde(default)]` or custom default deserializers; all configuration properties must be explicitly provided in configuration sources).
+  - Application must fail fast if required configurations are missing or malformed (no default fallbacks, such as using `#[serde(default)]` or custom default deserializers; all configuration properties must be explicitly provided in configuration sources). The logging level must be explicitly defined in this configuration and loaded on start.
   - Application binary must feature CLI parsing: `serve`, `version`, `migrate`.
 - **Concurrency & Web Server:**
   - Explicit Tokio runtime configuration via a `ThreadRuntime` struct (controlling thread count, stack size, and naming).
