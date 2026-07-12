@@ -68,4 +68,21 @@ export class UserListComponent implements OnInit {
       }
     });
   }
+
+  updateLogLevel(user: User, event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    const newLevel = select.value;
+    const updatedUser = { ...user, client_log_level: newLevel };
+
+    this.userService.updateUser(user.id, updatedUser).subscribe({
+      next: (updated) => {
+        this.users.update(users => users.map(u => u.id === updated.id ? updated : u));
+      },
+      error: (err) => {
+        console.error('Failed to update client_log_level', err);
+        // revert select visually on error
+        select.value = user.client_log_level || 'INFO';
+      }
+    });
+  }
 }

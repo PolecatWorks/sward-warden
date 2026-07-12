@@ -9,6 +9,7 @@ export interface User {
   role: 'user' | 'support' | 'admin';
   is_suspended?: boolean;
   modules?: string[];
+  client_log_level?: string;
 }
 
 @Injectable({
