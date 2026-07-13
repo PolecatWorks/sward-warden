@@ -55,9 +55,11 @@ pub fn validate_fertiliser_application(
 pub fn validate_organic_manure_application(
     event: &Event,
     app: &OrganicManureApplication,
-    _field: &Field,
+    field: &Field,
     farm: &Farm,
     previous_apps: &[Event], // Used for 3-week gap rule
+    farm_agricultural_area: f64,
+    farm_year_manure_apps: &[(OrganicManureApplication, Field)], // All apps for the farm in the current calendar year
 ) -> ValidationResult {
     let date = NaiveDate::parse_from_str(&event.date, "%Y-%m-%d")
         .unwrap_or_else(|_| Utc::now().date_naive());
@@ -121,24 +123,52 @@ pub fn validate_organic_manure_application(
         }
     }
 
-    // 5. Nitrogen Loading (Simplified check for this application)
-    let limit = if farm.has_derogation.unwrap_or(false) {
-        250.0
-    } else {
-        170.0
-    };
-    if let Some(n_content) = app.nitrogen_content_kg_per_unit {
-        let total_n = if let Some(vol) = app.volume_applied_m3_per_ha {
-            vol * n_content
-        } else if let Some(weight) = app.weight_applied_tonnes_per_ha {
-            weight * n_content
+    // 5. Nitrogen Loading
+    // Calculate cumulative N loading across the entire farm for the calendar year
+    if farm_agricultural_area > 0.0 {
+        let limit = if farm.has_derogation.unwrap_or(false) {
+            250.0
         } else {
-            0.0
+            170.0
         };
-        if total_n > limit {
+
+        // Helper to calculate total N applied in kg for a given application and field
+        let calculate_total_n_kg = |manure_app: &OrganicManureApplication, app_field: &Field| -> f64 {
+            if let Some(n_content) = manure_app.nitrogen_content_kg_per_unit {
+                if let Some(vol) = manure_app.volume_applied_m3_per_ha {
+                    vol * n_content * app_field.area_hectares
+                } else if let Some(weight) = manure_app.weight_applied_tonnes_per_ha {
+                    weight * n_content * app_field.area_hectares
+                } else {
+                    0.0
+                }
+            } else {
+                0.0
+            }
+        };
+
+        // Sum N from all previous applications in the year
+        let mut total_n_kg_year = 0.0;
+        for (prev_app, prev_field) in farm_year_manure_apps {
+            // Only count if it's not the same application we're currently processing
+            if let Some(id) = prev_app.id {
+                if app.id != Some(id) {
+                    total_n_kg_year += calculate_total_n_kg(prev_app, prev_field);
+                }
+            } else {
+                total_n_kg_year += calculate_total_n_kg(prev_app, prev_field);
+            }
+        }
+
+        // Add the current application
+        total_n_kg_year += calculate_total_n_kg(app, field);
+
+        let cumulative_n_per_ha = total_n_kg_year / farm_agricultural_area;
+
+        if cumulative_n_per_ha > limit {
             return ValidationResult::Invalid(format!(
-                "Application exceeds Nitrogen loading limit of {} kg N/ha/year.",
-                limit
+                "Application exceeds farm-wide Nitrogen loading limit. With this application, the farm average would be {:.1} kg N/ha/year, which exceeds the limit of {} kg N/ha/year.",
+                cumulative_n_per_ha, limit
             ));
         }
     }

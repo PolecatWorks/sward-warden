@@ -88,9 +88,17 @@ pub fn app_router(state: AppState) -> Router {
                 .post(applications::create_organic_manure_application),
         )
         .route(
+            "/v0/organic-manure-applications/{id}",
+            put(applications::update_organic_manure_application),
+        )
+        .route(
             "/v0/organic_manure_applications",
             get(applications::list_organic_manure_applications)
                 .post(applications::create_organic_manure_application),
+        )
+        .route(
+            "/v0/organic_manure_applications/{id}",
+            put(applications::update_organic_manure_application),
         )
         .route(
             "/v0/compliance-breaches",
