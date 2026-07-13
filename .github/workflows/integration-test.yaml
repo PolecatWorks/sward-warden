@@ -287,9 +287,14 @@ jobs:
       - name: Extract Test Results
         if: always()
         run: |
-          NAMESPACE="sward-warden-pr-${{ env.PR_NUMBER }}"
           mkdir -p ./robot-results
-          kubectl cp $NAMESPACE/robot-test-runner:/tmp/reports ./robot-results || echo "Failed to copy test results"
+          if [ -d "integration-tests/reports" ] && [ "$(ls -A integration-tests/reports)" ]; then
+            cp -r integration-tests/reports/* ./robot-results/
+          else
+            echo "Warning: integration-tests/reports is empty or does not exist."
+            NAMESPACE="sward-warden-pr-${{ env.PR_NUMBER }}"
+            kubectl cp $NAMESPACE/robot-test-runner:/tmp/reports ./robot-results || echo "Failed to copy test results"
+          fi
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
