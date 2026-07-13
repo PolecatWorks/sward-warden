@@ -397,8 +397,18 @@ export class FieldViewComponent implements OnInit {
   }
 
   // PRD Reference: 0003
+  showNapRulesModal: boolean = false;
+
   toggleOrganicManureForm(): void {
     this.showOrganicManureForm = !this.showOrganicManureForm;
+  }
+
+  toggleNapRulesModal(event?: MouseEvent): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.showNapRulesModal = !this.showNapRulesModal;
   }
 
   // PRD Reference: 0003

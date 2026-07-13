@@ -545,16 +545,88 @@
       </div>
     </div>
 
+    <!-- DAERA NAP Rules Modal -->
+    <div
+      *ngIf="showNapRulesModal"
+      class="fixed inset-0 z-[60] flex items-center justify-center bg-black bg-opacity-50 p-4"
+    >
+      <div class="bg-surface rounded-xl shadow-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-headline font-bold text-xl text-on-surface">
+            DAERA NAP Limits
+          </h3>
+          <button
+            (click)="toggleNapRulesModal()"
+            class="text-on-surface-variant hover:text-error"
+          >
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div class="space-y-4 text-sm text-on-surface">
+          <p>
+            The Nitrates Action Programme (NAP) limits the amount of nitrogen from livestock manure that can be applied to land.
+          </p>
+          <div class="bg-surface-container-low p-4 rounded-lg border border-outline-variant">
+            <h4 class="font-bold mb-2">Standard vs Derogation Limits</h4>
+            <div class="flex items-center gap-4 mb-2">
+              <div class="flex-1 bg-surface-variant h-4 rounded-full overflow-hidden flex">
+                <div class="bg-primary w-[68%] h-full"></div>
+              </div>
+              <span class="font-mono text-xs w-24">170 kg N/ha</span>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="flex-1 bg-surface-variant h-4 rounded-full overflow-hidden flex">
+                <div class="bg-tertiary w-full h-full"></div>
+              </div>
+              <span class="font-mono text-xs w-24">250 kg N/ha</span>
+            </div>
+            <p class="text-xs text-on-surface-variant mt-2">
+              Standard farms: <strong>170 kg N/ha/year</strong>. Farms with an approved NIEA derogation: <strong>250 kg N/ha/year</strong>.
+            </p>
+          </div>
+
+          <div>
+            <h4 class="font-bold mb-1">How is this calculated?</h4>
+            <p class="text-xs text-on-surface-variant">
+              The limit is aggregated across your entire farm for the calendar year.
+              Total nitrogen from all manure/slurry applications is divided by the farm's total eligible agricultural area.
+              If a new application causes the farm's cumulative average to exceed the limit, it will be rejected.
+            </p>
+          </div>
+        </div>
+
+        <div class="pt-6 flex justify-end">
+          <button
+            (click)="toggleNapRulesModal()"
+            class="px-4 py-2 bg-primary text-on-primary font-medium rounded-md hover:bg-primary/90"
+          >
+            Understood
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Organic Manure Application Form Modal -->
     <div
       *ngIf="showOrganicManureForm"
       class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
     >
       <div class="bg-surface rounded-xl shadow-2xl p-6 w-full max-w-md">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="font-headline font-bold text-xl text-on-surface">
-            Log Organic Manure
-          </h3>
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <h3 class="font-headline font-bold text-xl text-on-surface">
+              Log Organic Manure
+            </h3>
+            <button
+              type="button"
+              (click)="toggleNapRulesModal($event)"
+              class="text-xs text-primary font-medium hover:underline flex items-center gap-1 mt-1"
+            >
+              <span class="material-symbols-outlined text-[14px]">info</span>
+              View NAP N-Loading Rules
+            </button>
+          </div>
           <button
             (click)="toggleOrganicManureForm()"
             class="text-on-surface-variant hover:text-error"
