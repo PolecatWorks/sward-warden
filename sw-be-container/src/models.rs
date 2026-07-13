@@ -24,6 +24,7 @@ pub struct User {
     #[serde(default)]
     pub is_suspended: bool,
     pub modules: Option<Vec<String>>,
+    #[serde(default)]
     pub client_log_level: String,
 }
 

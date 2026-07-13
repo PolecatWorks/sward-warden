@@ -26,11 +26,26 @@ pub async fn receive_client_logs(
         };
 
         match log.level.to_uppercase().as_str() {
-            "DEBUG" => debug!("client_log user_id={} message=\"{}\" timestamp={}{}", user_id, log.message, log.timestamp, metadata_str),
-            "INFO" => info!("client_log user_id={} message=\"{}\" timestamp={}{}", user_id, log.message, log.timestamp, metadata_str),
-            "WARN" => warn!("client_log user_id={} message=\"{}\" timestamp={}{}", user_id, log.message, log.timestamp, metadata_str),
-            "ERROR" => error!("client_log user_id={} message=\"{}\" timestamp={}{}", user_id, log.message, log.timestamp, metadata_str),
-            _ => info!("client_log user_id={} level={} message=\"{}\" timestamp={}{}", user_id, log.level, log.message, log.timestamp, metadata_str),
+            "DEBUG" => debug!(
+                "client_log user_id={} message=\"{}\" timestamp={}{}",
+                user_id, log.message, log.timestamp, metadata_str
+            ),
+            "INFO" => info!(
+                "client_log user_id={} message=\"{}\" timestamp={}{}",
+                user_id, log.message, log.timestamp, metadata_str
+            ),
+            "WARN" => warn!(
+                "client_log user_id={} message=\"{}\" timestamp={}{}",
+                user_id, log.message, log.timestamp, metadata_str
+            ),
+            "ERROR" => error!(
+                "client_log user_id={} message=\"{}\" timestamp={}{}",
+                user_id, log.message, log.timestamp, metadata_str
+            ),
+            _ => info!(
+                "client_log user_id={} level={} message=\"{}\" timestamp={}{}",
+                user_id, log.level, log.message, log.timestamp, metadata_str
+            ),
         }
     }
 
