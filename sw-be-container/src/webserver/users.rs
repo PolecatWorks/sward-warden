@@ -26,7 +26,11 @@ pub async fn create_user(
     Json(user): Json<User>,
 ) -> Result<Json<User>, AppError> {
     let mut tx = state.db_pool.begin().await?;
-    let log_level = if user.client_log_level.is_empty() { "INFO" } else { &user.client_log_level };
+    let log_level = if user.client_log_level.is_empty() {
+        "INFO"
+    } else {
+        &user.client_log_level
+    };
     let new_user: User = sqlx::query_as(
         "INSERT INTO users (name, email, role, phone, description, is_suspended, client_log_level) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, name, email, role, phone, description, is_suspended, client_log_level, NULL AS modules",
     )
@@ -52,7 +56,7 @@ pub async fn create_user(
     tx.commit().await?;
 
     let final_user = sqlx::query_as::<_, User>(
-        "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.id = $1 GROUP BY u.id",
+        "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, u.client_log_level, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.id = $1 GROUP BY u.id",
     )
     .bind(new_user.id)
     .fetch_one(&state.db_pool)
@@ -84,7 +88,11 @@ pub async fn update_user(
 ) -> Result<Json<User>, AppError> {
     let mut tx = state.db_pool.begin().await?;
 
-    let log_level = if user.client_log_level.is_empty() { "INFO" } else { &user.client_log_level };
+    let log_level = if user.client_log_level.is_empty() {
+        "INFO"
+    } else {
+        &user.client_log_level
+    };
 
     sqlx::query(
         "UPDATE users SET name = $1, email = $2, role = $3, phone = $4, description = $5, is_suspended = $6, client_log_level = $7 WHERE id = $8",
@@ -117,7 +125,7 @@ pub async fn update_user(
     tx.commit().await?;
 
     let updated_user = sqlx::query_as::<_, User>(
-        "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.id = $1 GROUP BY u.id",
+        "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, u.client_log_level, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.id = $1 GROUP BY u.id",
     )
     .bind(id)
     .fetch_one(&state.db_pool)

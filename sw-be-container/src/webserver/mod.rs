@@ -7,9 +7,9 @@ pub mod events;
 pub mod farms;
 pub mod fields;
 pub mod inventory;
+pub mod logs;
 pub mod movements;
 pub mod optimization;
-pub mod logs;
 pub mod spatial;
 pub mod sync;
 pub mod users;
@@ -153,7 +153,10 @@ pub fn app_router(state: AppState) -> Router {
             "/v0/inventory-storage/{id}",
             put(inventory::update_inventory_storage).delete(inventory::delete_inventory_storage),
         )
-        .route("/v0/client-logs", axum::routing::post(logs::receive_client_logs));
+        .route(
+            "/v0/client-logs",
+            axum::routing::post(logs::receive_client_logs),
+        );
 
     if state.config.debugging.enable_dev_auth {
         router = router
