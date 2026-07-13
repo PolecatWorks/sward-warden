@@ -71,7 +71,8 @@ mod tests {
             is_deleted: Some(false),
         };
 
-        let result = validate_organic_manure_application(&event, &app, &field, &farm, &[], 10.0, &[]);
+        let result =
+            validate_organic_manure_application(&event, &app, &field, &farm, &[], 10.0, &[]);
         match result {
             ValidationResult::Invalid(reason) => assert!(reason.contains("LESSE) is required")),
             _ => panic!("Expected validation failure for missing pig slurry LESSE exemption"),
@@ -112,7 +113,8 @@ mod tests {
             is_deleted: Some(false),
         };
 
-        let result = validate_organic_manure_application(&event, &app, &field, &farm, &[], 10.0, &[]);
+        let result =
+            validate_organic_manure_application(&event, &app, &field, &farm, &[], 10.0, &[]);
         assert!(matches!(result, ValidationResult::Valid));
     }
 
@@ -158,7 +160,15 @@ mod tests {
             name: "Other Field".to_string(),
             area_hectares: 10.0,
             land_use: Some("grassland".to_string()),
-            min_elevation: None, max_elevation: None, mean_elevation: None, average_slope: None, max_slope: None, geometry_geojson: None, updated_at: None, image_url: None, is_deleted: Some(false),
+            min_elevation: None,
+            max_elevation: None,
+            mean_elevation: None,
+            average_slope: None,
+            max_slope: None,
+            geometry_geojson: None,
+            updated_at: None,
+            image_url: None,
+            is_deleted: Some(false),
         };
         let prev_app = OrganicManureApplication {
             id: Some(1),
@@ -180,7 +190,15 @@ mod tests {
 
         // Farm total area is 20 ha (10 + 10). Limit is 170 * 20 = 3400 kg N
         // Total N = 1000 + 1500 = 2500 kg N. (2500 / 20 = 125 kg N/ha, so it should pass)
-        let result_pass = validate_organic_manure_application(&event, &app, &field, &farm, &[], 20.0, &[(prev_app.clone(), prev_field.clone())]);
+        let result_pass = validate_organic_manure_application(
+            &event,
+            &app,
+            &field,
+            &farm,
+            &[],
+            20.0,
+            &[(prev_app.clone(), prev_field.clone())],
+        );
         assert!(matches!(result_pass, ValidationResult::Valid));
 
         // Now let's try an application that pushes it over the limit
@@ -190,13 +208,21 @@ mod tests {
             ..app
         };
 
-        let result_fail = validate_organic_manure_application(&event, &huge_app, &field, &farm, &[], 20.0, &[(prev_app, prev_field)]);
+        let result_fail = validate_organic_manure_application(
+            &event,
+            &huge_app,
+            &field,
+            &farm,
+            &[],
+            20.0,
+            &[(prev_app, prev_field)],
+        );
         match result_fail {
             ValidationResult::Invalid(reason) => {
                 if !reason.contains("exceeds farm-wide Nitrogen loading limit") {
                     panic!("Validation failed but for wrong reason: {}", reason);
                 }
-            },
+            }
             _ => panic!("Expected validation failure for exceeding farm-wide N loading"),
         }
     }
@@ -235,7 +261,8 @@ mod tests {
             is_deleted: Some(false),
         };
 
-        let result = validate_organic_manure_application(&event, &app, &field, &farm, &[], 10.0, &[]);
+        let result =
+            validate_organic_manure_application(&event, &app, &field, &farm, &[], 10.0, &[]);
         match result {
             ValidationResult::Invalid(reason) => assert!(reason.contains("LESSE) is required")),
             _ => panic!(
