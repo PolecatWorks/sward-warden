@@ -178,7 +178,11 @@ pub async fn create_organic_manure_application(
     // Determine the calendar year of the event
     let event_date = chrono::NaiveDate::parse_from_str(&event.date, "%Y-%m-%d")
         .unwrap_or_else(|_| chrono::Utc::now().date_naive());
-    let year = event_date.format("%Y").to_string().parse::<i32>().unwrap_or(0);
+    let year = event_date
+        .format("%Y")
+        .to_string()
+        .parse::<i32>()
+        .unwrap_or(0);
 
     // Fetch agricultural area from farm_records, or fallback to sum of field areas
     let farm_record = sqlx::query_scalar::<_, f64>(
@@ -193,7 +197,7 @@ pub async fn create_organic_manure_application(
         Some(area) => area,
         None => {
             let sum = sqlx::query_scalar::<_, Option<f64>>(
-                "SELECT SUM(area_hectares) FROM fields WHERE farm_id = $1 AND is_deleted = FALSE"
+                "SELECT SUM(area_hectares) FROM fields WHERE farm_id = $1 AND is_deleted = FALSE",
             )
             .bind(farm.id)
             .fetch_one(&state.db_pool)
@@ -208,7 +212,7 @@ pub async fn create_organic_manure_application(
 
     // Use query_as instead of the query! macro since we don't have offline compile checks setup here
     let year_apps_records_apps = sqlx::query_as::<_, OrganicManureApplication>(
-        "SELECT oma.id, oma.event_id, oma.manure_type, oma.volume_applied_m3_per_ha, oma.weight_applied_tonnes_per_ha, oma.nitrogen_content_kg_per_unit, oma.is_lesse_applied, oma.weather_conditions_confirmed, oma.buffer_zone_distance_meters, oma.updated_at, oma.is_deleted, oma.equipment_used, oma.lesse_exemption_reason, oma.geometry_geojson FROM organic_manure_applications oma JOIN events e ON oma.event_id = e.id JOIN fields f ON e.field_id = f.id WHERE f.farm_id = $1 AND e.date LIKE $2 AND oma.is_deleted = FALSE AND e.is_deleted = FALSE AND f.is_deleted = FALSE"
+        "SELECT oma.id, oma.event_id, oma.manure_type, oma.volume_applied_m3_per_ha, oma.weight_applied_tonnes_per_ha, oma.nitrogen_content_kg_per_unit, oma.is_lesse_applied, oma.weather_conditions_confirmed, oma.buffer_zone_distance_meters, oma.updated_at, oma.is_deleted, oma.equipment_used, oma.lesse_exemption_reason FROM organic_manure_applications oma JOIN events e ON oma.event_id = e.id JOIN fields f ON e.field_id = f.id WHERE f.farm_id = $1 AND e.date LIKE $2 AND oma.is_deleted = FALSE AND e.is_deleted = FALSE AND f.is_deleted = FALSE"
     )
     .bind(farm.id)
     .bind(format!("{}%", year_str))
@@ -227,8 +231,15 @@ pub async fn create_organic_manure_application(
         farm_year_manure_apps.push((app_record, field_record));
     }
 
-
-    match validate_organic_manure_application(&event, &app, &field, &farm, &previous_apps, farm_agricultural_area, &farm_year_manure_apps) {
+    match validate_organic_manure_application(
+        &event,
+        &app,
+        &field,
+        &farm,
+        &previous_apps,
+        farm_agricultural_area,
+        &farm_year_manure_apps,
+    ) {
         ValidationResult::Valid => (),
         ValidationResult::Invalid(reason) => return Err(AppError::BadRequest(reason)),
     }
@@ -266,7 +277,8 @@ pub async fn update_organic_manure_application(
         .bind(user_id)
         .fetch_one(&state.db_pool)
         .await?;
-    let is_admin = user.role == crate::models::Role::Admin || user.role == crate::models::Role::Support;
+    let is_admin =
+        user.role == crate::models::Role::Admin || user.role == crate::models::Role::Support;
 
     // Verify ownership
     let belongs = sqlx::query_scalar::<_, bool>(
@@ -331,7 +343,11 @@ pub async fn update_organic_manure_application(
     // Determine the calendar year of the event
     let event_date = chrono::NaiveDate::parse_from_str(&event.date, "%Y-%m-%d")
         .unwrap_or_else(|_| chrono::Utc::now().date_naive());
-    let year = event_date.format("%Y").to_string().parse::<i32>().unwrap_or(0);
+    let year = event_date
+        .format("%Y")
+        .to_string()
+        .parse::<i32>()
+        .unwrap_or(0);
 
     // Fetch agricultural area from farm_records, or fallback to sum of field areas
     let farm_record = sqlx::query_scalar::<_, f64>(
@@ -346,7 +362,7 @@ pub async fn update_organic_manure_application(
         Some(area) => area,
         None => {
             let sum = sqlx::query_scalar::<_, Option<f64>>(
-                "SELECT SUM(area_hectares) FROM fields WHERE farm_id = $1 AND is_deleted = FALSE"
+                "SELECT SUM(area_hectares) FROM fields WHERE farm_id = $1 AND is_deleted = FALSE",
             )
             .bind(farm.id)
             .fetch_one(&state.db_pool)
@@ -361,7 +377,7 @@ pub async fn update_organic_manure_application(
 
     // Use query_as instead of the query! macro since we don't have offline compile checks setup here
     let year_apps_records_apps = sqlx::query_as::<_, OrganicManureApplication>(
-        "SELECT oma.id, oma.event_id, oma.manure_type, oma.volume_applied_m3_per_ha, oma.weight_applied_tonnes_per_ha, oma.nitrogen_content_kg_per_unit, oma.is_lesse_applied, oma.weather_conditions_confirmed, oma.buffer_zone_distance_meters, oma.updated_at, oma.is_deleted, oma.equipment_used, oma.lesse_exemption_reason, oma.geometry_geojson FROM organic_manure_applications oma JOIN events e ON oma.event_id = e.id JOIN fields f ON e.field_id = f.id WHERE f.farm_id = $1 AND e.date LIKE $2 AND oma.is_deleted = FALSE AND e.is_deleted = FALSE AND f.is_deleted = FALSE"
+        "SELECT oma.id, oma.event_id, oma.manure_type, oma.volume_applied_m3_per_ha, oma.weight_applied_tonnes_per_ha, oma.nitrogen_content_kg_per_unit, oma.is_lesse_applied, oma.weather_conditions_confirmed, oma.buffer_zone_distance_meters, oma.updated_at, oma.is_deleted, oma.equipment_used, oma.lesse_exemption_reason FROM organic_manure_applications oma JOIN events e ON oma.event_id = e.id JOIN fields f ON e.field_id = f.id WHERE f.farm_id = $1 AND e.date LIKE $2 AND oma.is_deleted = FALSE AND e.is_deleted = FALSE AND f.is_deleted = FALSE"
     )
     .bind(farm.id)
     .bind(format!("{}%", year_str))
@@ -380,14 +396,21 @@ pub async fn update_organic_manure_application(
         farm_year_manure_apps.push((app_record, field_record));
     }
 
-
-    match validate_organic_manure_application(&event, &app, &field, &farm, &previous_apps, farm_agricultural_area, &farm_year_manure_apps) {
+    match validate_organic_manure_application(
+        &event,
+        &app,
+        &field,
+        &farm,
+        &previous_apps,
+        farm_agricultural_area,
+        &farm_year_manure_apps,
+    ) {
         ValidationResult::Valid => (),
         ValidationResult::Invalid(reason) => return Err(AppError::BadRequest(reason)),
     }
 
     let updated_app = sqlx::query_as::<_, OrganicManureApplication>(
-        "UPDATE organic_manure_applications SET event_id = $1, manure_type = $2, volume_applied_m3_per_ha = $3, weight_applied_tonnes_per_ha = $4, nitrogen_content_kg_per_unit = $5, is_lesse_applied = $6, weather_conditions_confirmed = $7, buffer_zone_distance_meters = $8, equipment_used = $9, lesse_exemption_reason = $10, updated_at = NOW() WHERE id = $11 RETURNING id, event_id, manure_type, volume_applied_m3_per_ha, weight_applied_tonnes_per_ha, nitrogen_content_kg_per_unit, is_lesse_applied, weather_conditions_confirmed, buffer_zone_distance_meters, updated_at, is_deleted, equipment_used, lesse_exemption_reason, geometry_geojson"
+        "UPDATE organic_manure_applications SET event_id = $1, manure_type = $2, volume_applied_m3_per_ha = $3, weight_applied_tonnes_per_ha = $4, nitrogen_content_kg_per_unit = $5, is_lesse_applied = $6, weather_conditions_confirmed = $7, buffer_zone_distance_meters = $8, equipment_used = $9, lesse_exemption_reason = $10, updated_at = NOW() WHERE id = $11 RETURNING id, event_id, manure_type, volume_applied_m3_per_ha, weight_applied_tonnes_per_ha, nitrogen_content_kg_per_unit, is_lesse_applied, weather_conditions_confirmed, buffer_zone_distance_meters, updated_at, is_deleted, equipment_used, lesse_exemption_reason"
     )
     .bind(app.event_id)
     .bind(&app.manure_type)

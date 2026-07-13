@@ -133,19 +133,20 @@ pub fn validate_organic_manure_application(
         };
 
         // Helper to calculate total N applied in kg for a given application and field
-        let calculate_total_n_kg = |manure_app: &OrganicManureApplication, app_field: &Field| -> f64 {
-            if let Some(n_content) = manure_app.nitrogen_content_kg_per_unit {
-                if let Some(vol) = manure_app.volume_applied_m3_per_ha {
-                    vol * n_content * app_field.area_hectares
-                } else if let Some(weight) = manure_app.weight_applied_tonnes_per_ha {
-                    weight * n_content * app_field.area_hectares
+        let calculate_total_n_kg =
+            |manure_app: &OrganicManureApplication, app_field: &Field| -> f64 {
+                if let Some(n_content) = manure_app.nitrogen_content_kg_per_unit {
+                    if let Some(vol) = manure_app.volume_applied_m3_per_ha {
+                        vol * n_content * app_field.area_hectares
+                    } else if let Some(weight) = manure_app.weight_applied_tonnes_per_ha {
+                        weight * n_content * app_field.area_hectares
+                    } else {
+                        0.0
+                    }
                 } else {
                     0.0
                 }
-            } else {
-                0.0
-            }
-        };
+            };
 
         // Sum N from all previous applications in the year
         let mut total_n_kg_year = 0.0;
