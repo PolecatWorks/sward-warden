@@ -18,6 +18,13 @@ spec:
             command: ["/bin/bash", "-c", "sleep infinity"]
             securityContext:
               runAsUser: 1001
+            resources:
+              requests:
+                cpu: 500m
+                memory: 1Gi
+              limits:
+                cpu: "2"
+                memory: 4Gi
 
 ---
 kind: Test
