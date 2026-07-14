@@ -8,7 +8,6 @@ import { Farm } from '../models/farm';
 import { Observable, BehaviorSubject, of, combineLatest } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { RxdbService } from '../services/rxdb/rxdb.service';
-import { LoggerService } from '../services/logger.service';
 import { InventoryStorageDocType } from '../services/rxdb/schemas';
 import { LoggerService } from '../services/logger.service';
 
