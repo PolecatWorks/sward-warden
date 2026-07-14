@@ -27,3 +27,4 @@ debugging:
   fail_debug_delay: 0s
   environment: "production"
   enable_dev_auth: false
+  log_level: "info"
