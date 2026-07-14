@@ -9,7 +9,7 @@ This specification defines the optimization of the GitHub Pages checkout and dep
 1. **Initialize Repositories Sparsely**:
    - Rather than using `git clone` for the full `gh-pages` branch, initialize an empty repository and set the origin.
    - Enable `core.sparseCheckout`.
-   - Use `git sparse-checkout set "$TARGET_DIR" "pr/*/.timestamp"` to check out only the target path (e.g., `pr/123` or `main`) and the timestamps of other PRs for pruning.
+   - Use `git sparse-checkout init --no-cone` and `git sparse-checkout set "$TARGET_DIR" "pr/*/.timestamp"` to check out only the target path (e.g., `pr/123` or `main`) and the timestamps of other PRs for pruning. Non-cone mode is required to support wildcard patterns.
 2. **Shallow Fetch**:
    - Fetch the branch with `--depth 1` to minimize fetched pack sizes.
 3. **Report Pruning**:

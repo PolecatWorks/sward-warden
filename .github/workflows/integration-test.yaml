@@ -327,7 +327,7 @@ jobs:
 
           # Enable sparse checkout
           git config core.sparseCheckout true
-          git sparse-checkout init --cone
+          git sparse-checkout init --no-cone
 
           # Configure it to only track the target directory and all .timestamp files (for pruning checks)
           git sparse-checkout set "$TARGET_DIR" "pr/*/.timestamp"
