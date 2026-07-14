@@ -111,6 +111,8 @@ spec:
         fail_debug_delay: 60s
         environment: "development"
         enable_dev_auth: true
+        log_level: "info"
+
 
     volumes:
       - name: config
