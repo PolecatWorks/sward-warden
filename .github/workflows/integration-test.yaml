@@ -319,8 +319,23 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Clone gh-pages branch in a separate folder
-          git clone --branch gh-pages https://x-token-auth:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages-repo
+          # Initialize a repository for sparse checkout
+          mkdir gh-pages-repo
+          cd gh-pages-repo
+          git init
+          git remote add origin https://x-token-auth:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
+          # Enable sparse checkout
+          git config core.sparseCheckout true
+          git sparse-checkout init --cone
+
+          # Configure it to only track the target directory and all .timestamp files (for pruning checks)
+          git sparse-checkout set "$TARGET_DIR" "pr/*/.timestamp"
+
+          # Fetch only the gh-pages branch with depth 1 to speed up checkout
+          git fetch --depth 1 origin gh-pages
+          git checkout gh-pages
+          cd ..
 
           # Run a retry loop for copying, committing, and pushing
           for i in {1..5}; do
@@ -332,7 +347,7 @@ jobs:
             cp -r ./robot-results/* gh-pages-repo/$TARGET_DIR/ || true
             date +%s > gh-pages-repo/$TARGET_DIR/.timestamp
 
-            # Prune PR reports older than 7 days using Python
+            # Prune PR reports older than 7 days using Python (still works because we checked out pr/*/.timestamp)
             python3 -c 'import sys, textwrap; exec(textwrap.dedent(sys.argv[1]))' '
             import os, time, shutil
             now = time.time()
