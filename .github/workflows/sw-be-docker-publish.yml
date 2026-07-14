@@ -341,12 +341,62 @@ jobs:
         run: cargo doc --no-deps
 
       - name: Publish to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./sw-be-container/target/doc
-          destination_dir: docs/rust
-          keep_files: true
+        run: |
+          # Configure Git
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Initialize a repository for sparse checkout
+          mkdir gh-pages-repo
+          cd gh-pages-repo
+          git init
+          git remote add origin https://x-token-auth:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
+          # Enable sparse checkout
+          git config core.sparseCheckout true
+          git sparse-checkout init --no-cone
+
+          # Configure it to only track the docs/rust directory
+          git sparse-checkout set "docs/rust"
+
+          # Fetch only the gh-pages branch with depth 1 to speed up checkout
+          git fetch --depth 1 origin gh-pages
+          git checkout gh-pages
+          cd ..
+
+          # Run a retry loop for copying, committing, and pushing
+          for i in {1..5}; do
+            echo "Attempt $i to publish Rust docs..."
+
+            # Clean and update the docs/rust dir inside the cloned repo
+            rm -rf gh-pages-repo/docs/rust
+            mkdir -p gh-pages-repo/docs/rust
+            cp -r ./sw-be-container/target/doc/* gh-pages-repo/docs/rust/ || true
+
+            # Commit and push
+            cd gh-pages-repo
+            git add .
+            if git diff --quiet && git diff --staged --quiet; then
+              echo "No changes to commit."
+              cd ..
+              break
+            fi
+
+            git commit -m "Deploy Rust Docs"
+
+            if git push origin gh-pages; then
+              echo "Successfully deployed!"
+              cd ..
+              break
+            fi
+
+            echo "Push failed, pulling latest changes and retrying..."
+            git pull --rebase origin gh-pages
+            cd ..
+
+            sleep 5
+          done
+
 
   ci-success:
     name: SW-BE CI Success
