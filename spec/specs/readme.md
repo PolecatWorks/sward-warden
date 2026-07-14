@@ -117,6 +117,8 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0014-09 Dev JWT Authentication (Backend)](./0014/0014-09-be-dev-jwt.md) | Complete | PRD 0014 |
 | [0014-10 Dev JWT Authentication (Frontend)](./0014/0014-10-fe-dev-jwt.md) | Complete | PRD 0014 |
 | [0014-11 Drop X-User-ID Header Support](./0014/0014-11-drop-x-user-id.md) | Complete | PRD 0014 |
+| [0014-12 Sparse Checkout Optimization for GitHub Pages](./0014/0014-12-sparse-checkout-gh-pages.md) | Complete | PRD 0014 |
+
 
 ## PostGIS Requirement
 
