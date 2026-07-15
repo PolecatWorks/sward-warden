@@ -3,7 +3,7 @@
 ## 1. Overview
 This specification details the implementation of an end-to-end integration test (Robot Framework) validating the creation of a field with a 4-corner polygon boundary located in the Ballycastle area of Northern Ireland. It verifies that the UI successfully captures the drawn spatial boundaries, saves them to the backend database, and displays the field's boundary clearly on the map when viewed.
 
-Status: Open
+Status: Complete
 
 ## 2. Test Journey Steps (`integration-tests/tests/test_field_polygon.robot`)
 
