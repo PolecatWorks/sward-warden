@@ -98,7 +98,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0008-05 Topographical Data Integration](./0008/0008-05-topographical-data-integration.md) | Complete | PRD 0008 |
 | [0008-06 Field Topology Creation and Editing](./0008/0008-06-field-topology-creation.md) | Complete | PRD 0008 |
 | [0008-07 GeoJSON Geometry Transition](./0008/0008-07-geojson-geometry.md) | Complete | PRD 0008 |
-| [0008-08 Field Polygon Creation and Map View Journey](./0008/0008-08-field-polygon-creation-and-map-view.md) | Open | PRD 0008 |
+| [0008-08 Field Polygon Creation and Map View Journey](./0008/0008-08-field-polygon-creation-and-map-view.md) | Complete | PRD 0008 |
 | [0013-01 Administration Console Application Setup](./0013/0013-01-admin-console-app-setup.md) | Complete | PRD 0013 |
 | [0013-02 Be Role-Based Access Control (RBAC)](./0013/0013-02-admin-rbac-implementation.md) | Complete | PRD 0013 |
 | [0013-03 User Administration FE](./0013/0013-03-user-administration-fe.md) | Complete | PRD 0013 |
