@@ -41,6 +41,14 @@ pub struct AppConfig {
     pub runtime: ThreadRuntime,
     pub startup_checks: StartupCheckConfig,
     pub debugging: DebuggingConfig,
+    #[serde(default)]
+    pub spatial: SpatialConfig,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone, Default)]
+pub struct SpatialConfig {
+    pub official_boundary_api_url: Option<Url>,
+    pub official_boundary_api_key: Option<String>,
 }
 
 // No obvious PRD requirement
@@ -214,6 +222,9 @@ mod tests {
         writeln!(file, "  environment: testing").unwrap();
         writeln!(file, "  enable_dev_auth: false").unwrap();
         writeln!(file, "  log_level: info").unwrap();
+        writeln!(file, "spatial:").unwrap();
+        writeln!(file, "  official_boundary_api_url: https://api.example.com").unwrap();
+        writeln!(file, "  official_boundary_api_key: secretkey").unwrap();
 
         let config = AppConfig::load(&test_config_path, &test_dir).unwrap();
 

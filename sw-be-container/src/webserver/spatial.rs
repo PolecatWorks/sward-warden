@@ -1,6 +1,6 @@
 use crate::error::AppError;
 use crate::spatial::SpatialService;
-use crate::spatial::models::{ExtentsRequest, ExtentsResponse};
+use crate::spatial::models::{ExtentsRequest, ExtentsResponse, OfficialBoundary};
 use crate::state::AppState;
 use axum::{
     Json,
@@ -11,6 +11,12 @@ use serde::{Deserialize, Serialize};
 #[derive(Deserialize)]
 pub struct BufferParams {
     pub distance: f64,
+}
+
+#[derive(Deserialize)]
+pub struct PointRequest {
+    pub lat: f64,
+    pub lon: f64,
 }
 
 // References more than 3 PRDs
@@ -68,4 +74,46 @@ pub async fn calculate_area(
     let area_sq_meters = SpatialService::calculate_area_from_polygon(&req.geojson)?;
 
     Ok(Json(CalculateAreaResponse { area_sq_meters }))
+}
+
+// PRD Reference: 0008
+pub async fn get_official_boundary(
+    State(state): State<AppState>,
+    Json(payload): Json<PointRequest>,
+) -> Result<Json<OfficialBoundary>, AppError> {
+    // 1. Check local cache
+    if let Some(cached_boundary) =
+        SpatialService::get_cached_boundary_by_point(&state.db_pool, payload.lat, payload.lon)
+            .await?
+    {
+        return Ok(Json(cached_boundary));
+    }
+
+    // 2. Fetch from external API
+    let api_response = SpatialService::fetch_boundary_from_official_api(
+        &state.config.spatial,
+        payload.lat,
+        payload.lon,
+    )
+    .await?;
+
+    // 3. Cache the result locally
+    let source_url = state
+        .config
+        .spatial
+        .official_boundary_api_url
+        .as_ref()
+        .map(|u| u.to_string())
+        .unwrap_or_else(|| "unknown".to_string());
+
+    let saved_boundary = SpatialService::cache_new_boundary(
+        &state.db_pool,
+        &api_response.sbi,
+        &api_response.parcel_id,
+        &api_response.polygon_geojson,
+        &source_url,
+    )
+    .await?;
+
+    Ok(Json(saved_boundary))
 }

@@ -39,3 +39,19 @@ pub struct ExtentsResponse {
     pub center: Point,
     pub extents: Extents,
 }
+
+#[derive(Serialize, Deserialize, Clone, Debug, sqlx::FromRow)]
+pub struct OfficialBoundary {
+    pub id: Option<i64>,
+    pub sbi: String,
+    pub parcel_id: String,
+    pub geometry_geojson: String,
+    pub source: String,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct OfficialBoundaryApiResponse {
+    pub sbi: String,
+    pub parcel_id: String,
+    pub polygon_geojson: String,
+}
