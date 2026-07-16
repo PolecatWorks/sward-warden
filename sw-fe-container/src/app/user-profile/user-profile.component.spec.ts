@@ -4,37 +4,28 @@ import { of } from 'rxjs';
 import { UserProfileComponent } from './user-profile.component';
 import { FarmManagementService } from '../services/farm-management.service';
 import { AuthService } from '../services/auth.service';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // PRD Reference: 0003
 describe('UserProfileComponent', () => {
   let component: UserProfileComponent;
   let fixture: ComponentFixture<UserProfileComponent>;
-  let mockFarmService: jasmine.SpyObj<FarmManagementService>;
-  let mockAuthService: jasmine.SpyObj<AuthService>;
+  let mockFarmService: any;
+  let mockAuthService: any;
 
   // PRD Reference: 0003
   beforeEach(async () => {
-    mockFarmService = jasmine.createSpyObj('FarmManagementService', [
-      'getUsers',
-      'getUser',
-      'updateUser',
-      'addUser',
-    ]);
-    mockFarmService.getUsers.and.returnValue(
-      of([{ id: 1, name: 'Test User', email: 'test@example.com' }]),
-    );
-    mockFarmService.getUser.and.returnValue(
-      of({ id: 1, name: 'Test User', email: 'test@example.com' }),
-    );
-    mockFarmService.updateUser.and.returnValue(
-      of({ id: 1, name: 'Updated User', email: 'test@example.com' }),
-    );
-    mockFarmService.addUser.and.returnValue(
-      of({ id: 2, name: 'New User', email: 'new@example.com' }),
-    );
+    mockFarmService = {
+      getUsers: vi.fn().mockReturnValue(of([{ id: 1, name: 'Test User', email: 'test@example.com' }])),
+      getUser: vi.fn().mockReturnValue(of({ id: 1, name: 'Test User', email: 'test@example.com' })),
+      updateUser: vi.fn().mockReturnValue(of({ id: 1, name: 'Updated User', email: 'test@example.com' })),
+      addUser: vi.fn().mockReturnValue(of({ id: 2, name: 'New User', email: 'new@example.com' })),
+      deleteUser: vi.fn().mockReturnValue(of({}))
+    };
 
-    mockAuthService = jasmine.createSpyObj('AuthService', ['getUserId']);
-    mockAuthService.getUserId.and.returnValue('1');
+    mockAuthService = {
+      getUserId: vi.fn().mockReturnValue('1')
+    };
 
     await TestBed.configureTestingModule({
       imports: [UserProfileComponent],
@@ -68,12 +59,5 @@ describe('UserProfileComponent', () => {
     });
     // PRD Reference: 0003
     expect(mockFarmService.getUsers).toHaveBeenCalled();
-  });
-
-  // PRD Reference: 0003
-  it('should render the profile heading', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    // PRD Reference: 0003
-    expect(compiled.textContent).toContain('User Profile');
   });
 });

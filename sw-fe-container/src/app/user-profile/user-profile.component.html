@@ -360,6 +360,71 @@
           class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
         ></textarea>
       </div>
+
+      <div class="mt-8">
+        <h4 class="font-headline font-bold text-lg text-on-surface mb-4">Unit Preferences</h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-on-surface mb-1" for="edit-area-unit">Area</label>
+            <select
+              id="edit-area-unit"
+              formControlName="area_unit"
+              class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+            >
+              <option [value]="AreaUnit.Acres">Acres</option>
+              <option [value]="AreaUnit.Hectares">Hectares</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface mb-1" for="edit-volume-unit">Volume</label>
+            <select
+              id="edit-volume-unit"
+              formControlName="volume_unit"
+              class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+            >
+              <option [value]="VolumeUnit.Litres">Litres</option>
+              <option [value]="VolumeUnit.Gallons">UK Gallons</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface mb-1" for="edit-weight-unit">Weight</label>
+            <select
+              id="edit-weight-unit"
+              formControlName="weight_unit"
+              class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+            >
+              <option [value]="WeightUnit.Kilograms">Kilograms (kg)</option>
+              <option [value]="WeightUnit.Pounds">Pounds (lbs)</option>
+              <option [value]="WeightUnit.Tonnes">Tonnes (Metric)</option>
+              <option [value]="WeightUnit.Tons">Tons (Imperial/US)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface mb-1" for="edit-distance-unit">Distance</label>
+            <select
+              id="edit-distance-unit"
+              formControlName="distance_unit"
+              class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+            >
+              <option [value]="DistanceUnit.Miles">Miles</option>
+              <option [value]="DistanceUnit.Kilometers">Kilometers (km)</option>
+              <option [value]="DistanceUnit.Meters">Meters (m)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-on-surface mb-1" for="edit-temperature-unit">Temperature</label>
+            <select
+              id="edit-temperature-unit"
+              formControlName="temperature_unit"
+              class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+            >
+              <option [value]="TemperatureUnit.Celsius">Celsius (°C)</option>
+              <option [value]="TemperatureUnit.Fahrenheit">Fahrenheit (°F)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       <div class="pt-4 flex justify-end gap-3">
         <button
           type="button"
