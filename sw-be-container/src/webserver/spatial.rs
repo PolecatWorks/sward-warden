@@ -25,7 +25,7 @@ pub async fn get_waterway_buffers(
     Ok(Json(geojson))
 }
 
-// No obvious PRD requirement
+// PRD Reference: 0004
 pub async fn calculate_extents(
     Json(payload): Json<ExtentsRequest>,
 ) -> Result<Json<ExtentsResponse>, AppError> {
