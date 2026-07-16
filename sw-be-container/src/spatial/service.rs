@@ -70,7 +70,7 @@ impl SpatialService {
         Ok(geojson)
     }
 
-    // No obvious PRD requirement
+    // PRD Reference: 0004
     pub fn calculate_extents(
         geometries: Vec<geojson::Geometry>,
     ) -> Result<ExtentsResponse, AppError> {
