@@ -14,3 +14,28 @@ pub struct BufferZone {
     pub distance_meters: f64,
     pub geom: String,
 }
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct ExtentsRequest {
+    pub geometries: Vec<geojson::Geometry>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub struct Point {
+    pub x: f64,
+    pub y: f64,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+pub struct Extents {
+    pub min_x: f64,
+    pub max_x: f64,
+    pub min_y: f64,
+    pub max_y: f64,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct ExtentsResponse {
+    pub center: Point,
+    pub extents: Extents,
+}
