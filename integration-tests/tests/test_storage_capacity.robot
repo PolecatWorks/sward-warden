@@ -41,6 +41,9 @@ Storage Capacity E2E Flow
     Fill Text    input[formcontrolname="name"]    ${lagoon_name}
     Select Options By    select[formcontrolname="storage_type"]    value    liquid
     Fill Text    input[formcontrolname="capacity_volume"]    ${lagoon_capacity}
+    Click    input[value="percentage"]
+    Fill Text    input[formcontrolname="current_percentage"]    50
+    Click    input[value="volume"]
     Click    input[formcontrolname="is_covered"]
 
     # Note: we test leaving farm_id unassigned for now to avoid needing to select dynamic options
@@ -49,7 +52,8 @@ Storage Capacity E2E Flow
 
     # 4. Verify storage appears in list and syncs
     Wait For Elements State    text=${lagoon_name}    visible    timeout=15s
-    Wait For Elements State    text=${lagoon_capacity} m³    visible    timeout=5s
+    # Half of capacity should be shown
+    Wait For Elements State    text=/${lagoon_capacity} m³    visible    timeout=5s
 
     Sleep    3s    # wait for sync to happen in background
 
@@ -70,7 +74,9 @@ Storage Capacity E2E Flow
     Fill Text    input[formcontrolname="name"]    ${lagoon_name_enter}
     Select Options By    select[formcontrolname="storage_type"]    value    liquid
     Fill Text    input[formcontrolname="capacity_volume"]    ${lagoon_capacity}
-    Press Keys    input[formcontrolname="capacity_volume"]    Enter
+    Click    input[value="percentage"]
+    Fill Text    input[formcontrolname="current_percentage"]    25
+    Press Keys    input[formcontrolname="current_percentage"]    Enter
     Wait For Elements State    text=${lagoon_name_enter}    visible    timeout=15s
     Sleep    3s
 

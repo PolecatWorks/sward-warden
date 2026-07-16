@@ -13,6 +13,7 @@ This document outlines the requirements for tracking agricultural inventory, spe
   - `name`
   - `storage_type` (liquid, solid, chemical)
   - `capacity_volume`
+  - `current_volume`
   - `is_covered`
 - **Supported Storage Types:**
   - **Liquid Storage:** Slurry tanks, lagoons, wash-water tanks.
