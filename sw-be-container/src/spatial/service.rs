@@ -1,5 +1,8 @@
 use crate::error::AppError;
+use crate::spatial::models::{Extents, ExtentsResponse, Point};
+use geo::{BoundingRect, Geometry};
 use sqlx::PgPool;
+use std::convert::TryFrom;
 
 pub struct SpatialService;
 
@@ -65,5 +68,124 @@ impl SpatialService {
         .fetch_one(pool)
         .await?;
         Ok(geojson)
+    }
+
+    // No obvious PRD requirement
+    pub fn calculate_extents(
+        geometries: Vec<geojson::Geometry>,
+    ) -> Result<ExtentsResponse, AppError> {
+        if geometries.is_empty() {
+            return Err(AppError::BadRequest(
+                "No geometries provided to calculate extents.".to_string(),
+            ));
+        }
+
+        let mut geo_geometries = Vec::with_capacity(geometries.len());
+        for gj in geometries {
+            match Geometry::try_from(gj) {
+                Ok(geo) => geo_geometries.push(geo),
+                Err(_) => {
+                    return Err(AppError::BadRequest(
+                        "Failed to convert GeoJSON geometry to valid geographic geometry."
+                            .to_string(),
+                    ));
+                }
+            }
+        }
+
+        if geo_geometries.is_empty() {
+            return Err(AppError::BadRequest(
+                "No valid geometries found to calculate extents.".to_string(),
+            ));
+        }
+
+        let geom_collection = geo::GeometryCollection::new_from(geo_geometries);
+
+        let rect = geom_collection.bounding_rect().ok_or_else(|| {
+            AppError::BadRequest(
+                "Could not calculate bounding rectangle for the provided geometries.".to_string(),
+            )
+        })?;
+
+        let min = rect.min();
+        let max = rect.max();
+
+        let extents = Extents {
+            min_x: min.x,
+            max_x: max.x,
+            min_y: min.y,
+            max_y: max.y,
+        };
+
+        let center = Point {
+            x: (min.x + max.x) / 2.0,
+            y: (min.y + max.y) / 2.0,
+        };
+
+        Ok(ExtentsResponse { center, extents })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_calculate_extents_empty() {
+        let result = SpatialService::calculate_extents(vec![]);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_calculate_extents_single_polygon() {
+        let geo_poly = geo::Geometry::Polygon(geo::Polygon::new(
+            geo::LineString::from(vec![
+                (0.0, 0.0),
+                (10.0, 0.0),
+                (10.0, 10.0),
+                (0.0, 10.0),
+                (0.0, 0.0),
+            ]),
+            vec![],
+        ));
+        let polygon = geojson::Geometry::try_from(&geo_poly).unwrap();
+
+        let result = SpatialService::calculate_extents(vec![polygon]).unwrap();
+
+        assert_eq!(result.extents.min_x, 0.0);
+        assert_eq!(result.extents.max_x, 10.0);
+        assert_eq!(result.extents.min_y, 0.0);
+        assert_eq!(result.extents.max_y, 10.0);
+
+        assert_eq!(result.center.x, 5.0);
+        assert_eq!(result.center.y, 5.0);
+    }
+
+    #[test]
+    fn test_calculate_extents_multiple_geometries() {
+        let geo_poly = geo::Geometry::Polygon(geo::Polygon::new(
+            geo::LineString::from(vec![
+                (0.0, 0.0),
+                (10.0, 0.0),
+                (10.0, 10.0),
+                (0.0, 10.0),
+                (0.0, 0.0),
+            ]),
+            vec![],
+        ));
+        let polygon = geojson::Geometry::try_from(&geo_poly).unwrap();
+
+        let geo_point = geo::Geometry::Point(geo::Point::new(20.0, 20.0));
+        let point = geojson::Geometry::try_from(&geo_point).unwrap();
+
+        let result = SpatialService::calculate_extents(vec![polygon, point]).unwrap();
+
+        assert_eq!(result.extents.min_x, 0.0);
+        assert_eq!(result.extents.max_x, 20.0);
+        assert_eq!(result.extents.min_y, 0.0);
+        assert_eq!(result.extents.max_y, 20.0);
+
+        assert_eq!(result.center.x, 10.0);
+        assert_eq!(result.center.y, 10.0);
     }
 }
