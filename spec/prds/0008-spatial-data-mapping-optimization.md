@@ -7,7 +7,10 @@ This document defines the requirements for the application's spatial capabilitie
 - **Map-Based Generation:** Users can define field boundaries via an interactive map interface using GeoJSON polygons or points (`GEOMETRY(Geometry, 4326)` in PostGIS).
 - **Auto-Generation:**
   - *Primary:* AI/Satellite imagery API (e.g., Farmdok) detects boundaries via click.
-  - *Secondary:* Fetch official boundaries via Government APIs (e.g., UK RPA) using a Single Business Identifier (SBI).
+  - *Secondary:* Fetch official boundaries via Government APIs (e.g., UK RPA).
+    - The backend provides a `POST /v0/spatial/official-boundary` endpoint that accepts a point (latitude and longitude).
+    - The endpoint checks a local cached database table (`official_field_boundaries`) using PostGIS spatial intersection.
+    - If a cached boundary isn't found, it fetches the official polygon, Single Business Identifier (SBI), and parcel ID from a configurable external government API URL, caches it locally, and returns the result to the UI so that the UI can assign it.
 - **Manual Tools:** Users can manually draw, edit vertices (drag handles), snap to adjacent boundaries, and delete points.
 - **Undefined Boundaries:** If a boundary is unknown, a single point representing the field center is permitted until defined. This single point representation has no relationship to the field's area, and all fields must have a defined area regardless of whether their boundary is a point or polygon.
 - **Viewing Modes:**
