@@ -9,7 +9,7 @@ import {
 import { RouterLink } from '@angular/router';
 import { FarmManagementService } from '../services/farm-management.service';
 import { AuthService } from '../services/auth.service';
-import { User } from '../models/user';
+import { User, AreaUnit, VolumeUnit, WeightUnit, DistanceUnit, TemperatureUnit } from '../models/user';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -30,6 +30,12 @@ export class UserProfileComponent implements OnInit {
 
   // A local variable to store current user id for updates
   currentUserId!: string;
+
+  AreaUnit = AreaUnit;
+  VolumeUnit = VolumeUnit;
+  WeightUnit = WeightUnit;
+  DistanceUnit = DistanceUnit;
+  TemperatureUnit = TemperatureUnit;
 
   activeModules = [
     { name: 'Slurry Management Dashboard', icon: 'dashboard', active: true },
@@ -59,6 +65,11 @@ export class UserProfileComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       phone: [''],
       description: [''],
+      area_unit: [AreaUnit.Acres],
+      volume_unit: [VolumeUnit.Litres],
+      weight_unit: [WeightUnit.Kilograms],
+      distance_unit: [DistanceUnit.Miles],
+      temperature_unit: [TemperatureUnit.Celsius],
     });
   }
 
@@ -83,6 +94,11 @@ export class UserProfileComponent implements OnInit {
           email: user.email,
           phone: user.phone || '',
           description: user.description || '',
+          area_unit: user.preferences?.area || AreaUnit.Acres,
+          volume_unit: user.preferences?.volume || VolumeUnit.Litres,
+          weight_unit: user.preferences?.weight || WeightUnit.Kilograms,
+          distance_unit: user.preferences?.distance || DistanceUnit.Miles,
+          temperature_unit: user.preferences?.temperature || TemperatureUnit.Celsius,
         });
       }
     });
@@ -102,6 +118,13 @@ export class UserProfileComponent implements OnInit {
         role: this.currentUserData.role,
         phone: this.editProfileForm.value.phone,
         description: this.editProfileForm.value.description,
+        preferences: {
+          area: this.editProfileForm.value.area_unit,
+          volume: this.editProfileForm.value.volume_unit,
+          weight: this.editProfileForm.value.weight_unit,
+          distance: this.editProfileForm.value.distance_unit,
+          temperature: this.editProfileForm.value.temperature_unit,
+        }
       };
 
       this.isSaving = true;
@@ -131,20 +154,54 @@ export class UserProfileComponent implements OnInit {
   // PRD Reference: 0003
   closeEditProfileModal(): void {
     this.showEditProfileModal = false;
+    // Reset form to current user data when closing
+    if (this.currentUserData) {
+      this.editProfileForm.patchValue({
+        name: this.currentUserData.name,
+        email: this.currentUserData.email,
+        phone: this.currentUserData.phone || '',
+        description: this.currentUserData.description || '',
+        area_unit: this.currentUserData.preferences?.area || AreaUnit.Acres,
+        volume_unit: this.currentUserData.preferences?.volume || VolumeUnit.Litres,
+        weight_unit: this.currentUserData.preferences?.weight || WeightUnit.Kilograms,
+        distance_unit: this.currentUserData.preferences?.distance || DistanceUnit.Miles,
+        temperature_unit: this.currentUserData.preferences?.temperature || TemperatureUnit.Celsius,
+      });
+      // Mark as pristine so the save button disables again
+      this.editProfileForm.markAsPristine();
+    }
   }
 
   // PRD Reference: 0003
   onSubmitUser(): void {
     if (this.userForm.valid) {
-      const newUser: User = {
-        id: Math.floor(Math.random() * 10000),
-        name: this.userForm.value.name,
-        email: this.userForm.value.email,
-      };
-      this.farmManagementService.addUser(newUser).subscribe(() => {
-        this.users$ = this.farmManagementService.getUsers();
-        this.userForm.reset();
-      });
+      this.farmManagementService
+        .addUser({
+          ...this.userForm.value,
+          role: 'Farm Worker', // Default role for team members
+          modules: ['Slurry Management Dashboard'], // Default access
+        })
+        .subscribe(() => {
+          this.users$ = this.farmManagementService.getUsers();
+          this.userForm.reset();
+        });
     }
+  }
+
+  // PRD Reference: 0003
+  onSuspendUser(id: number | string): void {
+    this.farmManagementService.deleteUser(id).subscribe(() => {
+      this.users$ = this.farmManagementService.getUsers();
+    });
+  }
+
+  // PRD Reference: 0003
+  getInitials(name: string): string {
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
   }
 }
