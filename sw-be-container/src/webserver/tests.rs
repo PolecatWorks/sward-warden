@@ -62,6 +62,7 @@ fn get_test_state() -> AppState {
             enable_dev_auth: false,
             log_level: "info".to_string(),
         },
+        spatial: crate::config::SpatialConfig::default(),
     };
 
     let db_pool = sqlx::postgres::PgPoolOptions::new()

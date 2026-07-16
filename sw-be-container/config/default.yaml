@@ -29,3 +29,6 @@ debugging:
   fail_debug_delay: 0s
   environment: "development"
   log_level: "info"
+spatial:
+  official_boundary_api_url: null
+  official_boundary_api_key: null

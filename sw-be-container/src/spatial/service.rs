@@ -1,5 +1,6 @@
+use crate::config::SpatialConfig;
 use crate::error::AppError;
-use crate::spatial::models::{Extents, ExtentsResponse, Point};
+use crate::spatial::models::{Extents, ExtentsResponse, Point, OfficialBoundary, OfficialBoundaryApiResponse};
 use geo::{BoundingRect, Geometry};
 use sqlx::PgPool;
 use std::convert::TryFrom;
@@ -182,6 +183,109 @@ impl SpatialService {
         };
 
         Ok(ExtentsResponse { center, extents })
+    }
+
+    pub async fn get_cached_boundary_by_point(
+        pool: &PgPool,
+        lat: f64,
+        lon: f64,
+    ) -> Result<Option<OfficialBoundary>, AppError> {
+        // Construct a Point using PostGIS
+        let point_wkt = format!("POINT({} {})", lon, lat);
+
+        let boundary = sqlx::query_as::<_, OfficialBoundary>(
+            r#"
+            SELECT
+                id,
+                sbi,
+                parcel_id,
+                ST_AsGeoJSON(geom) as geometry_geojson,
+                source
+            FROM official_field_boundaries
+            WHERE ST_Intersects(geom, ST_SetSRID(ST_GeomFromText($1), 4326))
+            LIMIT 1
+            "#,
+        )
+        .bind(point_wkt)
+        .fetch_optional(pool)
+        .await?;
+
+        Ok(boundary)
+    }
+
+    // PRD Reference: 0008
+    pub async fn cache_new_boundary(
+        pool: &PgPool,
+        sbi: &str,
+        parcel_id: &str,
+        polygon_geojson: &str,
+        source: &str,
+    ) -> Result<OfficialBoundary, AppError> {
+        let boundary = sqlx::query_as::<_, OfficialBoundary>(
+            r#"
+            INSERT INTO official_field_boundaries (sbi, parcel_id, geom, source)
+            VALUES ($1, $2, ST_SetSRID(ST_GeomFromGeoJSON($3), 4326), $4)
+            RETURNING
+                id,
+                sbi,
+                parcel_id,
+                ST_AsGeoJSON(geom) as geometry_geojson,
+                source
+            "#,
+        )
+        .bind(sbi)
+        .bind(parcel_id)
+        .bind(polygon_geojson)
+        .bind(source)
+        .fetch_one(pool)
+        .await?;
+
+        Ok(boundary)
+    }
+
+    // PRD Reference: 0008
+    pub async fn fetch_boundary_from_official_api(
+        config: &SpatialConfig,
+        lat: f64,
+        lon: f64,
+    ) -> Result<OfficialBoundaryApiResponse, AppError> {
+        let api_url = config.official_boundary_api_url.as_ref().ok_or_else(|| {
+            AppError::Message("Official boundary API URL is not configured".to_string())
+        })?;
+
+        let mut url = api_url.clone();
+        url.query_pairs_mut()
+            .append_pair("lat", &lat.to_string())
+            .append_pair("lon", &lon.to_string());
+
+        let client = reqwest::Client::new();
+        let mut request_builder = client.get(url.clone());
+
+        if let Some(api_key) = &config.official_boundary_api_key {
+            request_builder =
+                request_builder.header("Authorization", format!("Bearer {}", api_key));
+        }
+
+        let response = request_builder
+            .send()
+            .await
+            .map_err(|e| AppError::Message(format!("Failed to fetch from official API: {}", e)))?;
+
+        if !response.status().is_success() {
+            return Err(AppError::Message(format!(
+                "Official API returned error status: {}",
+                response.status()
+            )));
+        }
+
+        let api_response = response
+            .json::<OfficialBoundaryApiResponse>()
+            .await
+            .map_err(|e| {
+                AppError::Message(format!("Failed to parse response from official API: {}", e))
+            })?;
+
+        Ok(api_response)
     }
 }
 
