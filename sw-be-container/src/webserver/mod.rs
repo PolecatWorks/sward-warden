@@ -118,10 +118,6 @@ pub fn app_router(state: AppState) -> Router {
             "/v0/spatial/waterway-buffers",
             get(spatial::get_waterway_buffers),
         )
-        .route(
-            "/v0/spatial/extents",
-            axum::routing::post(spatial::calculate_extents),
-        )
         .route("/v0/sync/delta", get(sync::delta_sync))
         .route(
             "/v0/soil_analyses",
