@@ -13,6 +13,7 @@ This document defines the requirements for the application's spatial capabilitie
 - **Viewing Modes:**
   - *Field View:* Active field colored distinctly, farm bounds centered.
   - *Farm View:* Shows the extent of all fields in the farm with a suitable buffer context (e.g. 1 km). These bounds must be recorded on the farm definition object and persisted, updating dynamically as fields are added/removed or as farm geometry is modified.
+- **Area Calculation:** The system provides a backend spatial calculation endpoint that allows users to automatically suggest and populate the field area (in hectares) based on the current polygon's calculated square meters.
 
 ## 2. Topographical Data Analysis
 Evaluating the slope and elevation of a field is critical for determining runoff risk and ensuring compliance.

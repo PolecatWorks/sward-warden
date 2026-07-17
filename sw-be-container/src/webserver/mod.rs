@@ -17,7 +17,7 @@ pub mod weather;
 
 use axum::{
     Json, Router,
-    routing::{delete, get, put},
+    routing::{delete, get, post, put},
 };
 use axum_prometheus::PrometheusMetricLayer;
 use tokio_util::sync::CancellationToken;
@@ -121,6 +121,10 @@ pub fn app_router(state: AppState) -> Router {
         .route(
             "/v0/spatial/extents",
             axum::routing::post(spatial::calculate_extents),
+        )
+        .route(
+            "/v0/spatial/area-from-poly",
+            post(spatial::calculate_area),
         )
         .route("/v0/sync/delta", get(sync::delta_sync))
         .route(
