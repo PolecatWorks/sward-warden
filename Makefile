@@ -218,6 +218,26 @@ robot-test: $(ROBOT_VENV)/bin/robot wait-all
 		$(ROBOT_TEST_DIR); \
 		rc=$$?; if [ -t 1 ]; then open $(ROBOT_REPORT_DIR)/log.html; fi; exit $$rc
 
+# Run a specific robot test file or test case (e.g. make robot-test-single TEST=test_field_topology_flow.robot)
+.PHONY: robot-test-single
+robot-test-single: $(ROBOT_VENV)/bin/robot wait-all
+	@if [ -z "$(TEST)" ]; then \
+		echo "ERROR: Please specify the test file or test case name, e.g.: make robot-test-single TEST=test_field_topology_flow.robot"; \
+		exit 1; \
+	fi
+	@echo "Running robot test: $(TEST)..."
+	$(ROBOT) \
+		--variable BE_BASE_URL:${LOCAL_BE_URL} \
+		--variable FE_BASE_URL:${LOCAL_FE_URL} \
+		--variable EXTERNAL_DNS_URL:${LOCAL_FE_URL} \
+		--variable BE_POD_IP: \
+		--exclude k8s_only \
+		--loglevel DEBUG \
+		-d "${ROBOT_REPORT_DIR}" \
+		$(shell if [ -f "$(ROBOT_TEST_DIR)/$(TEST)" ]; then echo "$(ROBOT_TEST_DIR)/$(TEST)"; elif [ -f "$(TEST)" ]; then echo "$(TEST)"; else echo --test "$(TEST)" "$(ROBOT_TEST_DIR)"; fi); \
+		rc=$$?; if [ -t 1 ]; then open $(ROBOT_REPORT_DIR)/log.html; fi; exit $$rc
+
+
 # Run only backend API tests (RequestsLibrary-based)
 .PHONY: robot-test-be
 robot-test-be: $(ROBOT_VENV)/bin/robot wait-all

@@ -77,6 +77,12 @@ export class FieldMapEditorComponent
     if (this.isEditMode && !this.readonly) {
       this.setupGeoman();
     }
+
+    setTimeout(() => {
+      if (this.map) {
+        this.map.invalidateSize();
+      }
+    }, 200);
   }
 
   // PRD Reference: 0003

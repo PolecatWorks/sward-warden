@@ -44,7 +44,7 @@ Field Creation with Topology Flow
     ${field_none_id}=    Set Variable    ${EMPTY}
     FOR    ${field}    IN    @{fields}
         IF    $field['name'] == $field_name_none and str($field['farm_id']) == str($farm_id)
-            ${field_none_id}=    Set Variable    ${field['id']}
+            ${field_none_id}=    Convert To String    ${field['id']}
             Should Be Equal    ${field['geometry_geojson']}    ${None}
             BREAK
         END
@@ -60,13 +60,15 @@ Field Creation with Topology Flow
     Fill Text    \#newFieldArea    ${field_area_poly}
 
     # Draw Polygon using leaflet-geoman
+    Sleep    1s
     Click    .leaflet-pm-icon-polygon    button=left
     Click With Options    .leaflet-container    position_x=100    position_y=100
     Click With Options    .leaflet-container    position_x=200    position_y=100
     Click With Options    .leaflet-container    position_x=200    position_y=200
-    # Finish polygon by double-clicking the last point, or double-clicking near the last
-    Click With Options    .leaflet-container    position_x=100    position_y=200    clickCount=2
-
+    # Finish polygon by clicking the last point and then clicking the leaflet-geoman finish control
+    Click With Options    .leaflet-container    position_x=100    position_y=200
+    Click    .action-finish    button=left
+    Sleep    2s
     Click    button >> text=Save Field    button=left
     Wait For Elements State    text=${field_name_poly}    visible    timeout=10s
     Sleep    2s
@@ -76,7 +78,7 @@ Field Creation with Topology Flow
     ${field_poly_id}=    Set Variable    ${EMPTY}
     FOR    ${field}    IN    @{fields}
         IF    $field['name'] == $field_name_poly and str($field['farm_id']) == str($farm_id)
-            ${field_poly_id}=    Set Variable    ${field['id']}
+            ${field_poly_id}=    Convert To String    ${field['id']}
             Should Contain    ${field['geometry_geojson']}    Polygon
             BREAK
         END
@@ -92,9 +94,10 @@ Field Creation with Topology Flow
     Fill Text    \#newFieldArea    ${field_area_point}
 
     # Draw Point using leaflet-geoman
+    Sleep    1s
     Click    .leaflet-pm-icon-marker    button=left
     Click With Options    .leaflet-container    position_x=300    position_y=300
-
+    Sleep    2s
     Click    button >> text=Save Field    button=left
     Wait For Elements State    text=${field_name_point}    visible    timeout=10s
     Sleep    2s
@@ -104,7 +107,7 @@ Field Creation with Topology Flow
     ${field_point_id}=    Set Variable    ${EMPTY}
     FOR    ${field}    IN    @{fields}
         IF    $field['name'] == $field_name_point and str($field['farm_id']) == str($farm_id)
-            ${field_point_id}=    Set Variable    ${field['id']}
+            ${field_point_id}=    Convert To String    ${field['id']}
             Should Contain    ${field['geometry_geojson']}    Point
             BREAK
         END

@@ -403,6 +403,8 @@ export class FarmManagementService {
                 field.average_slope;
             if (field.max_slope !== undefined)
               updates.max_slope = outboxPayload.max_slope = field.max_slope;
+            if (field.geometry_geojson !== undefined)
+              updates.geometry_geojson = outboxPayload.geometry_geojson = field.geometry_geojson;
 
             const updateData = {
               ...updates,
@@ -509,6 +511,7 @@ export class FarmManagementService {
         mean_elevation: field.mean_elevation,
         average_slope: field.average_slope,
         max_slope: field.max_slope,
+        geometry_geojson: field.geometry_geojson,
       },
       {
         farm_id: field.farm_id,
@@ -520,6 +523,7 @@ export class FarmManagementService {
         mean_elevation: field.mean_elevation,
         average_slope: field.average_slope,
         max_slope: field.max_slope,
+        geometry_geojson: field.geometry_geojson,
       },
       (doc) => this.fieldDocToModel(doc),
     );
@@ -1077,6 +1081,7 @@ export class FarmManagementService {
       mean_elevation: doc.mean_elevation,
       average_slope: doc.average_slope,
       max_slope: doc.max_slope,
+      geometry_geojson: doc.geometry_geojson,
     };
   }
 
