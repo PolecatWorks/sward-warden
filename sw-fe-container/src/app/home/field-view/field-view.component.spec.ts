@@ -8,6 +8,7 @@ import { FieldViewComponent } from './field-view.component';
 import { LoggerService } from '../../services/logger.service';
 import { APP_CONFIG } from '../../app-config';
 import { FarmManagementService } from '../../services/farm-management.service';
+import { SpatialService } from '../../services/spatial.service';
 
 // PRD Reference: 0003
 describe('FieldViewComponent', () => {
@@ -65,6 +66,12 @@ describe('FieldViewComponent', () => {
             updateFertiliserApplication: () => of({}),
             updateOrganicManureApplication: () => of({}),
           },
+        },
+        {
+          provide: SpatialService,
+          useValue: {
+            calculateAreaFromPolygon: () => of({ area_sq_meters: 100000.0 })
+          }
         },
       ],
       imports: [

@@ -6,7 +6,7 @@ use axum::{
     Json,
     extract::{Query, State},
 };
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
 pub struct BufferParams {
@@ -31,4 +31,39 @@ pub async fn calculate_extents(
 ) -> Result<Json<ExtentsResponse>, AppError> {
     let result = SpatialService::calculate_extents(payload.geometries)?;
     Ok(Json(result))
+}
+
+#[derive(Deserialize)]
+pub struct CalculateAreaRequest {
+    pub geojson: String,
+}
+
+#[derive(Serialize)]
+pub struct CalculateAreaResponse {
+    pub area_sq_meters: f64,
+}
+
+// PRD Reference: 0008
+pub async fn calculate_area(
+    State(state): State<AppState>,
+    Json(req): Json<CalculateAreaRequest>,
+) -> Result<Json<CalculateAreaResponse>, AppError> {
+    if req.geojson.trim().is_empty() {
+        return Err(AppError::BadRequest("GeoJSON string cannot be empty".into()));
+    }
+
+    // validate it is a valid json object with type
+    let parsed: Result<serde_json::Value, _> = serde_json::from_str(&req.geojson);
+    match parsed {
+        Ok(val) => {
+            if val.get("type").is_none() {
+                return Err(AppError::BadRequest("Invalid GeoJSON geometry".into()));
+            }
+        }
+        Err(_) => return Err(AppError::BadRequest("Invalid JSON string".into())),
+    }
+
+    let area_sq_meters = SpatialService::calculate_area_from_polygon(&state.db_pool, &req.geojson).await?;
+
+    Ok(Json(CalculateAreaResponse { area_sq_meters }))
 }

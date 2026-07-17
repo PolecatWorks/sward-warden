@@ -11,6 +11,7 @@ import { OrganicManureApplication } from '../../models/organic-manure-applicatio
 import { Farm } from '../../models/farm';
 import { FieldMapEditorComponent } from '../../shared/components/field-map-editor/field-map-editor.component';
 import { LoggerService } from '../../services/logger.service';
+import { SpatialService } from '../../services/spatial.service';
 
 @Component({
   selector: 'app-field-view',
@@ -41,6 +42,7 @@ export class FieldViewComponent implements OnInit {
   originalEditFieldGeometry_geojson: string = '';
   farms: Farm[] = [];
   isSaving: boolean = false;
+  isCalculatingArea: boolean = false;
   errorMessage: string | null = null;
   showDeleteConfirm: boolean = false;
 
@@ -110,6 +112,7 @@ export class FieldViewComponent implements OnInit {
     private datePipe: DatePipe,
     private router: Router,
     private logger: LoggerService,
+    private spatialService: SpatialService,
   ) {}
 
   @HostListener('document:keydown.escape', ['$event'])
@@ -204,6 +207,24 @@ export class FieldViewComponent implements OnInit {
       this.editFieldFarmId !== this.originalEditFieldFarmId ||
       this.editFieldGeometry_geojson !== this.originalEditFieldGeometry_geojson
     );
+  }
+
+  // PRD Reference: 0008
+  calculateAreaFromPolygon(): void {
+    if (!this.editFieldGeometry_geojson) return;
+
+    this.isCalculatingArea = true;
+    this.spatialService.calculateAreaFromPolygon(this.editFieldGeometry_geojson).subscribe({
+      next: (response) => {
+        const hectares = response.area_sq_meters / 10000.0;
+        this.editFieldArea = Number(hectares.toFixed(2));
+        this.isCalculatingArea = false;
+      },
+      error: (err) => {
+        this.logger.error('Error calculating area:', err);
+        this.isCalculatingArea = false;
+      }
+    });
   }
 
   // PRD Reference: 0003

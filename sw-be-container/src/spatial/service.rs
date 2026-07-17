@@ -124,6 +124,21 @@ impl SpatialService {
 
         Ok(ExtentsResponse { center, extents })
     }
+
+    // PRD Reference: 0008
+    pub async fn calculate_area_from_polygon(
+        pool: &PgPool,
+        geojson_str: &str,
+    ) -> Result<f64, AppError> {
+        let area_sq_meters = sqlx::query_scalar::<_, f64>(
+            "SELECT ST_Area(ST_SetSRID(ST_GeomFromGeoJSON($1), 4326)::geography)",
+        )
+        .bind(geojson_str)
+        .fetch_one(pool)
+        .await?;
+
+        Ok(area_sq_meters)
+    }
 }
 
 #[cfg(test)]

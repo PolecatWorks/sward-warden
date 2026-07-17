@@ -120,15 +120,30 @@
             <label class="block text-sm font-medium text-on-surface mb-1"
               >Area (hectares)</label
             >
-            <input
-              type="number"
-              step="0.01"
-              [(ngModel)]="editFieldArea"
-              name="fieldArea"
-              required
-              class="w-full px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
-              id="edit-field-area-input"
-            />
+            <div class="flex gap-2">
+              <input
+                type="number"
+                step="0.01"
+                [(ngModel)]="editFieldArea"
+                name="fieldArea"
+                required
+                class="flex-1 px-3 py-2 border border-outline rounded-md focus:ring-primary focus:border-primary bg-surface text-on-surface"
+                id="edit-field-area-input"
+              />
+              <button
+                type="button"
+                *ngIf="editFieldGeometry_geojson"
+                (click)="calculateAreaFromPolygon()"
+                [disabled]="isCalculatingArea"
+                class="px-3 py-2 bg-secondary-container text-on-secondary-container rounded-md hover:bg-secondary-container/90 flex items-center gap-1 disabled:opacity-50"
+                id="calculate-area-btn"
+                title="Calculate Area from Polygon"
+              >
+                <span class="material-symbols-outlined text-[18px]">calculate</span>
+                <span class="text-sm font-medium" *ngIf="!isCalculatingArea">Calculate</span>
+                <span class="text-sm font-medium" *ngIf="isCalculatingArea">Wait...</span>
+              </button>
+            </div>
           </div>
           <div>
             <label class="block text-sm font-medium text-on-surface mb-1"
