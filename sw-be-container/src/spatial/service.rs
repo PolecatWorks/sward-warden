@@ -71,6 +71,61 @@ impl SpatialService {
         Ok(geojson)
     }
 
+    // PRD Reference: 0004
+    pub fn calculate_extents(
+        geometries: Vec<geojson::Geometry>,
+    ) -> Result<ExtentsResponse, AppError> {
+        if geometries.is_empty() {
+            return Err(AppError::BadRequest(
+                "No geometries provided to calculate extents.".to_string(),
+            ));
+        }
+
+        let mut geo_geometries = Vec::with_capacity(geometries.len());
+        for gj in geometries {
+            match Geometry::try_from(gj) {
+                Ok(geo) => geo_geometries.push(geo),
+                Err(_) => {
+                    return Err(AppError::BadRequest(
+                        "Failed to convert GeoJSON geometry to valid geographic geometry."
+                            .to_string(),
+                    ));
+                }
+            }
+        }
+
+        if geo_geometries.is_empty() {
+            return Err(AppError::BadRequest(
+                "No valid geometries found to calculate extents.".to_string(),
+            ));
+        }
+
+        let geom_collection = geo::GeometryCollection::new_from(geo_geometries);
+
+        let rect = geom_collection.bounding_rect().ok_or_else(|| {
+            AppError::BadRequest(
+                "Could not calculate bounding rectangle for the provided geometries.".to_string(),
+            )
+        })?;
+
+        let min = rect.min();
+        let max = rect.max();
+
+        let extents = Extents {
+            min_x: min.x,
+            max_x: max.x,
+            min_y: min.y,
+            max_y: max.y,
+        };
+
+        let center = Point {
+            x: (min.x + max.x) / 2.0,
+            y: (min.y + max.y) / 2.0,
+        };
+
+        Ok(ExtentsResponse { center, extents })
+    }
+
     // PRD Reference: 0008
     pub fn calculate_area_from_polygon(geojson_str: &str) -> Result<f64, AppError> {
         use geo::GeodesicArea;
@@ -130,60 +185,6 @@ impl SpatialService {
         Ok(area)
     }
 
-    // PRD Reference: 0004
-    pub fn calculate_extents(
-        geometries: Vec<geojson::Geometry>,
-    ) -> Result<ExtentsResponse, AppError> {
-        if geometries.is_empty() {
-            return Err(AppError::BadRequest(
-                "No geometries provided to calculate extents.".to_string(),
-            ));
-        }
-
-        let mut geo_geometries = Vec::with_capacity(geometries.len());
-        for gj in geometries {
-            match Geometry::try_from(gj) {
-                Ok(geo) => geo_geometries.push(geo),
-                Err(_) => {
-                    return Err(AppError::BadRequest(
-                        "Failed to convert GeoJSON geometry to valid geographic geometry."
-                            .to_string(),
-                    ));
-                }
-            }
-        }
-
-        if geo_geometries.is_empty() {
-            return Err(AppError::BadRequest(
-                "No valid geometries found to calculate extents.".to_string(),
-            ));
-        }
-
-        let geom_collection = geo::GeometryCollection::new_from(geo_geometries);
-
-        let rect = geom_collection.bounding_rect().ok_or_else(|| {
-            AppError::BadRequest(
-                "Could not calculate bounding rectangle for the provided geometries.".to_string(),
-            )
-        })?;
-
-        let min = rect.min();
-        let max = rect.max();
-
-        let extents = Extents {
-            min_x: min.x,
-            max_x: max.x,
-            min_y: min.y,
-            max_y: max.y,
-        };
-
-        let center = Point {
-            x: (min.x + max.x) / 2.0,
-            y: (min.y + max.y) / 2.0,
-        };
-
-        Ok(ExtentsResponse { center, extents })
-    }
 
     pub async fn get_cached_boundary_by_point(
         pool: &PgPool,
@@ -351,7 +352,6 @@ mod tests {
         assert_eq!(result.center.x, 10.0);
         assert_eq!(result.center.y, 10.0);
     }
-
     #[test]
     fn test_calculate_area_from_polygon() {
         // A 1-degree square box around equator
