@@ -404,8 +404,7 @@ export class FarmManagementService {
             if (field.max_slope !== undefined)
               updates.max_slope = outboxPayload.max_slope = field.max_slope;
             if (field.geometry_geojson !== undefined)
-              updates.geometry_geojson = outboxPayload.geometry_geojson =
-                field.geometry_geojson;
+              updates.geometry_geojson = outboxPayload.geometry_geojson = field.geometry_geojson;
 
             const updateData = {
               ...updates,
