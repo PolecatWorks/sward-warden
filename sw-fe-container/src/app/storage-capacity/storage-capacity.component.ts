@@ -38,8 +38,55 @@ export class StorageCapacityComponent implements OnInit, OnDestroy {
       name: ['', Validators.required],
       storage_type: ['liquid', Validators.required],
       capacity_volume: [0, [Validators.required, Validators.min(0.1)]],
+      calibration_mode: ['volume', Validators.required],
+      current_percentage: [0, [Validators.min(0), Validators.max(100)]],
+      current_volume: [0, [Validators.min(0)]],
       is_covered: [false],
       farm_id: [null],
+    });
+
+    this.storageForm.get('current_percentage')?.valueChanges.subscribe(pct => {
+      const mode = this.storageForm.get('calibration_mode')?.value;
+      if (mode === 'percentage') {
+        const capacity = this.storageForm.get('capacity_volume')?.value || 0;
+        const computedVol = Math.round((capacity * (pct || 0)) / 100 * 10) / 10;
+        this.storageForm.get('current_volume')?.setValue(computedVol, { emitEvent: false });
+      }
+    });
+
+    this.storageForm.get('current_volume')?.valueChanges.subscribe(vol => {
+      const mode = this.storageForm.get('calibration_mode')?.value;
+      if (mode === 'volume') {
+        const capacity = this.storageForm.get('capacity_volume')?.value || 0;
+        const computedPct = capacity > 0 ? Math.round(((vol || 0) / capacity) * 100) : 0;
+        this.storageForm.get('current_percentage')?.setValue(computedPct, { emitEvent: false });
+      }
+    });
+
+    this.storageForm.get('calibration_mode')?.valueChanges.subscribe(mode => {
+      const capacity = this.storageForm.get('capacity_volume')?.value || 0;
+      if (mode === 'percentage') {
+        const vol = this.storageForm.get('current_volume')?.value || 0;
+        const computedPct = capacity > 0 ? Math.round((vol / capacity) * 100) : 0;
+        this.storageForm.get('current_percentage')?.setValue(computedPct, { emitEvent: false });
+      } else {
+        const pct = this.storageForm.get('current_percentage')?.value || 0;
+        const computedVol = Math.round((capacity * pct) / 100 * 10) / 10;
+        this.storageForm.get('current_volume')?.setValue(computedVol, { emitEvent: false });
+      }
+    });
+
+    this.storageForm.get('capacity_volume')?.valueChanges.subscribe(capacity => {
+      const mode = this.storageForm.get('calibration_mode')?.value;
+      if (mode === 'percentage') {
+        const pct = this.storageForm.get('current_percentage')?.value || 0;
+        const computedVol = Math.round((capacity * pct) / 100 * 10) / 10;
+        this.storageForm.get('current_volume')?.setValue(computedVol, { emitEvent: false });
+      } else {
+        const vol = this.storageForm.get('current_volume')?.value || 0;
+        const computedPct = capacity > 0 ? Math.round((vol / capacity) * 100) : 0;
+        this.storageForm.get('current_percentage')?.setValue(computedPct, { emitEvent: false });
+      }
     });
   }
 
@@ -85,6 +132,9 @@ export class StorageCapacityComponent implements OnInit, OnDestroy {
     this.storageForm.reset({
       storage_type: 'liquid',
       capacity_volume: 0,
+      calibration_mode: 'volume',
+      current_percentage: 0,
+      current_volume: 0,
       is_covered: false,
       farm_id: null,
     });
@@ -94,10 +144,16 @@ export class StorageCapacityComponent implements OnInit, OnDestroy {
   startEdit(storage: InventoryStorageDocType) {
     this.isAdding = false;
     this.editingId = storage.id;
+    const currentVol = storage.current_volume || 0;
+    const capacity = storage.capacity_volume || 0;
+    const pct = capacity > 0 ? Math.round((currentVol / capacity) * 100) : 0;
     this.storageForm.patchValue({
       name: storage.name,
       storage_type: storage.storage_type,
-      capacity_volume: storage.capacity_volume,
+      capacity_volume: capacity,
+      calibration_mode: 'volume',
+      current_percentage: pct,
+      current_volume: currentVol,
       is_covered: storage.is_covered,
       farm_id: storage.farm_id,
     });
@@ -124,6 +180,7 @@ export class StorageCapacityComponent implements OnInit, OnDestroy {
         name: val.name,
         storage_type: val.storage_type,
         capacity_volume: Number(val.capacity_volume),
+        current_volume: val.current_volume ? Number(val.current_volume) : null,
         is_covered: val.is_covered,
         farm_id: val.farm_id ? Number(val.farm_id) : null,
         syncStatus: 'pending',
@@ -150,6 +207,7 @@ export class StorageCapacityComponent implements OnInit, OnDestroy {
           name: val.name,
           storage_type: val.storage_type,
           capacity_volume: Number(val.capacity_volume),
+          current_volume: val.current_volume ? Number(val.current_volume) : null,
           is_covered: val.is_covered,
           farm_id: val.farm_id ? Number(val.farm_id) : null,
           syncStatus: 'pending',

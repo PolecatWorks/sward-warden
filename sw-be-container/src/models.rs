@@ -216,6 +216,7 @@ pub struct InventoryStorage {
     pub name: String,
     pub storage_type: String,
     pub capacity_volume: f64,
+    pub current_volume: Option<f64>,
     pub is_covered: bool,
     #[serde(skip_deserializing)]
     pub created_at: chrono::DateTime<chrono::Utc>,

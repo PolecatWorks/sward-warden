@@ -18,6 +18,7 @@ CREATE TABLE inventory_storage (
     name VARCHAR(255) NOT NULL,
     storage_type VARCHAR(50) NOT NULL,
     capacity_volume NUMERIC NOT NULL,
+    current_volume NUMERIC,
     is_covered BOOLEAN NOT NULL DEFAULT false,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -41,6 +42,7 @@ pub struct InventoryStorage {
     pub name: String,
     pub storage_type: String,
     pub capacity_volume: f64,
+    pub current_volume: Option<f64>,
     pub is_covered: bool,
     #[serde(skip_deserializing)]
     pub created_at: chrono::DateTime<chrono::Utc>,

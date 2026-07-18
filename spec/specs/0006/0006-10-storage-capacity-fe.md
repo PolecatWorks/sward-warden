@@ -18,6 +18,7 @@ export interface InventoryStorageDocType {
   name: string;
   storage_type: string;
   capacity_volume: number;
+  current_volume?: number | null;
   is_covered: boolean;
   syncStatus: SyncStatus;
   updatedAt: string;

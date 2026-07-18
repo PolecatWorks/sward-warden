@@ -209,14 +209,14 @@ pub async fn delta_sync(
 
     let inventory_storage = if is_admin {
         sqlx::query_as::<_, InventoryStorage>(
-            "SELECT id, uuid, tenant_id, farm_id, name, storage_type, capacity_volume::DOUBLE PRECISION as capacity_volume, is_covered, created_at, updated_at FROM inventory_storage WHERE updated_at > $1"
+            "SELECT id, uuid, tenant_id, farm_id, name, storage_type, capacity_volume::DOUBLE PRECISION as capacity_volume, current_volume::DOUBLE PRECISION as current_volume, is_covered, created_at, updated_at FROM inventory_storage WHERE updated_at > $1"
         )
         .bind(since)
         .fetch_all(&state.db_pool)
         .await?
     } else {
         sqlx::query_as::<_, InventoryStorage>(
-            "SELECT id, uuid, tenant_id, farm_id, name, storage_type, capacity_volume::DOUBLE PRECISION as capacity_volume, is_covered, created_at, updated_at FROM inventory_storage WHERE tenant_id = $1 AND updated_at > $2"
+            "SELECT id, uuid, tenant_id, farm_id, name, storage_type, capacity_volume::DOUBLE PRECISION as capacity_volume, current_volume::DOUBLE PRECISION as current_volume, is_covered, created_at, updated_at FROM inventory_storage WHERE tenant_id = $1 AND updated_at > $2"
         )
         .bind(user_id)
         .bind(since)
