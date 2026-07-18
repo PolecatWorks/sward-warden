@@ -215,12 +215,12 @@ export class FieldViewComponent implements OnInit {
 
     this.isCalculatingArea = true;
     this.spatialService.calculateAreaFromPolygon(this.editFieldGeometry_geojson).subscribe({
-      next: (response) => {
+      next: (response: { area_sq_meters: number }) => {
         const hectares = response.area_sq_meters / 10000.0;
         this.editFieldArea = Number(hectares.toFixed(2));
         this.isCalculatingArea = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         this.logger.error('Error calculating area:', err);
         this.isCalculatingArea = false;
       }

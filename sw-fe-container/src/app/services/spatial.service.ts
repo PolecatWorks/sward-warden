@@ -26,4 +26,12 @@ export class SpatialService {
       `${this.apiUrl}/waterway-buffers?distance=${distance}`,
     );
   }
+
+  // PRD Reference: 0008
+  calculateAreaFromPolygon(geojson: string): Observable<{ area_sq_meters: number }> {
+    return this.http.post<{ area_sq_meters: number }>(
+      `${this.apiUrl}/area-from-poly`,
+      { geojson }
+    );
+  }
 }
