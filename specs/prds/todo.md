@@ -1,2 +1,3 @@
 - [ ] Fix flaky RxDB tests (COL23 error) caused by state bleeding across test suites in the RxDB memory adapter.
 - [ ] Fix 'Cannot read properties of undefined (reading subscribe)' in routing related tests that lack complete ActivatedRoute mocking.
+- [ ] Consider how to delete a user in production. Likely we want to mark them as deleted and disable the account. Then we will have a separate process that will do the final removal after suitable archival processes have been completed.
