@@ -122,10 +122,7 @@ pub fn app_router(state: AppState) -> Router {
             "/v0/spatial/extents",
             axum::routing::post(spatial::calculate_extents),
         )
-        .route(
-            "/v0/spatial/area-from-poly",
-            post(spatial::calculate_area),
-        )
+        .route("/v0/spatial/area-from-poly", post(spatial::calculate_area))
         .route("/v0/sync/delta", get(sync::delta_sync))
         .route(
             "/v0/soil_analyses",
