@@ -322,6 +322,29 @@ Serving the application locally via `http://sward-dev.k8s` alongside other domai
 
 ---
 
+## Zero-Trust Security Gaps & Mitigations
+
+During architectural review, the following potential security gaps were identified along with their respective mitigations to align SwardWarden with strict Zero-Trust Architecture (ZTA) patterns:
+
+### 1. Token Suspension/Revocation Latency
+*   **Gap:** Because the backend enforces authorization solely via the claims inside the validated JWT to avoid DB lookup overhead, a user who is suspended or has subscription modules revoked can continue to make valid API requests until their current Access Token expires.
+*   **Mitigation:**
+    - **Ultra Short-Lived Access Tokens:** Configure Keycloak to issue Access Tokens with a short lifespan (e.g., 2 to 5 minutes). The frontend client library will handle silent refresh token rotation seamlessly.
+    - **Refresh Token Invalidation:** When suspending an account, the backend must call the Keycloak Admin API to disable the user. This invalidates their Keycloak session immediately. When the frontend attempts its next silent refresh, Keycloak will reject the refresh token, terminating access.
+    - **Immediate Revocation (Optional):** If instant revocation is required for high-risk operations, implement a lightweight shared cache (e.g., Redis or in-memory) of suspended user IDs / token IDs (`jti` claim) that the backend checks before executing sensitive writes.
+
+### 2. JWT Replay & Audience Restriction
+*   **Gap:** A cryptographically valid JWT issued for a different client application within the same Keycloak realm could be replayed against SwardWarden's backend API.
+*   **Mitigation:**
+    - **Strict Audience Validation:** The backend's token verification middleware must validate that the `aud` (audience) claim in the JWT exactly matches the backend client ID (`sward-warden-be`). Any token with mismatched audience must be rejected.
+
+### 3. Mesh Bypass & Eavesdropping
+*   **Gap:** Pod-to-pod communication inside the Kubernetes cluster could be intercepted, or Envoy sidecars could be bypassed if plain-text HTTP is allowed between pods.
+*   **Mitigation:**
+    - **STRICT mTLS:** Configure an Istio `PeerAuthentication` policy in the `sward-warden-dev` and production namespaces setting mTLS to `STRICT`. This mandates that all in-mesh traffic is encrypted and authenticated using mutual TLS, preventing sidecar bypass.
+
+---
+
 ## Next Steps & Roadmap
 
 1. **Deployment manifests updates**:
@@ -330,5 +353,6 @@ Serving the application locally via `http://sward-dev.k8s` alongside other domai
 2. **Backend Code refactoring**:
    - Update `sw-be-container` configuration to support a configurable OIDC issuer and JWKS endpoint (e.g. `auth.oidc_issuer_url`, `auth.oidc_jwks_url`).
    - Modify the auth middleware to parse standard Keycloak JWT claims (`resource_access.sward-warden-be.roles`) in addition to the developer `sward_roles` claim.
+   - Implement strict `aud` validation in the token validation logic.
 3. **Frontend Integration**:
    - Update the UI codebase (e.g. using `keycloak-js` or an OIDC client library) to point to Keycloak for login redirection and token management.
