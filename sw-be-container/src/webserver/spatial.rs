@@ -45,11 +45,13 @@ pub struct CalculateAreaResponse {
 
 // PRD Reference: 0008
 pub async fn calculate_area(
-    State(state): State<AppState>,
+    State(_state): State<AppState>,
     Json(req): Json<CalculateAreaRequest>,
 ) -> Result<Json<CalculateAreaResponse>, AppError> {
     if req.geojson.trim().is_empty() {
-        return Err(AppError::BadRequest("GeoJSON string cannot be empty".into()));
+        return Err(AppError::BadRequest(
+            "GeoJSON string cannot be empty".into(),
+        ));
     }
 
     // validate it is a valid json object with type
@@ -63,7 +65,7 @@ pub async fn calculate_area(
         Err(_) => return Err(AppError::BadRequest("Invalid JSON string".into())),
     }
 
-    let area_sq_meters = SpatialService::calculate_area_from_polygon(&state.db_pool, &req.geojson).await?;
+    let area_sq_meters = SpatialService::calculate_area_from_polygon(&req.geojson)?;
 
     Ok(Json(CalculateAreaResponse { area_sq_meters }))
 }

@@ -71,18 +71,62 @@ impl SpatialService {
     }
 
     // PRD Reference: 0008
-    pub async fn calculate_area_from_polygon(
-        pool: &PgPool,
-        geojson_str: &str,
-    ) -> Result<f64, AppError> {
-        let area_sq_meters = sqlx::query_scalar::<_, f64>(
-            "SELECT ST_Area(ST_SetSRID(ST_GeomFromGeoJSON($1), 4326)::geography)",
-        )
-        .bind(geojson_str)
-        .fetch_one(pool)
-        .await?;
+    pub fn calculate_area_from_polygon(geojson_str: &str) -> Result<f64, AppError> {
+        use geo::GeodesicArea;
 
-        Ok(area_sq_meters)
+        // Parse the GeoJSON string
+        let geojson = geojson_str
+            .parse::<geojson::GeoJson>()
+            .map_err(|e| AppError::BadRequest(format!("Invalid GeoJSON: {}", e)))?;
+
+        // Extract geometry from the GeoJson object
+        let geometry = match geojson {
+            geojson::GeoJson::Geometry(geom) => geom,
+            geojson::GeoJson::Feature(feature) => feature.geometry.ok_or_else(|| {
+                AppError::BadRequest("Feature does not contain a geometry".to_string())
+            })?,
+            _ => {
+                return Err(AppError::BadRequest(
+                    "GeoJSON must be a Geometry or a Feature containing a geometry".to_string(),
+                ));
+            }
+        };
+
+        // Convert geojson::Geometry to geo::Geometry
+        let geo_geom = geo::Geometry::try_from(geometry).map_err(|_| {
+            AppError::BadRequest(
+                "Failed to convert GeoJSON geometry to valid geographic geometry".to_string(),
+            )
+        })?;
+
+        // Calculate geodesic area using the WGS84 ellipsoid
+        let area = match &geo_geom {
+            geo::Geometry::Polygon(poly) => poly.geodesic_area_unsigned(),
+            geo::Geometry::MultiPolygon(mpoly) => mpoly.geodesic_area_unsigned(),
+            geo::Geometry::GeometryCollection(gc) => {
+                fn get_collection_area(collection: &geo::GeometryCollection) -> f64 {
+                    collection
+                        .iter()
+                        .map(|g| match g {
+                            geo::Geometry::Polygon(p) => p.geodesic_area_unsigned(),
+                            geo::Geometry::MultiPolygon(mp) => mp.geodesic_area_unsigned(),
+                            geo::Geometry::GeometryCollection(sub_gc) => {
+                                get_collection_area(sub_gc)
+                            }
+                            _ => 0.0,
+                        })
+                        .sum()
+                }
+                get_collection_area(gc)
+            }
+            _ => {
+                return Err(AppError::BadRequest(
+                    "Geometry type is not supported for area calculation. Must be Polygon or MultiPolygon.".to_string(),
+                ));
+            }
+        };
+
+        Ok(area)
     }
 
     // PRD Reference: 0004
@@ -202,5 +246,27 @@ mod tests {
 
         assert_eq!(result.center.x, 10.0);
         assert_eq!(result.center.y, 10.0);
+    }
+
+    #[test]
+    fn test_calculate_area_from_polygon() {
+        // A 1-degree square box around equator
+        let geojson_str = r#"{
+            "type": "Polygon",
+            "coordinates": [
+                [
+                    [0.0, 0.0],
+                    [1.0, 0.0],
+                    [1.0, 1.0],
+                    [0.0, 1.0],
+                    [0.0, 0.0]
+                ]
+            ]
+        }"#;
+
+        let area = SpatialService::calculate_area_from_polygon(geojson_str).unwrap();
+        // 1 degree latitude is approx 111km, 1 degree longitude at equator is approx 111km.
+        // Area of 1x1 deg box should be approx 1.23e10 square meters. Let's assert it is in a reasonable range.
+        assert!(area > 1.2e10 && area < 1.3e10);
     }
 }
