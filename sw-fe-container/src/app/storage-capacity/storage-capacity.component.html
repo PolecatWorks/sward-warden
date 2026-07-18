@@ -53,6 +53,35 @@
                  class="w-full bg-surface text-on-surface border border-outline rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:border-transparent"
                  placeholder="0.0">
         </div>
+
+        <!-- Calibration Mode -->
+        <div>
+          <label class="block text-sm font-medium text-on-surface-variant mb-1">Calibration Mode</label>
+          <div class="flex gap-4 items-center h-10">
+            <label class="flex items-center gap-2 text-sm text-on-surface font-medium cursor-pointer">
+              <input type="radio" formControlName="calibration_mode" value="volume" class="w-4 h-4 text-primary focus:ring-primary">
+              Volume
+            </label>
+            <label class="flex items-center gap-2 text-sm text-on-surface font-medium cursor-pointer">
+              <input type="radio" formControlName="calibration_mode" value="percentage" class="w-4 h-4 text-primary focus:ring-primary">
+              Percentage
+            </label>
+          </div>
+        </div>
+
+        <!-- Calibration Input Value -->
+        <div *ngIf="storageForm.get('calibration_mode')?.value === 'volume'">
+          <label class="block text-sm font-medium text-on-surface-variant mb-1">Current Volume (m³)</label>
+          <input type="number" step="0.1" formControlName="current_volume"
+                 class="w-full bg-surface text-on-surface border border-outline rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:border-transparent"
+                 placeholder="0.0">
+        </div>
+        <div *ngIf="storageForm.get('calibration_mode')?.value === 'percentage'">
+          <label class="block text-sm font-medium text-on-surface-variant mb-1">Current Fill Percentage (%)</label>
+          <input type="number" formControlName="current_percentage"
+                 class="w-full bg-surface text-on-surface border border-outline rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:border-transparent"
+                 placeholder="0">
+        </div>
       </div>
 
       <!-- Covered Checkbox -->
@@ -102,7 +131,7 @@
           <p class="text-sm text-on-surface-variant flex items-center gap-2">
             <span class="capitalize font-medium">{{ storage.storage_type }}</span>
             <span>&bull;</span>
-            <span>{{ storage.capacity_volume }} m³</span>
+            <span>{{ storage.current_volume !== null && storage.current_volume !== undefined ? storage.current_volume + '/' : '' }}{{ storage.capacity_volume }} m³</span>
             <span>&bull;</span>
             <span class="truncate max-w-[150px]" title="{{ getFarmName(storage.farm_id) }}">{{ getFarmName(storage.farm_id) }}</span>
           </p>

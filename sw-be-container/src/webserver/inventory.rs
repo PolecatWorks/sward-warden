@@ -11,7 +11,7 @@ pub async fn list_inventory_storage(
     UserId(user_id): UserId,
 ) -> Result<Json<Vec<InventoryStorage>>, AppError> {
     let storages = sqlx::query_as::<_, InventoryStorage>(
-        "SELECT id, uuid, tenant_id, farm_id, name, storage_type, capacity_volume::DOUBLE PRECISION as capacity_volume, is_covered, created_at, updated_at FROM inventory_storage WHERE tenant_id = $1"
+        "SELECT id, uuid, tenant_id, farm_id, name, storage_type, capacity_volume::DOUBLE PRECISION as capacity_volume, current_volume::DOUBLE PRECISION as current_volume, is_covered, created_at, updated_at FROM inventory_storage WHERE tenant_id = $1"
     )
     .bind(user_id)
     .fetch_all(&state.db_pool)
@@ -43,9 +43,9 @@ pub async fn create_inventory_storage(
 
     let inserted = sqlx::query_as::<_, InventoryStorage>(
         r#"
-        INSERT INTO inventory_storage (tenant_id, farm_id, name, storage_type, capacity_volume, is_covered)
-        VALUES ($1, $2, $3, $4, $5, $6)
-        RETURNING id, uuid, tenant_id, farm_id, name, storage_type, capacity_volume::DOUBLE PRECISION as capacity_volume, is_covered, created_at, updated_at
+        INSERT INTO inventory_storage (tenant_id, farm_id, name, storage_type, capacity_volume, current_volume, is_covered)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING id, uuid, tenant_id, farm_id, name, storage_type, capacity_volume::DOUBLE PRECISION as capacity_volume, current_volume::DOUBLE PRECISION as current_volume, is_covered, created_at, updated_at
         "#
     )
     .bind(user_id)
@@ -53,6 +53,7 @@ pub async fn create_inventory_storage(
     .bind(&storage.name)
     .bind(&storage.storage_type)
     .bind(storage.capacity_volume)
+    .bind(storage.current_volume)
     .bind(storage.is_covered)
     .fetch_one(&state.db_pool)
     .await?;
@@ -86,15 +87,16 @@ pub async fn update_inventory_storage(
     let updated = sqlx::query_as::<_, InventoryStorage>(
         r#"
         UPDATE inventory_storage
-        SET farm_id = $1, name = $2, storage_type = $3, capacity_volume = $4, is_covered = $5, updated_at = NOW()
-        WHERE id = $6 AND tenant_id = $7
-        RETURNING id, uuid, tenant_id, farm_id, name, storage_type, capacity_volume::DOUBLE PRECISION as capacity_volume, is_covered, created_at, updated_at
+        SET farm_id = $1, name = $2, storage_type = $3, capacity_volume = $4, current_volume = $5, is_covered = $6, updated_at = NOW()
+        WHERE id = $7 AND tenant_id = $8
+        RETURNING id, uuid, tenant_id, farm_id, name, storage_type, capacity_volume::DOUBLE PRECISION as capacity_volume, current_volume::DOUBLE PRECISION as current_volume, is_covered, created_at, updated_at
         "#
     )
     .bind(storage.farm_id)
     .bind(&storage.name)
     .bind(&storage.storage_type)
     .bind(storage.capacity_volume)
+    .bind(storage.current_volume)
     .bind(storage.is_covered)
     .bind(id)
     .bind(user_id)

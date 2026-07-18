@@ -18,6 +18,7 @@ export interface InventoryStorageDocType {
   name: string;
   storage_type: string;
   capacity_volume: number;
+  current_volume?: number | null;
   is_covered: boolean;
   syncStatus: SyncStatus;
   updatedAt: string;
@@ -171,6 +172,7 @@ export const inventoryStorageSchema: RxJsonSchema<InventoryStorageDocType> = {
     name: { type: 'string' },
     storage_type: { type: 'string' },
     capacity_volume: { type: 'number' },
+    current_volume: { type: ['number', 'null'] },
     is_covered: { type: 'boolean' },
     syncStatus: { type: 'string', default: 'synced' },
     updatedAt: { type: 'string' },
