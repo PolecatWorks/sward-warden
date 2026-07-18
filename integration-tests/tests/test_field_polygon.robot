@@ -42,12 +42,14 @@ Field Polygon Creation and Mapping Verification Journey
     Press Keys    .glass    Enter
     Sleep    5s
 
-    # Programmatically set the Ballycastle polygon geometry via the Angular component and trigger change detection
-    Evaluate JavaScript    app-fields    (elem) => { const parentComp = ng.getComponent(elem); const geojsonStr = '{"type":"Polygon","coordinates":[[[-6.251,55.201],[-6.249,55.201],[-6.249,55.199],[-6.251,55.199],[-6.251,55.201]]]}'; parentComp.newFieldGeometry_geojson = geojsonStr; ng.applyChanges(parentComp); const mapEl = elem.querySelector('app-field-map-editor'); if (mapEl) { const mapComp = ng.getComponent(mapEl); mapComp.loadGeoJson(geojsonStr); ng.applyChanges(mapComp); } }
+    # Draw the polygon using Leaflet-Geoman controls on the map
+    Click    .leaflet-pm-icon-polygon    button=left
+    Click With Options    .leaflet-container    position_x=100    position_y=100
+    Click With Options    .leaflet-container    position_x=200    position_y=100
+    Click With Options    .leaflet-container    position_x=200    position_y=200
+    Click With Options    .leaflet-container    position_x=100    position_y=200
+    Click    .action-finish    button=left
     Sleep    2s
-
-    ${fe_val}=    Evaluate JavaScript    app-fields    (elem) => ng.getComponent(elem).newFieldGeometry_geojson
-    Log    Geometry value in FE component is: ${fe_val}
 
     # Save the field
     Click    id=save-field-btn
