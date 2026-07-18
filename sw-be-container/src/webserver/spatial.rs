@@ -1,5 +1,6 @@
 use crate::error::AppError;
 use crate::spatial::SpatialService;
+use crate::spatial::models::{ExtentsRequest, ExtentsResponse};
 use crate::state::AppState;
 use axum::{
     Json,
@@ -22,4 +23,12 @@ pub async fn get_waterway_buffers(
     let geojson: serde_json::Value =
         serde_json::from_str(&geojson_str).unwrap_or(serde_json::json!({}));
     Ok(Json(geojson))
+}
+
+// PRD Reference: 0004
+pub async fn calculate_extents(
+    Json(payload): Json<ExtentsRequest>,
+) -> Result<Json<ExtentsResponse>, AppError> {
+    let result = SpatialService::calculate_extents(payload.geometries)?;
+    Ok(Json(result))
 }
