@@ -125,7 +125,7 @@ Field Creation and Deletion Flow - Enter Key
     # 4. Fill in field details and save via Enter key
     Fill Text    \#newFieldName    ${field_name}
     Fill Text    \#newFieldArea    ${field_area}
-    Keyboard Key    press    Enter
+    Press Keys    \#newFieldArea    Enter
 
     # 5. Wait for field to appear in the UI
     Wait For Elements State    text=${field_name}    visible    timeout=10s
