@@ -467,3 +467,124 @@ async fn test_delete_user_route_exists() {
 
     assert_ne!(response.status(), StatusCode::NOT_FOUND);
 }
+
+#[tokio::test]
+async fn test_get_user_idor_protection() {
+    let state = get_test_state();
+    let app = app_router(state.clone());
+
+    // User 1 requests User 2's profile - should be Forbidden
+    let token = generate_test_jwt(&state, 1, "user");
+    let response = app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .uri("/v0/users/2")
+                .header("Authorization", format!("Bearer {}", token))
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(response.status(), StatusCode::FORBIDDEN);
+
+    // User 2 requests User 2's profile - should be OK (or internal error/not found if mock DB fails, but NOT forbidden)
+    let token2 = generate_test_jwt(&state, 2, "user");
+    let response2 = app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .uri("/v0/users/2")
+                .header("Authorization", format!("Bearer {}", token2))
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_ne!(response2.status(), StatusCode::FORBIDDEN);
+    assert_ne!(response2.status(), StatusCode::UNAUTHORIZED);
+
+    // Admin requests User 2's profile - should be OK
+    let token_admin = generate_test_jwt(&state, 3, "admin");
+    let response_admin = app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .uri("/v0/users/2")
+                .header("Authorization", format!("Bearer {}", token_admin))
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_ne!(response_admin.status(), StatusCode::FORBIDDEN);
+    assert_ne!(response_admin.status(), StatusCode::UNAUTHORIZED);
+
+    // Support requests User 2's profile - should be OK
+    let token_support = generate_test_jwt(&state, 4, "support");
+    let response_support = app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .uri("/v0/users/2")
+                .header("Authorization", format!("Bearer {}", token_support))
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_ne!(response_support.status(), StatusCode::FORBIDDEN);
+    assert_ne!(response_support.status(), StatusCode::UNAUTHORIZED);
+}
+
+#[tokio::test]
+async fn test_update_user_idor_and_privilege_escalation() {
+    let state = get_test_state();
+    let app = app_router(state.clone());
+
+    let user_json = serde_json::json!({
+        "id": 2,
+        "name": "Updated User",
+        "email": "updated@example.com",
+        "role": "admin",
+        "phone": "123456",
+        "description": "Some description",
+        "is_suspended": false,
+        "client_log_level": "DEBUG",
+        "modules": []
+    });
+
+    // User 1 trying to update User 2 - should be Forbidden
+    let token1 = generate_test_jwt(&state, 1, "user");
+    let response1 = app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .method("PUT")
+                .uri("/v0/users/2")
+                .header("Authorization", format!("Bearer {}", token1))
+                .header("Content-Type", "application/json")
+                .body(Body::from(user_json.to_string()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(response1.status(), StatusCode::FORBIDDEN);
+
+    // Support trying to update User 2 - should be Forbidden
+    let token_support = generate_test_jwt(&state, 4, "support");
+    let response_support = app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .method("PUT")
+                .uri("/v0/users/2")
+                .header("Authorization", format!("Bearer {}", token_support))
+                .header("Content-Type", "application/json")
+                .body(Body::from(user_json.to_string()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(response_support.status(), StatusCode::FORBIDDEN);
+}

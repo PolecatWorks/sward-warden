@@ -1,7 +1,6 @@
 use crate::error::AppError;
 use crate::models::User;
 use crate::state::AppState;
-use crate::webserver::auth::UserId;
 use axum::{Json, extract::State};
 
 // References more than 3 PRDs
@@ -68,9 +67,13 @@ pub async fn create_user(
 // References more than 3 PRDs
 pub async fn get_user(
     State(state): State<AppState>,
-    _caller: UserId,
+    caller: crate::webserver::auth::JwtUser,
     axum::extract::Path(id): axum::extract::Path<i64>,
 ) -> Result<Json<User>, AppError> {
+    if caller.user_id != id && caller.role != "admin" && caller.role != "support" {
+        return Err(AppError::Forbidden("Access denied".to_string()));
+    }
+
     let user = sqlx::query_as::<_, User>(
         "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, u.client_log_level, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.id = $1 GROUP BY u.id",
     )
@@ -83,15 +86,48 @@ pub async fn get_user(
 // References more than 3 PRDs
 pub async fn update_user(
     State(state): State<AppState>,
+    caller: crate::webserver::auth::JwtUser,
     axum::extract::Path(id): axum::extract::Path<i64>,
     Json(user): Json<User>,
 ) -> Result<Json<User>, AppError> {
+    if caller.user_id != id && caller.role != "admin" {
+        return Err(AppError::Forbidden("Access denied".to_string()));
+    }
+
     let mut tx = state.db_pool.begin().await?;
 
-    let log_level = if user.client_log_level.is_empty() {
-        "INFO"
+    let existing_user = sqlx::query_as::<_, User>(
+        "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, u.client_log_level, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.id = $1 GROUP BY u.id",
+    )
+    .bind(id)
+    .fetch_one(&mut *tx)
+    .await?;
+
+    let is_admin = caller.role == "admin";
+
+    let role_to_save = if is_admin {
+        &user.role
     } else {
-        &user.client_log_level
+        &existing_user.role
+    };
+    let is_suspended_to_save = if is_admin {
+        user.is_suspended
+    } else {
+        existing_user.is_suspended
+    };
+    let log_level_to_save = if is_admin {
+        if user.client_log_level.is_empty() {
+            "INFO"
+        } else {
+            &user.client_log_level
+        }
+    } else {
+        &existing_user.client_log_level
+    };
+    let modules_to_save = if is_admin {
+        &user.modules
+    } else {
+        &existing_user.modules
     };
 
     sqlx::query(
@@ -99,26 +135,28 @@ pub async fn update_user(
     )
     .bind(&user.name)
     .bind(&user.email)
-    .bind(&user.role)
+    .bind(role_to_save)
     .bind(&user.phone)
     .bind(&user.description)
-    .bind(user.is_suspended)
-    .bind(log_level)
+    .bind(is_suspended_to_save)
+    .bind(log_level_to_save)
     .bind(id)
     .execute(&mut *tx)
     .await?;
 
-    if let Some(modules) = &user.modules {
-        sqlx::query("DELETE FROM user_modules WHERE user_id = $1")
-            .bind(id)
-            .execute(&mut *tx)
-            .await?;
-        if !modules.is_empty() {
-            sqlx::query("INSERT INTO user_modules (user_id, module_id) SELECT $1, id FROM modules WHERE name = ANY($2)")
+    if is_admin {
+        if let Some(modules) = modules_to_save {
+            sqlx::query("DELETE FROM user_modules WHERE user_id = $1")
                 .bind(id)
-                .bind(modules)
                 .execute(&mut *tx)
                 .await?;
+            if !modules.is_empty() {
+                sqlx::query("INSERT INTO user_modules (user_id, module_id) SELECT $1, id FROM modules WHERE name = ANY($2)")
+                    .bind(id)
+                    .bind(modules)
+                    .execute(&mut *tx)
+                    .await?;
+            }
         }
     }
 
