@@ -1,6 +1,8 @@
 use crate::config::SpatialConfig;
 use crate::error::AppError;
-use crate::spatial::models::{Extents, ExtentsResponse, Point, OfficialBoundary, OfficialBoundaryApiResponse};
+use crate::spatial::models::{
+    Extents, ExtentsResponse, OfficialBoundary, OfficialBoundaryApiResponse, Point,
+};
 use geo::{BoundingRect, Geometry};
 use sqlx::PgPool;
 use std::convert::TryFrom;
@@ -184,7 +186,6 @@ impl SpatialService {
 
         Ok(area)
     }
-
 
     pub async fn get_cached_boundary_by_point(
         pool: &PgPool,
