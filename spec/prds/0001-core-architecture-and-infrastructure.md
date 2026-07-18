@@ -37,8 +37,21 @@ This document defines the overarching application architecture for the sward man
   - Admin users bypass `user_id` filtering but act securely on the data.
 
 ## 4. Security & CORS Policy Hardening
-- **Authentication:** OAuth2 (OIDC) supporting providers like Google. Endpoints protected and JWT validated by Istio/middleware.
-- **Identity Extraction:** User identity extracted dynamically from a secure authenticated context (e.g. valid JWT). `X-User-ID` header used only as a temporary dev mechanism.
+- **Authentication & Federated Identity:** OpenID Connect (OIDC) with Keycloak as the Identity Provider (IdP). The frontend (`sward-warden-fe`) acts as a public client executing OIDC Authorization Code Flow with PKCE.
+- **Identity & Token Validation Layers:**
+  - **Istio Service Mesh Layer:** An Envoy sidecar on the backend API pod intercepts traffic, validating JWT signatures against Keycloak's JSON Web Key Sets (JWKS) via `RequestAuthentication` and restricting access via `AuthorizationPolicy` based on token claims.
+  - **Backend Layer (Zero-Trust Validation):** The backend service does not trust the network boundary alone. It parses the `Authorization: Bearer <JWT>` header, verifies the cryptographic signature locally by caching Keycloak's JWKS, and validates the claims.
+- **JWT-Driven Enforcement (Zero Database Lookup Policy):**
+  To optimize performance and enforce strict architectural decoupling, the backend must rely *exclusively* on the claims contained within the validated JWT for all authentication and authorization checks. Querying the database to check role permissions, subscription modules, or suspension state is prohibited.
+  - **Required Custom JWT Claims:**
+    - `sub`: The unique identifier of the user (maps to the SwardWarden `user_id` or user UUID).
+    - `sward_roles`: Array of strings containing active roles (e.g. `["admin"]`, `["user"]`).
+    - `sward_suspended`: Boolean indicating whether the account is suspended. If `true`, the backend must immediately reject the request with `403 Forbidden`.
+    - `sward_modules`: Array of strings containing enabled modules (e.g. `["reports_and_analysis"]`).
+- **Secure Context & Local Development Constraints:**
+  To support the Web Crypto API required for browser-side PKCE challenge computation, the application must run in a Secure Context:
+  - In production and staging, HTTPS is strictly enforced.
+  - For local development, HTTP must only be used on `localhost` or `127.0.0.1`. Any local custom hostnames (e.g., `sward-dev.k8s`) must terminate TLS at the ingress gateway (using local CA certificates like `mkcert`) to serve the site over HTTPS.
 - **CORS Hardening:**
   - Strict, configurable whitelist-based CORS policy (no wildcard `*` or `Any` in production).
   - Preflight request handling injected via Axum `CorsLayer`.
