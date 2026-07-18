@@ -175,8 +175,13 @@ pub async fn update_user(
 // References more than 3 PRDs
 pub async fn delete_user(
     State(state): State<AppState>,
+    caller: crate::webserver::auth::JwtUser,
     axum::extract::Path(id): axum::extract::Path<i64>,
 ) -> Result<axum::http::StatusCode, AppError> {
+    if caller.user_id != id && caller.role != "admin" {
+        return Err(AppError::Forbidden("Access denied".to_string()));
+    }
+
     let env = state.config.debugging.environment.as_str();
     if env != "development" && env != "testing" {
         return Err(AppError::Forbidden(
