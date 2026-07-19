@@ -343,27 +343,34 @@ jobs:
       - name: Publish to gh-pages
         run: |
           # Configure Git
+          echo "Configuring Git user and environment variables..."
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           export GIT_EDITOR=true
           export GIT_TERMINAL_PROMPT=0
 
           # Initialize a repository for sparse checkout
+          echo "Initializing temporary repository for gh-pages..."
           mkdir gh-pages-repo
           cd gh-pages-repo
           git init
           git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
 
           # Enable sparse checkout
+          echo "Configuring sparse checkout..."
           git config core.sparseCheckout true
           git sparse-checkout init --no-cone
 
           # Configure it to only track the docs/rust directory
+          echo "Setting sparse checkout paths for docs/rust..."
           git sparse-checkout set "docs/rust"
 
           # Fetch only the gh-pages branch with depth 1 to speed up checkout
+          echo "Fetching gh-pages branch from remote..."
           git fetch --depth 1 origin gh-pages
+          echo "Checking out gh-pages branch..."
           git checkout gh-pages
+          echo "Checkout successful, returning to parent directory."
           cd ..
 
           # Run a retry loop for copying, committing, and pushing
