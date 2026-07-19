@@ -334,9 +334,9 @@ jobs:
           git config core.sparseCheckout true
           git sparse-checkout init --no-cone
 
-          # Configure it to only track the target directory and all .timestamp files (for pruning checks)
-          echo "Setting sparse checkout paths for $TARGET_DIR..."
-          git sparse-checkout set "$TARGET_DIR" "pr/*/.timestamp"
+          # Configure it to only track the target directory
+          echo "Setting sparse checkout path for $TARGET_DIR..."
+          git sparse-checkout set "$TARGET_DIR"
 
           # Fetch only the gh-pages branch with depth 1 to speed up checkout
           echo "Fetching gh-pages branch from remote..."
@@ -346,9 +346,8 @@ jobs:
             echo "Checkout successful, returning to parent directory."
             cd ..
           else
-            echo "gh-pages branch does not exist or fetch failed. Creating a new orphan gh-pages branch..."
+            echo "gh-pages branch does not exist on remote. Creating a new orphan gh-pages branch..."
             git checkout --orphan gh-pages
-            git rm -rf . || true
             echo "Orphan branch created, returning to parent directory."
             cd ..
           fi
@@ -362,28 +361,6 @@ jobs:
             mkdir -p gh-pages-repo/$TARGET_DIR
             cp -r ./robot-results/* gh-pages-repo/$TARGET_DIR/ || true
             date +%s > gh-pages-repo/$TARGET_DIR/.timestamp
-
-            echo "Running PR report pruning script..."
-            # Prune PR reports older than 7 days using Python (still works because we checked out pr/*/.timestamp)
-            python3 -c 'import sys, textwrap; exec(textwrap.dedent(sys.argv[1]))' '
-            import os, time, shutil
-            now = time.time()
-            pr_dir = "gh-pages-repo/pr"
-            if os.path.exists(pr_dir):
-                for entry in os.listdir(pr_dir):
-                    path = os.path.join(pr_dir, entry)
-                    if os.path.isdir(path):
-                        ts_file = os.path.join(path, ".timestamp")
-                        if os.path.exists(ts_file):
-                            try:
-                                with open(ts_file, "r") as f:
-                                    ts = float(f.read().strip())
-                                    if now - ts > 7 * 24 * 3600:
-                                        print(f"Pruning old PR report: {path}")
-                                        shutil.rmtree(path)
-                            except Exception as e:
-                                print(f"Error checking timestamp for {path}: {e}")
-            '
 
             # Commit and push
             echo "Staging files and checking for changes..."

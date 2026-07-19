@@ -1,0 +1,53 @@
+name: Prune GitHub Pages Reports
+on:
+  schedule:
+    - cron: '0 0 * * *' # Run daily at midnight
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  prune:
+    name: Prune Old PR Reports
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+
+      - name: Prune Old PR Reports
+        run: |
+          # Prune PR reports older than 7 days using Python
+          python3 -c '
+          import os, time, shutil
+          now = time.time()
+          pr_dir = "pr"
+          if os.path.exists(pr_dir):
+              for entry in os.listdir(pr_dir):
+                  path = os.path.join(pr_dir, entry)
+                  if os.path.isdir(path):
+                      ts_file = os.path.join(path, ".timestamp")
+                      if os.path.exists(ts_file):
+                          try:
+                              with open(ts_file, "r") as f:
+                                  ts = float(f.read().strip())
+                                  if now - ts > 7 * 24 * 3600:
+                                      print(f"Pruning old PR report: {path}")
+                                      shutil.rmtree(path)
+                          except Exception as e:
+                              print(f"Error checking timestamp for {path}: {e}")
+          '
+
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          if ! git diff --quiet || ! git diff --cached --quiet; then
+            git commit -m "chore: prune old PR reports"
+            git push origin gh-pages
+          else
+            echo "No old reports to prune."
+          fi
