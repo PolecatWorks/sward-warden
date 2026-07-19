@@ -70,38 +70,6 @@ impl FromRequestParts<AppState> for SupportOnly {
     }
 }
 
-pub struct UserAndRole {
-    pub id: i64,
-    pub role: String,
-}
-
-impl FromRequestParts<AppState> for UserAndRole {
-    type Rejection = AppError;
-
-    async fn from_request_parts(
-        parts: &mut Parts,
-        state: &AppState,
-    ) -> Result<Self, Self::Rejection> {
-        let (user_id, mut role) = extract_jwt_claims(parts, state).await?;
-
-        let auth_info = get_user_auth_info(&state.db_pool, user_id).await;
-        if let Some((_, true)) = auth_info {
-            return Err(AppError::Forbidden("Account is suspended".to_string()));
-        }
-
-        if role.is_none() {
-            role = auth_info.map(|(r, _)| r);
-        }
-
-        let role_str = role.unwrap_or_else(|| "user".to_string());
-
-        Ok(UserAndRole {
-            id: user_id,
-            role: role_str,
-        })
-    }
-}
-
 pub struct UserId(pub i64);
 
 impl FromRequestParts<AppState> for UserId {
