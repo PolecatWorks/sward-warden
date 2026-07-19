@@ -20,6 +20,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0001-14 Delta Sync Client and Conflict Resolution](./0001/0001-14-delta-sync-client-and-conflict-resolution.md) | Complete | PRD 0001 |
 | [0001-15 Self-Healing and Recovery Mechanisms](./0001/0001-15-self-healing-and-recovery.md) | Complete | PRD 0001 |
 | [0001-16 Security: Fix Overly Permissive CORS Policy](./0001/0001-16-security-cors.md) | Complete | PRD 0001 |
+| [0001-17 Keycloak CRs and Istio Security Policies](./0001/0001-17-gitops-keycloak-istio-crs.md) | Complete | PRD 0001 |
 | [0002-01 Dashboard Specification](./0002/0002-01-dashboard.md) | Complete | PRD 0002 |
 | [0002-02 Compliance Tracking Specification](./0002/0002-02-compliance-tracking.md) | Complete | PRD 0002 |
 | [0002-03 Optimization Engine Specification](./0002/0002-03-optimization-engine.md) | Complete | PRD 0002 |

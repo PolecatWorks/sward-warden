@@ -1,6 +1,6 @@
 # Infrastructure: Keycloak CRs and Istio Security Policies
 
-**State**: Planned
+**State**: Complete
 
 ## 1. Overview
 This specification details the infrastructure updates required in the `fluxcd-dev` environment to secure the SwardWarden application using Keycloak and Istio. It defines the necessary Keycloak Custom Resources (CRs) using the EDP Keycloak Operator, and the Istio `RequestAuthentication` and `AuthorizationPolicy` CRs.

@@ -67,6 +67,26 @@ spec:
     remediation:
       retries: 3
   values:
+    devsecops:
+      RequestAuthentication:
+        jwtRules:
+          - issuer: "https://sw-dev.polecatworks.com/auth/realms/sw-dev"
+            jwksUri: "http://keycloak-keycloakx-http.auth.svc.cluster.local/auth/realms/sw-dev/protocol/openid-connect/certs"
+            forwardOriginalToken: true
+            outputPayloadToHeader: "x-jwt-payload"
+      AuthorizationPolicy:
+        rules:
+          # Allow health checks without token
+          - to:
+              - operation:
+                  paths: ["/hams/alive", "/hams/ready"]
+          # Allow requests to API paths only if they have a valid token issuer
+          - from:
+              - source:
+                  requestPrincipals: ["https://sw-dev.polecatworks.com/auth/realms/sw-dev/*"]
+            to:
+              - operation:
+                  paths: ["/sward/v0/*"]
     imagePullSecrets:
       - name: ghcr-docker-auth
     env:
