@@ -11,46 +11,10 @@ spec:
   ref:
     semver: ">= 0.1.x-0"
     semverFilter: .*-main-*
-
-
-# ---
-# apiVersion: helm.toolkit.fluxcd.io/v2
-# kind: HelmRelease
-# metadata:
-#   name: mfe-sward-warden
-# spec:
-#   releaseName: mfe-sward-warden
-#   chartRef:
-#     kind: OCIRepository
-#     name: mfe-shell
-#     namespace: dev
-#   interval: 50m
-#   install:
-#     remediation:
-#       retries: 3
-#   values:
-#     image:
-#       repository: ghcr.io/polecatworks/sward-warden-fe
-#       tag: latest
-#       pullPolicy: Always # Dev ONLY
-#     env:
-#       - name: SERVE_ROOT
-#         value: /mfe/sward-warden
-#     config:
-#       contents:
-#         config.json: |
-#           {
-#             "apiUrl": "/sward-be/v0"
-#           }
----
 # If this is failing with 'DENIED', ensure the PAT in 'sw-gh-pat' has 'read:packages' scope.
 # For private GHCR repositories, the username must be the GitHub username.
 # Using a 'kubernetes.io/dockerconfigjson' secret is also recommended for OCI.
-
-# kubectl create secret docker-registry ghcr-docker-auth -n sward-warden-dev \
-#   --docker-server=ghcr.io \
-#   --docker-username=<USERNAME> \
-#   --docker-password='<YOUR_WORKING_PAT>'
+---
 
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
@@ -98,7 +62,7 @@ spec:
           value: "60s"
     image:
       repository: ghcr.io/polecatworks/sward-warden-be
-      tag: main
+      tag: sha-f06e862e679b04ccbb996a73ba0ff62ced7974b7
       pullPolicy: Always
     resources:
       requests:
@@ -132,8 +96,6 @@ spec:
         environment: "development"
         enable_dev_auth: true
         log_level: "info"
-
-
     volumes:
       - name: config
         configMap:
@@ -154,3 +116,4 @@ spec:
         subPath: config.yaml
       - name: secrets
         mountPath: /etc/sw-be/secrets
+    customPodSHA: 08bf410
