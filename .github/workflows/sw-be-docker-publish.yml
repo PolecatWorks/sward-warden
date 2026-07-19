@@ -377,12 +377,13 @@ jobs:
           for i in {1..5}; do
             echo "Attempt $i to publish Rust docs..."
 
-            # Clean and update the docs/rust dir inside the cloned repo
+            echo "Cleaning and copying new Rust docs to gh-pages-repo/docs/rust..."
             rm -rf gh-pages-repo/docs/rust
             mkdir -p gh-pages-repo/docs/rust
             cp -r ./sw-be-container/target/doc/* gh-pages-repo/docs/rust/ || true
 
             # Commit and push
+            echo "Staging files and checking for changes..."
             cd gh-pages-repo
             git add .
             if git diff --quiet && git diff --staged --quiet; then
@@ -391,18 +392,21 @@ jobs:
               break
             fi
 
+            echo "Committing changes..."
             git commit -m "Deploy Rust Docs"
 
+            echo "Pushing commits to remote origin gh-pages..."
             if git push origin gh-pages; then
               echo "Successfully deployed!"
               cd ..
               break
             fi
 
-            echo "Push failed, pulling latest changes and retrying..."
+            echo "Push failed! Pulling latest changes from remote with rebase..."
             git pull --rebase -Xtheirs --no-edit origin gh-pages
             cd ..
 
+            echo "Waiting 5 seconds before next attempt..."
             sleep 5
           done
 
