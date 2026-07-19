@@ -59,7 +59,7 @@ fn get_test_state() -> AppState {
         debugging: crate::config::DebuggingConfig {
             fail_debug_delay: std::time::Duration::from_secs(0),
             environment: "testing".to_string(),
-            enable_dev_auth: false,
+            enable_dev_auth: true,
             log_level: "info".to_string(),
         },
         spatial: crate::config::SpatialConfig::default(),
@@ -587,4 +587,52 @@ async fn test_update_user_idor_and_privilege_escalation() {
         .await
         .unwrap();
     assert_eq!(response_support.status(), StatusCode::FORBIDDEN);
+}
+
+#[tokio::test]
+async fn test_x_jwt_payload_authorized() {
+    let state = get_test_state();
+    let app = app_router(state);
+
+    // payload: {"sub": "1", "sward_roles": ["admin"]}
+    let payload = r#"{"sub": "1", "sward_roles": ["admin"]}"#;
+    let b64_payload = base64::Engine::encode(
+        &base64::engine::general_purpose::STANDARD,
+        payload.as_bytes(),
+    );
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .uri("/v0/admin/health")
+                .header("x-jwt-payload", b64_payload)
+                .header("Authorization", "Bearer some_dummy_token_123")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::OK);
+}
+
+#[tokio::test]
+async fn test_x_jwt_payload_missing_dev_auth_disabled() {
+    let mut state = get_test_state();
+    state.config.debugging.enable_dev_auth = false;
+    let app = app_router(state);
+
+    // Missing x-jwt-payload header in production mode must return 401
+    let response = app
+        .oneshot(
+            Request::builder()
+                .uri("/v0/admin/health")
+                .header("Authorization", "Bearer some_dummy_token_123")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
 }

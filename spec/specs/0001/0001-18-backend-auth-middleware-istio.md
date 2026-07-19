@@ -1,6 +1,6 @@
 # Backend: Auth Middleware & Istio Integration
 
-**State**: Planned
+**State**: Complete
 
 ## 1. Overview
 This specification details the updates required for the SwardWarden Rust backend (`sw-be-container`) to support authentication when running behind an Istio service mesh that acts as the primary OIDC token verifier.
@@ -35,8 +35,8 @@ To support local development without requiring a full Keycloak and Istio setup, 
   - If `debugging.enable_dev_auth` is `false`, the backend must strictly rely on the Istio-injected header and reject requests without it.
 
 ## 4. Acceptance Criteria
-- [ ] Backend middleware successfully parses the `x-jwt-payload` header injected by Istio.
-- [ ] The `sub` and `sward_roles` claims are correctly extracted and populated into the request context.
-- [ ] The original `Authorization` token is extracted and available in the request context.
-- [ ] In production (`enable_dev_auth: false`), requests missing the `x-jwt-payload` are rejected with `401 Unauthorized`.
-- [ ] In development (`enable_dev_auth: true`), requests with a valid local mock JWT but missing `x-jwt-payload` are accepted via local signature validation.
+- [x] Backend middleware successfully parses the `x-jwt-payload` header injected by Istio.
+- [x] The `sub` and `sward_roles` claims are correctly extracted and populated into the request context.
+- [x] The original `Authorization` token is extracted and available in the request context.
+- [x] In production (`enable_dev_auth: false`), requests missing the `x-jwt-payload` are rejected with `401 Unauthorized`.
+- [x] In development (`enable_dev_auth: true`), requests with a valid local mock JWT but missing `x-jwt-payload` are accepted via local signature validation.
