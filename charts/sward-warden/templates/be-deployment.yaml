@@ -18,6 +18,9 @@ spec:
       annotations:
         checksum/config: {{ $configsha }}
         checksum/volumes: {{ $volumesha }}
+        {{- if .Values.customPodSHA }}
+        checksum/custom: {{ .Values.customPodSHA | quote }}
+        {{- end }}
       {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

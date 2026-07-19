@@ -53,3 +53,4 @@ devsecops:
     rules: []
   RequestAuthentication:
     jwtRules: []
+customPodSHA: ""
