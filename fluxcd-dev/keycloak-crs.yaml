@@ -1,0 +1,99 @@
+apiVersion: v1.edp.epam.com/v1
+kind: KeycloakRealm
+metadata:
+  name: sw-dev
+  namespace: sward-warden-dev
+spec:
+  realmName: sw-dev
+  displayName: SwardWarden Development Realm
+  keycloakRef:
+    kind: Keycloak
+    name: keycloak-dev
+  login:
+    userRegistration: true
+---
+apiVersion: v1.edp.epam.com/v1
+kind: KeycloakClient
+metadata:
+  name: sward-warden-be
+  namespace: sward-warden-dev
+spec:
+  clientId: sward-warden-be
+  name: SwardWarden Backend API
+  description: Backend API Client
+  realmRef:
+    kind: KeycloakRealm
+    name: sw-dev
+  public: false
+  clientAuthenticatorType: client-secret
+  serviceAccount:
+    enabled: true
+  clientRolesV2:
+    - name: admin
+      description: "Full system administration and read/write access"
+    - name: support
+      description: "Access to read audit logs and view general farm data"
+    - name: user
+      description: "Standard tenant access"
+    - name: viewer
+      description: "Read-only access"
+---
+apiVersion: v1.edp.epam.com/v1
+kind: KeycloakClient
+metadata:
+  name: sward-warden-fe
+  namespace: sward-warden-dev
+spec:
+  clientId: sward-warden-fe
+  name: SwardWarden Frontend
+  description: Public client for SwardWarden Web UI
+  realmRef:
+    kind: KeycloakRealm
+    name: sw-dev
+  public: true
+  standardFlowEnabled: true
+  redirectUris:
+    - "http://localhost:4200/*"
+    - "https://sward.k8s/*"
+    - "https://sw-dev.polecatworks.com/*"
+  webOrigins:
+    - "+"
+  advancedProtocolMappers: true
+  protocolMappers:
+    - name: sward-roles-mapper
+      protocol: openid-connect
+      protocolMapper: oidc-usermodel-client-role-mapper
+      config:
+        access.token.claim: "true"
+        id.token.claim: "true"
+        claim.name: "sward_roles"
+        jsonType.label: "String"
+        multivalued: "true"
+        usermodel.clientRoleMapping.clientId: "sward-warden-be"
+---
+apiVersion: v1.edp.epam.com/v1
+kind: KeycloakRealmGroup
+metadata:
+  name: sw-users-group
+  namespace: sward-warden-dev
+spec:
+  name: sw-users
+  realmRef:
+    kind: KeycloakRealm
+    name: sw-dev
+  clientRoles:
+    - clientId: sward-warden-be
+      roles:
+        - user
+---
+apiVersion: v1.edp.epam.com/v1
+kind: KeycloakRealmRole
+metadata:
+  name: sw-dev-default-user-role
+  namespace: sward-warden-dev
+spec:
+  name: user
+  isDefault: true
+  realmRef:
+    kind: KeycloakRealm
+    name: sw-dev
