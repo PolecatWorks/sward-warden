@@ -26,6 +26,7 @@
     "@geoman-io/leaflet-geoman-free": "^2.20.0",
     "@types/leaflet": "^1.9.21",
     "@types/wicket": "^1.3.0",
+    "angular-oauth2-oidc": "^18.0.0",
     "dexie": "^4.4.2",
     "leaflet": "^1.9.4",
     "leaflet-geosearch": "^4.4.0",
