@@ -51,4 +51,4 @@ Create Fields with Different Topologies
     DELETE    ${BE_BASE_URL}/v0/fields/${res_point.json()['id']}    headers=${headers}    expected_status=204
     DELETE    ${BE_BASE_URL}/v0/fields/${res_none.json()['id']}    headers=${headers}    expected_status=204
     DELETE    ${BE_BASE_URL}/v0/farms/${farm_id}    headers=${headers}    expected_status=204
-    DELETE    ${BE_BASE_URL}/v0/users/${user_id}    expected_status=204
+    DELETE    ${BE_BASE_URL}/v0/users/${user_id}    headers=${headers}    expected_status=204
