@@ -4,5 +4,11 @@
   "otel": {
     "collectorUrl": "http://localhost:4318",
     "logLevel": "info"
+  },
+  "auth": {
+    "issuer": "https://sw-dev.polecatworks.com/auth/realms/sw-dev",
+    "clientId": "sward-warden-fe",
+    "scope": "openid profile email offline_access",
+    "requireHttps": false
   }
 }

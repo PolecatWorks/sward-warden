@@ -1,6 +1,6 @@
 # Frontend: OIDC Integration
 
-**State**: Planned
+**State**: Complete
 
 ## 1. Overview
 This specification details the frontend integration required to support authentication via Keycloak using the standard OpenID Connect (OIDC) Authorization Code Flow with PKCE. The implementation will utilize the technology-specific library `angular-oauth2-oidc` to handle the token lifecycle and communication with the Keycloak Identity Provider.
