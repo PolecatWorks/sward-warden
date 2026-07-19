@@ -91,6 +91,34 @@ impl FromRequestParts<AppState> for UserId {
     }
 }
 
+pub struct JwtUser {
+    pub user_id: i64,
+    pub role: String,
+}
+
+impl FromRequestParts<AppState> for JwtUser {
+    type Rejection = AppError;
+
+    // References more than 3 PRDs
+    async fn from_request_parts(
+        parts: &mut Parts,
+        state: &AppState,
+    ) -> Result<Self, Self::Rejection> {
+        let (user_id, role) = extract_jwt_claims(parts, state).await?;
+
+        let auth_info = get_user_auth_info(&state.db_pool, user_id).await;
+        if let Some((_, true)) = auth_info {
+            return Err(AppError::Forbidden("Account is suspended".to_string()));
+        }
+
+        let role_str = role.unwrap_or_else(|| "user".to_string());
+        Ok(JwtUser {
+            user_id,
+            role: role_str,
+        })
+    }
+}
+
 // PRD Reference: 0001, 0014
 async fn extract_jwt_claims(
     parts: &mut Parts,

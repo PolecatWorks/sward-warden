@@ -30,7 +30,7 @@ Module Access Restriction Verification
 
     # 1. Create a test user without the module
     ${random_str}=    Evaluate    str(random.randint(100000, 999999))    modules=random
-    &{admin_headers}=   Create Dictionary    X-User-ID=2    X-User-Role=admin
+    &{admin_headers}=   Create Dictionary    X-User-ID=999    X-User-Role=admin
     &{user_payload}=    Create Dictionary    name=No Module User    email=nomodule.${random_str}@example.com    role=user    is_suspended=${False}
     ${create_resp}=     POST    ${BE_BASE_URL}/v0/users    json=${user_payload}    headers=${admin_headers}    expected_status=200
     ${user_id}=         Convert To String    ${create_resp.json()['id']}
@@ -66,7 +66,7 @@ Module Subscription Granted Verification
 
     # 1. Create a test user without the module
     ${random_str}=    Evaluate    str(random.randint(100000, 999999))    modules=random
-    &{admin_headers}=   Create Dictionary    X-User-ID=2    X-User-Role=admin
+    &{admin_headers}=   Create Dictionary    X-User-ID=999    X-User-Role=admin
     &{user_payload}=    Create Dictionary    name=Granted Module User    email=grantedmodule.${random_str}@example.com    role=user    is_suspended=${False}
     ${create_resp}=     POST    ${BE_BASE_URL}/v0/users    json=${user_payload}    headers=${admin_headers}    expected_status=200
     ${user_id}=         Convert To String    ${create_resp.json()['id']}
