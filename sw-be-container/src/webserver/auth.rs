@@ -119,11 +119,74 @@ impl FromRequestParts<AppState> for JwtUser {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct RawToken(pub String);
+
+#[derive(Debug, Clone, serde::Deserialize)]
+pub struct JwtPayload {
+    pub sub: String,
+    #[serde(default)]
+    pub sward_roles: Vec<String>,
+}
+
+fn decode_base64(s: &str) -> Result<Vec<u8>, AppError> {
+    use base64::{
+        Engine as _,
+        engine::general_purpose::{STANDARD, STANDARD_NO_PAD, URL_SAFE, URL_SAFE_NO_PAD},
+    };
+    STANDARD
+        .decode(s)
+        .or_else(|_| STANDARD_NO_PAD.decode(s))
+        .or_else(|_| URL_SAFE.decode(s))
+        .or_else(|_| URL_SAFE_NO_PAD.decode(s))
+        .map_err(|e| AppError::Unauthorized(format!("Failed to decode base64 x-jwt-payload: {e}")))
+}
+
 // PRD Reference: 0001, 0014
 async fn extract_jwt_claims(
     parts: &mut Parts,
     state: &AppState,
 ) -> Result<(i64, Option<String>), AppError> {
+    // Retain the raw token if Authorization header is present
+    if let Some(auth_header) = parts
+        .headers
+        .get(axum::http::header::AUTHORIZATION)
+        .and_then(|h| h.to_str().ok())
+    {
+        if auth_header.starts_with("Bearer ") {
+            let token = &auth_header["Bearer ".len()..];
+            parts.extensions.insert(RawToken(token.to_string()));
+        }
+    }
+
+    if let Some(jwt_payload_header) = parts.headers.get("x-jwt-payload") {
+        let payload_str = jwt_payload_header.to_str().map_err(|_| {
+            AppError::Unauthorized("Invalid x-jwt-payload header format".to_string())
+        })?;
+
+        let decoded_bytes = decode_base64(payload_str)?;
+        let decoded_str = String::from_utf8(decoded_bytes).map_err(|e| {
+            AppError::Unauthorized(format!("Invalid UTF-8 in decoded x-jwt-payload: {e}"))
+        })?;
+
+        let payload: JwtPayload = serde_json::from_str(&decoded_str).map_err(|e| {
+            AppError::Unauthorized(format!("Failed to parse x-jwt-payload JSON: {e}"))
+        })?;
+
+        let user_id = payload.sub.parse::<i64>().map_err(|_| {
+            AppError::Unauthorized("Invalid subject claim format in x-jwt-payload".to_string())
+        })?;
+
+        let role = payload.sward_roles.first().cloned();
+        return Ok((user_id, role));
+    }
+
+    if !state.config.debugging.enable_dev_auth {
+        return Err(AppError::Unauthorized(
+            "Missing x-jwt-payload header".to_string(),
+        ));
+    }
+
     let auth_header = parts
         .headers
         .get(axum::http::header::AUTHORIZATION)
