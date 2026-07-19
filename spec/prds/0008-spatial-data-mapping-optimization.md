@@ -49,7 +49,17 @@ Evaluating the slope and elevation of a field is critical for determining runoff
 - **Optimization Bento:** Suggested plans presented in Bento-style dashboards explaining the "Reasoning" (e.g., "Optimal Weather Window").
 - **Weather Timeline:** Specialized horizontal timeline displaying the "Safe Spreading Window".
 
-## 6. User Journeys
+## 6. Spatial Extents API
+- **API Endpoint:** A new `POST /v0/spatial/extents` endpoint must be exposed on the Rust backend.
+- **Input Data:** The API must accept an array of fully typed GeoJSON geometries (e.g., Polygons, Points) in pure JSON format to prevent double-escaping issues.
+- **Core Computations:**
+  - The backend must calculate the overall bounding box (minimum and maximum X and Y coordinates) covering all provided geometries.
+  - The backend must calculate a "center" point derived from the center of the computed bounding box (`(min + max) / 2`).
+- **Output Data:** The API must return the computed `center` point (x, y) and `extents` (min_x, max_x, min_y, max_y).
+- **No Persistence:** Computations must happen strictly in-memory during the request lifecycle. The results must not be stored in the database.
+- **Error Handling:** The API must return an appropriate error (e.g., HTTP 400 Bad Request) if an empty list of geometries or unparseable geometries are provided.
+
+## 7. User Journeys
 The following user journeys validate spatial mapping capabilities:
 
 - **Field Topology Creation Journey (`test_field_topology.robot` and `test_field_topology_flow.robot`)**: The integration testing suite must include a spatial data mapping journey testing both API functionality and the UI frontend interface. The journey must verify creating fields with various topologies: one containing a Polygon GeoJSON geometry, one with a Point GeoJSON geometry, and one with no geometry (null). It must ensure that the map tools accurately create and verify these locations correctly on the backend API and visualise them on the UI.
