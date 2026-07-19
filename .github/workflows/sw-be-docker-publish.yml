@@ -373,9 +373,8 @@ jobs:
             echo "Checkout successful, returning to parent directory."
             cd ..
           else
-            echo "gh-pages branch does not exist or fetch failed. Creating a new orphan gh-pages branch..."
+            echo "gh-pages branch does not exist on remote. Creating a new orphan gh-pages branch..."
             git checkout --orphan gh-pages
-            git rm -rf . || true
             echo "Orphan branch created, returning to parent directory."
             cd ..
           fi
