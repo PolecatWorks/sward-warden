@@ -38,6 +38,11 @@ This document defines the overarching application architecture for the sward man
 
 ## 4. Security & CORS Policy Hardening
 - **Authentication & Federated Identity:** OpenID Connect (OIDC) with Keycloak as the Identity Provider (IdP). The frontend (`sward-warden-fe`) acts as a public client executing OIDC Authorization Code Flow with PKCE.
+  - **Naming Conventions:** `sw-dev` realm, `sward-warden-fe` (frontend client ID), `sward-warden-be` (backend client ID).
+  - **Dynamic User Provisioning Options:**
+    - Native Keycloak Self-Registration (Recommended for simplicity).
+    - Programmatic Provisioning via Keycloak Admin API (For custom signup UIs).
+    - Just-In-Time (JIT) Provisioning via Identity Federation (Google, GitHub, Enterprise OIDC/SAML).
 - **Identity & Token Validation Layers:**
   - **Istio Service Mesh Layer:** An Envoy sidecar on the backend API pod intercepts traffic, validating JWT signatures against Keycloak's JSON Web Key Sets (JWKS) via `RequestAuthentication` and restricting access via `AuthorizationPolicy` based on token claims.
   - **Backend Layer (Zero-Trust Validation):** The backend service does not trust the network boundary alone. It parses the `Authorization: Bearer <JWT>` header, verifies the cryptographic signature locally by caching Keycloak's JWKS, and validates the claims.
@@ -48,10 +53,22 @@ This document defines the overarching application architecture for the sward man
     - `sward_roles`: Array of strings containing active roles (e.g. `["admin"]`, `["user"]`).
     - `sward_suspended`: Boolean indicating whether the account is suspended. If `true`, the backend must immediately reject the request with `403 Forbidden`.
     - `sward_modules`: Array of strings containing enabled modules (e.g. `["reports_and_analysis"]`).
+  - **Role Mappings:**
+    - `admin`: Full system administration and read/write access.
+    - `support`: Access to read audit logs and view general farm data for diagnostic purposes.
+    - `user`: Standard tenant access (read/write access to their own farms, fields, and compliance data).
+    - `viewer`: Read-only access to view farms, fields, and records without modification permissions.
+  - **Protocol Mapper:** A Keycloak Protocol Mapper (e.g., `sward-roles-mapper`) maps user client roles to the `sward_roles` claim in the access token.
+- **Zero-Trust Security Gaps & Mitigations:**
+  - **Token Suspension/Revocation Latency:** Mitigate by using Ultra Short-Lived Access Tokens, Refresh Token Invalidation via Keycloak Admin API, or Immediate Revocation caching for high-risk operations.
+  - **JWT Replay & Audience Restriction:** Strict Validation of the `aud` (audience) claim matching `sward-warden-be`.
+  - **Mesh Bypass & Eavesdropping:** Mandate `STRICT` mTLS via Istio `PeerAuthentication` policy inside the mesh to prevent sidecar bypass.
 - **Secure Context & Local Development Constraints:**
   To support the Web Crypto API required for browser-side PKCE challenge computation, the application must run in a Secure Context:
   - In production and staging, HTTPS is strictly enforced.
   - For local development, HTTP must only be used on `localhost` or `127.0.0.1`. Any local custom hostnames (e.g., `sward-dev.k8s`) must terminate TLS at the ingress gateway (using local CA certificates like `mkcert`) to serve the site over HTTPS.
+  - **Mock Dev Auth vs. Local Keycloak:** Use a mock in-memory developer authentication server (`debugging.enable_dev_auth: true`) for rapid local iteration and reliable integration test runs, avoiding the resource overhead of running Keycloak locally.
+  - **Redirect URIs & CORS (Local):** `sward-warden-fe` client in Keycloak must support `http://localhost:4200/*` and any `https://sw-*.dev.k8s/*` for local testing.
 - **CORS Hardening:**
   - Strict, configurable whitelist-based CORS policy (no wildcard `*` or `Any` in production).
   - Preflight request handling injected via Axum `CorsLayer`.
