@@ -27,7 +27,10 @@ This file describes the workflow and development patterns for our agents to foll
 - Prd files should be numbered. Spec files should be numbers deriving from the prd it is from.
 - Spec files must be sorted into subdirectories based on their PRD number (e.g., `spec/specs/0001/`).
 - The specs readme (`spec/specs/readme.md`) must show a summary of all specs as a table with columns for the Specification (link) and Status (state).
-- **Testing before Push**: Before pushing changes to the repository, you MUST run the integration tests using `make robot-test` and confirm that all tests are passing successfully.
+- **Testing before Push**: Before pushing changes to the repository, you MUST run the integration tests using `make robot-test` and confirm that all tests are passing successfully. However, robot tests are NOT required if the backend (`sw-be-container/`) and frontend (`sw-fe-container/`) code are not directly modified.
+- **Docker Image Builds**:
+  - If the backend code (`sw-be-container/`) is modified, the backend container build must be run (`make sw-be-docker`).
+  - If the frontend code (`sw-fe-container/`) is modified, the frontend container build must be run (`make sw-fe-docker`).
 - **Integration Test Best Practices**: Do NOT use Angular-specific debugging utilities such as `ng.getComponent` or `ng.applyChanges` within integration tests (e.g. Robot / Playwright scripts). These APIs are stripped and disabled in production builds (such as CI), leading to runtime `ReferenceError: ng is not defined` failures. Always interact with components via standard user input simulations (clicks, keystrokes, form fields).
 
 - **NOTE**: PRD files can mutate over time. Spec files are immutable, however when a spec file has updates and it is not complete (ie still in open state) then it can be modified and does not need to be superceeded. Spec files can be in the following states: Open / Complete / Deprecated / Superceeded.
