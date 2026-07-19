@@ -367,7 +367,7 @@ jobs:
 
           # Fetch only the gh-pages branch with depth 1 to speed up checkout
           echo "Fetching gh-pages branch from remote..."
-          if git fetch --depth 1 origin gh-pages; then
+          if git fetch --filter=blob:none --depth 1 origin gh-pages; then
             echo "Checking out gh-pages branch..."
             git checkout gh-pages
             echo "Checkout successful, returning to parent directory."
