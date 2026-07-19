@@ -319,12 +319,13 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           export GIT_EDITOR=true
+          export GIT_TERMINAL_PROMPT=0
 
           # Initialize a repository for sparse checkout
           mkdir gh-pages-repo
           cd gh-pages-repo
           git init
-          git remote add origin https://x-token-auth:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
 
           # Enable sparse checkout
           git config core.sparseCheckout true
