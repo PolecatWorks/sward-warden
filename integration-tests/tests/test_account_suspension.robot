@@ -13,7 +13,7 @@ Account Suspension Cycle API Verification
 
     # 1. Create a test user
     ${random_str}=    Evaluate    str(random.randint(100000, 999999))    modules=random
-    &{admin_headers}=   Create Dictionary    X-User-ID=2    X-User-Role=admin
+    &{admin_headers}=   Create Dictionary    X-User-ID=999    X-User-Role=admin
     &{user_payload}=    Create Dictionary    name=Suspension Test User    email=suspend.test.${random_str}@example.com    role=user    is_suspended=${False}
     ${create_resp}=     POST    ${BE_BASE_URL}/v0/users    json=${user_payload}    headers=${admin_headers}    expected_status=200
     ${user_id}=         Convert To String    ${create_resp.json()['id']}
@@ -42,7 +42,7 @@ Suspension Data Sync Block Verification
 
     # 1. Create a suspended test user
     ${random_str}=    Evaluate    str(random.randint(100000, 999999))    modules=random
-    &{admin_headers}=   Create Dictionary    X-User-ID=2    X-User-Role=admin
+    &{admin_headers}=   Create Dictionary    X-User-ID=999    X-User-Role=admin
     &{user_payload}=    Create Dictionary    name=Sync Block Test User    email=sync.block.${random_str}@example.com    role=user    is_suspended=${True}
     ${create_resp}=     POST    ${BE_BASE_URL}/v0/users    json=${user_payload}    headers=${admin_headers}    expected_status=200
     ${user_id}=         Convert To String    ${create_resp.json()['id']}
