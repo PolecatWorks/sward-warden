@@ -26,7 +26,7 @@ spec:
   values:
     image:
       repository: ghcr.io/polecatworks/sward-warden-fe
-      tag: main
+      tag: sha-bb15c2eff5475ec4c48350908187c859b618a4c8
       pullPolicy: Always
     imagePullSecrets:
       - name: ghcr-docker-auth
@@ -83,7 +83,7 @@ spec:
               "logLevel": "info"
             }
           }
----
+    customPodSHA: 08bf410
 # apiVersion: helm.toolkit.fluxcd.io/v2
 # kind: HelmRelease
 # metadata:
@@ -111,66 +111,5 @@ spec:
 #             default "";
 #             "~^http://localhost(:\d+)?$" "$http_origin";
 #           }
+---
 
-#           server {
-#             listen 8080;
-#             server_name localhost;
-#             root /usr/share/nginx/html;
-
-#             # 1. Health Checks (High Priority)
-#             location /alive { return 200; access_log off; }
-#             location /ready { return 200; access_log off; }
-
-#             # 2. MFE Shell logic. Serve index.html if we hit a 404
-#             location / {
-#                 alias /usr/share/nginx/html/;
-#                 index  index.html index.htm;
-#                 try_files $uri $uri/ /index.html;
-#             }
-#             error_page  404              /index.html;
-
-#             # 3. General Static Files
-#             location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|json)$ {
-#                 expires 1y;
-#                 add_header Cache-Control "public, no-transform";
-#                 add_header 'Access-Control-Allow-Origin' $cors_origin;
-#                 # Note: If a file is in /mfe1/, it was already handled by the ^~ block above
-#             }
-#           }
-#       contents:
-#         shell-config.json: |
-#           {
-#             "remotes": {
-#               "mfe1": "/mfe/mfe1/remoteEntry.json",
-#               "mfe2": "/mfe/mfe2/remoteEntry.json",
-#               "angry-agent": "/mfe/angry-agent/remoteEntry.json"
-#             },
-#             "mfeRoutes": [
-#               { "path": "mfe1", "displayName": "MFE 1", "remoteName": "mfe1", "exposedModule": "./routes", "componentName": "remoteRoutes" },
-#               { "path": "mfe2", "displayName": "Irish MFE", "remoteName": "mfe2", "exposedModule": "./Component", "componentName": "Component" },
-#               { "path": "angry-agent", "displayName": "Angry Agent", "remoteName": "angry-agent", "exposedModule": "./routes", "componentName": "remoteRoutes" }
-#             ],
-#             "menu": [
-#               { "name": "Home", "route": "/home" },
-#               { "name": "Base", "route": "/home/base" },
-#               { "name": "Profile", "route": "/home/profile" },
-#               { "name": "Settings", "route": "/home/settings" },
-#               { "name": "MFE 1", "route": "/home/mfe1" },
-#               { "name": "Irish MFE", "route": "/home/mfe2" },
-#               { "name": "Angry Agent", "route": "/home/angry-agent" }
-#             ]
-#           }
-#         auth-config.json: |
-#           {
-#             "issuer": "http://keycloak.k8s/auth/realms/dev",
-#             "redirectUri": "/index.html",
-#             "clientId": "shell-ui",
-#             "responseType": "code",
-#             "scope": "openid profile email offline_access",
-#             "useSilentRefresh": true,
-#             "showDebugInformation": true,
-#             "timeoutFactor": 0.01,
-#             "requireHttps": false,
-#             "skipIssuerCheck": true,
-#             "strictDiscoveryDocumentValidation": false
-#           }
