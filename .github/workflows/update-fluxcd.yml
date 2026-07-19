@@ -6,6 +6,7 @@ on:
     paths:
       - "sw-fe-container/**"
       - "sw-be-container/**"
+      - "charts/**"
       - ".github/workflows/sw-fe-docker-publish.yml"
       - ".github/workflows/sw-be-docker-publish.yml"
       - ".github/workflows/update-fluxcd.yml"
@@ -87,6 +88,10 @@ jobs:
           echo "Determined Backend content SHA: $BACKEND_SHA"
           echo "BACKEND_SHA=$BACKEND_SHA" >> $GITHUB_ENV
 
+          POD_SHA=$(git log -1 --format=%h -- .github/workflows/ sw-fe-container/ sw-be-container/ charts/)
+          echo "Determined Pod SHA: $POD_SHA"
+          echo "POD_SHA=$POD_SHA" >> $GITHUB_ENV
+
       - name: Update fluxcd-dev tags
         env:
           PAT: ${{ secrets.PAT }}
@@ -96,7 +101,10 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           yq e '(. | select(.kind == "HelmRelease" and .metadata.name == "sward-warden-fe") | .spec.values.image.tag) = "sha-" + env(UI_SHA)' -i fluxcd-dev/sward-warden-fe.yaml
+          yq e '(. | select(.kind == "HelmRelease" and .metadata.name == "sward-warden-fe") | .spec.values.customPodSHA) = env(POD_SHA)' -i fluxcd-dev/sward-warden-fe.yaml
+
           yq e '(. | select(.kind == "HelmRelease" and .metadata.name == "sward-warden") | .spec.values.image.tag) = "sha-" + env(BACKEND_SHA)' -i fluxcd-dev/sward-warden-be.yaml
+          yq e '(. | select(.kind == "HelmRelease" and .metadata.name == "sward-warden") | .spec.values.customPodSHA) = env(POD_SHA)' -i fluxcd-dev/sward-warden-be.yaml
 
           git add fluxcd-dev/sward-warden-fe.yaml fluxcd-dev/sward-warden-be.yaml
           if git diff --staged --quiet; then
