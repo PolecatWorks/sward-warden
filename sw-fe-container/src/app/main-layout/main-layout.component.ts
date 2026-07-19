@@ -8,6 +8,7 @@ import {
 } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SyncStatusComponent } from '../sync-status/sync-status.component';
+import { AvatarComponent } from '../utils/avatar.component';
 import { RxdbService } from '../services/rxdb/rxdb.service';
 import { AuthService } from '../services/auth.service';
 import { FarmManagementService } from '../services/farm-management.service';
@@ -25,6 +26,7 @@ import { SyncStateService, SyncState } from '../services/sync-state.service';
     RouterLinkActive,
     CommonModule,
     SyncStatusComponent,
+    AvatarComponent,
   ],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.css',
