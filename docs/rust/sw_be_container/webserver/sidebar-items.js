@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["app_router","hello_handler","start_app_api"],"mod":["admin","applications","auth","compliance","dev_auth","events","farms","fields","inventory","logs","movements","optimization","spatial","sync","users","weather"]};

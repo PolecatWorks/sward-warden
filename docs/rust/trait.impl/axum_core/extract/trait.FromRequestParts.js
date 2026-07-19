@@ -1,0 +1,9 @@
+(function() {
+    const implementors = Object.fromEntries([["sw_be_container",[["impl FromRequestParts&lt;<a class=\"struct\" href=\"sw_be_container/state/struct.AppState.html\" title=\"struct sw_be_container::state::AppState\">AppState</a>&gt; for <a class=\"struct\" href=\"sw_be_container/webserver/auth/struct.AdminOnly.html\" title=\"struct sw_be_container::webserver::auth::AdminOnly\">AdminOnly</a>",0],["impl FromRequestParts&lt;<a class=\"struct\" href=\"sw_be_container/state/struct.AppState.html\" title=\"struct sw_be_container::state::AppState\">AppState</a>&gt; for <a class=\"struct\" href=\"sw_be_container/webserver/auth/struct.JwtUser.html\" title=\"struct sw_be_container::webserver::auth::JwtUser\">JwtUser</a>",0],["impl FromRequestParts&lt;<a class=\"struct\" href=\"sw_be_container/state/struct.AppState.html\" title=\"struct sw_be_container::state::AppState\">AppState</a>&gt; for <a class=\"struct\" href=\"sw_be_container/webserver/auth/struct.SupportOnly.html\" title=\"struct sw_be_container::webserver::auth::SupportOnly\">SupportOnly</a>",0],["impl FromRequestParts&lt;<a class=\"struct\" href=\"sw_be_container/state/struct.AppState.html\" title=\"struct sw_be_container::state::AppState\">AppState</a>&gt; for <a class=\"struct\" href=\"sw_be_container/webserver/auth/struct.UserId.html\" title=\"struct sw_be_container::webserver::auth::UserId\">UserId</a>",0]]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":59,"fragment_lengths":[1336]}

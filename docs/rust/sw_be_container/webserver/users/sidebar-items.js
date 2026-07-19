@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["create_user","delete_user","get_user","list_users","update_user"]};

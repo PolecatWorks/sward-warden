@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["admin_health","admin_list_audit_logs","admin_list_events","admin_list_farms","admin_list_fields","log_admin_action"]};

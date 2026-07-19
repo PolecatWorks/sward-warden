@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Role"],"struct":["AuditLog","ComplianceBreach","Event","Farm","FarmRecord","FertilisationPlan","FertiliserApplication","Field","InventoryStorage","OrganicManureApplication","SoilAnalysis","SwardMovement","SyncQuery","SyncResponse","User"]};

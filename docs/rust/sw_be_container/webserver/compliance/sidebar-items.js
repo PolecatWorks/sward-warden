@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["create_compliance_breach","list_compliance_breaches"]};

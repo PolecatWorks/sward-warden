@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["get_static_forecast"],"struct":["WeatherData"]};

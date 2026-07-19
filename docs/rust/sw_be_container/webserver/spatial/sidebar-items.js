@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["calculate_area","calculate_extents","get_official_boundary","get_waterway_buffers"],"struct":["BufferParams","CalculateAreaRequest","CalculateAreaResponse","PointRequest"]};

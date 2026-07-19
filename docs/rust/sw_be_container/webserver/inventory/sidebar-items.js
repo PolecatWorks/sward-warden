@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["create_inventory_storage","delete_inventory_storage","list_inventory_storage","update_inventory_storage"]};

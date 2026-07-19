@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ValidationResult"],"fn":["validate_fertiliser_application","validate_organic_manure_application"]};

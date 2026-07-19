@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["create_fertiliser_application","create_organic_manure_application","list_fertiliser_applications","list_organic_manure_applications","update_organic_manure_application"]};

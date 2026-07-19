@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["create_event","create_farm_record","create_fertilisation_plan","create_soil_analysis","delete_event","delete_fertilisation_plan","delete_soil_analysis","list_events","list_farm_records","list_fertilisation_plans","list_soil_analyses"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["AppConfig","CorsConfig","DatabaseConfig","DebuggingConfig","SpatialConfig","StartupCheckConfig","UrlWithUsernamePassword","WebServiceConfig"]};

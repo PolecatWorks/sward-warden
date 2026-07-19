@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["create_sward_movement","list_sward_movements"]};

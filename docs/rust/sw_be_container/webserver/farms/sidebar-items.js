@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["create_farm","delete_farm","get_farm","list_farms","update_farm"]};
