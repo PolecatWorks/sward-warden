@@ -318,6 +318,7 @@ jobs:
           # Configure Git
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          export GIT_EDITOR=true
 
           # Initialize a repository for sparse checkout
           mkdir gh-pages-repo
@@ -386,7 +387,7 @@ jobs:
             fi
 
             echo "Push failed, pulling latest changes and retrying..."
-            git pull --rebase origin gh-pages
+            git pull --rebase -Xtheirs --no-edit origin gh-pages
             cd ..
 
             sleep 5
