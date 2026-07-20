@@ -1,6 +1,10 @@
+Created At: 2026-07-20T08:04:15Z
+Completed At: 2026-07-20T08:14:00Z
+File Path: `file:///Users/bengreene/Development/polecatworks/sward-warden/spec/specs/0001/0001-20-backend-keycloak-admin-sync.md`
+
 # Backend: Keycloak Admin API Synchronization
 
-**State**: Planned
+**State**: Complete
 
 ## 1. Overview
 This specification details the requirements for the Rust backend (`sw-be-container`) to communicate with the Keycloak Admin API to synchronize user state changes, specifically account suspensions and module subscription updates. This ensures that administrative actions taken within SwardWarden are accurately reflected in Keycloak and subsequently in the JWT claims issued to the user.
@@ -29,7 +33,7 @@ When an administrator modifies a user's active module subscriptions in the Sward
 - If the Keycloak API call fails, the backend should either rollback the local database change or implement a retry/queue mechanism to ensure eventual consistency between SwardWarden and Keycloak. The specific error handling strategy should be clearly logged.
 
 ## 4. Acceptance Criteria
-- [ ] Suspending a user via the backend API updates the local database and successfully sets `enabled: false` and `is_suspended: true` in Keycloak via the Admin API.
-- [ ] Unsuspending a user via the backend API updates the local database and successfully sets `enabled: true` and `is_suspended: false` in Keycloak via the Admin API.
-- [ ] Updating a user's module subscriptions via the backend API updates the local database and successfully updates the `modules` custom attribute in Keycloak via the Admin API.
-- [ ] The backend handles Keycloak Admin API errors gracefully, preventing inconsistent state between the local database and Keycloak.
+- [x] Suspending a user via the backend API updates the local database and successfully sets `enabled: false` and `is_suspended: true` in Keycloak via the Admin API.
+- [x] Unsuspending a user via the backend API updates the local database and successfully sets `enabled: true` and `is_suspended: false` in Keycloak via the Admin API.
+- [x] Updating a user's module subscriptions via the backend API updates the local database and successfully updates the `modules` custom attribute in Keycloak via the Admin API.
+- [x] The backend handles Keycloak Admin API errors gracefully, preventing inconsistent state between the local database and Keycloak.

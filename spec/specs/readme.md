@@ -23,7 +23,9 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0001-17 Keycloak CRs and Istio Security Policies](./0001/0001-17-gitops-keycloak-istio-crs.md) | Complete | PRD 0001 |
 | [0001-18 Backend: Auth Middleware & Istio Integration](./0001/0001-18-backend-auth-middleware-istio.md) | Complete | PRD 0001 |
 | [0001-19 Frontend: OIDC Integration](./0001/0001-19-frontend-auth-oidc.md) | Complete | PRD 0001 |
+| [0001-20 Backend: Keycloak Admin API Synchronization](./0001/0001-20-backend-keycloak-admin-sync.md) | Complete | PRD 0001 |
 | [0002-01 Dashboard Specification](./0002/0002-01-dashboard.md) | Complete | PRD 0002 |
+
 | [0002-02 Compliance Tracking Specification](./0002/0002-02-compliance-tracking.md) | Complete | PRD 0002 |
 | [0002-03 Optimization Engine Specification](./0002/0002-03-optimization-engine.md) | Complete | PRD 0002 |
 | [0002-04 Weather Integration Specification](./0002/0002-04-weather-integration.md) | Complete | PRD 0002 |

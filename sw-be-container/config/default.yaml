@@ -32,3 +32,8 @@ debugging:
 spatial:
   official_boundary_api_url: null
   official_boundary_api_key: null
+keycloak:
+  base_url: "http://keycloak-keycloakx-http.auth.svc.cluster.local/auth"
+  realm: "sw-dev"
+  client_id: "sward-warden-be"
+  client_secret: null
