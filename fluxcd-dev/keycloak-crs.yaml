@@ -1,3 +1,19 @@
+# This file configures the Custom Resources (CRs) for the SwardWarden Keycloak realm, clients, roles, and groups
+# in the development environment using the EPAM Keycloak Operator.
+#
+# Specifically, it does the following:
+# 1. Provisions the `sw-dev` KeycloakRealm (`SwardWarden Development Realm`) pointing to the parent `keycloak-sw-dev` instance.
+# 2. Configures the SwardWarden Backend API (`sward-warden-be`) client as a confidential client (using client-secret authentication)
+#    with service accounts enabled and defines client roles: admin, support, user, and viewer.
+# 3. Configures the SwardWarden Frontend (`sward-warden-fe`) client as a public client (standard OIDC auth code flow) with redirect URIs
+#    and a protocol mapper (`sward-roles-mapper`) to map backend client roles (`sward-warden-be`) into the `sward_roles` token claim.
+# 4. Defines a KeycloakRealmGroup (`sw-users-group`) representing the `sw-users` group, mapping the `user` client role to its members.
+# 5. Configures a default KeycloakRealmRole (`sw-dev-default-user-role`) mapping standard `user` status by default.
+#
+# Dependencies:
+# - EPAM Keycloak Operator (APIs `v1.edp.epam.com/v1`)
+# - The parent `Keycloak` resource named `keycloak-sw-dev` (defined in `keycloak-admin.yaml`)
+---
 apiVersion: v1.edp.epam.com/v1
 kind: KeycloakRealm
 metadata:
@@ -8,7 +24,7 @@ spec:
   displayName: SwardWarden Development Realm
   keycloakRef:
     kind: Keycloak
-    name: keycloak-dev
+    name: keycloak-sw-dev
   login:
     userRegistration: true
 ---
