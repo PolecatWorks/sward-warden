@@ -43,6 +43,16 @@ pub struct AppConfig {
     pub debugging: DebuggingConfig,
     #[serde(default)]
     pub spatial: SpatialConfig,
+    #[serde(default)]
+    pub keycloak: KeycloakConfig,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone, Default)]
+pub struct KeycloakConfig {
+    pub base_url: Option<String>,
+    pub realm: Option<String>,
+    pub client_id: Option<String>,
+    pub client_secret: Option<String>,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, Default)]

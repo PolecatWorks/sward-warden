@@ -63,6 +63,7 @@ fn get_test_state() -> AppState {
             log_level: "info".to_string(),
         },
         spatial: crate::config::SpatialConfig::default(),
+        keycloak: crate::config::KeycloakConfig::default(),
     };
 
     let db_pool = sqlx::postgres::PgPoolOptions::new()

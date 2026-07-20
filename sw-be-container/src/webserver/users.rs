@@ -87,6 +87,7 @@ pub async fn get_user(
 pub async fn update_user(
     State(state): State<AppState>,
     caller: crate::webserver::auth::JwtUser,
+    raw_token: Option<axum::Extension<crate::webserver::auth::RawToken>>,
     axum::extract::Path(id): axum::extract::Path<i64>,
     Json(user): Json<User>,
 ) -> Result<Json<User>, AppError> {
@@ -159,6 +160,20 @@ pub async fn update_user(
             }
         }
     }
+
+    let raw_token_str = raw_token.map(|axum::Extension(rt)| rt.0);
+    let empty_modules = Vec::new();
+    let modules_slice = modules_to_save.as_ref().unwrap_or(&empty_modules);
+
+    crate::service::keycloak::sync_user_to_keycloak(
+        &state.config,
+        raw_token_str.as_deref(),
+        &user.email,
+        !is_suspended_to_save,
+        is_suspended_to_save,
+        modules_slice,
+    )
+    .await?;
 
     tx.commit().await?;
 

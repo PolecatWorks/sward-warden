@@ -5,6 +5,7 @@ pub mod hams;
 pub mod metrics;
 pub mod models;
 pub mod optimization;
+pub mod service;
 pub mod spatial;
 pub mod startup_tools;
 pub mod state;
