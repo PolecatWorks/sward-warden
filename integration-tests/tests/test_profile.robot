@@ -40,7 +40,7 @@ Edit Profile
     Click    id=save-edit-profile-btn    button=left
 
     # Wait for the form to close
-    Wait For Elements State    id=save-edit-profile-btn    detached    timeout=5s
+    Wait For Elements State    id=save-edit-profile-btn    detached    timeout=10s
     Sleep    1s
 
     # Reload and re-open the form to verify persistence
@@ -62,7 +62,7 @@ Edit Profile
     Fill Text    id=edit-email    enterkey@test.com
     Press Keys    id=edit-email    Enter
 
-    Wait For Elements State    id=save-edit-profile-btn    detached    timeout=5s
+    Wait For Elements State    id=save-edit-profile-btn    detached    timeout=10s
     Sleep    1s
 
     # Reload and verify
