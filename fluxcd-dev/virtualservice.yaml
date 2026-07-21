@@ -10,6 +10,15 @@ spec:
     - istio-ingress/k8s-gateway
     - mesh # applies to all the sidecars in the mesh
   http:
+    - name: keycloak
+      match:
+        - uri:
+            prefix: /auth
+      route:
+        - destination:
+            host: keycloak-keycloakx-http.auth.svc.cluster.local
+            port:
+              number: 80
     - name: sward-warden-be
       match:
         - uri:
@@ -24,10 +33,3 @@ spec:
       route:
         - destination:
             host: sward-warden-fe-nginx-view
-    # - name: mfe-shell
-    #   match:
-    #     - uri:
-    #         prefix: /
-    #   route:
-    #     - destination:
-    #         host: mfe-shell-nginx-view
