@@ -46,6 +46,8 @@ All modal dialogs across the application must strictly adhere to the following k
 - **Submit:** Pressing the `Enter` (or `Return`) key must submit the modal form.
 - **Disabled State Protection:** The submit button (and the `Enter` key action) must remain disabled until a valid change has been made to the form data (dirty state).
 
-## 5. Runtime Configuration Initialization
+## 5. Runtime Configuration Initialization & OIDC Authentication Flow
 - The frontend must load `/assets/contents/app-config.json` via the `APP_INITIALIZER` pattern before bootstrapping.
-- API base paths (`apiPath`), logging levels, and telemetry configuration must be driven dynamically by this configuration injected via an `InjectionToken`.
+- API base paths (`apiPath`), logging levels, telemetry configuration, and OIDC auth settings must be driven dynamically by this configuration injected via an `InjectionToken`.
+- **OIDC Configuration & Realm Discovery:** The runtime configuration must support `auth` settings including `issuer` (e.g. `https://sw-dev.polecatworks.com/auth/realms/sw-dev`), `clientId`, and `redirectUri`. When bootstrapping, the OAuth service dynamically discovers authorization server endpoints using standard OIDC discovery (`.well-known/openid-configuration`) for the specified realm (such as `sw-dev`).
+- **Unauthenticated Redirection to Auth Server:** When an unauthenticated user attempts to access protected routes, or when the application is initialized without a valid user token, the frontend (via route guards / auth services) must automatically redirect the user to the configured OIDC authentication server (e.g. Keycloak realm login page) via OIDC Authorization Code Flow.
