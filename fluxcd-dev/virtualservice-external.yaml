@@ -2,7 +2,7 @@
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: sward-warden
+  name: sward-warden-external
 spec:
   hosts:
     - sw-dev.polecatworks.com
