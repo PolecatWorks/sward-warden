@@ -6,7 +6,7 @@
     "logLevel": "info"
   },
   "auth": {
-    "issuer": "https://sw-dev.polecatworks.com/auth/realms/sw-dev",
+    "issuer": "http://keycloak.k8s/auth/realms/sw-dev",
     "clientId": "sward-warden-fe",
     "scope": "openid profile email offline_access",
     "requireHttps": false

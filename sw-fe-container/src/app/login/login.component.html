@@ -21,9 +21,23 @@
 
     <!-- Dev Login Area (When NOT showing Create Form) -->
     <div *ngIf="!showCreateForm">
-      <div class="mb-8 text-center">
-        <h2 class="text-xl font-bold text-primary mb-2">Development Login</h2>
-        <p class="text-sm text-on-surface-variant">Select a user to continue.</p>
+      <div class="mb-6">
+        <button (click)="loginWithKeycloak()"
+                id="keycloak-login-btn"
+                class="w-full py-3 bg-[#154212] hover:bg-[#154212]/90 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-md">
+          <span class="material-symbols-outlined text-xl">lock</span>
+          Login with Keycloak SSO
+        </button>
+      </div>
+
+      <div class="relative flex py-2 items-center mb-6">
+        <div class="flex-grow border-t border-outline-variant/50"></div>
+        <span class="flex-shrink mx-4 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">or dev login</span>
+        <div class="flex-grow border-t border-outline-variant/50"></div>
+      </div>
+
+      <div class="mb-6 text-center">
+        <p class="text-xs text-on-surface-variant">Select a local dev user to continue.</p>
       </div>
 
       <div class="space-y-3 mb-6">
