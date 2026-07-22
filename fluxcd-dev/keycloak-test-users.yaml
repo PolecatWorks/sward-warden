@@ -14,7 +14,7 @@
 apiVersion: generators.external-secrets.io/v1alpha1
 kind: Password
 metadata:
-  name: test-user-john-snow-pass-gen
+  name: keycloak-users-password-gen
   namespace: sward-warden-dev
 spec:
   length: 24
@@ -26,27 +26,27 @@ spec:
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
-  name: keycloak-user-john-snow-password
+  name: keycloak-user-johnsnow
   namespace: sward-warden-dev
 spec:
   refreshInterval: "0"
   target:
-    name: keycloak-user-john-snow-password
+    name: keycloak-user-johnsnow
     creationPolicy: Owner
     template:
       data:
-        password: '{{ .password }}'
+        password: "{{ .password }}"
   dataFrom:
     - sourceRef:
         generatorRef:
           apiVersion: generators.external-secrets.io/v1alpha1
           kind: Password
-          name: test-user-john-snow-pass-gen
+          name: keycloak-users-password-gen
 ---
 apiVersion: v1.edp.epam.com/v1
 kind: KeycloakRealmUser
 metadata:
-  name: dev-user-john-snow
+  name: dev-user-johnsnow
   namespace: sward-warden-dev
 spec:
   realmRef:
@@ -63,5 +63,5 @@ spec:
   groups:
     - sw-users
   passwordSecret:
-    name: keycloak-user-john-snow-password
+    name: keycloak-user-johnsnow
     key: password
