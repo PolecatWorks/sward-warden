@@ -28,6 +28,7 @@ export function initializeOAuth(oauthService: OAuthService, config: AppConfig) {
         requireHttps: config.auth.requireHttps ?? true,
         useSilentRefresh: true,
         strictDiscoveryDocumentValidation: false,
+        skipIssuerCheck: config.auth.skipIssuerCheck ?? true,
       };
       oauthService.configure(authConfig);
       oauthService.setupAutomaticSilentRefresh();

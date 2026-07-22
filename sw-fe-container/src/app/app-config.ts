@@ -10,6 +10,7 @@ export interface OidcConfig {
   clientId: string;
   scope: string;
   requireHttps?: boolean;
+  skipIssuerCheck?: boolean;
 }
 
 export interface AppConfig {

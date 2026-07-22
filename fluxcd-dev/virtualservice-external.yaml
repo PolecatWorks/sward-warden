@@ -13,6 +13,11 @@ spec:
       match:
         - uri:
             prefix: /auth
+      headers:
+        request:
+          set:
+            x-forwarded-proto: "https"
+            x-forwarded-port: "443"
       route:
         - destination:
             host: keycloak-keycloakx-http.auth.svc.cluster.local
