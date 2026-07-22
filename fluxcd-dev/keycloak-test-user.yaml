@@ -23,16 +23,19 @@ spec:
   symbolCharacters: "!@#$%"
   allowRepeat: true
 ---
-apiVersion: external-secrets.io/v1beta1
+apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
   name: keycloak-user-john-snow-password
   namespace: sward-warden-dev
 spec:
-  refreshInterval: 0h
+  refreshInterval: "0"
   target:
     name: keycloak-user-john-snow-password
     creationPolicy: Owner
+    template:
+      data:
+        password: '{{ .password }}'
   dataFrom:
     - sourceRef:
         generatorRef:
