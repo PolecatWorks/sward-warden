@@ -1,0 +1,64 @@
+# This file provisions a test user in Keycloak using the EPAM Keycloak Operator (KeycloakRealmUser CR)
+# with a dynamically generated, non-committed password managed by External Secrets Operator (ESO).
+#
+# Specifically, it does the following:
+# 1. Configures an ESO Password generator (`test-user-john-snow-pass-gen`) to generate a secure random password.
+# 2. Defines an ExternalSecret (`keycloak-user-john-snow-password`) producing a Kubernetes secret containing the password.
+# 3. Defines a KeycloakRealmUser (`dev-user-john-snow`) under the `sw-dev` realm referencing the password secret.
+#
+# Dependencies:
+# - External Secrets Operator (`generators.external-secrets.io/v1alpha1`, `external-secrets.io/v1beta1`)
+# - EPAM Keycloak Operator (`v1.edp.epam.com/v1`)
+# - The parent `KeycloakRealm` named `sw-dev` in `keycloak-crs.yaml`
+---
+apiVersion: generators.external-secrets.io/v1alpha1
+kind: Password
+metadata:
+  name: test-user-john-snow-pass-gen
+  namespace: sward-warden-dev
+spec:
+  length: 24
+  digits: 5
+  symbols: 3
+  symbolCharacters: "!@#$%"
+  allowRepeat: true
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: keycloak-user-john-snow-password
+  namespace: sward-warden-dev
+spec:
+  refreshInterval: 0h
+  target:
+    name: keycloak-user-john-snow-password
+    creationPolicy: Owner
+  dataFrom:
+    - sourceRef:
+        generatorRef:
+          apiVersion: generators.external-secrets.io/v1alpha1
+          kind: Password
+          name: test-user-john-snow-pass-gen
+---
+apiVersion: v1.edp.epam.com/v1
+kind: KeycloakRealmUser
+metadata:
+  name: dev-user-john-snow
+  namespace: sward-warden-dev
+spec:
+  realmRef:
+    kind: KeycloakRealm
+    name: sw-dev
+  username: johnsnow
+  email: john.snow13@example.com
+  firstName: John
+  lastName: Snow
+  enabled: true
+  emailVerified: true
+  roles:
+    - offline_access
+  groups:
+    - sw-users
+  passwordSecret:
+    name: keycloak-user-john-snow-password
+    key: password
