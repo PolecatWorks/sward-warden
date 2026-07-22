@@ -73,6 +73,10 @@ export class LoginComponent implements OnInit {
   }
 
   // No obvious PRD requirement
+  loginWithKeycloak(): void {
+    this.authService.initCodeFlow();
+  }
+
   loginAs(user: User): void {
     if (user && user.id !== undefined) {
       this.devAuthApi.getToken(user.id, user.role || 'user').subscribe({
