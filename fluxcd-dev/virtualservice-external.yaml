@@ -18,6 +18,7 @@ spec:
           set:
             x-forwarded-proto: "https"
             x-forwarded-port: "443"
+            x-forwarded-host: "sw-dev.polecatworks.com"
       route:
         - destination:
             host: keycloak-keycloakx-http.auth.svc.cluster.local
