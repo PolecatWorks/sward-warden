@@ -90,32 +90,3 @@ spec:
               "skipIssuerCheck": true
             }
           }
-    customPodSHA: 08bf410
-# apiVersion: helm.toolkit.fluxcd.io/v2
-# kind: HelmRelease
-# metadata:
-#   name: mfe-shell
-# spec:
-#   releaseName: mfe-shell
-#   chartRef:
-#     kind: OCIRepository
-#     name: mfe-shell
-#   interval: 50m
-#   install:
-#     remediation:
-#       retries: 3
-#   values:
-#     image:
-#       repository: ghcr.io/polecatworks/mfe-shell-mfe-shell
-#       tag: main
-#       pullPolicy: Always # Dev ONLY
-#     imagePullSecrets:
-#       - name: ghcr-docker-auth
-#     config:
-#       configs:
-#         default.conf.template: |
-#           map $http_origin $cors_origin {
-#             default "";
-#             "~^http://localhost(:\d+)?$" "$http_origin";
-#           }
----
