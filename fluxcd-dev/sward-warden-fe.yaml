@@ -26,7 +26,7 @@ spec:
   values:
     image:
       repository: ghcr.io/polecatworks/sward-warden-fe
-      tag: sha-bb15c2eff5475ec4c48350908187c859b618a4c8
+      tag: main
       pullPolicy: Always
     imagePullSecrets:
       - name: ghcr-docker-auth
@@ -119,4 +119,3 @@ spec:
 #             "~^http://localhost(:\d+)?$" "$http_origin";
 #           }
 ---
-

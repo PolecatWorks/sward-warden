@@ -62,7 +62,7 @@ spec:
           value: "60s"
     image:
       repository: ghcr.io/polecatworks/sward-warden-be
-      tag: sha-f06e862e679b04ccbb996a73ba0ff62ced7974b7
+      tag: main
       pullPolicy: Always
     resources:
       requests:
