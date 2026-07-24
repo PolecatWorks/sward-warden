@@ -58,4 +58,54 @@ export class AuthService {
   initCodeFlow(): void {
     this.oauthService.initCodeFlow();
   }
+
+  // PRD Reference: 0001, 0002
+  getUsername(): string {
+    if (this.oauthService.hasValidAccessToken()) {
+      const claims = this.oauthService.getIdentityClaims() as Record<string, any>;
+      if (claims) {
+        return claims['preferred_username'] || claims['name'] || claims['email'] || claims['sub'] || 'Authenticated User';
+      }
+    }
+    return localStorage.getItem(this.USER_KEY) || 'Guest User';
+  }
+
+  // PRD Reference: 0001, 0002
+  getUserEmail(): string {
+    if (this.oauthService.hasValidAccessToken()) {
+      const claims = this.oauthService.getIdentityClaims() as Record<string, any>;
+      if (claims && claims['email']) {
+        return claims['email'];
+      }
+    }
+    const userId = this.getUserId();
+    return userId ? `${userId}@polecatworks.com` : 'N/A';
+  }
+
+  // PRD Reference: 0001, 0002
+  getUserRoles(): string[] {
+    if (this.oauthService.hasValidAccessToken()) {
+      const claims = this.oauthService.getIdentityClaims() as Record<string, any>;
+      if (claims) {
+        const realmAccess = claims['realm_access'];
+        if (realmAccess && Array.isArray(realmAccess.roles)) {
+          return realmAccess.roles;
+        }
+        if (Array.isArray(claims['roles'])) {
+          return claims['roles'];
+        }
+      }
+    }
+    return ['user'];
+  }
+
+  // PRD Reference: 0001, 0002
+  getUserProfile(): { userId: string; username: string; email: string; roles: string[] } {
+    return {
+      userId: this.getUserId() || 'unknown',
+      username: this.getUsername(),
+      email: this.getUserEmail(),
+      roles: this.getUserRoles(),
+    };
+  }
 }

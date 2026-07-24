@@ -1,4 +1,5 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, Optional } from '@angular/core';
+import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {
   Subscription,
@@ -73,6 +74,7 @@ export class SyncEngineService implements OnDestroy {
     private authService: AuthService,
     private logger: LoggerService,
     private http: HttpClient,
+    @Optional() private router?: Router,
   ) {
     // Load initial lastSyncTime from RxDB
     this.rxdbService.db$.subscribe(async (db) => {
@@ -129,7 +131,7 @@ export class SyncEngineService implements OnDestroy {
    * 1. Push: flush the outbox queue
    * 2. Pull: fetch delta changes from the be
    */
-  // PRD Reference: 0001
+  // PRD Reference: 0001, 0002
   async fullSync(): Promise<void> {
     if (this.syncInProgress || this.rxdbService.fallbackToRest$.value) {
       this.syncNeededAgain = true;
@@ -146,9 +148,39 @@ export class SyncEngineService implements OnDestroy {
           break;
         }
       }
+    } catch (error: any) {
+      this.logger.error('SYNC ENGINE: Sync failed with error:', error);
+      if (error && (error.status === 403 || error.status === 401)) {
+        this.handleSyncError(error);
+      } else {
+        throw error;
+      }
     } finally {
       this.syncInProgress = false;
       this.syncNeededAgain = false;
+    }
+  }
+
+  /** Handle sync errors by navigating to /error with diagnostic state and user profile */
+  // PRD Reference: 0001, 0002
+  private handleSyncError(error: any): void {
+    const currentUrl = this.router ? this.router.url : '/home';
+    const previousUrl = currentUrl && currentUrl !== '/error' ? currentUrl : '/home';
+    const status = error.status || 403;
+    const message =
+      error.error?.error ||
+      error.message ||
+      'Synchronization forbidden. Please verify permissions or user identity.';
+
+    if (this.router) {
+      this.router.navigate(['/error'], {
+        state: {
+          error: message,
+          errorCode: status,
+          isSyncError: true,
+          previousUrl,
+        },
+      });
     }
   }
 
@@ -216,6 +248,9 @@ export class SyncEngineService implements OnDestroy {
           `SYNC ENGINE: Error processing entry ${entry.id}:`,
           error,
         );
+        if (error && (error.status === 403 || error.status === 401)) {
+          throw error;
+        }
         const newRetryCount = (entry.retryCount || 0) + 1;
         const isClientError =
           error && (error.status === 400 || error.status === 422);

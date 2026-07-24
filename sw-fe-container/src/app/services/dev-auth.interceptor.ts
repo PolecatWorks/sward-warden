@@ -8,7 +8,7 @@ import { APP_CONFIG } from '../app-config';
 export const devAuthInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const authService = inject(AuthService);
-  const config = inject(APP_CONFIG);
+  const config = inject(APP_CONFIG, { optional: true });
 
   let newReq = req;
 
@@ -29,7 +29,7 @@ export const devAuthInterceptor: HttpInterceptorFn = (req, next) => {
       // Catch authentication/authorization errors
       if (error.status === 401) {
         authService.logout();
-        if (config.auth) {
+        if (config?.auth) {
           authService.initCodeFlow();
         } else {
           router.navigate(['/login']);
