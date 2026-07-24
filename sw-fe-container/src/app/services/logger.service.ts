@@ -46,7 +46,7 @@ export class LoggerService implements OnDestroy {
 
   constructor(
     @Optional() @Inject(APP_CONFIG) private config: AppConfig | null,
-    private http: HttpClient,
+    @Optional() private http: HttpClient | null,
     private networkService: NetworkService,
     private authService: AuthService
   ) {
@@ -101,6 +101,7 @@ export class LoggerService implements OnDestroy {
 
       const url = `${this.config.apiPath}/client-logs`;
 
+      if (!this.http) return;
       this.http.post(url, logs).subscribe({
         next: async () => {
           // On success, clear the sent logs

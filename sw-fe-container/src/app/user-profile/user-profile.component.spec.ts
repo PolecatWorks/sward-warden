@@ -4,8 +4,6 @@ import { of } from 'rxjs';
 import { UserProfileComponent } from './user-profile.component';
 import { FarmManagementService } from '../services/farm-management.service';
 import { AuthService } from '../services/auth.service';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-
 // PRD Reference: 0003
 describe('UserProfileComponent', () => {
   let component: UserProfileComponent;
@@ -16,15 +14,15 @@ describe('UserProfileComponent', () => {
   // PRD Reference: 0003
   beforeEach(async () => {
     mockFarmService = {
-      getUsers: vi.fn().mockReturnValue(of([{ id: 1, name: 'Test User', email: 'test@example.com' }])),
-      getUser: vi.fn().mockReturnValue(of({ id: 1, name: 'Test User', email: 'test@example.com' })),
-      updateUser: vi.fn().mockReturnValue(of({ id: 1, name: 'Updated User', email: 'test@example.com' })),
-      addUser: vi.fn().mockReturnValue(of({ id: 2, name: 'New User', email: 'new@example.com' })),
-      deleteUser: vi.fn().mockReturnValue(of({}))
+      getUsers: jasmine.createSpy('getUsers').and.returnValue(of([{ id: 1, name: 'Test User', email: 'test@example.com' }])),
+      getUser: jasmine.createSpy('getUser').and.returnValue(of({ id: 1, name: 'Test User', email: 'test@example.com' })),
+      updateUser: jasmine.createSpy('updateUser').and.returnValue(of({ id: 1, name: 'Updated User', email: 'test@example.com' })),
+      addUser: jasmine.createSpy('addUser').and.returnValue(of({ id: 2, name: 'New User', email: 'new@example.com' })),
+      deleteUser: jasmine.createSpy('deleteUser').and.returnValue(of({}))
     };
 
     mockAuthService = {
-      getUserId: vi.fn().mockReturnValue('1')
+      getUserId: jasmine.createSpy('getUserId').and.returnValue('1')
     };
 
     await TestBed.configureTestingModule({
