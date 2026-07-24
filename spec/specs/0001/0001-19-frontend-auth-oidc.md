@@ -32,7 +32,17 @@ Update the existing HTTP interceptor in the frontend to inject the JWT access to
 - The interceptor must retrieve the current valid access token from the `angular-oauth2-oidc` service.
 - It must inject this token into the `Authorization` header as a `Bearer` token (e.g., `Authorization: Bearer <token>`).
 - The interceptor should no longer use or inject the legacy `X-User-ID` or `X-User-Role` headers.
-- If a request returns a `401 Unauthorized` response (e.g., if a token expires and silent refresh fails, or the user is suspended), the interceptor should clear the local token state and redirect the user to the login page.
+### 3.4. Service Worker Navigation Bypass
+- Service Worker configuration (`sw-fe-container/ngsw-config.json`) must include `navigationUrls` negative glob patterns to prevent `ngsw-worker.js` from intercepting OIDC discovery and Keycloak authentication endpoints:
+  ```json
+  "navigationUrls": [
+    "/**",
+    "!/auth/**",
+    "!/api/**",
+    "!/hams/**"
+  ]
+  ```
+- This ensures OIDC discovery calls (`.well-known/openid-configuration`) and Keycloak realm URLs bypass Service Worker caching and reach Keycloak directly.
 
 ## 4. Acceptance Criteria
 - [ ] `angular-oauth2-oidc` is successfully integrated and configured for the Keycloak `sw-dev` realm.
@@ -41,3 +51,4 @@ Update the existing HTTP interceptor in the frontend to inject the JWT access to
 - [ ] The HTTP interceptor correctly injects the `Authorization: Bearer <token>` header on all outgoing API requests.
 - [ ] The application handles `401 Unauthorized` responses by redirecting to the login flow.
 - [ ] Silent refresh successfully renews the access token without user intervention.
+- [ ] `ngsw-config.json` explicitly excludes `/auth/**`, `/api/**`, and `/hams/**` from `navigationUrls`, preventing Service Worker `index.html` interception on Keycloak OIDC discovery and auth routes.

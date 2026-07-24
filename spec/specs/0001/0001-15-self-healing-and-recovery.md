@@ -43,9 +43,17 @@ Implement client-side self-healing and recovery mechanisms to prevent applicatio
   - Once daily on startup (when online), compare a lightweight hash of local primary keys and timestamps with the server's records.
   - If a mismatch is detected, trigger a forced delta pull/clean to reconcile local state with the server.
 
+### 5. HTTP 403 Sync Error Handling & Timer Recovery
+- **Error Interception**: Catch HTTP `403 Forbidden` (and authorization errors) during pull/push sync calls inside `SyncEngineService` instead of letting uncaught exceptions reset or crash the app layout.
+- **Error View Navigation**: Transition the application view to `SyncErrorComponent` at route `/sync-error`.
+- **User Identity Context**: Inject `AuthService` state to display the logged-in user's profile info (User ID, Username/Email, Active Roles) on the error page.
+- **Visual Retry Bar & Auto-Retry**: Display a visual progress bar and countdown timer (e.g. 15-30s) that automatically triggers `sync()` when expired.
+- **Application Resumption**: Upon receiving a `200 OK` response during retry, dismiss the error view and navigate back to resume user workflow seamlessly.
+
 ## Acceptance Criteria
 - When database initialization fails (e.g., due to simulated schema changes), the application automatically wipes the database and restarts it successfully.
 - Following a database wipe, the application performs a full pull sync to rebuild the local store.
 - If IndexedDB is blocked or disabled completely (causing repeated initialization failures), the app boots in "online-only" REST mode and displays a warning banner.
 - A 400 Bad Request response for an outbox entry transitions it to `permanently_failed` without blocking other entries.
+- HTTP 403 sync errors trigger navigation to the Sync Error page showing error status, logged-in user profile, and a countdown timer progress bar, auto-retrying sync when the countdown finishes and resuming the application upon a successful response.
 - All unit tests for the recovery and fallback paths pass.
