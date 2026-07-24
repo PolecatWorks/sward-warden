@@ -28,11 +28,21 @@ Implement the client-side pull-sync mechanism that fetches only changed records 
      - Network state transitions from offline → online.
      - Periodically (configurable interval, default: 5 minutes) while online.
    - Use RxJS `timer` and `switchMap` to avoid overlapping sync operations.
-5. **Testing**:
+5. **Sync Error & HTTP 403 Interception Flow**:
+   - When a push or pull sync call fails with HTTP `403 Forbidden` (or unexpected server error), catch the error in `SyncEngineService` without crashing the client or resetting app state.
+   - Navigate the router to `/sync-error` (rendering `SyncErrorComponent`).
+   - The error component displays:
+     - The HTTP error code (e.g. `403 Forbidden`) and message.
+     - Authenticated user details retrieved from `AuthService` (User ID, Email/Username, Roles).
+     - An active countdown timer bar indicating seconds remaining before retry.
+   - Upon timer expiration (or manual retry click), re-execute sync via `SyncEngineService.sync()`.
+   - On successful sync (HTTP `200 OK`), navigate back to the previous route / home view and resume normal app operation.
+6. **Testing**:
    - Unit tests for checkpoint storage and retrieval.
    - Unit tests for pull sync: verifying upserts, soft-delete removals, and checkpoint updates.
    - Unit tests for LWW conflict resolution: server-newer, local-newer-with-pending, local-newer-without-pending scenarios.
    - Unit tests for sync scheduling (startup, reconnection, periodic triggers).
+   - Unit tests for HTTP 403 error interception, navigation to SyncErrorComponent, countdown timer retry, and recovery on HTTP 200 OK.
 
 ## Acceptance Criteria
 - The client pulls only records changed since the last checkpoint.
@@ -40,4 +50,5 @@ Implement the client-side pull-sync mechanism that fetches only changed records 
 - LWW conflict resolution correctly resolves server vs. local record conflicts.
 - The sync checkpoint is updated after each successful pull.
 - Sync triggers on startup, reconnection, and at configurable intervals.
+- HTTP 403 Forbidden errors during sync navigate to the Sync Error Page showing user info and countdown retry bar, re-attempting sync upon timer expiration, and resuming normal app flow on success.
 - All unit tests pass.
