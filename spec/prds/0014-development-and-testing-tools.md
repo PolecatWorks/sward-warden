@@ -11,14 +11,26 @@ A standalone Rust CLI application (`tools/`) to populate the backend database wi
 - **Configuration:** Accepts CLI arguments for target API URL and scale of generation (e.g., number of farms).
 
 ## 2. Dev User Authentication & Multi-User Testing
-Replaces the simplistic `default-user` fallback with explicit development-only authentication to properly test multi-tenant data segregation.
+Local development supports two distinct authentication execution modes:
+
+### Mode A: Standalone Dev Auth (Shortcut / Mock Mode)
+Allows developers to run the frontend and backend without running Keycloak locally.
+- **Enabled via:** `debugging.enable_dev_auth = true` in backend configuration.
+- **Makefile Targets:** Executed via `make sw-be-dev` and `make sw-fe-dev`.
 - **Dev Login UI (`/login`):** A dev-only frontend view fetching available seeded users and allowing the developer to select a persona to log in. Includes an inline form to create new test users dynamically.
-- **User Deletion:** Provides a dev-only ability to delete a user (and cascade delete their data) via a UI trashcan icon and backend `DELETE /v0/users/{id}` endpoint. Clicking delete must stop click propagation (not trigger login). The backend must clear the backend farms cache for that user. This capability is restricted to development environments and must return `403 Forbidden` in production.
+- **User Deletion:** Provides a dev-only ability to delete a user (and cascade delete their data) via a UI trashcan icon and backend `DELETE /v0/users/{id}` endpoint. Clicking delete must stop click propagation (not trigger login). The backend must clear the backend farms cache for that user. Restricted to development environments and must return `403 Forbidden` in production.
 - **Header Switcher:** The main layout top bar provides a dropdown to instantly switch the active dev user, triggering a fresh JWT fetch and app reload.
 
-## 3. Dev JWT Authentication
-Brings the local dev environment closer to production architecture by using real JWTs instead of plain HTTP headers (`X-User-ID`).
-- **Key Generation:** Backend generates an in-memory RSA keypair (RS256) on startup (dev mode only) using `jwt_simple`.
+### Mode B: Local Keycloak Auth Mode (Full OIDC Integration Flow)
+Includes Keycloak directly in the local development login flow to validate real OIDC redirects, PKCE, token refresh, and user onboarding before deployment.
+- **Enabled via:** `debugging.enable_dev_auth = false` in backend configuration, with local Keycloak OIDC issuer/JWKS parameters.
+- **Makefile Targets:** Executed via `make sw-be-dev-keycloak` and `make sw-fe-dev-keycloak`.
+- **Configurable Keycloak Endpoint:** The Makefile provides default Keycloak realm endpoints (e.g. `KEYCLOAK_URL ?= http://keycloak.k8s` and `KEYCLOAK_REALM_URL ?= http://keycloak.k8s/auth/realms/sw-dev`), which can be overridden via environment variables (e.g., `KEYCLOAK_URL=https://custom-keycloak-dev.example.com make sw-fe-dev-keycloak`).
+- **OIDC Flow:** The frontend `/login` page initiates standard OIDC Authorization Code Flow with PKCE against the local Keycloak instance, handling redirect flows, authorization codes, and token exchanges.
+
+## 3. Dev JWT Authentication (Standalone Mode)
+Brings the standalone local dev environment closer to production architecture by using real JWTs instead of plain HTTP headers (`X-User-ID`).
+- **Key Generation:** Backend generates an in-memory RSA keypair (RS256) on startup (when `debugging.enable_dev_auth = true`) using `jwt_simple`.
 - **Endpoints (Dev Only):**
   - `POST /dev/auth/token`: Signs and returns a JWT for a selected User ID and roles.
   - `GET /.well-known/jwks.json`: Exposes the public key for local Istio service mesh validation.
