@@ -68,7 +68,9 @@ This document defines the overarching application architecture for the sward man
   To support the Web Crypto API required for browser-side PKCE challenge computation, the application must run in a Secure Context:
   - In production and staging, HTTPS is strictly enforced.
   - For local development, HTTP must only be used on `localhost` or `127.0.0.1`. Any local custom hostnames (e.g., `sward-dev.k8s`) must terminate TLS at the ingress gateway (using local CA certificates like `mkcert`) to serve the site over HTTPS.
-  - **Mock Dev Auth vs. Local Keycloak:** Use a mock in-memory developer authentication server (`debugging.enable_dev_auth: true`) for rapid local iteration and reliable integration test runs, avoiding the resource overhead of running Keycloak locally.
+  - **Dual Local Development Authentication Modes:**
+    - **Mock Dev Auth Mode (Shortcut Mode):** Enabled via `debugging.enable_dev_auth: true`. Bypasses Keycloak and uses an in-memory dev auth server and persona picker UI (`/login`) for rapid local iteration and lightweight integration test runs without external keycloak dependency.
+    - **Local Keycloak Auth Mode (Full OIDC Flow):** Enabled via `debugging.enable_dev_auth: false` with local OIDC parameters pointing to a local Keycloak instance (defaulting to `http://keycloak.k8s` with realm `sw-dev`). The frontend performs full OIDC Authorization Code Flow with PKCE against Keycloak, enabling local end-to-end testing of authentication, token refresh, and initial user onboarding.
   - **Redirect URIs & CORS (Local):** `sward-warden-fe` client in Keycloak must support `http://localhost:4200/*` and any `https://sw-*.dev.k8s/*` for local testing.
 - **CORS Hardening:**
   - Strict, configurable whitelist-based CORS policy (no wildcard `*` or `Any` in production).
