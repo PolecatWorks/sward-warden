@@ -12,9 +12,8 @@ export const authGuard: CanActivateFn = (route, state) => {
     return true;
   }
 
-  if (config.auth) {
-    authService.initCodeFlow();
-    return false;
+  if (config.auth && (window.location.search.includes('code=') || window.location.search.includes('state='))) {
+    return true;
   }
 
   // Not logged in, redirect to login page

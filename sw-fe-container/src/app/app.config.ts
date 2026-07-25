@@ -13,7 +13,7 @@ import { provideServiceWorker } from '@angular/service-worker';
 
 import { APP_CONFIG, AppConfig } from './app-config';
 import { devAuthInterceptor } from './services/dev-auth.interceptor';
-import { provideOAuthClient, OAuthService, AuthConfig } from 'angular-oauth2-oidc';
+import { provideOAuthClient, OAuthService, AuthConfig, OAuthStorage } from 'angular-oauth2-oidc';
 
 export function initializeOAuth(oauthService: OAuthService, config: AppConfig) {
   return () => {
@@ -26,13 +26,24 @@ export function initializeOAuth(oauthService: OAuthService, config: AppConfig) {
         scope: config.auth.scope,
         showDebugInformation: isDevMode(),
         requireHttps: config.auth.requireHttps ?? true,
-        useSilentRefresh: true,
+        useSilentRefresh: config.auth.requireHttps ?? false,
         strictDiscoveryDocumentValidation: false,
         skipIssuerCheck: config.auth.skipIssuerCheck ?? true,
       };
       oauthService.configure(authConfig);
-      oauthService.setupAutomaticSilentRefresh();
-      return oauthService.loadDiscoveryDocumentAndTryLogin().then(() => true).catch(() => true);
+      if (config.auth.requireHttps ?? true) {
+        oauthService.setupAutomaticSilentRefresh();
+      }
+      return oauthService
+        .loadDiscoveryDocumentAndTryLogin()
+        .then((result) => {
+          console.log('OAuth discovery & login result:', result, 'Has token:', oauthService.hasValidAccessToken(), 'Claims:', oauthService.getIdentityClaims());
+          return true;
+        })
+        .catch((err) => {
+          console.error('OAuth discovery & login error:', err);
+          return true;
+        });
     }
     return Promise.resolve(true);
   };
@@ -53,6 +64,7 @@ export const createAppConfig = (config: AppConfig): ApplicationConfig => ({
       registrationStrategy: 'registerWhenStable:30000',
     }),
     { provide: APP_CONFIG, useValue: config },
+    { provide: OAuthStorage, useValue: localStorage },
     provideOAuthClient(),
     {
       provide: APP_INITIALIZER,

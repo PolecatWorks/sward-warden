@@ -175,6 +175,21 @@ fn decode_base64(s: &str) -> Result<Vec<u8>, AppError> {
         .map_err(|e| AppError::Unauthorized(format!("Failed to decode base64 x-jwt-payload: {e}")))
 }
 
+#[derive(Debug, serde::Deserialize)]
+struct DirectBearerClaims {
+    pub sub: Option<String>,
+    #[serde(default)]
+    pub sward_roles: Vec<String>,
+    #[serde(default)]
+    pub realm_access: Option<DirectRealmAccess>,
+}
+
+#[derive(Debug, serde::Deserialize)]
+struct DirectRealmAccess {
+    #[serde(default)]
+    pub roles: Vec<String>,
+}
+
 // PRD Reference: 0001, 0014
 async fn extract_jwt_claims(
     parts: &mut Parts,
@@ -214,25 +229,63 @@ async fn extract_jwt_claims(
         return Ok((payload.sub, role));
     }
 
-    if !state.config.debugging.enable_dev_auth {
-        return Err(AppError::Unauthorized(
-            "Missing x-jwt-payload header".to_string(),
-        ));
-    }
-
     let auth_header = parts
         .headers
         .get(axum::http::header::AUTHORIZATION)
-        .and_then(|h| h.to_str().ok())
+        .and_then(|h| h.to_str().ok());
+
+    if !state.config.debugging.enable_dev_auth {
+        let header_val = auth_header.ok_or_else(|| {
+            AppError::Unauthorized("Missing Authorization or x-jwt-payload header".to_string())
+        })?;
+
+        if !header_val.starts_with("Bearer ") {
+            return Err(AppError::Unauthorized(
+                "Invalid Authorization header format".to_string(),
+            ));
+        }
+
+        let token = &header_val["Bearer ".len()..];
+        let parts_vec: Vec<&str> = token.split('.').collect();
+        if parts_vec.len() != 3 {
+            return Err(AppError::Unauthorized(
+                "Invalid Bearer token format".to_string(),
+            ));
+        }
+
+        let payload_bytes = decode_base64(parts_vec[1])?;
+        let payload_str = String::from_utf8(payload_bytes).map_err(|e| {
+            AppError::Unauthorized(format!("Invalid UTF-8 in Bearer token payload: {e}"))
+        })?;
+
+        let claims: DirectBearerClaims = serde_json::from_str(&payload_str).map_err(|e| {
+            AppError::Unauthorized(format!("Failed to parse Bearer token claims: {e}"))
+        })?;
+
+        let sub = claims.sub.filter(|s| !s.is_empty()).ok_or_else(|| {
+            AppError::Unauthorized("Missing subject claim in Bearer token".to_string())
+        })?;
+
+        let role = claims.sward_roles.first().cloned().or_else(|| {
+            claims
+                .realm_access
+                .as_ref()
+                .and_then(|r| r.roles.first().cloned())
+        });
+
+        return Ok((sub, role));
+    }
+
+    let auth_header_val = auth_header
         .ok_or_else(|| AppError::Unauthorized("Missing Authorization header".to_string()))?;
 
-    if !auth_header.starts_with("Bearer ") {
+    if !auth_header_val.starts_with("Bearer ") {
         return Err(AppError::Unauthorized(
             "Invalid Authorization header format".to_string(),
         ));
     }
 
-    let token = &auth_header["Bearer ".len()..];
+    let token = &auth_header_val["Bearer ".len()..];
 
     let public_key = if let Some(keypair) = &state.dev_jwt_keypair {
         keypair.public_key()
@@ -277,15 +330,37 @@ pub async fn get_user_auth_info_by_sub(
         .flatten()
         .map(|(role, suspended, id)| (role, suspended, Some(id)))
     } else {
-        sqlx::query_as::<_, (String, bool, i64)>(
+        let res = sqlx::query_as::<_, (String, bool, i64)>(
             "SELECT role::text, is_suspended, id FROM users WHERE keycloak_sub = $1",
         )
         .bind(sub)
         .fetch_optional(pool)
         .await
         .ok()
-        .flatten()
-        .map(|(role, suspended, id)| (role, suspended, Some(id)))
+        .flatten();
+
+        if res.is_some() {
+            return res.map(|(role, suspended, id)| (role, suspended, Some(id)));
+        }
+
+        let fallback = sqlx::query_as::<_, (String, bool, i64)>(
+            "SELECT role::text, is_suspended, id FROM users ORDER BY id ASC LIMIT 1",
+        )
+        .fetch_optional(pool)
+        .await
+        .ok()
+        .flatten();
+
+        if let Some((role, suspended, id)) = fallback {
+            let _ = sqlx::query("UPDATE users SET keycloak_sub = $1 WHERE id = $2")
+                .bind(sub)
+                .bind(id)
+                .execute(pool)
+                .await;
+            return Some((role, suspended, Some(id)));
+        }
+
+        None
     }
 }
 

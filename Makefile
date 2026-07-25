@@ -1,8 +1,11 @@
 .PHONY: all build-fe build-be helm-package helm-deploy test \
-        sw-fe-dev sw-fe-docker sw-fe-docker-run \
-        sw-be-dev sw-be-docker sw-be-docker-run \
+        sw-fe-dev sw-fe-dev-keycloak sw-fe-docker sw-fe-docker-run \
+        sw-be-dev sw-be-dev-keycloak sw-be-docker sw-be-docker-run \
         db-local \
         robot-test robot-test-be robot-test-fe robot-test-nav robot-test-hold
+
+KEYCLOAK_URL ?= http://keycloak.k8s
+KEYCLOAK_REALM_URL ?= $(KEYCLOAK_URL)/auth/realms/sw-dev
 
 BASE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
@@ -43,7 +46,7 @@ helm-deploy:
 
 # --- Rust Be Patterns ---
 
-# Run development server
+# Run development server (Standalone / Mock Auth mode)
 $(foreach app,$(RUST_APPS),$(app)-dev):%-dev:
 	-@lsof -t -i :$($*_PORT) | xargs kill -9 2>/dev/null || true
 	$(if $($*_HEALTH_PORT),-@lsof -t -i :$($*_HEALTH_PORT) | xargs kill -9 2>/dev/null || true)
@@ -53,6 +56,22 @@ $(foreach app,$(RUST_APPS),$(app)-dev):%-dev:
 	SP_BE__DATABASE__URL__URL="postgres://localhost:5432/swarddb" \
 	SP_BE__DATABASE__URL__USERNAME="postgres" \
 	SP_BE__DATABASE__URL__PASSWORD="mysecretpassword" \
+	SP_BE__DEBUGGING__ENABLE_DEV_AUTH=true \
+	cargo watch -x 'run -- --config-path config/default.yaml --secrets-dir config/ serve'
+
+# Run development server with Keycloak OIDC authentication flow
+$(foreach app,$(RUST_APPS),$(app)-dev-keycloak):%-dev-keycloak:
+	-@lsof -t -i :$($*_PORT) | xargs kill -9 2>/dev/null || true
+	$(if $($*_HEALTH_PORT),-@lsof -t -i :$($*_HEALTH_PORT) | xargs kill -9 2>/dev/null || true)
+	cd $*-container && \
+	RUST_LOG=debug \
+	DATABASE_URL="postgres://postgres:mysecretpassword@localhost:5432/swarddb" \
+	SP_BE__DATABASE__URL__URL="postgres://localhost:5432/swarddb" \
+	SP_BE__DATABASE__URL__USERNAME="postgres" \
+	SP_BE__DATABASE__URL__PASSWORD="mysecretpassword" \
+	SP_BE__DEBUGGING__ENABLE_DEV_AUTH=false \
+	SP_BE__KEYCLOAK__BASE_URL="$(KEYCLOAK_REALM_URL)" \
+	SP_BE__KEYCLOAK__REALM="sw-dev" \
 	cargo watch -x 'run -- --config-path config/default.yaml --secrets-dir config/ serve'
 
 # Run migrations
@@ -75,9 +94,38 @@ $(foreach app,$(RUST_APPS),$(app)-test):%-test:
 $(foreach app,$(NODE_APPS),$(app)-container/node_modules):%-container/node_modules:%-container/package.json
 	cd $*-container && npm install
 
-# Run dev server (Node)
+# Run dev server (Node - Standalone / Mock Auth mode)
 $(foreach app,$(NODE_APPS),$(app)-dev):%-dev:%-container/node_modules
 	-@lsof -t -i :$($*_PORT) | xargs kill -9 2>/dev/null || true
+	@if [ "$*" = "sw-fe" ]; then \
+		node -e ' \
+			const fs = require("fs"); \
+			const path = "sw-fe-container/src/assets/contents/app-config.json"; \
+			const cfg = JSON.parse(fs.readFileSync(path, "utf8")); \
+			cfg.auth = null; \
+			fs.writeFileSync(path, JSON.stringify(cfg, null, 2)); \
+		'; \
+	fi
+	cd $*-container && npm start
+
+# Run dev server (Node - Keycloak Auth mode)
+$(foreach app,$(NODE_APPS),$(app)-dev-keycloak):%-dev-keycloak:%-container/node_modules
+	-@lsof -t -i :$($*_PORT) | xargs kill -9 2>/dev/null || true
+	@if [ "$*" = "sw-fe" ]; then \
+		node -e ' \
+			const fs = require("fs"); \
+			const path = "sw-fe-container/src/assets/contents/app-config.json"; \
+			const cfg = JSON.parse(fs.readFileSync(path, "utf8")); \
+			cfg.auth = { \
+				issuer: process.env.KEYCLOAK_REALM_URL || "$(KEYCLOAK_REALM_URL)", \
+				clientId: "sward-warden-fe", \
+				scope: "openid profile email", \
+				requireHttps: false, \
+				skipIssuerCheck: true \
+			}; \
+			fs.writeFileSync(path, JSON.stringify(cfg, null, 2)); \
+		'; \
+	fi
 	cd $*-container && npm start
 
 # Run tests (Node)
