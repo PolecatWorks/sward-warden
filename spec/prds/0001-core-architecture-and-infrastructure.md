@@ -43,6 +43,7 @@ This document defines the overarching application architecture for the sward man
     - Native Keycloak Self-Registration (Recommended for simplicity).
     - Programmatic Provisioning via Keycloak Admin API (For custom signup UIs).
     - Just-In-Time (JIT) Provisioning via Identity Federation (Google, GitHub, Enterprise OIDC/SAML).
+    - **First-Login Application User Onboarding:** Upon initial Keycloak login using the Keycloak-assigned user ID string (decoded JWT `sub` claim, e.g., `ae5245cd-3095-46db-8ce3-cea42fe26edf`), the frontend checks profile existence via `GET /sward/v0/users/{userId}`. If `404 Not Found`, the frontend routes the user to an edit user screen pre-populated with decoded Keycloak JWT claims (`name`, `given_name`, `family_name`, `email`, `preferred_username`), allowing the user to complete and submit their initial application user record.
 - **Identity & Token Validation Layers:**
   - **Istio Service Mesh Layer:** An Envoy sidecar on the backend API pod intercepts traffic, validating JWT signatures against Keycloak's JSON Web Key Sets (JWKS) via `RequestAuthentication` and restricting access via `AuthorizationPolicy` based on token claims.
   - **Backend Layer (Zero-Trust Validation):** The backend service does not trust the network boundary alone. It parses the `Authorization: Bearer <JWT>` header, verifies the cryptographic signature locally by caching Keycloak's JWKS, and validates the claims.
