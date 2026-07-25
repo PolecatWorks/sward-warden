@@ -14,7 +14,7 @@ import { AuthService } from '../services/auth.service';
 import { FarmManagementService } from '../services/farm-management.service';
 import { DevAuthApiService } from '../services/dev-auth-api.service';
 import { User } from '../models/user';
-import { Observable, shareReplay } from 'rxjs';
+import { Observable, shareReplay, catchError, EMPTY } from 'rxjs';
 import { SyncStateService, SyncState } from '../services/sync-state.service';
 
 @Component({
@@ -52,13 +52,21 @@ export class MainLayoutComponent implements OnInit {
     this.lastSyncTime$ = this.syncStateService.lastSyncTime$;
   }
 
-  // No obvious PRD requirement
+  // PRD Reference: 0002, 0003
   ngOnInit(): void {
     const userId = this.authService.getUserId();
     if (userId) {
       this.currentUser$ = this.farmManagementService
         .getUser(userId)
-        .pipe(shareReplay(1));
+        .pipe(
+          catchError((err) => {
+            if (err?.status === 404) {
+              this.router.navigate(['/profile']);
+            }
+            return EMPTY;
+          }),
+          shareReplay(1)
+        );
     }
     this.users$ = this.farmManagementService.getUsers().pipe(shareReplay(1));
   }

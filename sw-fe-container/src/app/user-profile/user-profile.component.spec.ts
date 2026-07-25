@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { UserProfileComponent } from './user-profile.component';
 import { FarmManagementService } from '../services/farm-management.service';
 import { AuthService } from '../services/auth.service';
@@ -57,5 +57,39 @@ describe('UserProfileComponent', () => {
     });
     // PRD Reference: 0003
     expect(mockFarmService.getUsers).toHaveBeenCalled();
+  });
+
+  // PRD Reference: 0002, 0003
+  it('should handle 404 user profile error by pre-populating form from JWT claims and opening edit modal', () => {
+    mockFarmService.getUser.and.returnValue(throwError(() => ({ status: 404 })));
+    mockAuthService.getIdentityClaims = jasmine.createSpy('getIdentityClaims').and.returnValue({
+      sub: 'ae5245cd-3095-46db-8ce3-cea42fe26edf',
+      name: 'John Snow',
+      email: 'john.snow13@example.com',
+      preferred_username: 'johnsnow'
+    });
+
+    component.loadCurrentUser();
+
+    expect(component.isNewUser).toBeTrue();
+    expect(component.showEditProfileModal).toBeTrue();
+    expect(component.editProfileForm.value.name).toBe('John Snow');
+    expect(component.editProfileForm.value.email).toBe('john.snow13@example.com');
+  });
+
+  // PRD Reference: 0002, 0003
+  it('should call addUser on profile submit when isNewUser is true', () => {
+    component.isNewUser = true;
+    component.editProfileForm.patchValue({
+      name: 'John Snow',
+      email: 'john.snow13@example.com'
+    });
+
+    component.onEditProfileSubmit();
+
+    expect(mockFarmService.addUser).toHaveBeenCalledWith(jasmine.objectContaining({
+      name: 'John Snow',
+      email: 'john.snow13@example.com'
+    }));
   });
 });
