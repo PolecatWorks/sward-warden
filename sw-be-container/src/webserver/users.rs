@@ -13,7 +13,7 @@ pub async fn list_users(State(state): State<AppState>) -> Result<Json<Vec<User>>
     }
 
     let users =
-        sqlx::query_as::<_, User>("SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, u.client_log_level, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id GROUP BY u.id")
+        sqlx::query_as::<_, User>("SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, u.client_log_level, u.keycloak_sub, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id GROUP BY u.id")
             .fetch_all(&state.db_pool)
             .await;
     Ok(Json(users?))
@@ -22,8 +22,16 @@ pub async fn list_users(State(state): State<AppState>) -> Result<Json<Vec<User>>
 // References more than 3 PRDs
 pub async fn create_user(
     State(state): State<AppState>,
-    Json(user): Json<User>,
+    caller: crate::webserver::auth::OptionalJwtUser,
+    Json(mut user): Json<User>,
 ) -> Result<Json<User>, AppError> {
+    if user.keycloak_sub.is_none() {
+        if let Some(c) = caller.0 {
+            if !c.sub.is_empty() && c.sub.parse::<i64>().is_err() {
+                user.keycloak_sub = Some(c.sub);
+            }
+        }
+    }
     let mut tx = state.db_pool.begin().await?;
     let log_level = if user.client_log_level.is_empty() {
         "INFO"
@@ -31,7 +39,7 @@ pub async fn create_user(
         &user.client_log_level
     };
     let new_user: User = sqlx::query_as(
-        "INSERT INTO users (name, email, role, phone, description, is_suspended, client_log_level) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, name, email, role, phone, description, is_suspended, client_log_level, NULL AS modules",
+        "INSERT INTO users (name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id, name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub, NULL AS modules",
     )
     .bind(&user.name)
     .bind(&user.email)
@@ -40,6 +48,7 @@ pub async fn create_user(
     .bind(&user.description)
     .bind(user.is_suspended)
     .bind(log_level)
+    .bind(&user.keycloak_sub)
     .fetch_one(&mut *tx)
     .await?;
 
@@ -55,7 +64,7 @@ pub async fn create_user(
     tx.commit().await?;
 
     let final_user = sqlx::query_as::<_, User>(
-        "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, u.client_log_level, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.id = $1 GROUP BY u.id",
+        "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, u.client_log_level, u.keycloak_sub, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.id = $1 GROUP BY u.id",
     )
     .bind(new_user.id)
     .fetch_one(&state.db_pool)
@@ -68,19 +77,37 @@ pub async fn create_user(
 pub async fn get_user(
     State(state): State<AppState>,
     caller: crate::webserver::auth::JwtUser,
-    axum::extract::Path(id): axum::extract::Path<i64>,
+    axum::extract::Path(id): axum::extract::Path<String>,
 ) -> Result<Json<User>, AppError> {
-    if caller.user_id != id && caller.role != "admin" && caller.role != "support" {
+    if caller.sub != id
+        && caller.user_id.map(|uid| uid.to_string()) != Some(id.clone())
+        && caller.role != "admin"
+        && caller.role != "support"
+    {
         return Err(AppError::Forbidden("Access denied".to_string()));
     }
 
-    let user = sqlx::query_as::<_, User>(
-        "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, u.client_log_level, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.id = $1 GROUP BY u.id",
-    )
-    .bind(id)
-    .fetch_one(&state.db_pool)
-    .await?;
-    Ok(Json(user))
+    let user = if let Ok(numeric_id) = id.parse::<i64>() {
+        sqlx::query_as::<_, User>(
+            "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, u.client_log_level, u.keycloak_sub, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.id = $1 OR u.keycloak_sub = $2 GROUP BY u.id",
+        )
+        .bind(numeric_id)
+        .bind(&id)
+        .fetch_optional(&state.db_pool)
+        .await?
+    } else {
+        sqlx::query_as::<_, User>(
+            "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, u.client_log_level, u.keycloak_sub, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.keycloak_sub = $1 GROUP BY u.id",
+        )
+        .bind(&id)
+        .fetch_optional(&state.db_pool)
+        .await?
+    };
+
+    match user {
+        Some(u) => Ok(Json(u)),
+        None => Err(AppError::NotFound(format!("User {id} not found"))),
+    }
 }
 
 // References more than 3 PRDs
@@ -88,22 +115,37 @@ pub async fn update_user(
     State(state): State<AppState>,
     caller: crate::webserver::auth::JwtUser,
     raw_token: Option<axum::Extension<crate::webserver::auth::RawToken>>,
-    axum::extract::Path(id): axum::extract::Path<i64>,
+    axum::extract::Path(id): axum::extract::Path<String>,
     Json(user): Json<User>,
 ) -> Result<Json<User>, AppError> {
-    if caller.user_id != id && caller.role != "admin" {
+    if caller.sub != id
+        && caller.user_id.map(|uid| uid.to_string()) != Some(id.clone())
+        && caller.role != "admin"
+    {
         return Err(AppError::Forbidden("Access denied".to_string()));
     }
 
     let mut tx = state.db_pool.begin().await?;
 
-    let existing_user = sqlx::query_as::<_, User>(
-        "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, u.client_log_level, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.id = $1 GROUP BY u.id",
-    )
-    .bind(id)
-    .fetch_one(&mut *tx)
-    .await?;
+    let existing_user = if let Ok(numeric_id) = id.parse::<i64>() {
+        sqlx::query_as::<_, User>(
+            "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, u.client_log_level, u.keycloak_sub, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.id = $1 OR u.keycloak_sub = $2 GROUP BY u.id",
+        )
+        .bind(numeric_id)
+        .bind(&id)
+        .fetch_optional(&mut *tx)
+        .await?
+    } else {
+        sqlx::query_as::<_, User>(
+            "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, u.client_log_level, u.keycloak_sub, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.keycloak_sub = $1 GROUP BY u.id",
+        )
+        .bind(&id)
+        .fetch_optional(&mut *tx)
+        .await?
+    }
+    .ok_or_else(|| AppError::NotFound(format!("User {id} not found")))?;
 
+    let db_id = existing_user.id;
     let is_admin = caller.role == "admin";
 
     let role_to_save = if is_admin {
@@ -130,9 +172,13 @@ pub async fn update_user(
     } else {
         &existing_user.modules
     };
+    let keycloak_sub_to_save = user
+        .keycloak_sub
+        .as_ref()
+        .or(existing_user.keycloak_sub.as_ref());
 
     sqlx::query(
-        "UPDATE users SET name = $1, email = $2, role = $3, phone = $4, description = $5, is_suspended = $6, client_log_level = $7 WHERE id = $8",
+        "UPDATE users SET name = $1, email = $2, role = $3, phone = $4, description = $5, is_suspended = $6, client_log_level = $7, keycloak_sub = $8 WHERE id = $9",
     )
     .bind(&user.name)
     .bind(&user.email)
@@ -141,19 +187,20 @@ pub async fn update_user(
     .bind(&user.description)
     .bind(is_suspended_to_save)
     .bind(log_level_to_save)
-    .bind(id)
+    .bind(keycloak_sub_to_save)
+    .bind(db_id)
     .execute(&mut *tx)
     .await?;
 
     if is_admin {
         if let Some(modules) = modules_to_save {
             sqlx::query("DELETE FROM user_modules WHERE user_id = $1")
-                .bind(id)
+                .bind(db_id)
                 .execute(&mut *tx)
                 .await?;
             if !modules.is_empty() {
                 sqlx::query("INSERT INTO user_modules (user_id, module_id) SELECT $1, id FROM modules WHERE name = ANY($2)")
-                    .bind(id)
+                    .bind(db_id)
                     .bind(modules)
                     .execute(&mut *tx)
                     .await?;
@@ -178,9 +225,9 @@ pub async fn update_user(
     tx.commit().await?;
 
     let updated_user = sqlx::query_as::<_, User>(
-        "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, u.client_log_level, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.id = $1 GROUP BY u.id",
+        "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, u.client_log_level, u.keycloak_sub, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.id = $1 GROUP BY u.id",
     )
-    .bind(id)
+    .bind(db_id)
     .fetch_one(&state.db_pool)
     .await?;
 
@@ -191,9 +238,12 @@ pub async fn update_user(
 pub async fn delete_user(
     State(state): State<AppState>,
     caller: crate::webserver::auth::JwtUser,
-    axum::extract::Path(id): axum::extract::Path<i64>,
+    axum::extract::Path(id): axum::extract::Path<String>,
 ) -> Result<axum::http::StatusCode, AppError> {
-    if caller.user_id != id && caller.role != "admin" {
+    if caller.sub != id
+        && caller.user_id.map(|uid| uid.to_string()) != Some(id.clone())
+        && caller.role != "admin"
+    {
         return Err(AppError::Forbidden("Access denied".to_string()));
     }
 
@@ -204,15 +254,25 @@ pub async fn delete_user(
         ));
     }
 
-    let result = sqlx::query("DELETE FROM users WHERE id = $1")
-        .bind(id)
-        .execute(&state.db_pool)
-        .await?;
+    let result = if let Ok(numeric_id) = id.parse::<i64>() {
+        sqlx::query("DELETE FROM users WHERE id = $1 OR keycloak_sub = $2")
+            .bind(numeric_id)
+            .bind(&id)
+            .execute(&state.db_pool)
+            .await?
+    } else {
+        sqlx::query("DELETE FROM users WHERE keycloak_sub = $1")
+            .bind(&id)
+            .execute(&state.db_pool)
+            .await?
+    };
 
     if result.rows_affected() == 0 {
         return Err(AppError::NotFound("User not found".to_string()));
     }
 
-    state.farms_cache.write().await.remove(&id);
+    if let Ok(numeric_id) = id.parse::<i64>() {
+        state.farms_cache.write().await.remove(&numeric_id);
+    }
     Ok(axum::http::StatusCode::NO_CONTENT)
 }
