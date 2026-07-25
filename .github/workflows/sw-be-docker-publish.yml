@@ -42,7 +42,7 @@ jobs:
 
   check-image:
     needs: check-paths
-    if: needs.check-paths.outputs.backend == 'true' && github.event_name != 'pull_request'
+    if: needs.check-paths.outputs.backend == 'true'
     runs-on: ubuntu-latest
     outputs:
       exists: ${{ steps.check.outputs.exists }}
@@ -62,7 +62,7 @@ jobs:
         id: image-name
         run: |
           repo_name="${{ github.repository }}"
-          if [[ "${{ github.event_name }}" == "merge_group" ]]; then
+          if [[ "${{ github.event_name }}" == "merge_group" || "${{ github.event_name }}" == "pull_request" ]]; then
             echo "IMAGE_NAME_LOWERCASE=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')-be/dev" >> $GITHUB_OUTPUT
           else
             echo "IMAGE_NAME_LOWERCASE=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')-be" >> $GITHUB_OUTPUT
@@ -90,7 +90,7 @@ jobs:
 
   build:
     needs: [check-paths, check-image]
-    if: needs.check-paths.outputs.backend == 'true' && github.event_name != 'pull_request' && needs.check-image.outputs.exists != 'true'
+    if: needs.check-paths.outputs.backend == 'true' && needs.check-image.outputs.exists != 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -131,7 +131,7 @@ jobs:
         run: |
           platform=${{ matrix.platform }}
           repo_name="${{ github.repository }}"
-          if [[ "${{ github.event_name }}" == "merge_group" ]]; then
+          if [[ "${{ github.event_name }}" == "merge_group" || "${{ github.event_name }}" == "pull_request" ]]; then
             echo "IMAGE_NAME_LOWERCASE=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')-be/dev" >> $GITHUB_ENV
           else
             echo "IMAGE_NAME_LOWERCASE=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')-be" >> $GITHUB_ENV
@@ -224,7 +224,7 @@ jobs:
       - name: Prepare environment
         run: |
           repo_name="${{ github.repository }}"
-          if [[ "${{ github.event_name }}" == "merge_group" ]]; then
+          if [[ "${{ github.event_name }}" == "merge_group" || "${{ github.event_name }}" == "pull_request" ]]; then
             echo "IMAGE_NAME_LOWERCASE=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')-be/dev" >> $GITHUB_ENV
           else
             echo "IMAGE_NAME_LOWERCASE=$(echo "$repo_name" | tr '[:upper:]' '[:lower:]')-be" >> $GITHUB_ENV
