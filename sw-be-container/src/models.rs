@@ -26,6 +26,7 @@ pub struct User {
     pub modules: Option<Vec<String>>,
     #[serde(default)]
     pub client_log_level: String,
+    pub keycloak_sub: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]

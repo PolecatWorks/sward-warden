@@ -14,16 +14,16 @@ impl FromRequestParts<AppState> for AdminOnly {
         parts: &mut Parts,
         state: &AppState,
     ) -> Result<Self, Self::Rejection> {
-        let (user_id, mut role) = extract_jwt_claims(parts, state).await?;
+        let (sub, mut role) = extract_jwt_claims(parts, state).await?;
 
-        let auth_info = get_user_auth_info(&state.db_pool, user_id).await;
+        let auth_info = get_user_auth_info_by_sub(&state.db_pool, &sub).await;
 
-        if let Some((_, true)) = auth_info {
+        if let Some((_, true, _)) = auth_info {
             return Err(AppError::Forbidden("Account is suspended".to_string()));
         }
 
         if role.is_none() {
-            role = auth_info.map(|(r, _)| r);
+            role = auth_info.map(|(r, _, _)| r);
         }
 
         let role_str = role.unwrap_or_else(|| "user".to_string());
@@ -46,16 +46,16 @@ impl FromRequestParts<AppState> for SupportOnly {
         parts: &mut Parts,
         state: &AppState,
     ) -> Result<Self, Self::Rejection> {
-        let (user_id, mut role) = extract_jwt_claims(parts, state).await?;
+        let (sub, mut role) = extract_jwt_claims(parts, state).await?;
 
-        let auth_info = get_user_auth_info(&state.db_pool, user_id).await;
+        let auth_info = get_user_auth_info_by_sub(&state.db_pool, &sub).await;
 
-        if let Some((_, true)) = auth_info {
+        if let Some((_, true, _)) = auth_info {
             return Err(AppError::Forbidden("Account is suspended".to_string()));
         }
 
         if role.is_none() {
-            role = auth_info.map(|(r, _)| r);
+            role = auth_info.map(|(r, _, _)| r);
         }
 
         let role_str = role.unwrap_or_else(|| "user".to_string());
@@ -80,19 +80,28 @@ impl FromRequestParts<AppState> for UserId {
         parts: &mut Parts,
         state: &AppState,
     ) -> Result<Self, Self::Rejection> {
-        let (user_id, _) = extract_jwt_claims(parts, state).await?;
+        let (sub, _) = extract_jwt_claims(parts, state).await?;
 
-        let auth_info = get_user_auth_info(&state.db_pool, user_id).await;
-        if let Some((_, true)) = auth_info {
+        let auth_info = get_user_auth_info_by_sub(&state.db_pool, &sub).await;
+        if let Some((_, true, _)) = auth_info {
             return Err(AppError::Forbidden("Account is suspended".to_string()));
         }
+
+        let user_id = if let Ok(id) = sub.parse::<i64>() {
+            id
+        } else if let Some((_, _, Some(id))) = auth_info {
+            id
+        } else {
+            return Err(AppError::Unauthorized("User not found".to_string()));
+        };
 
         Ok(UserId(user_id))
     }
 }
 
 pub struct JwtUser {
-    pub user_id: i64,
+    pub sub: String,
+    pub user_id: Option<i64>,
     pub role: String,
 }
 
@@ -104,18 +113,42 @@ impl FromRequestParts<AppState> for JwtUser {
         parts: &mut Parts,
         state: &AppState,
     ) -> Result<Self, Self::Rejection> {
-        let (user_id, role) = extract_jwt_claims(parts, state).await?;
+        let (sub, role) = extract_jwt_claims(parts, state).await?;
 
-        let auth_info = get_user_auth_info(&state.db_pool, user_id).await;
-        if let Some((_, true)) = auth_info {
+        let auth_info = get_user_auth_info_by_sub(&state.db_pool, &sub).await;
+        if let Some((_, true, _)) = auth_info {
             return Err(AppError::Forbidden("Account is suspended".to_string()));
         }
 
-        let role_str = role.unwrap_or_else(|| "user".to_string());
+        let user_id = if let Ok(id) = sub.parse::<i64>() {
+            Some(id)
+        } else {
+            auth_info.as_ref().and_then(|(_, _, id)| *id)
+        };
+
+        let role_str = role
+            .or_else(|| auth_info.map(|(r, _, _)| r))
+            .unwrap_or_else(|| "user".to_string());
+
         Ok(JwtUser {
+            sub,
             user_id,
             role: role_str,
         })
+    }
+}
+
+pub struct OptionalJwtUser(pub Option<JwtUser>);
+
+impl FromRequestParts<AppState> for OptionalJwtUser {
+    type Rejection = std::convert::Infallible;
+
+    async fn from_request_parts(
+        parts: &mut Parts,
+        state: &AppState,
+    ) -> Result<Self, Self::Rejection> {
+        let user = JwtUser::from_request_parts(parts, state).await.ok();
+        Ok(OptionalJwtUser(user))
     }
 }
 
@@ -146,7 +179,7 @@ fn decode_base64(s: &str) -> Result<Vec<u8>, AppError> {
 async fn extract_jwt_claims(
     parts: &mut Parts,
     state: &AppState,
-) -> Result<(i64, Option<String>), AppError> {
+) -> Result<(String, Option<String>), AppError> {
     // Retain the raw token if Authorization header is present
     if let Some(auth_header) = parts
         .headers
@@ -173,12 +206,12 @@ async fn extract_jwt_claims(
             AppError::Unauthorized(format!("Failed to parse x-jwt-payload JSON: {e}"))
         })?;
 
-        let user_id = payload.sub.parse::<i64>().map_err(|_| {
-            AppError::Unauthorized("Invalid subject claim format in x-jwt-payload".to_string())
-        })?;
+        if payload.sub.is_empty() {
+            return Err(AppError::Unauthorized("Missing subject claim".to_string()));
+        }
 
         let role = payload.sward_roles.first().cloned();
-        return Ok((user_id, role));
+        return Ok((payload.sub, role));
     }
 
     if !state.config.debugging.enable_dev_auth {
@@ -223,13 +256,37 @@ async fn extract_jwt_claims(
     let user_id_str = claims
         .subject
         .ok_or_else(|| AppError::Unauthorized("Missing subject claim".to_string()))?;
-    let user_id = user_id_str
-        .parse::<i64>()
-        .map_err(|_| AppError::Unauthorized("Invalid subject claim format".to_string()))?;
 
     let role = claims.custom.sward_roles.first().cloned();
 
-    Ok((user_id, role))
+    Ok((user_id_str, role))
+}
+
+pub async fn get_user_auth_info_by_sub(
+    pool: &sqlx::PgPool,
+    sub: &str,
+) -> Option<(String, bool, Option<i64>)> {
+    if let Ok(id) = sub.parse::<i64>() {
+        sqlx::query_as::<_, (String, bool, i64)>(
+            "SELECT role::text, is_suspended, id FROM users WHERE id = $1",
+        )
+        .bind(id)
+        .fetch_optional(pool)
+        .await
+        .ok()
+        .flatten()
+        .map(|(role, suspended, id)| (role, suspended, Some(id)))
+    } else {
+        sqlx::query_as::<_, (String, bool, i64)>(
+            "SELECT role::text, is_suspended, id FROM users WHERE keycloak_sub = $1",
+        )
+        .bind(sub)
+        .fetch_optional(pool)
+        .await
+        .ok()
+        .flatten()
+        .map(|(role, suspended, id)| (role, suspended, Some(id)))
+    }
 }
 
 pub async fn get_user_auth_info(pool: &sqlx::PgPool, user_id: i64) -> Option<(String, bool)> {
