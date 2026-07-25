@@ -73,6 +73,8 @@ export class UserProfileComponent implements OnInit {
     });
   }
 
+  isNewUser: boolean = false;
+
   // PRD Reference: 0003
   ngOnInit(): void {
     this.users$ = this.farmManagementService.getUsers();
@@ -83,39 +85,73 @@ export class UserProfileComponent implements OnInit {
     this.loadCurrentUser();
   }
 
-  // PRD Reference: 0003
+  // PRD Reference: 0002, 0003
   loadCurrentUser() {
     this.currentUser$ = this.farmManagementService.getUser(this.currentUserId);
-    this.currentUser$.subscribe((user) => {
-      if (user) {
-        this.currentUserData = user;
-        this.editProfileForm.patchValue({
-          name: user.name,
-          email: user.email,
-          phone: user.phone || '',
-          description: user.description || '',
-          area_unit: user.preferences?.area || AreaUnit.Acres,
-          volume_unit: user.preferences?.volume || VolumeUnit.Litres,
-          weight_unit: user.preferences?.weight || WeightUnit.Kilograms,
-          distance_unit: user.preferences?.distance || DistanceUnit.Miles,
-          temperature_unit: user.preferences?.temperature || TemperatureUnit.Celsius,
-        });
-      }
+    this.currentUser$.subscribe({
+      next: (user) => {
+        if (user) {
+          this.currentUserData = user;
+          this.isNewUser = false;
+          this.editProfileForm.patchValue({
+            name: user.name,
+            email: user.email,
+            phone: user.phone || '',
+            description: user.description || '',
+            area_unit: user.preferences?.area || AreaUnit.Acres,
+            volume_unit: user.preferences?.volume || VolumeUnit.Litres,
+            weight_unit: user.preferences?.weight || WeightUnit.Kilograms,
+            distance_unit: user.preferences?.distance || DistanceUnit.Miles,
+            temperature_unit: user.preferences?.temperature || TemperatureUnit.Celsius,
+          });
+        }
+      },
+      error: (err) => {
+        // First-time login when GET /users/{id} returns 404
+        if (err?.status === 404 || err) {
+          this.isNewUser = true;
+          this.prepopulateFromJwt();
+          this.openEditProfileModal();
+        }
+      },
     });
+  }
+
+  // PRD Reference: 0002, 0003
+  prepopulateFromJwt(): void {
+    const claims = this.authService.getIdentityClaims() || {};
+    const name =
+      claims['name'] ||
+      [claims['given_name'], claims['family_name']].filter(Boolean).join(' ') ||
+      claims['preferred_username'] ||
+      '';
+    const email = claims['email'] || '';
+
+    this.editProfileForm.patchValue({
+      name: name,
+      email: email,
+      phone: '',
+      description: '',
+      area_unit: AreaUnit.Acres,
+      volume_unit: VolumeUnit.Litres,
+      weight_unit: WeightUnit.Kilograms,
+      distance_unit: DistanceUnit.Miles,
+      temperature_unit: TemperatureUnit.Celsius,
+    });
+    this.editProfileForm.markAsDirty();
   }
 
   // PRD Reference: 0003
   onEditProfileSubmit(): void {
     if (
       this.editProfileForm.valid &&
-      this.currentUserData &&
-      !this.editProfileForm.pristine
+      (this.isNewUser || !this.editProfileForm.pristine)
     ) {
       const updatedUser: User = {
-        id: this.currentUserData.id,
+        id: this.currentUserData?.id || (isNaN(Number(this.currentUserId)) ? 0 : Number(this.currentUserId)),
         name: this.editProfileForm.value.name,
         email: this.editProfileForm.value.email,
-        role: this.currentUserData.role,
+        role: this.currentUserData?.role || 'user',
         phone: this.editProfileForm.value.phone,
         description: this.editProfileForm.value.description,
         preferences: {
@@ -124,17 +160,25 @@ export class UserProfileComponent implements OnInit {
           weight: this.editProfileForm.value.weight_unit,
           distance: this.editProfileForm.value.distance_unit,
           temperature: this.editProfileForm.value.temperature_unit,
-        }
+        },
       };
 
       this.isSaving = true;
-      this.farmManagementService
-        .updateUser(this.currentUserId, updatedUser)
-        .subscribe(() => {
+      const request$ = this.isNewUser
+        ? this.farmManagementService.addUser(updatedUser)
+        : this.farmManagementService.updateUser(this.currentUserId, updatedUser);
+
+      request$.subscribe({
+        next: () => {
           this.isSaving = false;
+          this.isNewUser = false;
           this.closeEditProfileModal();
           this.loadCurrentUser();
-        });
+        },
+        error: () => {
+          this.isSaving = false;
+        },
+      });
     }
   }
 

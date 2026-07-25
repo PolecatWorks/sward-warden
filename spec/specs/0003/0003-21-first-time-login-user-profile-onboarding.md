@@ -1,7 +1,7 @@
 # Spec 0003-21: First-Time Login User Profile Onboarding
 
 ## Status
-Open
+Complete
 
 ## Target PRD
 PRD 0003, PRD 0002

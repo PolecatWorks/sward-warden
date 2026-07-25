@@ -5,7 +5,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly oauthService = inject(OAuthService);
+  private readonly oauthService = inject(OAuthService, { optional: true });
   private readonly USER_KEY = 'agent-user-id';
   private readonly JWT_KEY = 'dev-jwt-token';
 
@@ -23,7 +23,7 @@ export class AuthService {
 
   // PRD Reference: 0014
   logout(): void {
-    if (this.oauthService.hasValidAccessToken()) {
+    if (this.oauthService?.hasValidAccessToken()) {
       this.oauthService.logOut();
     }
     localStorage.removeItem(this.USER_KEY);
@@ -32,16 +32,24 @@ export class AuthService {
 
   // PRD Reference: 0014
   getUserId(): string | null {
-    if (this.oauthService.hasValidAccessToken()) {
+    if (this.oauthService?.hasValidAccessToken()) {
       const claims = this.oauthService.getIdentityClaims();
       return claims ? (claims['sub'] || null) : null;
     }
     return localStorage.getItem(this.USER_KEY);
   }
 
+  // PRD Reference: 0002, 0003
+  getIdentityClaims(): Record<string, any> | null {
+    if (this.oauthService?.hasValidAccessToken()) {
+      return this.oauthService.getIdentityClaims() as Record<string, any>;
+    }
+    return null;
+  }
+
   // PRD Reference: 0014
   getToken(): string | null {
-    if (this.oauthService.hasValidAccessToken()) {
+    if (this.oauthService?.hasValidAccessToken()) {
       return this.oauthService.getAccessToken();
     }
     return localStorage.getItem(this.JWT_KEY);
@@ -49,19 +57,19 @@ export class AuthService {
 
   // PRD Reference: 0014
   isLoggedIn(): boolean {
-    if (this.oauthService.hasValidAccessToken()) {
+    if (this.oauthService?.hasValidAccessToken()) {
       return true;
     }
     return !!localStorage.getItem(this.USER_KEY);
   }
 
   initCodeFlow(): void {
-    this.oauthService.initCodeFlow();
+    this.oauthService?.initCodeFlow();
   }
 
   // PRD Reference: 0001, 0002
   getUsername(): string {
-    if (this.oauthService.hasValidAccessToken()) {
+    if (this.oauthService?.hasValidAccessToken()) {
       const claims = this.oauthService.getIdentityClaims() as Record<string, any>;
       if (claims) {
         return claims['preferred_username'] || claims['name'] || claims['email'] || claims['sub'] || 'Authenticated User';
@@ -72,7 +80,7 @@ export class AuthService {
 
   // PRD Reference: 0001, 0002
   getUserEmail(): string {
-    if (this.oauthService.hasValidAccessToken()) {
+    if (this.oauthService?.hasValidAccessToken()) {
       const claims = this.oauthService.getIdentityClaims() as Record<string, any>;
       if (claims && claims['email']) {
         return claims['email'];
@@ -84,7 +92,7 @@ export class AuthService {
 
   // PRD Reference: 0001, 0002
   getUserRoles(): string[] {
-    if (this.oauthService.hasValidAccessToken()) {
+    if (this.oauthService?.hasValidAccessToken()) {
       const claims = this.oauthService.getIdentityClaims() as Record<string, any>;
       if (claims) {
         const realmAccess = claims['realm_access'];

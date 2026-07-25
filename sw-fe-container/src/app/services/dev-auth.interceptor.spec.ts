@@ -24,7 +24,7 @@ describe('devAuthInterceptor', () => {
   // PRD Reference: 0014
   beforeEach(() => {
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    authServiceSpy = jasmine.createSpyObj('AuthService', ['getToken']);
+    authServiceSpy = jasmine.createSpyObj('AuthService', ['getToken', 'logout', 'initCodeFlow']);
     authServiceSpy.getToken.and.returnValue('real-test-token');
 
     TestBed.configureTestingModule({
@@ -77,7 +77,7 @@ describe('devAuthInterceptor', () => {
   });
 
   // PRD Reference: 0014
-  it('should navigate to /error with correct state on 401 response', () => {
+  it('should logout and navigate to /login on 401 response when not using OIDC auth config', () => {
     httpClient.get('/test-endpoint').subscribe({
       next: () => fail('should have failed with 401'),
       error: (error: HttpErrorResponse) => {
@@ -93,13 +93,14 @@ describe('devAuthInterceptor', () => {
     );
 
     // PRD Reference: 0014
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/error'], {
-      state: { error: 'Unauthorized Access' },
-    });
+    expect(authServiceSpy.logout).toHaveBeenCalled();
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/login']);
   });
 
   // PRD Reference: 0014
-  it('should navigate to /error with correct state on 403 response', () => {
+  it('should navigate to /error with correct state on 403 response when token exists', () => {
+    authServiceSpy.getToken.and.returnValue('valid-token');
+
     httpClient.get('/test-endpoint').subscribe({
       next: () => fail('should have failed with 403'),
       error: (error: HttpErrorResponse) => {
@@ -117,28 +118,6 @@ describe('devAuthInterceptor', () => {
     // PRD Reference: 0014
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/error'], {
       state: { error: 'Forbidden Access' },
-    });
-  });
-
-  // PRD Reference: 0014
-  it('should navigate to /error with default message on 401/403 if no error message provided in response body', () => {
-    httpClient.get('/test-endpoint').subscribe({
-      next: () => fail('should have failed with 401'),
-      error: (error: HttpErrorResponse) => {
-        // PRD Reference: 0014
-        expect(error.status).toBe(401);
-      },
-    });
-
-    const req = httpMock.expectOne('/test-endpoint');
-    req.flush({}, { status: 401, statusText: 'Unauthorized' });
-
-    // PRD Reference: 0014
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/error'], {
-      state: {
-        error:
-          'Authentication failed. Please check your credentials or access rights.',
-      },
     });
   });
 
