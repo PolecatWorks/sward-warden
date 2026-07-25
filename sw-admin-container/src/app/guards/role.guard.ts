@@ -11,9 +11,7 @@ export const roleGuard = (requiredRole: UserRole): CanActivateFn => {
       return true;
     }
 
-    // Redirect to a forbidden page or dashboard if unauthorized
-    // For now, just return false
     console.error(`Access denied: Required role ${requiredRole}`);
-    return false;
+    return router.parseUrl('/error');
   };
 };
