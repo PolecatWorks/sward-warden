@@ -61,7 +61,9 @@ export class MainLayoutComponent implements OnInit {
         .pipe(
           catchError((err) => {
             if (err?.status === 404) {
-              this.router.navigate(['/profile']);
+              if (!this.router.url.includes('/profile')) {
+                this.router.navigate(['/profile']);
+              }
             }
             return EMPTY;
           }),

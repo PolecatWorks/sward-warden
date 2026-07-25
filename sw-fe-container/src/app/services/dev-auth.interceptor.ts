@@ -29,11 +29,7 @@ export const devAuthInterceptor: HttpInterceptorFn = (req, next) => {
       // Catch authentication/authorization errors
       if (error.status === 401) {
         authService.logout();
-        if (config?.auth) {
-          authService.initCodeFlow();
-        } else {
-          router.navigate(['/login']);
-        }
+        router.navigate(['/login']);
       } else if (error.status === 403 && authService.getToken()) {
         const errorMsg =
           error.error?.error ||

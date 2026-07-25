@@ -126,6 +126,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0014-11 Drop X-User-ID Header Support](./0014/0014-11-drop-x-user-id.md) | Complete | PRD 0014 |
 | [0014-12 Sparse Checkout Optimization for GitHub Pages](./0014/0014-12-sparse-checkout-gh-pages.md) | Complete | PRD 0014 |
 | [0014-13 Sparse Checkout Optimization for Rust Docs](./0014/0014-13-sparse-checkout-rust-docs.md) | Complete | PRD 0014 |
+| [0014-14 Local Keycloak Dev Mode & Makefile Targets](./0014/0014-14-local-keycloak-dev-mode.md) | Complete | PRD 0014 |
 
 
 

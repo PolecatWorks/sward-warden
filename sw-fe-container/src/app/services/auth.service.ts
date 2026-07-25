@@ -32,33 +32,43 @@ export class AuthService {
 
   // PRD Reference: 0014
   getUserId(): string | null {
-    if (this.oauthService?.hasValidAccessToken()) {
-      const claims = this.oauthService.getIdentityClaims();
-      return claims ? (claims['sub'] || null) : null;
+    if (this.oauthService) {
+      const claims = this.oauthService.getIdentityClaims() as Record<string, any>;
+      if (claims && claims['sub']) {
+        return claims['sub'];
+      }
     }
     return localStorage.getItem(this.USER_KEY);
   }
 
   // PRD Reference: 0002, 0003
   getIdentityClaims(): Record<string, any> | null {
-    if (this.oauthService?.hasValidAccessToken()) {
-      return this.oauthService.getIdentityClaims() as Record<string, any>;
+    if (this.oauthService) {
+      const claims = this.oauthService.getIdentityClaims() as Record<string, any>;
+      if (claims) {
+        return claims;
+      }
     }
     return null;
   }
 
   // PRD Reference: 0014
   getToken(): string | null {
-    if (this.oauthService?.hasValidAccessToken()) {
-      return this.oauthService.getAccessToken();
+    if (this.oauthService) {
+      const token = this.oauthService.getAccessToken();
+      if (token) {
+        return token;
+      }
     }
     return localStorage.getItem(this.JWT_KEY);
   }
 
   // PRD Reference: 0014
   isLoggedIn(): boolean {
-    if (this.oauthService?.hasValidAccessToken()) {
-      return true;
+    if (this.oauthService) {
+      if (this.oauthService.hasValidAccessToken() || this.oauthService.hasValidIdToken() || !!this.oauthService.getAccessToken()) {
+        return true;
+      }
     }
     return !!localStorage.getItem(this.USER_KEY);
   }
