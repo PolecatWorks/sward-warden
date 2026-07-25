@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { LoggerService } from '../services/logger.service';
@@ -14,6 +14,7 @@ import { DevAuthApiService } from '../services/dev-auth-api.service';
 import { User } from '../models/user';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
+import { APP_CONFIG, AppConfig } from '../app-config';
 
 @Component({
   selector: 'app-login',
@@ -38,6 +39,7 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private logger: LoggerService,
+    @Inject(APP_CONFIG) private config: AppConfig,
   ) {}
 
   // No obvious PRD requirement
