@@ -48,6 +48,7 @@ To manage user access at scale, three OIDC registration and provisioning flows a
 - **Keycloak Self-Registration (Default):** Enabled in Keycloak Realm settings. Self-registered users are automatically assigned to a default group (e.g., granting the `user` and `viewer` client roles) upon verification.
 - **Programmatic Provisioning (Admin API):** The backend API can use a Keycloak service account credentials to provision custom users or system-to-system integration accounts via Keycloak's user endpoints.
 - **Just-In-Time (JIT) Identity Federation:** If users log in via third-party Identity Providers (Google, GitHub, etc.), Keycloak brokers the login and provisions local profiles on first login, mapping external claims to SwardWarden roles.
+- **First-Time Login Application Profile Setup:** When a newly authenticated Keycloak user logs in using their Keycloak user ID string (`sub` claim, e.g. `ae5245cd-3095-46db-8ce3-cea42fe26edf`), the frontend queries `GET /sward/v0/users/{userId}` (e.g. `https://sw-dev.polecatworks.com/sward/v0/users/ae5245cd-3095-46db-8ce3-cea42fe26edf`). If no record is found (`404 Not Found`), the frontend automatically redirects the user to an edit user screen pre-populated with decoded JWT claims (`name`, `given_name`, `family_name`, `email`, `preferred_username`) so the user can enter and submit their profile details to create their user record.
 
 ## 6. User Journeys
 The following user journeys validate tenant security and restriction capabilities:
