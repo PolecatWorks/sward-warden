@@ -4,9 +4,14 @@ import { DashboardComponent } from './components/dashboard/dashboard';
 import { UserListComponent } from './components/user-list/user-list';
 import { EntityExplorerComponent } from './components/entity-explorer/entity-explorer';
 import { AuditLogComponent } from './components/audit-log/audit-log';
+import { ErrorComponent } from './components/error/error';
 import { roleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
+  {
+    path: 'error',
+    component: ErrorComponent
+  },
   {
     path: '',
     component: LayoutComponent,
