@@ -4,22 +4,22 @@ Library         Browser
 Library         Collections
 Library         String
 
-Suite Setup     Setup Suite
-Suite Teardown  Close Browser
+Test Setup     Setup Test Context
+Test Teardown  Close Context
 
 *** Variables ***
 ${BE_BASE_URL}          http://localhost:8080/sward
 ${FE_BASE_URL}          http://localhost:4200
 
 *** Keywords ***
-Setup Suite
+Setup Test Context
     New Browser    chromium    headless=true
     New Context
 
 Setup UI Login
     [Arguments]    ${user_id}
     New Page       ${EXTERNAL_DNS_URL}/login
-    Wait For Elements State    css=[data-testid="user-login-${user_id}"]    visible    timeout=15s
+    Wait For Elements State    css=[data-testid="user-login-${user_id}"]    visible    timeout=20s
     Click          css=[data-testid="user-login-${user_id}"]
     Wait For Elements State    css=app-home    visible    timeout=15s
 

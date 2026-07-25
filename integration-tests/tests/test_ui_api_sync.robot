@@ -44,7 +44,7 @@ UI and API Sync Journey
     ${found_farm}=    Set Variable    ${False}
     ${farm_id}=    Set Variable    ${EMPTY}
     FOR    ${farm}    IN    @{farms}
-        IF    '${farm['name']}' == '${farm_name}'
+        IF    $farm['name'] == $farm_name
             ${found_farm}=    Set Variable    ${True}
             ${farm_id}=    Set Variable    ${farm['id']}
             BREAK
@@ -74,7 +74,7 @@ UI and API Sync Journey
     ${found_field}=    Set Variable    ${False}
     ${field_id}=    Set Variable    ${EMPTY}
     FOR    ${field}    IN    @{fields}
-        IF    '${field['name']}' == '${field_name}' and '${field['farm_id']}' == '${farm_id}'
+        IF    $field['name'] == $field_name and str($field['farm_id']) == str($farm_id)
             ${found_field}=    Set Variable    ${True}
             ${field_id}=    Set Variable    ${field['id']}
             BREAK

@@ -42,7 +42,7 @@ export class LoginComponent implements OnInit {
 
   // No obvious PRD requirement
   ngOnInit(): void {
-    if (this.authService.isLoggedIn()) {
+    if (this.config.auth && this.authService.isLoggedIn()) {
       this.router.navigate(['/home']);
       return;
     }
