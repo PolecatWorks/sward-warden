@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink } from '@angular/router';
 import { SyncEngineService } from './services/sync-engine.service';
+import { VersionUpdateService } from './services/version-update.service';
 
 @Component({
   selector: 'app-root',
@@ -12,5 +13,8 @@ import { SyncEngineService } from './services/sync-engine.service';
 export class AppComponent {
   title = 'temp-app';
 
-  constructor(private syncEngine: SyncEngineService) {}
+  constructor(
+    private syncEngine: SyncEngineService,
+    private versionUpdateService: VersionUpdateService
+  ) {}
 }
