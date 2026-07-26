@@ -103,6 +103,51 @@ spec:
         - user
 ---
 apiVersion: v1.edp.epam.com/v1
+kind: KeycloakRealmGroup
+metadata:
+  name: sw-admin-group
+  namespace: sward-warden-dev
+spec:
+  name: sw-admin
+  realmRef:
+    kind: KeycloakRealm
+    name: sw-dev
+  clientRoles:
+    - clientId: sward-warden-be
+      roles:
+        - admin
+---
+apiVersion: v1.edp.epam.com/v1
+kind: KeycloakRealmGroup
+metadata:
+  name: sw-support-group
+  namespace: sward-warden-dev
+spec:
+  name: sw-support
+  realmRef:
+    kind: KeycloakRealm
+    name: sw-dev
+  clientRoles:
+    - clientId: sward-warden-be
+      roles:
+        - support
+---
+apiVersion: v1.edp.epam.com/v1
+kind: KeycloakRealmGroup
+metadata:
+  name: sw-viewer-group
+  namespace: sward-warden-dev
+spec:
+  name: sw-viewer
+  realmRef:
+    kind: KeycloakRealm
+    name: sw-dev
+  clientRoles:
+    - clientId: sward-warden-be
+      roles:
+        - viewer
+---
+apiVersion: v1.edp.epam.com/v1
 kind: KeycloakRealmRole
 metadata:
   name: sw-dev-default-user-role

@@ -1,15 +1,11 @@
-# This file provisions a test user in Keycloak using the EPAM Keycloak Operator (KeycloakRealmUser CR)
-# with a dynamically generated, non-committed password managed by External Secrets Operator (ESO).
+# This file provisions test users with different role permissions (Admin, Support, Viewer, User)
+# in Keycloak using the EPAM Keycloak Operator (KeycloakRealmUser CR) with shared ESO password generation.
 #
-# Specifically, it does the following:
-# 1. Configures an ESO Password generator (`test-user-john-snow-pass-gen`) to generate a secure random password.
-# 2. Defines an ExternalSecret (`keycloak-user-john-snow-password`) producing a Kubernetes secret containing the password.
-# 3. Defines a KeycloakRealmUser (`dev-user-john-snow`) under the `sw-dev` realm referencing the password secret.
-#
-# Dependencies:
-# - External Secrets Operator (`generators.external-secrets.io/v1alpha1`, `external-secrets.io/v1beta1`)
-# - EPAM Keycloak Operator (`v1.edp.epam.com/v1`)
-# - The parent `KeycloakRealm` named `sw-dev` in `keycloak-crs.yaml`
+# Users provisioned:
+# 1. johnsnow (User role) - dev-user-johnsnow
+# 2. testadmin (Admin role) - dev-user-testadmin
+# 3. testsupport (Support role) - dev-user-testsupport
+# 4. testviewer (Viewer role) - dev-user-testviewer
 ---
 apiVersion: generators.external-secrets.io/v1alpha1
 kind: Password
@@ -26,12 +22,12 @@ spec:
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
-  name: keycloak-user-johnsnow
+  name: keycloak-users-shared-password
   namespace: sward-warden-dev
 spec:
   refreshInterval: "0"
   target:
-    name: keycloak-user-johnsnow
+    name: keycloak-users-shared-password
     creationPolicy: Owner
     template:
       data:
@@ -63,5 +59,74 @@ spec:
   groups:
     - sw-users
   passwordSecret:
-    name: keycloak-user-johnsnow
+    name: keycloak-users-shared-password
+    key: password
+---
+apiVersion: v1.edp.epam.com/v1
+kind: KeycloakRealmUser
+metadata:
+  name: dev-user-testadmin
+  namespace: sward-warden-dev
+spec:
+  realmRef:
+    kind: KeycloakRealm
+    name: sw-dev
+  username: testadmin
+  email: test.admin@example.com
+  firstName: Test
+  lastName: Admin
+  enabled: true
+  emailVerified: true
+  roles:
+    - offline_access
+  groups:
+    - sw-admin
+  passwordSecret:
+    name: keycloak-users-shared-password
+    key: password
+---
+apiVersion: v1.edp.epam.com/v1
+kind: KeycloakRealmUser
+metadata:
+  name: dev-user-testsupport
+  namespace: sward-warden-dev
+spec:
+  realmRef:
+    kind: KeycloakRealm
+    name: sw-dev
+  username: testsupport
+  email: test.support@example.com
+  firstName: Test
+  lastName: Support
+  enabled: true
+  emailVerified: true
+  roles:
+    - offline_access
+  groups:
+    - sw-support
+  passwordSecret:
+    name: keycloak-users-shared-password
+    key: password
+---
+apiVersion: v1.edp.epam.com/v1
+kind: KeycloakRealmUser
+metadata:
+  name: dev-user-testviewer
+  namespace: sward-warden-dev
+spec:
+  realmRef:
+    kind: KeycloakRealm
+    name: sw-dev
+  username: testviewer
+  email: test.viewer@example.com
+  firstName: Test
+  lastName: Viewer
+  enabled: true
+  emailVerified: true
+  roles:
+    - offline_access
+  groups:
+    - sw-viewer
+  passwordSecret:
+    name: keycloak-users-shared-password
     key: password
