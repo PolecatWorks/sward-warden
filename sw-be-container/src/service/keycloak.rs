@@ -1,3 +1,7 @@
+//! Keycloak Admin REST API integration service.
+//!
+//! Synchronizes user status, suspension state, and module subscriptions to Keycloak realms.
+
 use crate::config::AppConfig;
 use crate::error::AppError;
 use std::collections::HashMap;
@@ -21,6 +25,20 @@ struct UserRepresentation {
     attributes: Option<HashMap<String, Vec<String>>>,
 }
 
+/// Synchronizes a user's suspension status and assigned modules to the Keycloak realm.
+///
+/// # Arguments
+///
+/// * `config` - Application configuration containing Keycloak settings.
+/// * `raw_token` - Optional Bearer token from the incoming admin HTTP request.
+/// * `email` - Target user email address in Keycloak.
+/// * `enabled` - Account enabled status flag.
+/// * `is_suspended` - Suspension status flag.
+/// * `modules` - Slice of module names assigned to the user.
+///
+/// # Errors
+///
+/// Returns [`AppError`] if authenticating with Keycloak or updating user representation fails.
 pub async fn sync_user_to_keycloak(
     config: &AppConfig,
     raw_token: Option<&str>,

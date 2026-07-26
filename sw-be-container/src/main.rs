@@ -1,3 +1,8 @@
+//! Sward Warden Backend (`sw-be-container`) binary application entrypoint.
+//!
+//! Provides CLI command parsing for running the main server, database migrations,
+//! seeding realistic test data, and version reporting.
+
 use clap::{Parser, Subcommand};
 use tokio_util::sync::CancellationToken;
 
@@ -10,19 +15,24 @@ use sw_be_container::{NAME, VERSION};
 
 use ::hams::hams::Hams;
 
+/// Command line arguments structure for the backend binary executable.
 #[derive(Parser, Debug, PartialEq)]
 #[command(name = "sw-be", about = "Sward management be", version)]
 pub struct Cli {
+    /// Path to the application configuration file (YAML format).
     #[arg(short, long)]
     pub config_path: std::path::PathBuf,
 
+    /// Path to the directory containing secret files (e.g. database credentials).
     #[arg(short, long)]
     pub secrets_dir: std::path::PathBuf,
 
+    /// Subcommand selection to execute.
     #[command(subcommand)]
     pub command: Commands,
 }
 
+/// Available subcommands for `sw-be`.
 #[derive(Subcommand, Debug, PartialEq)]
 pub enum Commands {
     /// Start the main application server
@@ -39,6 +49,9 @@ pub enum Commands {
     },
 }
 
+/// Initializes structured logging using `tracing_subscriber`.
+///
+/// Filters by `RUST_LOG` environment variable if present, falling back to `fallback_level`.
 fn init_logging(fallback_level: &str) {
     let env_filter = tracing_subscriber::EnvFilter::try_from_default_env()
         .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new(fallback_level));

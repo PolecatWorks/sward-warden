@@ -1,3 +1,8 @@
+//! HTTP webserver and API router definitions.
+//!
+//! Provides Axum HTTP endpoint routing, CORS middleware integration, Prometheus instrumentation,
+//! and graceful cancellation handling.
+
 pub mod admin;
 pub mod applications;
 pub mod auth;
@@ -30,11 +35,13 @@ use tracing::{Level, info};
 use crate::error::AppError;
 use crate::state::AppState;
 
+/// Basic health check endpoint handler.
 // PRD Reference: 0001
 pub async fn hello_handler() -> Result<Json<serde_json::Value>, AppError> {
     Ok(Json(serde_json::json!({ "message": "hello" })))
 }
 
+/// Constructs the central Axum API [`Router`] with registered routes and middleware.
 // PRD Reference: 0001
 // Central API Router
 pub fn app_router(state: AppState) -> Router {

@@ -1,3 +1,5 @@
+//! Sward and manure import/export movement HTTP handlers.
+
 use crate::error::AppError;
 use crate::models::SwardMovement;
 use crate::state::AppState;

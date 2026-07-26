@@ -1,3 +1,5 @@
+//! Weather integration and spreading suitability forecasting services.
+
 pub mod data;
 pub mod service;
 

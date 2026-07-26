@@ -1,3 +1,5 @@
+//! Client telemetry log ingestion HTTP handlers.
+
 use crate::error::AppError;
 use crate::state::AppState;
 use crate::webserver::auth::UserId;

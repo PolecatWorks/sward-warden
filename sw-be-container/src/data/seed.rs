@@ -1,8 +1,22 @@
+//! Database seed generator for local development and testing.
+//!
+//! Populates PostgreSQL with demo users, farms, fields, and events.
+
 use crate::error::AppError;
 use chrono::Utc;
 use sqlx::{PgPool, QueryBuilder};
 use tracing::info;
 
+/// Seeds the database with sample user, farm, and field records.
+///
+/// # Arguments
+///
+/// * `pool` - PostgreSQL database connection pool.
+/// * `user_id` - ID of the target user to seed records for.
+///
+/// # Errors
+///
+/// Returns [`AppError`] if inserting seed records into the database fails.
 // PRD Reference: 0014
 pub async fn seed_database(pool: &PgPool, user_id: i64) -> Result<(), AppError> {
     info!("Seeding database for user_id: {}", user_id);

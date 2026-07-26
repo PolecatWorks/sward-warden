@@ -1,3 +1,5 @@
+//! Mock development authentication endpoints and dev JWT token generator.
+
 use crate::{error::AppError, state::AppState};
 use axum::{
     extract::{Json, State},

@@ -1,3 +1,7 @@
+//! Startup tools and database pre-flight connection checks.
+//!
+//! Provides configurable retry execution logic for application startup verification tasks.
+
 use std::future::Future;
 
 use futures::FutureExt;
@@ -68,6 +72,16 @@ where
     )))
 }
 
+/// Runs all pre-flight startup checks including PostgreSQL database connectivity checks.
+///
+/// # Arguments
+///
+/// * `config` - Loaded application configuration.
+/// * `db_pool` - Connection pool to PostgreSQL.
+///
+/// # Errors
+///
+/// Returns [`AppError`] if any pre-flight check fails after retries.
 // PRD Reference: 0001
 pub async fn run_startup_checks(
     config: &AppConfig,

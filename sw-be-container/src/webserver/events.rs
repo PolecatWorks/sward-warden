@@ -1,3 +1,5 @@
+//! Field activity event logging HTTP handlers.
+
 use crate::error::AppError;
 use crate::models::{Event, FarmRecord, FertilisationPlan, SoilAnalysis};
 use crate::state::AppState;

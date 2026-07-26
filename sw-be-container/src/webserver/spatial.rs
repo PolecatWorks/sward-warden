@@ -1,3 +1,5 @@
+//! Spatial extents and official boundary lookup HTTP handlers.
+
 use crate::error::AppError;
 use crate::spatial::SpatialService;
 use crate::spatial::models::{ExtentsRequest, ExtentsResponse, OfficialBoundary};

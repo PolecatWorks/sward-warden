@@ -1,6 +1,7 @@
-//! Provide a custom error struct
+//! Custom application error types and Axum HTTP response implementations.
 //!
-//! Allow derriving AppError from other Error types from dependant packages.
+//! Maps internal application failures, database errors, authentication issues, and serialization
+//! errors into structured HTTP status codes and JSON error responses.
 
 use std::io;
 
@@ -9,55 +10,83 @@ use axum::extract::rejection::JsonRejection;
 use thiserror::Error;
 use tracing_subscriber::filter::FromEnvError;
 
-/// Error type for handling errors on Sample
+/// Root error type for backend operations and API responses.
 #[derive(Error, Debug)]
 pub enum AppError {
+    /// General internal server error message.
     #[error("General error `{0}`")]
     Message(String),
+
+    /// Client request invalid error (400 Bad Request).
     #[error("Bad Request `{0}`")]
     BadRequest(String),
+
+    /// Operation or service cancelled.
     #[error("Service Cancelled")]
     Cancelled,
+
+    /// Missing or invalid authentication credentials (401 Unauthorized).
     #[error("Unauthorized `{0}`")]
     Unauthorized(String),
+
+    /// Insufficient role or access permissions (403 Forbidden).
     #[error("Forbidden `{0}`")]
     Forbidden(String),
 
+    /// Error originating from Health Monitoring System (HaMS).
     #[error("HaMs error `{0}`")]
     HamsError(#[from] HamsError),
 
+    /// Prometheus recorder or exporter error.
     #[error("Prometheus error `{0}`")]
     PrometheusError(#[from] prometheus::Error),
 
+    /// JSON serialization or deserialization error.
     #[error("Serdes error `{0}`")]
     Serde(#[from] serde_json::Error),
+
+    /// I/O operation error.
     #[error("data store disconnected")]
     Io(#[from] io::Error),
 
+    /// Axum JSON extractor rejection error.
     #[error("Json Rejection `{0}`")]
     JsonRejection(#[from] JsonRejection),
 
+    /// Service shutdown health check failure.
     #[error("Shutdown error")]
     ShutdownCheck,
 
+    /// Service pre-flight startup check failure.
     #[error("PreFlight error")]
     PreflightCheck,
 
+    /// Configuration parsing error from Figment.
     #[error("Figment error `{0}`")]
     FigmentError(#[from] Box<figment::error::Error>),
 
+    /// Environment log filter parsing error.
     #[error("EnvFilter error `{0}`")]
     EnvFilterError(#[from] FromEnvError),
 
+    /// Requested resource was not found (404 Not Found).
     #[error("Not Found: `{0}`")]
     NotFound(String),
 
+    /// Database schema version mismatch error.
     #[error("Schema Mismatch: expected {expected}, actual {actual}")]
-    SchemaMismatch { expected: i32, actual: i32 },
+    SchemaMismatch {
+        /// Expected schema version.
+        expected: i32,
+        /// Actual detected schema version.
+        actual: i32,
+    },
 
+    /// Invalid HTTP header value error.
     #[error("Invalid header value")]
     InvalidHeaderValue(#[from] reqwest::header::InvalidHeaderValue),
 
+    /// PostgreSQL database query or connection pool error.
     #[error("Database error")]
     DatabaseError(#[from] sqlx::Error),
 }

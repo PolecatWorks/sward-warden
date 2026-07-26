@@ -1,3 +1,8 @@
+//! PostGIS-backed spatial query and geometry analysis service.
+//!
+//! Provides spatial buffer validation, waterway intersection checks, field extents calculation,
+//! and integration with official land boundary APIs.
+
 use crate::config::SpatialConfig;
 use crate::error::AppError;
 use crate::spatial::models::{
@@ -7,9 +12,11 @@ use geo::{BoundingRect, Geometry};
 use sqlx::PgPool;
 use std::convert::TryFrom;
 
+/// Service containing static spatial operations and PostGIS queries.
 pub struct SpatialService;
 
 impl SpatialService {
+    /// Validates whether a proposed application geometry lies within field boundaries and satisfies waterway buffer requirements.
     // References more than 3 PRDs
     pub async fn validate_application_area(
         pool: &PgPool,

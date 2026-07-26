@@ -1,3 +1,5 @@
+//! Nutrient spreading optimization engine and recommendation algorithms.
+
 pub mod engine;
 pub mod models;
 

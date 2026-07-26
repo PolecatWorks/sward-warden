@@ -1,3 +1,5 @@
+//! Manure and chemical inventory storage tracking HTTP handlers.
+
 use crate::error::AppError;
 use crate::models::InventoryStorage;
 use crate::state::AppState;

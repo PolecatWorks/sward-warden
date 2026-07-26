@@ -1,46 +1,76 @@
+//! Domain models and SQLx database entity mapping definitions.
+//!
+//! Includes core data structures for users, farms, fields, events, soil analyses,
+//! fertilisation plans, applications, compliance breaches, sward movements, inventory, and audit logs.
+
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use uuid::Uuid;
 
+/// User access control roles.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, sqlx::Type)]
 #[sqlx(type_name = "user_role", rename_all = "lowercase")]
 #[serde(rename_all = "lowercase")]
 pub enum Role {
+    /// Standard farm manager or owner user.
     User,
+    /// Support staff role with cross-tenant read/support capabilities.
     Support,
+    /// System administrator with global management privileges.
     Admin,
 }
 
+/// User entity representing a registered platform user.
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct User {
+    /// Unique auto-incrementing user ID.
     #[serde(default)]
     pub id: i64,
+    /// Display name of the user.
     pub name: String,
+    /// Email address of the user.
     pub email: String,
+    /// Role assigned to the user.
     pub role: Role,
+    /// Optional contact phone number.
     pub phone: Option<String>,
+    /// Optional user description or notes.
     pub description: Option<String>,
+    /// Flag indicating whether the account is suspended.
     #[serde(default)]
     pub is_suspended: bool,
+    /// Subscribed system modules (e.g. `["inventory", "compliance"]`).
     pub modules: Option<Vec<String>>,
+    /// Client UI logging level preference.
     #[serde(default)]
     pub client_log_level: String,
+    /// Keycloak subject identifier mapping.
     pub keycloak_sub: Option<String>,
 }
 
+/// Farm entity representing a managed agricultural holding.
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct Farm {
+    /// Unique farm ID.
     pub id: Option<i64>,
+    /// Owner user ID.
     pub user_id: Option<i64>,
+    /// Name of the farm holding.
     pub name: String,
+    /// Physical address or geographic location description.
     pub location: String,
+    /// Indicates whether nitrates derogation status is active for this farm.
     pub has_derogation: Option<bool>,
+    /// Optional farm photo asset URL.
     pub photo: Option<String>,
+    /// Timestamp of last modification.
     pub updated_at: Option<DateTime<Utc>>,
+    /// Soft deletion flag.
     pub is_deleted: Option<bool>,
 }
 
+/// Field entity representing an individual land plot or parcel.
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct Field {
     pub id: Option<i64>,
