@@ -10,15 +10,16 @@ This specification details the frontend changes required to implement a Header U
 ### 2.1. `sw-fe-container/src/app/main-layout/main-layout.component.ts`
 - Leverage the existing `FarmManagementService` injection.
 - Declare a property `users$: Observable<User[]>` to hold the list of all seeded users.
-- Initialize `users$` in `ngOnInit` by calling `this.farmManagementService.getUsers()`.
+- Determine `showUserSelection$` or `showUserSelection` boolean based on `isDevAuth` OR whether `currentUser.role` / JWT claims include `'admin'` or `'support'`.
+- Initialize `users$` when `showUserSelection` is true by calling `this.farmManagementService.getUsers()`.
 - Add a new method `switchUser(userId: string | number): void`:
   - Call `this.authService.login(userId.toString())` to update the active user context in local storage.
   - Call `window.location.reload()` to force a reload/refresh of the application context and reset any active queries or databases.
 
 ### 2.2. `sw-fe-container/src/app/main-layout/main-layout.component.html`
-- In the top header bar, next to the active user's profile image and greeting, introduce an interactive dropdown selector element.
+- In the top header bar, next to the active user's profile image and greeting, display the interactive user dropdown selector element (`#user-switcher-dropdown`) whenever `showUserSelection` is true (`isDevAuth` or user has `admin`/`support` role).
 - Bind the dropdown options to the `users$ | async` stream:
-  - Each option displays the user's name and role (e.g., "John Doe (Admin)").
+  - Each option displays the user's name and role (e.g., "John Doe (admin)").
   - Set the active option to the current user's ID.
 - Listen for change events on the dropdown to invoke `switchUser(selectedUserId)`.
 - Ensure the dropdown matches the premium design system (clean typography, HSL/emerald green accents, and proper dark mode support).

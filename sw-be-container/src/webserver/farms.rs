@@ -1,10 +1,10 @@
 use crate::error::AppError;
-use crate::models::Farm;
+use crate::models::{EntityQuery, Farm};
 use crate::state::AppState;
 use crate::webserver::auth::UserId;
 use axum::{
     Json,
-    extract::{Path, State},
+    extract::{Path, Query, State},
 };
 use reqwest::StatusCode;
 
@@ -12,31 +12,48 @@ use reqwest::StatusCode;
 pub async fn list_farms(
     State(state): State<AppState>,
     UserId(user_id): UserId,
+    Query(params): Query<EntityQuery>,
 ) -> Result<Json<Vec<Farm>>, AppError> {
     let is_admin = crate::webserver::auth::check_is_admin(&state.db_pool, user_id).await;
 
-    if !is_admin {
+    let target_user_id = if is_admin {
+        params.user_id
+    } else {
+        if let Some(requested_uid) = params.user_id {
+            if requested_uid != user_id {
+                return Err(AppError::Forbidden(
+                    "Cannot query another user's farms".to_string(),
+                ));
+            }
+        }
+        Some(user_id)
+    };
+
+    if !is_admin && params.user_id.is_none() {
         if let Some(cached_farms) = state.farms_cache.read().await.get(&user_id) {
             return Ok(Json(cached_farms.clone()));
         }
     }
 
-    let farms = if is_admin {
-        sqlx::query_as::<_, Farm>(
-            "SELECT id, user_id, name, location, has_derogation, photo, updated_at, is_deleted FROM farms WHERE is_deleted = FALSE"
-        )
-        .fetch_all(&state.db_pool)
-        .await?
-    } else {
-        sqlx::query_as::<_, Farm>(
-            "SELECT id, user_id, name, location, has_derogation, photo, updated_at, is_deleted FROM farms WHERE user_id = $1 AND is_deleted = FALSE"
-        )
-        .bind(user_id)
-        .fetch_all(&state.db_pool)
-        .await?
+    let farms = match target_user_id {
+        Some(uid) => {
+            sqlx::query_as::<_, Farm>(
+                "SELECT id, user_id, name, location, has_derogation, photo, updated_at, is_deleted FROM farms WHERE user_id = $1 AND is_deleted = FALSE"
+            )
+            .bind(uid)
+            .fetch_all(&state.db_pool)
+            .await?
+        }
+        None => {
+            sqlx::query_as::<_, Farm>(
+                "SELECT id, user_id, name, location, has_derogation, photo, updated_at, is_deleted FROM farms WHERE is_deleted = FALSE"
+            )
+            .fetch_all(&state.db_pool)
+            .await?
+        }
     };
 
-    if !is_admin {
+    if !is_admin && params.user_id.is_none() {
         state
             .farms_cache
             .write()

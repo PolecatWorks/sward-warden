@@ -128,6 +128,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0014-13 Sparse Checkout Optimization for Rust Docs](./0014/0014-13-sparse-checkout-rust-docs.md) | Complete | PRD 0014 |
 | [0014-14 Local Keycloak Dev Mode & Makefile Targets](./0014/0014-14-local-keycloak-dev-mode.md) | Complete | PRD 0014 |
 | [0014-15 Update GitHub Actions to Resolve Node 20 Deprecation Warnings](./0014/0014-15-ci-action-updates.md) | Complete | PRD 0014 |
+| [0014-16 Admin and Support User Switcher and All-Entity Visibility Journey](./0014/0014-16-admin-support-user-switch-journey.md) | Complete | PRD 0014 |
 
 
 
