@@ -27,7 +27,7 @@ jobs:
         run: |
           echo "repository=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
 
-      - uses: azure/setup-helm@v4.2.0
+      - uses: azure/setup-helm@v4
 
       - name: Lint Helm Chart
         run: helm lint charts/sward-warden

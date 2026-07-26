@@ -35,7 +35,7 @@ jobs:
       run_tests: ${{ steps.filter.outputs.run_tests }}
     steps:
       - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3.0.2
+      - uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |
@@ -297,7 +297,7 @@ jobs:
           fi
 
       - name: Upload Test Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: robot-test-results
@@ -420,7 +420,7 @@ jobs:
 
       - name: Upload Robot Test Results Artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: robot-test-results-pr-${{ env.PR_NUMBER }}
           path: ./robot-results/
