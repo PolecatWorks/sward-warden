@@ -56,10 +56,8 @@ Users BREAD Operations
     ${users}=    Set Variable    ${list_response.json()}
     Should Not Be Empty    ${users}
 
-    # Missing Endpoints:
-    # 3. Read: GET /v0/users/${user_id} is missing.
-    # 4. Edit: PUT/PATCH /v0/users/${user_id} is missing.
-    # 5. Delete: DELETE /v0/users/${user_id} is missing.
+    # Teardown User
+    DELETE    ${BE_BASE_URL}/v0/users/${user_id}    expected_status=any
 
 # *** Test Cases - Farms ***
 # No obvious PRD requirement
@@ -92,7 +90,6 @@ Farms BREAD Operations
     Log    Edit Farm Response: ${edit_response.content}
     Should Be Equal As Strings    ${edit_response.json()['name']}    Updated Farm Name
     Should Be Equal As Strings    ${edit_response.json()['location']}    Updated Location
-
 
     # 5. Delete (Delete) Farm
     ${delete_response}=    DELETE    ${BE_BASE_URL}/v0/farms/${farm_id}    expected_status=204
