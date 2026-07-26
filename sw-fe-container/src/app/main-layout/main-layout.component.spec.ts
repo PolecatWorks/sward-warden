@@ -48,6 +48,7 @@ describe('MainLayoutComponent', () => {
       'getUserId',
       'login',
       'logout',
+      'getUserRoles',
     ]);
     farmServiceSpy = jasmine.createSpyObj('FarmManagementService', [
       'getUser',
@@ -56,6 +57,7 @@ describe('MainLayoutComponent', () => {
     devAuthApiSpy = jasmine.createSpyObj('DevAuthApiService', ['getToken']);
 
     authServiceSpy.getUserId.and.returnValue('1');
+    authServiceSpy.getUserRoles.and.returnValue(['admin']);
     farmServiceSpy.getUser.and.returnValue(of(mockUser));
     farmServiceSpy.getUsers.and.returnValue(of(mockUsers));
     devAuthApiSpy.getToken.and.returnValue(
@@ -150,7 +152,12 @@ describe('MainLayoutComponent', () => {
     expect(component.switchUser).toHaveBeenCalledWith('2');
   });
 
-  it('should hide user-switcher-dropdown when auth configuration is provided', async () => {
+  it('should hide user-switcher-dropdown when auth configuration is provided for a standard user', async () => {
+    farmServiceSpy.getUser.and.returnValue(
+      of({ id: 2, name: 'John Doe', email: 'john@example.com', role: 'user' }),
+    );
+    authServiceSpy.getUserRoles.and.returnValue(['user']);
+
     TestBed.resetTestingModule();
     await TestBed.configureTestingModule({
       imports: [MainLayoutComponent],
@@ -180,5 +187,42 @@ describe('MainLayoutComponent', () => {
       By.css('#user-switcher-dropdown'),
     );
     expect(selectEl).toBeNull();
+  });
+
+  it('should show user-switcher-dropdown when auth configuration is provided for admin or support user', async () => {
+    farmServiceSpy.getUser.and.returnValue(
+      of({ id: 3, name: 'Support User', email: 'support@example.com', role: 'support' }),
+    );
+    authServiceSpy.getUserRoles.and.returnValue(['support']);
+
+    TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [MainLayoutComponent],
+      providers: [
+        provideRouter([]),
+        {
+          provide: APP_CONFIG,
+          useValue: {
+            apiPath: '/api',
+            logLevel: 'DEBUG',
+            auth: { issuer: 'https://keycloak.example.com', clientId: 'test' },
+          },
+        },
+        LoggerService,
+        { provide: RxdbService, useValue: rxdbServiceSpy },
+        { provide: AuthService, useValue: authServiceSpy },
+        { provide: FarmManagementService, useValue: farmServiceSpy },
+        { provide: DevAuthApiService, useValue: devAuthApiSpy },
+        { provide: SyncEngineService, useValue: syncEngineServiceSpy },
+      ],
+    }).compileComponents();
+
+    const fixtureAuth = TestBed.createComponent(MainLayoutComponent);
+    fixtureAuth.detectChanges();
+
+    const selectEl = fixtureAuth.debugElement.query(
+      By.css('#user-switcher-dropdown'),
+    );
+    expect(selectEl).toBeTruthy();
   });
 });

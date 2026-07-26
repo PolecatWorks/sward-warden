@@ -14,7 +14,7 @@ import { AuthService } from '../services/auth.service';
 import { FarmManagementService } from '../services/farm-management.service';
 import { DevAuthApiService } from '../services/dev-auth-api.service';
 import { User } from '../models/user';
-import { Observable, shareReplay, catchError, EMPTY } from 'rxjs';
+import { Observable, shareReplay, catchError, EMPTY, map, startWith, of } from 'rxjs';
 import { SyncStateService, SyncState } from '../services/sync-state.service';
 import { APP_CONFIG, AppConfig } from '../app-config';
 
@@ -39,6 +39,7 @@ export class MainLayoutComponent implements OnInit {
   currentUser$!: Observable<User>;
   users$: Observable<User[]> | undefined;
   isDevAuth = false;
+  showUserSelection$: Observable<boolean> | undefined;
 
   constructor(
     private rxdbService: RxdbService,
@@ -56,7 +57,7 @@ export class MainLayoutComponent implements OnInit {
     this.isDevAuth = !this.config?.auth;
   }
 
-  // PRD Reference: 0002, 0003
+  // PRD Reference: 0002, 0003, 0014
   ngOnInit(): void {
     const userId = this.authService.getUserId();
     if (userId) {
@@ -74,9 +75,30 @@ export class MainLayoutComponent implements OnInit {
           shareReplay(1)
         );
     }
-    if (this.isDevAuth) {
-      this.users$ = this.farmManagementService.getUsers().pipe(shareReplay(1));
-    }
+
+    this.showUserSelection$ = (this.currentUser$ || of(null)).pipe(
+      map((user) => {
+        if (this.isDevAuth) {
+          return true;
+        }
+        const role = user?.role?.toLowerCase();
+        if (role === 'admin' || role === 'support') {
+          return true;
+        }
+        const roles = this.authService.getUserRoles ? this.authService.getUserRoles() : [];
+        return roles.some(
+          (r) => r.toLowerCase() === 'admin' || r.toLowerCase() === 'support'
+        );
+      }),
+      startWith(this.isDevAuth),
+      shareReplay(1)
+    );
+
+    this.showUserSelection$.subscribe((visible) => {
+      if (visible && !this.users$) {
+        this.users$ = this.farmManagementService.getUsers().pipe(shareReplay(1));
+      }
+    });
   }
 
   // No obvious PRD requirement

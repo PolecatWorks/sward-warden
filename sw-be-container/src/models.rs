@@ -104,10 +104,17 @@ pub struct SyncResponse {
     pub inventory_storage: Vec<InventoryStorage>,
 }
 
+/// Query parameters for entity listing endpoints (e.g. /v0/farms, /v0/fields).
+#[derive(Deserialize, Debug)]
+pub struct EntityQuery {
+    pub user_id: Option<i64>,
+}
+
 /// Query parameters for the delta sync endpoint.
 #[derive(Deserialize, Debug)]
 pub struct SyncQuery {
     pub since: Option<DateTime<Utc>>,
+    pub user_id: Option<i64>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, FromRow)]

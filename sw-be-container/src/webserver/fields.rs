@@ -1,10 +1,10 @@
 use crate::error::AppError;
-use crate::models::Field;
+use crate::models::{EntityQuery, Field};
 use crate::state::AppState;
 use crate::webserver::auth::UserId;
 use axum::{
     Json,
-    extract::{Path, State},
+    extract::{Path, Query, State},
 };
 use reqwest::StatusCode;
 
@@ -12,22 +12,39 @@ use reqwest::StatusCode;
 pub async fn list_fields(
     State(state): State<AppState>,
     UserId(user_id): UserId,
+    Query(params): Query<EntityQuery>,
 ) -> Result<Json<Vec<Field>>, AppError> {
     let is_admin = crate::webserver::auth::check_is_admin(&state.db_pool, user_id).await;
 
-    let fields = if is_admin {
-        sqlx::query_as::<_, Field>(
-            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, f.min_elevation, f.max_elevation, f.mean_elevation, f.average_slope, f.max_slope, ST_AsGeoJSON(f.geom) as geometry_geojson, f.updated_at, f.is_deleted FROM fields f WHERE f.is_deleted = FALSE"
-        )
-        .fetch_all(&state.db_pool)
-        .await?
+    let target_user_id = if is_admin {
+        params.user_id
     } else {
-        sqlx::query_as::<_, Field>(
-            "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, f.min_elevation, f.max_elevation, f.mean_elevation, f.average_slope, f.max_slope, ST_AsGeoJSON(f.geom) as geometry_geojson, f.updated_at, f.is_deleted FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = $1 AND f.is_deleted = FALSE"
-        )
-        .bind(user_id)
-        .fetch_all(&state.db_pool)
-        .await?
+        if let Some(requested_uid) = params.user_id {
+            if requested_uid != user_id {
+                return Err(AppError::Forbidden(
+                    "Cannot query another user's fields".to_string(),
+                ));
+            }
+        }
+        Some(user_id)
+    };
+
+    let fields = match target_user_id {
+        Some(uid) => {
+            sqlx::query_as::<_, Field>(
+                "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, f.min_elevation, f.max_elevation, f.mean_elevation, f.average_slope, f.max_slope, ST_AsGeoJSON(f.geom) as geometry_geojson, f.updated_at, f.is_deleted FROM fields f JOIN farms fa ON f.farm_id = fa.id WHERE fa.user_id = $1 AND f.is_deleted = FALSE"
+            )
+            .bind(uid)
+            .fetch_all(&state.db_pool)
+            .await?
+        }
+        None => {
+            sqlx::query_as::<_, Field>(
+                "SELECT f.id, f.farm_id, f.name, f.area_hectares, f.land_use, f.min_elevation, f.max_elevation, f.mean_elevation, f.average_slope, f.max_slope, ST_AsGeoJSON(f.geom) as geometry_geojson, f.updated_at, f.is_deleted FROM fields f WHERE f.is_deleted = FALSE"
+            )
+            .fetch_all(&state.db_pool)
+            .await?
+        }
     };
     Ok(Json(fields))
 }
