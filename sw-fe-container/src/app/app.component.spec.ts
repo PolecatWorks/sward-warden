@@ -4,6 +4,8 @@ import { AppComponent } from './app.component';
 import { routes } from './app.routes';
 import { Location } from '@angular/common';
 import { AuthService } from './services/auth.service';
+import { VersionUpdateService } from './services/version-update.service';
+import { APP_CONFIG } from './app-config';
 
 // No obvious PRD requirement
 describe('AppComponent Routing', () => {
@@ -25,6 +27,8 @@ describe('AppComponent Routing', () => {
         // No obvious PRD requirement
         provideRouter(routes),
         { provide: AuthService, useValue: mockAuthService },
+        { provide: VersionUpdateService, useValue: {} },
+        { provide: APP_CONFIG, useValue: { apiPath: '/api', logLevel: 'DEBUG' } },
       ],
     }).compileComponents();
   });

@@ -17,6 +17,7 @@ PRDs dictate the high-level features and requirements of the project. Every PRD 
 - [0008 Spatial Data, Mapping & Optimization](./0008-spatial-data-mapping-optimization.md)
 - [0013 Administration & Multi-Tenant Features](./0013-administration-and-multi-tenant.md)
 - [0014 Development & Testing Tools](./0014-development-and-testing-tools.md)
+- [0015 Frontend Auto-Update & Background Cache Sync](./0015-frontend-auto-update-and-cache-control.md)
 
 ## Evolution Mapping
 

@@ -129,6 +129,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0014-14 Local Keycloak Dev Mode & Makefile Targets](./0014/0014-14-local-keycloak-dev-mode.md) | Complete | PRD 0014 |
 | [0014-15 Update GitHub Actions to Resolve Node 20 Deprecation Warnings](./0014/0014-15-ci-action-updates.md) | Complete | PRD 0014 |
 | [0014-16 Admin and Support User Switcher and All-Entity Visibility Journey](./0014/0014-16-admin-support-user-switch-journey.md) | Complete | PRD 0014 |
+| [0015-01 Frontend Auto-Update and Background Cache Sync Specification](./0015/0015-01-frontend-auto-update-and-cache-control.md) | Complete | PRD 0015 |
 
 
 
