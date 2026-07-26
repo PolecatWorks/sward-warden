@@ -44,13 +44,28 @@ spec:
           - to:
               - operation:
                   paths: ["/hams/alive", "/hams/ready"]
-          # Allow requests to API paths only if they have a valid token issuer
+          # Read access: GET, HEAD, OPTIONS require viewer, user, support, or admin roles
           - from:
               - source:
                   requestPrincipals: ["https://sw-dev.polecatworks.com/auth/realms/sw-dev/*"]
             to:
               - operation:
+                  methods: ["GET", "HEAD", "OPTIONS"]
                   paths: ["/sward/v0/*"]
+            when:
+              - key: request.auth.claims[sward_roles]
+                values: ["viewer", "user", "support", "admin"]
+          # Write access: POST, PUT, DELETE, PATCH require user, support, or admin roles
+          - from:
+              - source:
+                  requestPrincipals: ["https://sw-dev.polecatworks.com/auth/realms/sw-dev/*"]
+            to:
+              - operation:
+                  methods: ["POST", "PUT", "DELETE", "PATCH"]
+                  paths: ["/sward/v0/*"]
+            when:
+              - key: request.auth.claims[sward_roles]
+                values: ["user", "support", "admin"]
     imagePullSecrets:
       - name: ghcr-docker-auth
     env:
