@@ -1,16 +1,25 @@
+//! Weather evaluation and application safety validation service.
+
 use crate::error::AppError;
 use crate::weather::data::{WeatherData, get_static_forecast};
 use chrono::{DateTime, Utc};
 
+/// Service providing weather forecasts and weather-dependent spreading safety checks.
 pub struct WeatherService;
 
 impl WeatherService {
+    /// Retrieves weather forecast entries for specified latitude and longitude coordinates.
     // PRD Reference: 0001
     pub async fn get_forecast(_lat: f64, _lon: f64) -> Result<Vec<WeatherData>, AppError> {
         // In the future, this would call a real weather API
         Ok(get_static_forecast())
     }
 
+    /// Validates whether spreading applications are safe based on 48-hour precipitation forecasts.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`AppError::BadRequest`] if heavy rainfall (>10mm or >75% probability) is forecast.
     // References more than 3 PRDs
     pub async fn validate_application_safety(
         lat: f64,

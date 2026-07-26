@@ -1,7 +1,7 @@
-//! Module to handle easy sending functions to tokio
+//! Tokio async runtime configuration and helper utilities.
 //!
-//! The provides two functions one function run_in_tokio creates and sends the function to tokio.
-//! The second function run_in_tokio_with_cancel allows the creation of a CancellationToken which can be used to shut down the tokio async.
+//! Provides utilities for constructing Tokio runtimes (single-threaded or multi-threaded)
+//! and executing asynchronous futures with optional cancellation token support.
 
 use crate::error::AppError;
 use futures::Future;
@@ -11,10 +11,14 @@ use serde::{Deserialize, Serialize};
 use tokio::runtime::{self, Runtime};
 use tokio_util::sync::CancellationToken;
 
+/// Configuration for creating a Tokio runtime instance.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct ThreadRuntime {
+    /// Number of worker threads (0 for single-threaded runtime).
     pub threads: usize,
+    /// Thread stack size in bytes.
     pub stack_size: usize,
+    /// Name prefix assigned to worker threads.
     pub name: String,
 }
 
@@ -29,6 +33,11 @@ impl Default for ThreadRuntime {
     }
 }
 
+/// Builds a Tokio [`Runtime`] based on the provided [`ThreadRuntime`] configuration.
+///
+/// # Errors
+///
+/// Returns [`AppError`] if constructing the Tokio runtime fails.
 // PRD Reference: 0001
 pub fn rt_multithreaded(runtime: &ThreadRuntime) -> Result<Runtime, AppError> {
     if runtime.threads == 0 {

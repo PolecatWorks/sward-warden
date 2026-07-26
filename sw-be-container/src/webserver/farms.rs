@@ -1,3 +1,5 @@
+//! Farm holding management HTTP handlers.
+
 use crate::error::AppError;
 use crate::models::{EntityQuery, Farm};
 use crate::state::AppState;

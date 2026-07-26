@@ -1,3 +1,5 @@
+//! Spatial analysis and GIS services.
+
 pub mod models;
 pub mod service;
 

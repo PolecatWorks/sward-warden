@@ -1,3 +1,5 @@
+//! Field plot management HTTP handlers.
+
 use crate::error::AppError;
 use crate::models::{EntityQuery, Field};
 use crate::state::AppState;

@@ -1,11 +1,24 @@
+//! Nutrient spreading recommendation algorithm engine.
+
 use crate::error::AppError;
 use crate::models::Field;
 use crate::optimization::models::{OptimizationPlan, OptimizationSuggestion};
 use sqlx::PgPool;
 
+/// Optimization engine for calculating nutrient application rates and field priority scores.
 pub struct OptimizationEngine;
 
 impl OptimizationEngine {
+    /// Calculates field nutrient spreading suggestions and suitability scores for a given farm.
+    ///
+    /// # Arguments
+    ///
+    /// * `pool` - PostgreSQL connection pool.
+    /// * `farm_id` - ID of the farm to generate suggestions for.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`AppError`] if querying database field records fails.
     // PRD Reference: 0001
     pub async fn get_suggestions(
         pool: &PgPool,

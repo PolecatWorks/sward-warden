@@ -1,11 +1,19 @@
+//! Compliance and validation rules for agricultural event records.
+//!
+//! Enforces environmental regulations, closed spreading periods, buffer zones, and N/P limit checks.
+
 use crate::models::{Event, Farm, FertiliserApplication, Field, OrganicManureApplication};
 use chrono::{Datelike, NaiveDate, Utc};
 
+/// Result of a compliance rule validation check.
 pub enum ValidationResult {
+    /// Validation passed with no breaches.
     Valid,
+    /// Validation failed with a description of the compliance violation.
     Invalid(String),
 }
 
+/// Validates chemical fertiliser application rules against environmental regulation constraints.
 // References more than 3 PRDs
 pub fn validate_fertiliser_application(
     event: &Event,

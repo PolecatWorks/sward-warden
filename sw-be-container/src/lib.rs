@@ -1,3 +1,9 @@
+//! Sward Warden Backend (`sw-be-container`) core library.
+//!
+//! Provides application configuration, state management, HTTP webserver routing,
+//! spatial analysis, weather integration, optimization engine, compliance tracking,
+//! and HaMS health monitoring.
+
 pub mod config;
 pub mod data;
 pub mod error;
@@ -31,9 +37,23 @@ use crate::metrics::{prometheus_response_free, prometheus_response_mystate};
 use crate::state::AppState;
 use crate::webserver::start_app_api;
 
+/// The package name of the backend container.
 pub const NAME: &str = env!("CARGO_PKG_NAME");
+
+/// The package version of the backend container.
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
+/// Starts the backend web server with support for graceful cancellation.
+///
+/// # Arguments
+///
+/// * `ct` - Tokio cancellation token for triggering service shutdown.
+/// * `config` - Loaded application configuration (`AppConfig`).
+/// * `hams` - Mutable reference to the HaMS health and monitoring service.
+///
+/// # Errors
+///
+/// Returns an [`AppError`] if database migration, health probe registration, or web server startup fails.
 // PRD Reference: 0001
 pub async fn service_cancellable(
     ct: CancellationToken,

@@ -1,9 +1,15 @@
+//! Authentication extractors and RBAC permission guards for Axum routes.
+//!
+//! Handles JWT verification, dev-auth mode fallbacks, account suspension checks,
+//! and extraction of `UserId`, `AdminOnly`, and `SupportOnly` guards.
+
 use crate::error::AppError;
 use crate::state::AppState;
 use crate::webserver::dev_auth::CustomClaims;
 use axum::{extract::FromRequestParts, http::request::Parts};
 use jwt_simple::prelude::*;
 
+/// Axum extractor guard requiring `admin` role privileges.
 pub struct AdminOnly;
 
 impl FromRequestParts<AppState> for AdminOnly {

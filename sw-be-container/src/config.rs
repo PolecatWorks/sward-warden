@@ -1,3 +1,8 @@
+//! Application configuration loading and schema structures.
+//!
+//! Handles hierarchical configuration loading via `figment`, incorporating YAML files,
+//! environment variables, and file-based secret overrides.
+
 use figment::{
     Figment,
     providers::{Env, Format, Yaml},
@@ -11,10 +16,14 @@ use ::hams::hams::config::HamsConfig;
 
 use crate::tokio_tools::ThreadRuntime;
 
+/// A URL structure that optionally embeds credential placeholders for file-based secret resolution.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct UrlWithUsernamePassword {
+    /// Base target URL.
     pub url: Url,
+    /// Optional username credential.
     pub username: Option<String>,
+    /// Optional password credential.
     pub password: Option<String>,
 }
 
@@ -32,32 +41,49 @@ impl From<UrlWithUsernamePassword> for Url {
     }
 }
 
+/// Root application configuration structure.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct AppConfig {
+    /// PostgreSQL database connection settings.
     pub database: DatabaseConfig,
+    /// Web server listening and CORS settings.
     pub webservice: WebServiceConfig,
+    /// Health Monitoring System (HaMS) settings.
     #[serde(serialize_with = "serialize_hams")]
     pub hams: HamsConfig,
+    /// Tokio thread runtime configuration.
     pub runtime: ThreadRuntime,
+    /// Pre-flight startup verification checks configuration.
     pub startup_checks: StartupCheckConfig,
+    /// Debugging, delay, and logging level options.
     pub debugging: DebuggingConfig,
+    /// Spatial/GIS integration settings.
     #[serde(default)]
     pub spatial: SpatialConfig,
+    /// Keycloak SSO integration settings.
     #[serde(default)]
     pub keycloak: KeycloakConfig,
 }
 
+/// Keycloak identity provider configuration settings.
 #[derive(Deserialize, Serialize, Debug, Clone, Default)]
 pub struct KeycloakConfig {
+    /// Base URL of the Keycloak instance (e.g. `https://keycloak.example.com`).
     pub base_url: Option<String>,
+    /// Target Keycloak realm name.
     pub realm: Option<String>,
+    /// Client identifier registered in Keycloak.
     pub client_id: Option<String>,
+    /// Optional client secret key for confidential clients.
     pub client_secret: Option<String>,
 }
 
+/// Spatial and geographic boundary service settings.
 #[derive(Deserialize, Serialize, Debug, Clone, Default)]
 pub struct SpatialConfig {
+    /// External API URL for official boundary queries.
     pub official_boundary_api_url: Option<Url>,
+    /// Optional API key for authenticating external boundary calls.
     pub official_boundary_api_key: Option<String>,
 }
 
@@ -69,48 +95,72 @@ where
     s.serialize_str(&format!("{:?}", hams))
 }
 
+/// Runtime debugging configuration options.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct DebuggingConfig {
+    /// Artificial delay to pause before process exit on failure during debugging.
     #[serde(with = "humantime_serde")]
     pub fail_debug_delay: Duration,
+    /// Active deployment environment name (e.g. `development`, `staging`, `production`).
     pub environment: String,
+    /// Flag indicating whether mock dev-auth mode is enabled.
     pub enable_dev_auth: bool,
+    /// Minimum log level for `tracing_subscriber` (e.g. `info`, `debug`).
     pub log_level: String,
 }
 
+/// PostgreSQL database configuration parameters.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct DatabaseConfig {
+    /// Database connection URL with credentials.
     pub url: UrlWithUsernamePassword,
+    /// Maximum connection pool size.
     pub max_connections: u32,
 }
 
+/// Cross-Origin Resource Sharing (CORS) policy configuration.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct CorsConfig {
+    /// Allowed origin patterns (e.g. `http://localhost:4200`).
     pub allow_origins: Vec<String>,
+    /// Allowed HTTP request methods (e.g. `GET`, `POST`, `OPTIONS`).
     pub allow_methods: Vec<String>,
+    /// Allowed HTTP request headers.
     pub allow_headers: Vec<String>,
 }
 
+/// Web server listener and networking configuration.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct WebServiceConfig {
+    /// Listening address URL (host and port).
     pub address: Url,
+    /// HTTP headers to forward through proxy layers.
     pub forwarding_headers: Vec<String>,
+    /// CORS policies configuration.
     pub cors: CorsConfig,
+    /// Web server connection timeout duration.
     #[serde(with = "humantime_serde")]
     pub timeout: Duration,
+    /// Maximum concurrent client connections allowed.
     pub max_connections: usize,
 }
 
+/// Pre-flight startup health check parameters.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct StartupCheckConfig {
+    /// Maximum allowable consecutive pre-flight check failures before aborting startup.
     pub fails: u32,
+    /// Timeout duration per health check attempt.
     #[serde(with = "humantime_serde")]
     pub timeout: Duration,
+    /// Flag enabling pre-flight startup checks.
     pub enabled: bool,
 }
 
 impl AppConfig {
-    // References more than 3 PRDs
+    /// Loads application configuration from a YAML file and secrets directory.
+    ///
+    /// Merges configuration values with environment variable overrides starting with `SW_BE_`.
     pub fn load(
         config_path: &std::path::Path,
         secrets_dir: &std::path::Path,

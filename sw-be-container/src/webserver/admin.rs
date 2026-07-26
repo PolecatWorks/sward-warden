@@ -1,9 +1,14 @@
+//! Administrative management and audit logging HTTP handlers.
+//!
+//! Provides global cross-tenant listing endpoints for support and admin users.
+
 use crate::error::AppError;
 use crate::models::{AuditLog, Event, Farm, Field};
 use crate::state::AppState;
 use crate::webserver::auth;
 use axum::{Json, extract::State};
 
+/// Administrative health status check handler.
 // References more than 3 PRDs
 pub async fn admin_health(_: auth::SupportOnly) -> Result<Json<serde_json::Value>, AppError> {
     Ok(Json(serde_json::json!({ "status": "ok", "admin": true })))

@@ -1,3 +1,5 @@
+//! User profile and onboarding management HTTP handlers.
+
 use crate::error::AppError;
 use crate::models::User;
 use crate::state::AppState;

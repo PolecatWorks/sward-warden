@@ -1,3 +1,8 @@
+//! C-FFI compatibility callbacks for exporting Prometheus metrics.
+//!
+//! Provides memory-safe raw pointer handlers for bridging Tokio/Axum Prometheus metrics
+//! with external C-FFI monitoring systems (e.g. HaMS).
+
 use std::ffi::{CString, c_char, c_void};
 
 use prometheus::{Encoder, Registry};
@@ -5,6 +10,12 @@ use tracing::info;
 
 use crate::state::AppState;
 
+/// C-FFI callback function to gather Prometheus metrics from a raw [`Registry`] pointer.
+///
+/// # Safety
+///
+/// `ptr` must be a valid non-null raw pointer to a Prometheus [`Registry`].
+/// The caller is responsible for freeing the returned string buffer using [`prometheus_response_free`].
 #[unsafe(no_mangle)]
 pub extern "C" fn prometheus_response(ptr: *const c_void) -> *mut c_char {
     info!("Gathering Prometheus metrics in bill");
@@ -24,6 +35,12 @@ pub extern "C" fn prometheus_response(ptr: *const c_void) -> *mut c_char {
     c_str_prometheus.into_raw()
 }
 
+/// C-FFI callback function to render Prometheus metrics from a raw [`AppState`] pointer.
+///
+/// # Safety
+///
+/// `ptr` must be a valid non-null raw pointer to an [`AppState`].
+/// The caller is responsible for freeing the returned string buffer using [`prometheus_response_free`].
 #[unsafe(no_mangle)]
 pub extern "C" fn prometheus_response_mystate(ptr: *const c_void) -> *mut c_char {
     let state = unsafe { &*(ptr as *const AppState) };
@@ -39,6 +56,12 @@ pub extern "C" fn prometheus_response_mystate(ptr: *const c_void) -> *mut c_char
     c_str_prometheus.into_raw()
 }
 
+/// C-FFI callback function to free string memory allocated by Prometheus response callbacks.
+///
+/// # Safety
+///
+/// `ptr` must point to a C-string previously allocated by [`prometheus_response`] or
+/// [`prometheus_response_mystate`], or be null.
 #[unsafe(no_mangle)]
 #[allow(clippy::not_unsafe_ptr_arg_deref)]
 pub extern "C" fn prometheus_response_free(ptr: *mut c_char) {

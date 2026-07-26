@@ -1,3 +1,5 @@
+//! Compliance tracking and penalty calculation HTTP handlers.
+
 use crate::error::AppError;
 use crate::models::ComplianceBreach;
 use crate::state::AppState;

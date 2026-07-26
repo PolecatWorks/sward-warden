@@ -1,3 +1,7 @@
+//! Chemical and organic fertiliser application HTTP handlers.
+//!
+//! Enforces environmental safety, weather checks, buffer zones, and PostGIS boundary validation.
+
 use crate::data::rules::{
     ValidationResult, validate_fertiliser_application, validate_organic_manure_application,
 };
@@ -7,6 +11,7 @@ use crate::state::AppState;
 use crate::webserver::auth::UserId;
 use axum::{Json, extract::State};
 
+/// Lists chemical fertiliser applications owned by the authenticated user.
 // References more than 3 PRDs
 pub async fn list_fertiliser_applications(
     State(state): State<AppState>,

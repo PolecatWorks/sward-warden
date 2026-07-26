@@ -1,3 +1,7 @@
+//! Health Monitoring System (HaMS) check handlers and HTTP probe probes.
+//!
+//! Provides parallel HTTP pre-flight and shutdown checks against registered dependencies.
+
 use futures::future;
 use reqwest::Client;
 use serde::Deserialize;
@@ -11,17 +15,31 @@ use url::Url;
 
 use crate::error::AppError;
 
+/// Configuration and endpoint lists for HaMS pre-flight and shutdown checks.
 #[serde_as]
 #[derive(Deserialize, Debug, Clone)]
 pub struct Checks {
+    /// Retry interval duration between check attempts.
     #[serde_as(as = "DurationSeconds<u64>")]
     pub timeout: Duration,
+    /// Maximum number of allowable retry attempts per endpoint.
     pub fails: u32,
+    /// Target URLs for pre-flight readiness checks.
     pub preflights: Vec<Url>,
+    /// Target URLs for shutdown verification checks.
     pub shutdowns: Vec<Url>,
 }
 
 impl Checks {
+    /// Executes parallel pre-flight health checks against all configured `preflights` URLs.
+    ///
+    /// # Arguments
+    ///
+    /// * `client` - Shared HTTP client for issuing probe requests.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`AppError::PreflightCheck`] if any endpoint exhausts its retry attempts.
     // PRD Reference: 0001
     pub async fn preflight(&self, client: &Client) -> Result<u32, AppError> {
         let futures = self.preflights.iter().map(|preflight| async move {
@@ -59,6 +77,15 @@ impl Checks {
         Ok(min_fails)
     }
 
+    /// Executes parallel shutdown health checks against all configured `shutdowns` URLs.
+    ///
+    /// # Arguments
+    ///
+    /// * `client` - Shared HTTP client for issuing probe requests.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`AppError::ShutdownCheck`] if any shutdown check endpoint fails.
     // PRD Reference: 0001
     pub async fn shutdown(&self, client: &Client) -> Result<u32, AppError> {
         let futures = self.shutdowns.iter().map(|shutdown| async move {

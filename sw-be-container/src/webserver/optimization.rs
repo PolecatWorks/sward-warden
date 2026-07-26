@@ -1,3 +1,5 @@
+//! Optimization recommendation HTTP handlers.
+
 use crate::error::AppError;
 use crate::optimization::{OptimizationEngine, OptimizationPlan};
 use crate::state::AppState;

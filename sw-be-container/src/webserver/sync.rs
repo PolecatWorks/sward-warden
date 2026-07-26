@@ -1,3 +1,5 @@
+//! Delta sync HTTP handlers for offline client database synchronization.
+
 use crate::error::AppError;
 use crate::models::{
     ComplianceBreach, Event, Farm, FarmRecord, FertilisationPlan, FertiliserApplication, Field,

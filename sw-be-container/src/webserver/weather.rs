@@ -1,3 +1,5 @@
+//! Weather forecast HTTP handlers.
+
 use crate::error::AppError;
 use crate::state::AppState;
 use crate::weather::{WeatherData, WeatherService};
