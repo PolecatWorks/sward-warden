@@ -1,5 +1,5 @@
 import { LoggerService } from '../services/logger.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import {
   Router,
   RouterLink,
@@ -16,6 +16,7 @@ import { DevAuthApiService } from '../services/dev-auth-api.service';
 import { User } from '../models/user';
 import { Observable, shareReplay, catchError, EMPTY } from 'rxjs';
 import { SyncStateService, SyncState } from '../services/sync-state.service';
+import { APP_CONFIG, AppConfig } from '../app-config';
 
 @Component({
   selector: 'app-main-layout',
@@ -37,6 +38,7 @@ export class MainLayoutComponent implements OnInit {
   readonly lastSyncTime$: Observable<Date | null>;
   currentUser$!: Observable<User>;
   users$: Observable<User[]> | undefined;
+  isDevAuth = false;
 
   constructor(
     private rxdbService: RxdbService,
@@ -46,10 +48,12 @@ export class MainLayoutComponent implements OnInit {
     private router: Router,
     private logger: LoggerService,
     private syncStateService: SyncStateService,
+    @Inject(APP_CONFIG) private config: AppConfig,
   ) {
     this.fallbackToRest$ = this.rxdbService.fallbackToRest$;
     this.syncState$ = this.syncStateService.syncState$;
     this.lastSyncTime$ = this.syncStateService.lastSyncTime$;
+    this.isDevAuth = !this.config?.auth;
   }
 
   // PRD Reference: 0002, 0003
@@ -70,7 +74,9 @@ export class MainLayoutComponent implements OnInit {
           shareReplay(1)
         );
     }
-    this.users$ = this.farmManagementService.getUsers().pipe(shareReplay(1));
+    if (this.isDevAuth) {
+      this.users$ = this.farmManagementService.getUsers().pipe(shareReplay(1));
+    }
   }
 
   // No obvious PRD requirement

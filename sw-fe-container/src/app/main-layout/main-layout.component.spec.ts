@@ -149,4 +149,36 @@ describe('MainLayoutComponent', () => {
     // No obvious PRD requirement
     expect(component.switchUser).toHaveBeenCalledWith('2');
   });
+
+  it('should hide user-switcher-dropdown when auth configuration is provided', async () => {
+    TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [MainLayoutComponent],
+      providers: [
+        provideRouter([]),
+        {
+          provide: APP_CONFIG,
+          useValue: {
+            apiPath: '/api',
+            logLevel: 'DEBUG',
+            auth: { issuer: 'https://keycloak.example.com', clientId: 'test' },
+          },
+        },
+        LoggerService,
+        { provide: RxdbService, useValue: rxdbServiceSpy },
+        { provide: AuthService, useValue: authServiceSpy },
+        { provide: FarmManagementService, useValue: farmServiceSpy },
+        { provide: DevAuthApiService, useValue: devAuthApiSpy },
+        { provide: SyncEngineService, useValue: syncEngineServiceSpy },
+      ],
+    }).compileComponents();
+
+    const fixtureAuth = TestBed.createComponent(MainLayoutComponent);
+    fixtureAuth.detectChanges();
+
+    const selectEl = fixtureAuth.debugElement.query(
+      By.css('#user-switcher-dropdown'),
+    );
+    expect(selectEl).toBeNull();
+  });
 });
