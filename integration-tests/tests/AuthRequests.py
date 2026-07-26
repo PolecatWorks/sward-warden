@@ -46,23 +46,49 @@ class AuthRequests(RequestsLibrary):
                 if role is None:
                     role = "user"
 
-                # Get the JWT token from the dev auth endpoint
-                cache_key = (str(user_id), str(role))
+                enable_keycloak = BuiltIn().get_variable_value("${ENABLE_KEYCLOAK}", "false")
+                if isinstance(enable_keycloak, str):
+                    enable_keycloak = enable_keycloak.lower() in ("true", "1", "yes")
+
+                cache_key = (str(user_id), str(role), bool(enable_keycloak))
                 if cache_key not in _token_cache:
-                    auth_url = f"{be_base_url.rstrip('/')}/dev/auth/token"
-                    try:
-                        r = requests.post(
-                            auth_url,
-                            json={"user_id": int(user_id), "role": str(role)},
-                            timeout=5
-                        )
-                        r.raise_for_status()
-                        token = r.json().get("access_token")
-                        if token:
-                            _token_cache[cache_key] = token
-                    except Exception as e:
-                        # Fallback or log if token fetch fails
-                        BuiltIn().log(f"Failed to fetch dev auth token: {e}", level="WARN")
+                    if enable_keycloak:
+                        keycloak_realm_url = BuiltIn().get_variable_value("${KEYCLOAK_REALM_URL}", "http://keycloak.k8s/auth/realms/sw-dev")
+                        client_id = BuiltIn().get_variable_value("${KEYCLOAK_CLIENT_ID}", "sward-warden-fe")
+                        token_url = f"{keycloak_realm_url.rstrip('/')}/protocol/openid-connect/token"
+                        username = BuiltIn().get_variable_value("${KEYCLOAK_USERNAME}", "devuser")
+                        password = BuiltIn().get_variable_value("${KEYCLOAK_PASSWORD}", "devpassword")
+                        try:
+                            r = requests.post(
+                                token_url,
+                                data={
+                                    "grant_type": "password",
+                                    "client_id": client_id,
+                                    "username": username,
+                                    "password": password,
+                                },
+                                timeout=5
+                            )
+                            r.raise_for_status()
+                            token = r.json().get("access_token")
+                            if token:
+                                _token_cache[cache_key] = token
+                        except Exception as e:
+                            BuiltIn().log(f"Failed to fetch Keycloak OIDC token: {e}", level="WARN")
+                    else:
+                        auth_url = f"{be_base_url.rstrip('/')}/dev/auth/token"
+                        try:
+                            r = requests.post(
+                                auth_url,
+                                json={"user_id": int(user_id), "role": str(role)},
+                                timeout=5
+                            )
+                            r.raise_for_status()
+                            token = r.json().get("access_token")
+                            if token:
+                                _token_cache[cache_key] = token
+                        except Exception as e:
+                            BuiltIn().log(f"Failed to fetch dev auth token: {e}", level="WARN")
 
                 token = _token_cache.get(cache_key)
                 if token:

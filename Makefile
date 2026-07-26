@@ -298,6 +298,13 @@ robot-test-be: $(ROBOT_VENV)/bin/robot wait-all
 		$(ROBOT_TEST_DIR)/test_be.robot; \
 		rc=$$?; if [ -t 1 ]; then open $(ROBOT_REPORT_DIR)/log.html; fi; exit $$rc
 
+# Clean up stale/orphaned test data from backend API
+.PHONY: robot-test-cleanup
+robot-test-cleanup: $(ROBOT_VENV)/bin/robot
+	@echo "Cleaning up stale test data..."
+	$(ROBOT_VENV)/bin/python integration-tests/tests/cleanup_stale_test_data.py $(LOCAL_BE_URL)
+
+
 # Run only frontend HTTP tests (RequestsLibrary-based)
 .PHONY: robot-test-fe
 robot-test-fe: $(ROBOT_VENV)/bin/robot wait-all
