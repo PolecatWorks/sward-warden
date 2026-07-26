@@ -45,6 +45,8 @@ The fe is an Angular application.
 
 The be is built in Rust using the Axum framework. It serves main HTTP traffic on port `8080` and exposes Kubernetes lifecycle checks (liveness, readiness, startup, shutdown) under `/hams/*` on port `8079`.
 
+Rust documentation is published at: [Rust Code Documentation](https://polecatworks.github.io/sward-warden/docs/rust/sw_be_container/index.html).
+
 1. Navigate to the be directory:
    ```bash
    cd sw-be-container
