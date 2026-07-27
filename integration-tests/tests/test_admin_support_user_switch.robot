@@ -36,7 +36,11 @@ Setup Multi User Environment
     ${admin_res}=    POST    ${BE_BASE_URL}/v0/users    json=${admin_data}    expected_status=200
     ${admin_id}=    Convert To String    ${admin_res.json()['id']}
 
-    &{result}=    Create Dictionary    u1_id=${u1_id}    farm1_name=Farm Alpha ${random_str}    u2_id=${u2_id}    farm2_name=Farm Beta ${random_str}    admin_id=${admin_id}
+    ${u1_name}=    Set Variable    User One ${random_str}
+    ${u2_name}=    Set Variable    User Two ${random_str}
+    ${admin_name}=    Set Variable    Admin User ${random_str}
+
+    &{result}=    Create Dictionary    u1_id=${u1_id}    u1_name=${u1_name}    farm1_name=Farm Alpha ${random_str}    u2_id=${u2_id}    u2_name=${u2_name}    farm2_name=Farm Beta ${random_str}    admin_id=${admin_id}    admin_name=${admin_name}
     RETURN    ${result}
 
 *** Test Cases ***
@@ -62,26 +66,58 @@ Admin and Support User Switcher and All Entity Visibility Flow
     Wait For Elements State    text=${env['farm1_name']}    visible    timeout=10s
     Wait For Elements State    text=${env['farm2_name']}    visible    timeout=10s
 
-    # 3. Switch user to User 1 via dropdown
-    Run Keyword And Ignore Error    Select Options By    id=user-switcher-dropdown    value    ${env['u1_id']}
+    # 3. Switch user to User 1 via login page
+    Evaluate JavaScript    ${None}    () => { localStorage.clear(); }
+    Go To    ${EXTERNAL_DNS_URL}/login
+    Wait For Elements State    css=[data-testid="user-login-${env['u1_id']}"]    visible    timeout=10s
+    Click    css=[data-testid="user-login-${env['u1_id']}"]
+    Wait For Elements State    css=app-home    visible    timeout=10s
+    Go To    ${EXTERNAL_DNS_URL}/farms
 
     # 4. Verify UI displays ONLY Farm Alpha (User 1's farm) and NOT Farm Beta
     Sleep    3s
     Wait For Elements State    text=${env['farm1_name']}    visible    timeout=10s
     Wait For Elements State    text=${env['farm2_name']}    detached    timeout=5s
 
-    # 5. Switch user to User 2 via dropdown
-    Run Keyword And Ignore Error    Select Options By    id=user-switcher-dropdown    value    ${env['u2_id']}
+    # 5. Switch user to User 2 via login page
+    Evaluate JavaScript    ${None}    () => { localStorage.clear(); }
+    Go To    ${EXTERNAL_DNS_URL}/login
+    Wait For Elements State    css=[data-testid="user-login-${env['u2_id']}"]    visible    timeout=10s
+    Click    css=[data-testid="user-login-${env['u2_id']}"]
+    Wait For Elements State    css=app-home    visible    timeout=10s
+    Go To    ${EXTERNAL_DNS_URL}/farms
 
     # 6. Verify UI displays ONLY Farm Beta (User 2's farm) and NOT Farm Alpha
     Sleep    3s
     Wait For Elements State    text=${env['farm2_name']}    visible    timeout=10s
     Wait For Elements State    text=${env['farm1_name']}    detached    timeout=5s
 
-    # 7. Switch back to Admin User via dropdown
-    Run Keyword And Ignore Error    Select Options By    id=user-switcher-dropdown    value    ${env['admin_id']}
+    # 7. Switch back to Admin User via login page
+    Evaluate JavaScript    ${None}    () => { localStorage.clear(); }
+    Go To    ${EXTERNAL_DNS_URL}/login
+    Wait For Elements State    css=[data-testid="user-login-${env['admin_id']}"]    visible    timeout=10s
+    Click    css=[data-testid="user-login-${env['admin_id']}"]
+    Wait For Elements State    css=app-home    visible    timeout=10s
+    Go To    ${EXTERNAL_DNS_URL}/farms
 
     # 8. Verify Admin view displays BOTH Farm Alpha and Farm Beta again
     Sleep    3s
     Wait For Elements State    text=${env['farm1_name']}    visible    timeout=10s
     Wait For Elements State    text=${env['farm2_name']}    visible    timeout=10s
+
+    # 9. Clean up created entities via API
+    &{h1}=    Create Dictionary    X-User-ID=${env['u1_id']}
+    ${farms1}=    GET    ${BE_BASE_URL}/v0/farms    headers=${h1}    expected_status=200
+    FOR    ${farm}    IN    @{farms1.json()}
+        Run Keyword And Ignore Error    DELETE    ${BE_BASE_URL}/v0/farms/${farm['id']}    headers=${h1}    expected_status=204
+    END
+    Run Keyword And Ignore Error    DELETE    ${BE_BASE_URL}/v0/users/${env['u1_id']}    expected_status=204
+
+    &{h2}=    Create Dictionary    X-User-ID=${env['u2_id']}
+    ${farms2}=    GET    ${BE_BASE_URL}/v0/farms    headers=${h2}    expected_status=200
+    FOR    ${farm}    IN    @{farms2.json()}
+        Run Keyword And Ignore Error    DELETE    ${BE_BASE_URL}/v0/farms/${farm['id']}    headers=${h2}    expected_status=204
+    END
+    Run Keyword And Ignore Error    DELETE    ${BE_BASE_URL}/v0/users/${env['u2_id']}    expected_status=204
+
+    Run Keyword And Ignore Error    DELETE    ${BE_BASE_URL}/v0/users/${env['admin_id']}    expected_status=204
