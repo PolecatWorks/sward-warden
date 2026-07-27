@@ -75,12 +75,17 @@ class AuthRequests(RequestsLibrary):
                                 _token_cache[cache_key] = token
                         except Exception as e:
                             BuiltIn().log(f"Failed to fetch Keycloak OIDC token: {e}", level="WARN")
-                    else:
-                        auth_url = f"{be_base_url.rstrip('/')}/dev/auth/token"
+
+                    if cache_key not in _token_cache:
+                        clean_base = be_base_url.rstrip('/')
+                        if clean_base.endswith('/sward'):
+                            auth_url = f"{clean_base}/dev/auth/token"
+                        else:
+                            auth_url = f"{clean_base}/sward/dev/auth/token"
                         try:
                             r = requests.post(
                                 auth_url,
-                                json={"user_id": int(user_id), "role": str(role)},
+                                json={"user_id": int(user_id) if str(user_id).isdigit() else 1, "role": str(role)},
                                 timeout=5
                             )
                             r.raise_for_status()

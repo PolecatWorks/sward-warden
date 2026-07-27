@@ -69,8 +69,8 @@ Dev User Switching Flow
     Sleep    3s
     Wait For Elements State    text=Farm 1    visible    timeout=10s
 
-    # 4. Switch user to Robot Test User using Header User Switcher dropdown
-    Run Keyword And Ignore Error    Select Options By    id=user-switcher-dropdown    text    ${user_name} (user)
+    # 4. Switch user to Robot Test User using Header User Switcher dropdown if available
+    Run Keyword And Ignore Error    Select Options By    id=user-switcher-dropdown    label    ${user_name} (user)
 
     # 5. Verify page reloaded and we see "No farms yet" empty state since Robot Test User has no farms
     Sleep    3s
@@ -116,8 +116,9 @@ Verify Force Sync With User Change In Between
     ${clean_user_id}=    Set Variable    ${user_res.json()['id']}
 
     # 4. Get JWT token for Clean Sync User
+    ${clean_base}=    Evaluate    '${BE_BASE_URL}'.rstrip('/').replace('/sward', '')
     ${token_req}=    Create Dictionary    user_id=${clean_user_id}    role=user
-    ${clean_auth_res}=    POST    ${BE_BASE_URL}/dev/auth/token    json=${token_req}    expected_status=200
+    ${clean_auth_res}=    POST    ${clean_base}/sward/dev/auth/token    json=${token_req}    expected_status=200
     ${clean_token}=    Set Variable    ${clean_auth_res.json()['access_token']}
 
     # 5. Simulate a user change in between by updating localStorage manually without page reload

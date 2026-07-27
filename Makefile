@@ -2,7 +2,7 @@
         sw-fe-dev sw-fe-dev-keycloak sw-fe-docker sw-fe-docker-run \
         sw-be-dev sw-be-dev-keycloak sw-be-docker sw-be-docker-run \
         db-local \
-        robot-test robot-test-be robot-test-fe robot-test-nav robot-test-hold
+        robot-test robot-test-keycloak robot-test-be robot-test-fe robot-test-nav robot-test-hold
 
 KEYCLOAK_URL ?= http://keycloak.k8s
 KEYCLOAK_REALM_URL ?= $(KEYCLOAK_URL)/auth/realms/sw-dev
@@ -260,6 +260,22 @@ robot-test: $(ROBOT_VENV)/bin/robot wait-all
 		--variable FE_BASE_URL:${LOCAL_FE_URL} \
 		--variable EXTERNAL_DNS_URL:${LOCAL_FE_URL} \
 		--variable BE_POD_IP: \
+		--exclude k8s_only \
+		--loglevel DEBUG \
+		-d "${ROBOT_REPORT_DIR}" \
+		$(ROBOT_TEST_DIR); \
+		rc=$$?; if [ -t 1 ]; then open $(ROBOT_REPORT_DIR)/log.html; fi; exit $$rc
+
+# Run all robot integration tests with Keycloak enabled against local dev
+.PHONY: robot-test-keycloak
+robot-test-keycloak: $(ROBOT_VENV)/bin/robot wait-all
+	@echo "Running all robot integration tests with Keycloak enabled..."
+	$(ROBOT) \
+		--variable BE_BASE_URL:${LOCAL_BE_URL} \
+		--variable FE_BASE_URL:${LOCAL_FE_URL} \
+		--variable EXTERNAL_DNS_URL:${LOCAL_FE_URL} \
+		--variable BE_POD_IP: \
+		--variable ENABLE_KEYCLOAK:true \
 		--exclude k8s_only \
 		--loglevel DEBUG \
 		-d "${ROBOT_REPORT_DIR}" \
