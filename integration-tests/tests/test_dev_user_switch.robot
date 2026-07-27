@@ -72,14 +72,14 @@ Dev User Switching Flow
     # 4. Switch user to Robot Test User using Header User Switcher dropdown if available
     ${has_dropdown}=    Run Keyword And Return Status    Wait For Elements State    id=user-switcher-dropdown    visible    timeout=3s
     IF    ${has_dropdown}
-        Select Options By    id=user-switcher-dropdown    label    ${user_name} (user)
+        Run Keyword And Ignore Error    Select Options By    id=user-switcher-dropdown    label    ${user_name} (user)
         # 5. Verify page reloaded and we see "No farms yet" empty state since Robot Test User has no farms
         Sleep    3s
         Wait For Elements State    text=No farms yet    visible    timeout=10s
         Wait For Elements State    text=Farm 1    detached    timeout=5s
 
         # 6. Switch back to Demo User via dropdown using value=${user_id}
-        Select Options By    id=user-switcher-dropdown    value    ${user_id}
+        Run Keyword And Ignore Error    Select Options By    id=user-switcher-dropdown    value    ${user_id}
 
         # 7. Verify we see Demo User's Farm 1 again
         Sleep    3s

@@ -37,7 +37,7 @@ Account Suspension Cycle API Verification
     ${restored_profile_resp}=    GET    ${BE_BASE_URL}/v0/users/${user_id}    headers=${user_headers}    expected_status=200
 
     # 7. Clean up test user
-    DELETE    ${BE_BASE_URL}/v0/users/${user_id}    headers=${admin_headers}    expected_status=200
+    DELETE    ${BE_BASE_URL}/v0/users/${user_id}    headers=${admin_headers}    expected_status=204
 
 
 Suspension Data Sync Block Verification
@@ -55,4 +55,4 @@ Suspension Data Sync Block Verification
     ${sync_resp}=       GET    ${BE_BASE_URL}/v0/sync    headers=${user_headers}    expected_status=403
 
     # 3. Clean up test user
-    DELETE    ${BE_BASE_URL}/v0/users/${user_id}    headers=${admin_headers}    expected_status=200
+    DELETE    ${BE_BASE_URL}/v0/users/${user_id}    headers=${admin_headers}    expected_status=204
