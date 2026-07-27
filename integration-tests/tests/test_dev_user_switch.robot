@@ -87,6 +87,14 @@ Dev User Switching Flow
         Wait For Elements State    text=No farms yet    detached    timeout=5s
     END
 
+    # 8. Clean up created user and farm via API
+    &{headers}=    Create Dictionary    X-User-ID=${user_id}
+    ${farms_res}=    GET    ${BE_BASE_URL}/v0/farms    headers=${headers}    expected_status=200
+    FOR    ${farm}    IN    @{farms_res.json()}
+        Run Keyword And Ignore Error    DELETE    ${BE_BASE_URL}/v0/farms/${farm['id']}    headers=${headers}    expected_status=204
+    END
+    Run Keyword And Ignore Error    DELETE    ${BE_BASE_URL}/v0/users/${user_id}    expected_status=204
+
 # PRD Reference: 0014
 Verify Force Sync With User Change In Between
     [Documentation]    Test that if the user changes in between syncs (simulated by localStorage changes),
@@ -136,3 +144,12 @@ Verify Force Sync With User Change In Between
     Sleep    3s
     Wait For Elements State    text=No farms yet    visible    timeout=10s
     Wait For Elements State    text=Farm 1    detached    timeout=5s
+
+    # 8. Clean up created users and farm via API
+    &{headers}=    Create Dictionary    X-User-ID=${user_id}
+    ${farms_res}=    GET    ${BE_BASE_URL}/v0/farms    headers=${headers}    expected_status=200
+    FOR    ${farm}    IN    @{farms_res.json()}
+        Run Keyword And Ignore Error    DELETE    ${BE_BASE_URL}/v0/farms/${farm['id']}    headers=${headers}    expected_status=204
+    END
+    Run Keyword And Ignore Error    DELETE    ${BE_BASE_URL}/v0/users/${user_id}    expected_status=204
+    Run Keyword And Ignore Error    DELETE    ${BE_BASE_URL}/v0/users/${clean_user_id}    expected_status=204

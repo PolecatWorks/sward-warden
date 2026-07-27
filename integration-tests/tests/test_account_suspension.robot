@@ -36,6 +36,9 @@ Account Suspension Cycle API Verification
     # 6. Attempt the profile fetch again and assert 200 OK
     ${restored_profile_resp}=    GET    ${BE_BASE_URL}/v0/users/${user_id}    headers=${user_headers}    expected_status=200
 
+    # 7. Clean up test user
+    DELETE    ${BE_BASE_URL}/v0/users/${user_id}    headers=${admin_headers}    expected_status=200
+
 
 Suspension Data Sync Block Verification
     [Documentation]    Test that a suspended user cannot push data via the sync endpoint.
@@ -50,3 +53,6 @@ Suspension Data Sync Block Verification
     # 2. Attempt to access the sync endpoint as the suspended user and assert 403 Forbidden
     &{user_headers}=    Create Dictionary    X-User-ID=${user_id}
     ${sync_resp}=       GET    ${BE_BASE_URL}/v0/sync    headers=${user_headers}    expected_status=403
+
+    # 3. Clean up test user
+    DELETE    ${BE_BASE_URL}/v0/users/${user_id}    headers=${admin_headers}    expected_status=200
