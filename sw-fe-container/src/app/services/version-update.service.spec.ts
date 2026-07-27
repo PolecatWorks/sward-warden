@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ApplicationRef, provideZoneChangeDetection } from '@angular/core';
+import { provideZoneChangeDetection } from '@angular/core';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { Subject } from 'rxjs';
 import { VersionUpdateService } from './version-update.service';
