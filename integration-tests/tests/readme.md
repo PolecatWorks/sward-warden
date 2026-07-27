@@ -91,25 +91,38 @@ graph TD
 
 ## Running the Tests
 
-To run the integration tests locally, ensure that the database (`make compose-db`), backend (`make sw-be-dev`), and frontend (`make sw-fe-dev`) are running.
+Ensure the database (`make compose-db`) is running first.
 
-Then, execute the following commands from the root directory:
-
+### Minimal Standalone Dev Auth Mode
+Start backend with `make sw-be-dev` and frontend with `make sw-fe-dev`, then run:
 ```bash
-# Run the entire integration test suite
+# Run all integration tests against standard local dev
 make robot-test
 
-# Run only backend API validation tests
+# Run backend API tests only
 make robot-test-be
+```
 
+### Keycloak OIDC Auth Mode
+Start backend with `make sw-be-dev-keycloak` and frontend with `make sw-fe-dev-keycloak`, then run:
+```bash
+# Run all integration tests with Keycloak enabled
+make robot-test-keycloak
+```
+
+### Targeted Test Suites
+```bash
 # Run only frontend HTTP tests
 make robot-test-fe
 
 # Run browser navigation tests
 make robot-test-nav
 
-# Run additional test flows
-make robot-test-hold
+# Run single test file
+make robot-test-single TEST=test_farm_flow.robot
+
+# Clean up stale/orphaned test data from past test runs
+make robot-test-cleanup
 ```
 
 Test reports and video recordings (if any test fails or completes) will be generated and saved under `integration-tests/reports/`.

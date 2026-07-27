@@ -115,3 +115,6 @@ Storage Capacity E2E Flow
     FOR    ${s}    IN    @{storage_response_after}
         Should Not Be Equal As Strings    ${s['name']}    ${lagoon_name}
     END
+
+    # Clean up parent farm via API
+    DELETE    ${BE_BASE_URL}/v0/farms/${farm_id}    expected_status=204

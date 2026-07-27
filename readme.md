@@ -20,7 +20,62 @@ Before beginning development, ensure you have the following installed:
 
 ## Development Setup & Running
 
-### Fe Development (`sw-fe-container`)
+You can run the application in two execution modes: **Minimal Standalone Dev Auth mode** (default, local mock auth) or **Keycloak OIDC Auth mode**.
+
+### 1. Minimal Standalone Dev Auth Mode (Default)
+
+In this mode, local development authentication bypasses Keycloak OIDC and uses simulated dev tokens (`/dev/auth/token`).
+
+1. **Start Database**:
+   ```bash
+   make compose-db
+   ```
+2. **Start Backend (Dev Auth)**:
+   ```bash
+   make sw-be-dev
+   ```
+3. **Start Frontend (Dev Auth)**:
+   ```bash
+   make sw-fe-dev
+   ```
+4. **Run Robot Tests (Minimal Mode)**:
+   ```bash
+   # Run all integration tests against Minimal Dev Auth setup
+   make robot-test
+
+   # Run backend API tests only
+   make robot-test-be
+   ```
+
+---
+
+### 2. Keycloak OIDC Auth Mode
+
+In this mode, authentication flows through Keycloak OIDC identity management.
+
+1. **Start Database**:
+   ```bash
+   make compose-db
+   ```
+2. **Start Backend (Keycloak Mode)**:
+   ```bash
+   make sw-be-dev-keycloak
+   ```
+3. **Start Frontend (Keycloak Mode)**:
+   ```bash
+   make sw-fe-dev-keycloak
+   ```
+4. **Run Robot Tests (Keycloak Mode)**:
+   ```bash
+   # Run all integration tests with Keycloak OIDC enabled
+   make robot-test-keycloak
+   ```
+
+---
+
+### Component-Level Development
+
+#### Fe Development (`sw-fe-container`)
 
 The fe is an Angular application.
 
@@ -41,7 +96,7 @@ The fe is an Angular application.
    npm test -- --watch=false --browsers=ChromeHeadless
    ```
 
-### Be Development (`sw-be-container`)
+#### Be Development (`sw-be-container`)
 
 The be is built in Rust using the Axum framework. It serves main HTTP traffic on port `8080` and exposes Kubernetes lifecycle checks (liveness, readiness, startup, shutdown) under `/hams/*` on port `8079`.
 
@@ -64,7 +119,11 @@ Rust documentation is published at: [Rust Code Documentation](https://polecatwor
 
 The repository uses specific `Makefile` targets to coordinate builds and testing. All major development actions should be triggered via these targets:
 
-* `make test` - Runs be tests safely (single-threaded).
+* `make robot-test` - Runs all robot integration tests against standard local dev.
+* `make robot-test-keycloak` - Runs all robot integration tests with Keycloak OIDC enabled.
+* `make robot-test-be` - Runs backend API robot integration tests.
+* `make robot-test-cleanup` - Purges orphaned test data created by automated tests.
+* `make test` - Runs backend Rust unit/integration tests safely (single-threaded).
 * `make build-fe` - Builds the Docker image for the fe.
 * `make build-be` - Builds the Docker image for the be.
 * `make helm-package` - Packages the Helm chart into the `charts/` directory.
