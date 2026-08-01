@@ -5,7 +5,7 @@ set -e
 # Expects:
 #   - Backend running on localhost:8080 (make sw-be-dev)
 #   - Frontend running on localhost:4200 (make sw-fe-dev)
-#   - Database running (make compose-db)
+#   - Database running (make compose-db-up)
 #
 # Usage:
 #   ./run-tests-local.sh                     # Run all tests

@@ -274,7 +274,8 @@ jobs:
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
           GARDEN_KUBECONTEXT: local
-          GHCR_READER_TOKEN: ${{ secrets.GHCR_READER_TOKEN }}
+          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+          GHCR_USER: ${{ secrets.GHCR_USER }}
         run: |
           garden test --env pr \
             --log-level verbose \

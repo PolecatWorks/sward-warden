@@ -105,9 +105,9 @@ spec:
     imagePullSecrets:
       - name: ghcr-secret
     image:
-      repository: ${local.env.SW_BE_IMAGE || actions.build.get-be-sha.outputs.image}
-      tag: ${local.env.SW_BE_TAG || actions.build.get-be-sha.outputs.tag}
-      pullPolicy: Always
+      repository: '${local.env.SW_BE_IMAGE != null ? local.env.SW_BE_IMAGE : actions.build.get-be-sha.outputs.image}'
+      tag: '${local.env.SW_BE_TAG != null ? local.env.SW_BE_TAG : actions.build.get-be-sha.outputs.tag}'
+      pullPolicy: '${local.env.SW_BE_IMAGE != null ? "IfNotPresent" : "Always"}'
     resources:
       requests:
         cpu: 10m
@@ -185,9 +185,9 @@ spec:
     version: "0.1.0-main-20260210211011-05bbdec" # <-- Replace with your actual chart version
   values:
     image:
-      repository: ${local.env.SW_FE_IMAGE || actions.build.get-fe-sha.outputs.image}
-      tag: ${local.env.SW_FE_TAG || actions.build.get-fe-sha.outputs.tag}
-      pullPolicy: Always
+      repository: '${local.env.SW_FE_IMAGE != null ? local.env.SW_FE_IMAGE : actions.build.get-fe-sha.outputs.image}'
+      tag: '${local.env.SW_FE_TAG != null ? local.env.SW_FE_TAG : actions.build.get-fe-sha.outputs.tag}'
+      pullPolicy: '${local.env.SW_FE_IMAGE != null ? "IfNotPresent" : "Always"}'
     imagePullSecrets:
       - name: ghcr-secret
     resources:
@@ -243,59 +243,25 @@ spec:
 kind: Deploy
 type: kubernetes
 name: ghcr-external-secret
-description: "Pulls GHCR auth from dev namespace using ExternalSecrets"
+description: "Creates GHCR image pull secret directly from GHCR_TOKEN environment variable"
 spec:
   manifests:
-    # 1. The token we injected via environment variable
     - apiVersion: v1
       kind: Secret
       metadata:
-        name: remote-cluster-token-secret
-      type: Opaque
+        name: ghcr-secret
+      type: kubernetes.io/dockerconfigjson
       stringData:
-        token: ${local.env.GHCR_READER_TOKEN || local.env.GHCR_TOKEN || ""}
-
-    # 2. The SecretStore using the token
-    - apiVersion: external-secrets.io/v1
-      kind: SecretStore
-      metadata:
-        name: remote-k8s-store
-      spec:
-        provider:
-          kubernetes:
-            server:
-              url: "https://kubernetes.default.svc"
-              caProvider:
-                type: ConfigMap
-                name: kube-root-ca.crt
-                key: ca.crt
-            remoteNamespace: sward-warden-dev
-            auth:
-              token:
-                bearerToken:
-                  name: remote-cluster-token-secret
-                  key: token
-
-    # 3. The ExternalSecret that creates the dockerconfigjson
-    - apiVersion: external-secrets.io/v1
-      kind: ExternalSecret
-      metadata:
-        name: pull-ghcr-docker-auth
-      spec:
-        refreshInterval: "5m"
-        secretStoreRef:
-          name: remote-k8s-store
-          kind: SecretStore
-        target:
-          name: ghcr-secret # This matches the imagePullSecrets name in sward-warden Helm chart
-          creationPolicy: Owner
-          template:
-            type: kubernetes.io/dockerconfigjson
-        data:
-          - secretKey: .dockerconfigjson
-            remoteRef:
-              key: ghcr-docker-auth
-              property: .dockerconfigjson
+        .dockerconfigjson: |
+          {
+            "auths": {
+              "ghcr.io": {
+                "username": "${local.env.GHCR_USER || 'bengreen'}",
+                "password": "${local.env.GHCR_TOKEN || ''}",
+                "auth": "${base64Encode((local.env.GHCR_USER || 'bengreen') + ':' + (local.env.GHCR_TOKEN || ''))}"
+              }
+            }
+          }
 ---
 kind: Deploy
 type: kubernetes
@@ -343,14 +309,8 @@ spec:
     - "-c"
     - |
       BACKEND_SHA=$(git log -1 --format=%H -- sw-be-container/ .github/workflows/sw-be-docker-publish.yml)
-      MAIN_SHA=$(git log -1 --format=%H origin/main -- sw-be-container/ .github/workflows/sw-be-docker-publish.yml 2>/dev/null || echo "")
-      if [ "$BACKEND_SHA" = "$MAIN_SHA" ] || [ -z "$MAIN_SHA" ]; then
-        IMAGE="ghcr.io/polecatworks/sward-warden-be"
-        TAG="main"
-      else
-        IMAGE="ghcr.io/polecatworks/sward-warden-be/dev"
-        TAG="sha-$BACKEND_SHA"
-      fi
+      IMAGE="ghcr.io/polecatworks/sward-warden-be/dev"
+      TAG="sha-$BACKEND_SHA"
       if [ -n "$GARDEN_ACTION_OUTPUTS_JSON_PATH" ]; then
         echo "{\"image\": \"$IMAGE\", \"tag\": \"$TAG\"}" > "$GARDEN_ACTION_OUTPUTS_JSON_PATH"
       elif [ -n "$GARDEN_ACTION_JSON_OUTPUTS_PATH" ]; then
