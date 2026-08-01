@@ -55,7 +55,7 @@ In this mode, authentication flows through Keycloak OIDC identity management.
 
 1. **Start Database**:
    ```bash
-   make compose-db
+   make compose-db-up
    ```
 2. **Start Backend (Keycloak Mode)**:
    ```bash
@@ -132,9 +132,23 @@ The repository uses specific `Makefile` targets to coordinate builds and testing
 
 # Garden
 
-do this before running garden
+Ensure `GHCR_TOKEN` is exported in your environment:
 
+```bash
+export GHCR_TOKEN=ghp_...
+make garden-up
+```
 
-   ```bash
-   export GHCR_READER_TOKEN=$(kubectl get secret ghcr-secret-reader-token -n sward-warden-dev -o jsonpath="{.data.token}" | base64 --decode)
-   ```
+To run Garden integration tests:
+
+```bash
+make garden-test
+```
+
+To teardown and clean up the deployed Garden environment and namespace:
+
+```bash
+make garden-down
+```
+
+Garden directly creates the `ghcr-secret` Kubernetes dockerconfigjson Secret from `GHCR_TOKEN` and `GHCR_USER` without requiring external cross-namespace CRDs.

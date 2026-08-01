@@ -1,7 +1,7 @@
 .PHONY: all build-fe build-be helm-package helm-deploy test \
         sw-fe-dev sw-fe-dev-keycloak sw-fe-docker sw-fe-docker-run \
         sw-be-dev sw-be-dev-keycloak sw-be-docker sw-be-docker-run \
-        db-local \
+        compose-db-up compose-db-down compose-db-clean garden-up garden-test garden-down \
         robot-test robot-test-keycloak robot-test-be robot-test-fe robot-test-nav robot-test-hold
 
 KEYCLOAK_URL ?= http://keycloak.k8s
@@ -148,7 +148,7 @@ $(foreach app,$(APPS),$(app)-docker-run):%-docker-run:%-docker
 tests: $(foreach app,$(APPS),$(app)-test)
 
 # --- Database ---
-compose-db:
+compose-db-up:
 	@if docker ps --format '{{.Names}}' | grep -Eq "^sward-postgres$$"; then \
 		echo "Container sward-postgres is already running. Attaching to logs..."; \
 		docker logs -f sward-postgres; \
@@ -156,17 +156,38 @@ compose-db:
 		docker compose -f docker-compose/postgres.yaml up; \
 	fi
 
-db-local:
-	docker container stop sward-postgres || true
-	@echo "Starting Postgres on port 5432"
-	docker run -it --rm --name sward-postgres \
-		-e POSTGRES_PASSWORD=mysecretpassword \
-		-e POSTGRES_DB=swarddb \
-		-p 5432:5432 \
-		postgis/postgis:15-3.3
+compose-db-down:
+	@echo "Stopping and removing local Postgres database container..."
+	docker compose -f docker-compose/postgres.yaml down
+
+compose-db-clean:
+	@echo "Stopping Postgres container and removing database volumes..."
+	docker compose -f docker-compose/postgres.yaml down -v
+
+# --- Garden ---
+garden-up:
+	@echo "Logging Helm into GHCR and running Garden deploy..."
+	@echo "$${GHCR_TOKEN}" | helm registry login ghcr.io -u "$${GHCR_USER:-bengreen}" --password-stdin 2>/dev/null || true
+	garden deploy
+
+garden-test: garden-up
+	@echo "Running Garden tests..."
+	garden test
+	@echo "Copying test reports to $(ROBOT_REPORT_DIR)..."
+	@mkdir -p $(ROBOT_REPORT_DIR)
+	@NS="sward-warden-$${USER:-local}"; \
+	kubectl cp $$NS/robot-test-runner:/tmp/reports $(ROBOT_REPORT_DIR) 2>/dev/null || true
+	@if [ -f "$(ROBOT_REPORT_DIR)/log.html" ]; then \
+		echo "Opening test report log.html..."; \
+		open $(ROBOT_REPORT_DIR)/log.html || true; \
+	fi
+
+garden-down:
+	@echo "Tearing down Garden environment..."
+	garden cleanup env
 
 # --- Robot Integration Tests (Local Dev) ---
-# Prerequisites: make compose-db, make sw-be-dev, make sw-fe-dev
+# Prerequisites: make compose-db-up, make sw-be-dev, make sw-fe-dev
 
 # LOCAL_BE_URL ?= http://127.0.0.1:8080/sward
 # LOCAL_FE_URL ?= http://127.0.0.1:4200
