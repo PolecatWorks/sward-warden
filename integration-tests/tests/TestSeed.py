@@ -39,7 +39,10 @@ class TestSeed:
         try:
             r = requests.get(f"{clean_base}/v0/users/{user_id_int}", headers=admin_headers, timeout=5)
             if r.status_code != 200:
-                requests.post(f"{clean_base}/v0/users", json=user_payload, headers=admin_headers, timeout=5)
+                all_users_r = requests.get(f"{clean_base}/v0/users", headers=admin_headers, timeout=5)
+                existing_emails = [u.get("email") for u in all_users_r.json()] if all_users_r.status_code == 200 else []
+                if f"user{user_id_int}@example.com" not in existing_emails:
+                    requests.post(f"{clean_base}/v0/users", json=user_payload, headers=admin_headers, timeout=5)
         except Exception as e:
             BuiltIn().log(f"TestSeed: User creation check failed: {e}", level="WARN")
 
@@ -48,7 +51,10 @@ class TestSeed:
         try:
             r = requests.get(f"{clean_base}/v0/users/999", headers=admin_headers, timeout=5)
             if r.status_code != 200:
-                requests.post(f"{clean_base}/v0/users", json=admin_payload, headers=admin_headers, timeout=5)
+                all_users_r = requests.get(f"{clean_base}/v0/users", headers=admin_headers, timeout=5)
+                existing_emails = [u.get("email") for u in all_users_r.json()] if all_users_r.status_code == 200 else []
+                if "admin@example.com" not in existing_emails:
+                    requests.post(f"{clean_base}/v0/users", json=admin_payload, headers=admin_headers, timeout=5)
         except Exception as e:
             BuiltIn().log(f"TestSeed: Admin user creation check failed: {e}", level="WARN")
 

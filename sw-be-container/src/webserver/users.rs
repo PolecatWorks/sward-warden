@@ -43,8 +43,8 @@ pub async fn create_user(
 
     let new_user: User = loop {
         if user.id > 0 {
-            let res = sqlx::query_as::<_, User>(
-                "INSERT INTO users (id, name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, email = EXCLUDED.email RETURNING id, name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub, NULL AS modules",
+            let inserted = sqlx::query_as::<_, User>(
+                "INSERT INTO users (id, name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id, name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub, NULL AS modules",
             )
             .bind(user.id)
             .bind(&user.name)
@@ -56,12 +56,9 @@ pub async fn create_user(
             .bind(log_level)
             .bind(&user.keycloak_sub)
             .fetch_one(&mut *tx)
-            .await;
+            .await?;
 
-            match res {
-                Ok(inserted) => break inserted,
-                Err(e) => return Err(AppError::from(e)),
-            }
+            break inserted;
         } else {
             let res = sqlx::query_as::<_, User>(
                 "INSERT INTO users (name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name RETURNING id, name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub, NULL AS modules",

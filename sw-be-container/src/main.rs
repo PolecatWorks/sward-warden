@@ -7,7 +7,6 @@ use clap::{Parser, Subcommand};
 use tokio_util::sync::CancellationToken;
 
 use sw_be_container::config::AppConfig;
-use sw_be_container::data::seed;
 use sw_be_container::error::AppError;
 use sw_be_container::service_cancellable;
 use sw_be_container::tokio_tools::run_in_tokio;
@@ -41,12 +40,6 @@ pub enum Commands {
     Version,
     /// Execute schema migrations against PostgreSQL
     Migrate,
-    /// Seed the database with realistic sample data
-    Seed {
-        /// The user ID to seed data for
-        #[arg(long, default_value_t = 1)]
-        user_id: i64,
-    },
 }
 
 /// Initializes structured logging using `tracing_subscriber`.
@@ -165,40 +158,6 @@ fn main() -> Result<(), AppError> {
             }) {
                 tracing::error!(
                     "Migrate failed: {}. Sleeping for {:?} before exiting...",
-                    e,
-                    delay
-                );
-                std::thread::sleep(delay);
-                return Err(e);
-            }
-        }
-        Commands::Seed { user_id } => {
-            let config = AppConfig::load(&cli.config_path, &cli.secrets_dir).map_err(|e| {
-                init_logging("info");
-                tracing::error!("Failed to load config: {}", e);
-                AppError::Message(format!("Failed to load config: {}", e))
-            })?;
-            init_logging(&config.debugging.log_level);
-
-            println!(
-                "Config:\n{}",
-                serde_yaml::to_string(&config)
-                    .map_err(|e| AppError::Message(format!("Failed to serialize config: {e}")))?
-            );
-            let delay = config.debugging.fail_debug_delay;
-            if let Err(e) = run_in_tokio(&config.runtime, async move {
-                let db_url: url::Url = config.database.url.clone().into();
-                let db_pool = sqlx::postgres::PgPoolOptions::new()
-                    .max_connections(1)
-                    .connect(db_url.as_str())
-                    .await
-                    .map_err(|e| {
-                        AppError::Message(format!("Failed to connect to database: {e}"))
-                    })?;
-                seed::seed_database(&db_pool, *user_id).await
-            }) {
-                tracing::error!(
-                    "Seed failed: {}. Sleeping for {:?} before exiting...",
                     e,
                     delay
                 );
