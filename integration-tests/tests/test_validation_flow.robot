@@ -20,14 +20,13 @@ Immediate Validation and Form UX Flow
     # 1. Create a Farm and Field via API
     ${random_str}=    Evaluate    str(random.randint(1000, 9999))    modules=random
     Ensure User Exists    user_id=1    name=Demo User    email=user1@example.com    role=user
-    &{admin_headers}=    Create Dictionary    X-User-ID=999    X-User-Role=admin
+    &{user_headers}=    Create Dictionary    X-User-ID=1    X-User-Role=user
     ${farm_name}=    Set Variable    Validation Farm ${random_str}
     &{farm_data}=    Create Dictionary    id=${0}    user_id=${1}    name=${farm_name}    location=Validation Location    has_derogation=${True}
-    ${farm_response}=    POST    ${BE_BASE_URL}/v0/farms    json=${farm_data}    headers=${admin_headers}    expected_status=200
+    ${farm_response}=    POST    ${BE_BASE_URL}/v0/farms    json=${farm_data}    headers=${user_headers}    expected_status=200
     ${farm_id}=    Convert To String    ${farm_response.json()['id']}
     ${farm_id_int}=    Convert To Integer    ${farm_id}
 
-    &{user_headers}=    Create Dictionary    X-User-ID=1    X-User-Role=user
     ${field_name}=    Set Variable    Validation Field ${random_str}
     &{field_data}=    Create Dictionary    id=${0}    farm_id=${farm_id_int}    name=${field_name}    area_hectares=${12.5}    land_use=grassland
     ${field_response}=    POST    ${BE_BASE_URL}/v0/fields    json=${field_data}    headers=${user_headers}    expected_status=200
