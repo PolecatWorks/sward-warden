@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["rules","seed"]};
+window.SIDEBAR_ITEMS = {"mod":["rules"]};
