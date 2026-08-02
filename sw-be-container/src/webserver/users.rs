@@ -8,7 +8,8 @@ use axum::{Json, extract::State};
 // References more than 3 PRDs
 pub async fn list_users(State(state): State<AppState>) -> Result<Json<Vec<User>>, AppError> {
     let env = state.config.debugging.environment.as_str();
-    if env != "development" && env != "testing" {
+    let dev_auth = state.config.debugging.enable_dev_auth;
+    if env != "development" && env != "testing" && !dev_auth {
         return Err(AppError::Forbidden(
             "User directory listing is disabled in this environment".to_string(),
         ));
@@ -293,7 +294,8 @@ pub async fn delete_user(
     }
 
     let env = state.config.debugging.environment.as_str();
-    if env != "development" && env != "testing" {
+    let dev_auth = state.config.debugging.enable_dev_auth;
+    if env != "development" && env != "testing" && !dev_auth {
         return Err(AppError::Forbidden(
             "User deletion is disabled in this environment".to_string(),
         ));
