@@ -49,7 +49,8 @@ Sward Movement Creation Flow
     Sleep    15s
 
     # 4. Verify creation via API
-    ${list_response}=    GET    ${BE_BASE_URL}/v0/sward-movements    expected_status=200
+    &{user_headers}=    Create Dictionary    X-User-ID=1    X-User-Role=user
+    ${list_response}=    GET    ${BE_BASE_URL}/v0/sward-movements    headers=${user_headers}    expected_status=200
     ${movements}=    Set Variable    ${list_response.json()}
 
     ${found_movement}=    Set Variable    ${False}
