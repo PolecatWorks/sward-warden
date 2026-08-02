@@ -30,6 +30,7 @@ Since the majority of users manage a single farm, the application prioritizes a 
 - **List & Card Layout:** Farm cards feature an image header, name, area, and edit pencil icon in the bottom drawer. Clicking the card navigates to the farm detail view. The edit pencil icon must stop click propagation and open an edit modal. Farm lists must expand to utilize the full available screen width, displaying up to 3 cards per row on larger screens in a responsive grid layout.
 - **Safe Deletion:** Farms can only be deleted from the Farm Details page (`/farms/:farmId`) via a red trash can icon revealing an inline confirmation. Deletion is blocked (FE & BE) if active fields remain attached.
 - **Empty State:** A full-width, center-aligned empty state card with a prominent "Add Farm" button. The empty state card must span the full page width and not be constrained by grid layouts to ensure consistent center alignment.
+- **No Side-Effect User Creation:** Creating a farm (`POST /v0/farms`) must strictly operate on the target farm entity and must not perform side-effect creation or upserting of missing user records. If the target user ID does not exist in the database, the endpoint must return an appropriate error (or foreign key failure) rather than automatically seeding a user record.
 - **Weather Safety Timeline:** The Farm Details page includes a weather safety timeline component that displays a 48-hour forecast and indicates whether application is safe or blocked based on precipitation risk.
 
 ## 4. Field Management
