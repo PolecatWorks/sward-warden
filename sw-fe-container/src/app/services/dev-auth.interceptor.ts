@@ -20,10 +20,11 @@ export const devAuthInterceptor: HttpInterceptorFn = (req, next) => {
       newReq = req.clone({
         headers: req.headers.set('Authorization', `Bearer ${token}`),
       });
-    } else if (req.url.includes('/users')) {
+    } else {
+      const storedUserId = authService.getUserId() || '1';
       newReq = req.clone({
         headers: req.headers
-          .set('X-User-ID', '1')
+          .set('X-User-ID', storedUserId)
           .set('X-User-Role', 'user'),
       });
     }
