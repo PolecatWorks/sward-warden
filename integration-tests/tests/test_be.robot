@@ -1,5 +1,7 @@
 *** Settings ***
 Library    AuthRequests.py
+Library    TestSeed.py
+Suite Setup    Seed Test Database
 
 *** Variables ***
 ${BE_POD_IP}

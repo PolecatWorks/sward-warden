@@ -31,6 +31,7 @@ This file describes the workflow and development patterns for our agents to foll
 - **Docker Image Builds**:
   - If the backend code (`sw-be-container/`) is modified, the backend container build must be run (`make sw-be-docker`).
   - If the frontend code (`sw-fe-container/`) is modified, the frontend container build must be run (`make sw-fe-docker`).
+  - **Garden / Kubernetes Deployment Note**: Building Docker images locally builds them in the local Docker daemon. For `make garden-test` running against Kubernetes, Garden resolves container images from GHCR (`ghcr.io/polecatworks/sward-warden-be/dev:sha-<SHA>`). Code changes to backend or frontend containers must be committed and pushed to the PR/branch so CI can build and push the corresponding container images to GHCR before running Kubernetes integration tests.
 - **Integration Test Best Practices**: Do NOT use Angular-specific debugging utilities such as `ng.getComponent` or `ng.applyChanges` within integration tests (e.g. Robot / Playwright scripts). These APIs are stripped and disabled in production builds (such as CI), leading to runtime `ReferenceError: ng is not defined` failures. Always interact with components via standard user input simulations (clicks, keystrokes, form fields).
 
 - **NOTE**: PRD files can mutate over time. Spec files are immutable, however when a spec file has updates and it is not complete (ie still in open state) then it can be modified and does not need to be superceeded. Spec files can be in the following states: Open / Complete / Deprecated / Superceeded.

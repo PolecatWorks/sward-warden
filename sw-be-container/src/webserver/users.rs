@@ -40,19 +40,56 @@ pub async fn create_user(
     } else {
         &user.client_log_level
     };
-    let new_user: User = sqlx::query_as(
-        "INSERT INTO users (name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id, name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub, NULL AS modules",
-    )
-    .bind(&user.name)
-    .bind(&user.email)
-    .bind(&user.role)
-    .bind(&user.phone)
-    .bind(&user.description)
-    .bind(user.is_suspended)
-    .bind(log_level)
-    .bind(&user.keycloak_sub)
-    .fetch_one(&mut *tx)
-    .await?;
+
+    let new_user: User = loop {
+        if user.id > 0 {
+            let res = sqlx::query_as::<_, User>(
+                "INSERT INTO users (id, name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, email = EXCLUDED.email RETURNING id, name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub, NULL AS modules",
+            )
+            .bind(user.id)
+            .bind(&user.name)
+            .bind(&user.email)
+            .bind(&user.role)
+            .bind(&user.phone)
+            .bind(&user.description)
+            .bind(user.is_suspended)
+            .bind(log_level)
+            .bind(&user.keycloak_sub)
+            .fetch_one(&mut *tx)
+            .await;
+
+            match res {
+                Ok(inserted) => break inserted,
+                Err(e) => return Err(AppError::from(e)),
+            }
+        } else {
+            let res = sqlx::query_as::<_, User>(
+                "INSERT INTO users (name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name RETURNING id, name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub, NULL AS modules",
+            )
+            .bind(&user.name)
+            .bind(&user.email)
+            .bind(&user.role)
+            .bind(&user.phone)
+            .bind(&user.description)
+            .bind(user.is_suspended)
+            .bind(log_level)
+            .bind(&user.keycloak_sub)
+            .fetch_one(&mut *tx)
+            .await;
+
+            match res {
+                Ok(inserted) => break inserted,
+                Err(sqlx::Error::Database(db_err)) if db_err.constraint() == Some("users_pkey") => {
+                    // Sequence counter generated an ID that collides with an explicit ID; increment sequence and retry within the transaction
+                    sqlx::query("SELECT nextval(pg_get_serial_sequence('users', 'id'))")
+                        .execute(&mut *tx)
+                        .await?;
+                    continue;
+                }
+                Err(e) => return Err(AppError::from(e)),
+            }
+        }
+    };
 
     if let Some(modules) = &user.modules {
         if !modules.is_empty() {
@@ -63,14 +100,15 @@ pub async fn create_user(
                 .await?;
         }
     }
-    tx.commit().await?;
 
     let final_user = sqlx::query_as::<_, User>(
         "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, u.client_log_level, u.keycloak_sub, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.id = $1 GROUP BY u.id",
     )
     .bind(new_user.id)
-    .fetch_one(&state.db_pool)
+    .fetch_one(&mut *tx)
     .await?;
+
+    tx.commit().await?;
 
     Ok(Json(final_user))
 }
