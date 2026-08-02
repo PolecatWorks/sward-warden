@@ -50,8 +50,11 @@ class AuthRequests(RequestsLibrary):
         except Exception:
             pass
 
+        # Derive unique email if using default email parameter
+        effective_email = email if email != "user1@example.com" or user_id_int == 1 else f"user{user_id_int}@example.com"
+
         # Create user if not present
-        payload = {"id": user_id_int, "name": name, "email": email, "role": role, "keycloak_sub": str(user_id_int)}
+        payload = {"id": user_id_int, "name": name, "email": effective_email, "role": role, "keycloak_sub": str(user_id_int)}
         try:
             post_r = requests.post(f"{clean_base}/v0/users", json=payload, headers=headers, timeout=5)
             if post_r.status_code in (200, 201, 409):
