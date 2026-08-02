@@ -24,11 +24,16 @@ Teardown With Video
 Login As Demo User
     [Documentation]    Logs in as the default Demo User (ID 1) via the development login page or Keycloak SSO
     New Page    ${EXTERNAL_DNS_URL}/login
-    ${dev_user_visible}=    Run Keyword And Return Status    Wait For Elements State    css=[data-testid^="user-login-"] >> nth=0    visible    timeout=5s
-    IF    ${dev_user_visible}
-        Click    css=[data-testid^="user-login-"] >> nth=0
+    ${demo_user_visible}=    Run Keyword And Return Status    Wait For Elements State    data-testid=user-login-1    visible    timeout=3s
+    IF    ${demo_user_visible}
+        Click    data-testid=user-login-1
     ELSE
-        Wait For Elements State    id=keycloak-login-btn    visible    timeout=5s
-        Click    id=keycloak-login-btn
+        ${dev_user_visible}=    Run Keyword And Return Status    Wait For Elements State    css=[data-testid^="user-login-"] >> nth=0    visible    timeout=3s
+        IF    ${dev_user_visible}
+            Click    css=[data-testid^="user-login-"] >> nth=0
+        ELSE
+            Wait For Elements State    id=keycloak-login-btn    visible    timeout=5s
+            Click    id=keycloak-login-btn
+        END
     END
     Wait For Elements State    css=app-home    visible    timeout=10s
