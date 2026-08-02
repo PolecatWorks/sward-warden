@@ -80,7 +80,7 @@ pub async fn create_farm(
 
     // Ensure target_user_id exists in users table to prevent FK constraint failure
     sqlx::query(
-        "INSERT INTO users (id, name, email, role, keycloak_sub) VALUES ($1, $2, $3, 'user', $4) ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name",
+        "INSERT INTO users (id, name, email, role, keycloak_sub) VALUES ($1, $2, $3, 'user', $4) ON CONFLICT (id) DO NOTHING",
     )
     .bind(target_user_id)
     .bind(format!("User {}", target_user_id))
