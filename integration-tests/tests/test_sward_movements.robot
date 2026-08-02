@@ -70,10 +70,10 @@ Sward Movement Creation Flow
 Create Test Farm
     ${random_str}=    Evaluate    str(random.randint(1000, 9999))    modules=random
     Ensure User Exists    user_id=1    name=Demo User    email=user1@example.com    role=user
-    &{admin_headers}=    Create Dictionary    X-User-ID=999    X-User-Role=admin
+    &{user_headers}=    Create Dictionary    X-User-ID=1    X-User-Role=user
     ${farm_name}=    Set Variable    E2E Parent Farm ${random_str}
     &{farm_data}=    Create Dictionary    id=${0}    user_id=${1}    name=${farm_name}    location=E2E Location    has_derogation=${True}
-    ${farm_response}=    POST    ${BE_BASE_URL}/v0/farms    json=${farm_data}    headers=${admin_headers}    expected_status=200
+    ${farm_response}=    POST    ${BE_BASE_URL}/v0/farms    json=${farm_data}    headers=${user_headers}    expected_status=200
     ${farm_id}=    Convert To String    ${farm_response.json()['id']}
     Set Test Variable    ${TEST_FARM_ID}    ${farm_id}
 
