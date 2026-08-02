@@ -53,7 +53,7 @@ pub async fn create_user(
     let new_user: User = loop {
         if user.id > 0 {
             let inserted = sqlx::query_as::<_, User>(
-                "INSERT INTO users (id, name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id, name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub, NULL AS modules",
+                "INSERT INTO users (id, name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name, keycloak_sub = COALESCE(users.keycloak_sub, EXCLUDED.keycloak_sub) RETURNING id, name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub, NULL AS modules",
             )
             .bind(user.id)
             .bind(&user.name)
