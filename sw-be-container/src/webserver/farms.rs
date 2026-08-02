@@ -78,17 +78,6 @@ pub async fn create_farm(
         user_id
     };
 
-    // Ensure target_user_id exists in users table to prevent FK constraint failure
-    sqlx::query(
-        "INSERT INTO users (id, name, email, role, keycloak_sub) VALUES ($1, $2, $3, 'user', $4) ON CONFLICT (id) DO NOTHING",
-    )
-    .bind(target_user_id)
-    .bind(format!("User {}", target_user_id))
-    .bind(format!("user{}@example.com", target_user_id))
-    .bind(target_user_id.to_string())
-    .execute(&state.db_pool)
-    .await?;
-
     let new_farm = sqlx::query_as::<_, Farm>(
         "INSERT INTO farms (user_id, name, location, has_derogation, photo) VALUES ($1, $2, $3, $4, $5) RETURNING id, user_id, name, location, has_derogation, photo, updated_at, is_deleted"
     )

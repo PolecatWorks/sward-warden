@@ -22,6 +22,7 @@ This document defines the overarching application architecture for the sward man
   - Explicit Tokio runtime configuration via a `ThreadRuntime` struct (controlling thread count, stack size, and naming).
   - Propagate shutdown signals across internal async tasks via a `tokio_util::sync::CancellationToken`.
   - Modular routing organization (e.g., separate files for `users`, `farms`, `fields`, etc.).
+  - **No API Side Effects:** API endpoints must remain strictly scoped to their explicit domain entity and must not perform unintended side effects on secondary entities. For example, `POST /v0/farms` must strictly validate that the owner `user_id` exists in the database and return a database error or foreign key violation if not found, rather than automatically creating or upserting user records as a side effect.
   - Unified error handling (`AppError` enum implementing `axum::response::IntoResponse`).
 - **Networking:**
   - Main HTTP traffic served on port 8080.
