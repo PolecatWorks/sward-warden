@@ -27,9 +27,10 @@ Immediate Validation and Form UX Flow
     ${farm_id}=    Convert To String    ${farm_response.json()['id']}
     ${farm_id_int}=    Convert To Integer    ${farm_id}
 
+    &{user_headers}=    Create Dictionary    X-User-ID=1    X-User-Role=user
     ${field_name}=    Set Variable    Validation Field ${random_str}
     &{field_data}=    Create Dictionary    id=${0}    farm_id=${farm_id_int}    name=${field_name}    area_hectares=${12.5}    land_use=grassland
-    ${field_response}=    POST    ${BE_BASE_URL}/v0/fields    json=${field_data}    headers=${admin_headers}    expected_status=200
+    ${field_response}=    POST    ${BE_BASE_URL}/v0/fields    json=${field_data}    headers=${user_headers}    expected_status=200
     ${field_id}=    Convert To String    ${field_response.json()['id']}
 
     # 2. Login as Demo User and navigate to the Field detail page

@@ -11,12 +11,22 @@ pub async fn list_sward_movements(
     State(state): State<AppState>,
     UserId(user_id): UserId,
 ) -> Result<Json<Vec<SwardMovement>>, AppError> {
-    let movements = sqlx::query_as::<_, SwardMovement>(
-        "SELECT sm.id, sm.farm_id, sm.movement_type, sm.quantity_m3, sm.date, sm.manure_type, sm.consignee_name, sm.consignee_address, sm.consignor_name, sm.consignor_address, sm.transporter_name, sm.contract_length_months, sm.updated_at, sm.is_deleted FROM sward_movements sm JOIN farms fa ON sm.farm_id = fa.id WHERE fa.user_id = $1 AND sm.is_deleted = FALSE"
-    )
-    .bind(user_id)
-    .fetch_all(&state.db_pool)
-    .await?;
+    let is_admin = crate::webserver::auth::check_is_admin(&state.db_pool, user_id).await;
+
+    let movements = if is_admin {
+        sqlx::query_as::<_, SwardMovement>(
+            "SELECT sm.id, sm.farm_id, sm.movement_type, sm.quantity_m3, sm.date, sm.manure_type, sm.consignee_name, sm.consignee_address, sm.consignor_name, sm.consignor_address, sm.transporter_name, sm.contract_length_months, sm.updated_at, sm.is_deleted FROM sward_movements sm JOIN farms fa ON sm.farm_id = fa.id WHERE sm.is_deleted = FALSE"
+        )
+        .fetch_all(&state.db_pool)
+        .await?
+    } else {
+        sqlx::query_as::<_, SwardMovement>(
+            "SELECT sm.id, sm.farm_id, sm.movement_type, sm.quantity_m3, sm.date, sm.manure_type, sm.consignee_name, sm.consignee_address, sm.consignor_name, sm.consignor_address, sm.transporter_name, sm.contract_length_months, sm.updated_at, sm.is_deleted FROM sward_movements sm JOIN farms fa ON sm.farm_id = fa.id WHERE fa.user_id = $1 AND sm.is_deleted = FALSE"
+        )
+        .bind(user_id)
+        .fetch_all(&state.db_pool)
+        .await?
+    };
     Ok(Json(movements))
 }
 
