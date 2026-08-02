@@ -20,7 +20,7 @@ export const devAuthInterceptor: HttpInterceptorFn = (req, next) => {
       newReq = req.clone({
         headers: req.headers.set('Authorization', `Bearer ${token}`),
       });
-    } else {
+    } else if (req.url.includes('/users')) {
       newReq = req.clone({
         headers: req.headers
           .set('X-User-ID', '1')
