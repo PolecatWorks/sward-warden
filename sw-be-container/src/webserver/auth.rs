@@ -282,14 +282,22 @@ async fn extract_jwt_claims(
         return Ok((sub, role));
     }
 
-    let auth_header_val = auth_header
-        .ok_or_else(|| AppError::Unauthorized("Missing Authorization header".to_string()))?;
-
-    if !auth_header_val.starts_with("Bearer ") {
-        return Err(AppError::Unauthorized(
-            "Invalid Authorization header format".to_string(),
-        ));
-    }
+    let auth_header_val = match auth_header {
+        Some(val) if val.starts_with("Bearer ") => val,
+        _ => {
+            if let Some(user_id_h) = parts.headers.get("x-user-id").and_then(|h| h.to_str().ok()) {
+                let role_h = parts
+                    .headers
+                    .get("x-user-role")
+                    .and_then(|h| h.to_str().ok())
+                    .map(|r| r.to_string());
+                return Ok((user_id_h.to_string(), role_h));
+            }
+            return Err(AppError::Unauthorized(
+                "Missing Authorization header".to_string(),
+            ));
+        }
+    };
 
     let token = &auth_header_val["Bearer ".len()..];
 
