@@ -49,14 +49,14 @@ class AuthRequests(RequestsLibrary):
             pass
 
         # Create user if not present
-        payload = {"id": user_id_int, "name": name, "email": email, "role": role}
+        payload = {"id": user_id_int, "name": name, "email": email, "role": role, "keycloak_sub": str(user_id_int)}
         try:
             post_r = requests.post(f"{clean_base}/v0/users", json=payload, headers=headers, timeout=5)
             if post_r.status_code in (200, 201, 409):
                 _verified_users.add(user_id_int)
             elif post_r.status_code == 500:
                 # If creating user_id_int failed (e.g. email conflict), retry with auto-increment ID
-                auto_payload = {"id": 0, "name": name, "email": email, "role": role}
+                auto_payload = {"id": 0, "name": name, "email": email, "role": role, "keycloak_sub": str(user_id_int)}
                 requests.post(f"{clean_base}/v0/users", json=auto_payload, headers=headers, timeout=5)
                 _verified_users.add(user_id_int)
         except Exception as e:

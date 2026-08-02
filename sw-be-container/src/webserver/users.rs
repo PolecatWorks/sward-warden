@@ -41,6 +41,14 @@ pub async fn create_user(
         &user.client_log_level
     };
 
+    let effective_sub = user.keycloak_sub.or_else(|| {
+        if user.id > 0 {
+            Some(user.id.to_string())
+        } else {
+            None
+        }
+    });
+
     let new_user: User = loop {
         if user.id > 0 {
             let inserted = sqlx::query_as::<_, User>(
@@ -54,7 +62,7 @@ pub async fn create_user(
             .bind(&user.description)
             .bind(user.is_suspended)
             .bind(log_level)
-            .bind(&user.keycloak_sub)
+            .bind(&effective_sub)
             .fetch_one(&mut *tx)
             .await?;
 
@@ -70,7 +78,7 @@ pub async fn create_user(
             .bind(&user.description)
             .bind(user.is_suspended)
             .bind(log_level)
-            .bind(&user.keycloak_sub)
+            .bind(&effective_sub)
             .fetch_one(&mut *tx)
             .await;
 
