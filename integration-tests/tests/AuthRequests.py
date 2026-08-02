@@ -39,6 +39,12 @@ class AuthRequests(RequestsLibrary):
             if get_r.status_code == 200:
                 _verified_users.add(user_id_int)
                 return
+            all_users_r = requests.get(f"{clean_base}/v0/users", headers=headers, timeout=5)
+            if all_users_r.status_code == 200:
+                existing_uids = [u.get("id") for u in all_users_r.json()]
+                if user_id_int in existing_uids:
+                    _verified_users.add(user_id_int)
+                    return
         except Exception:
             pass
 
@@ -47,6 +53,11 @@ class AuthRequests(RequestsLibrary):
         try:
             post_r = requests.post(f"{clean_base}/v0/users", json=payload, headers=headers, timeout=5)
             if post_r.status_code in (200, 201, 409):
+                _verified_users.add(user_id_int)
+            elif post_r.status_code == 500:
+                # If creating user_id_int failed (e.g. email conflict), retry with auto-increment ID
+                auto_payload = {"id": 0, "name": name, "email": email, "role": role}
+                requests.post(f"{clean_base}/v0/users", json=auto_payload, headers=headers, timeout=5)
                 _verified_users.add(user_id_int)
         except Exception as e:
             BuiltIn().log(f"ensure_user_exists request failed: {e}", level="WARN")

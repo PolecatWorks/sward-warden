@@ -68,9 +68,8 @@ Sward Movement Creation Flow
 # PRD Reference: 0004
 Create Test Farm
     ${random_str}=    Evaluate    str(random.randint(1000, 9999))    modules=random
+    Ensure User Exists    user_id=1    name=Demo User    email=user1@example.com    role=user
     &{admin_headers}=    Create Dictionary    X-User-ID=999    X-User-Role=admin
-    &{user_data}=    Create Dictionary    name=Demo User    email=user1@example.com    role=user
-    Run Keyword And Ignore Error    POST    ${BE_BASE_URL}/v0/users    json=${user_data}    headers=${admin_headers}
     ${farm_name}=    Set Variable    E2E Parent Farm ${random_str}
     &{farm_data}=    Create Dictionary    id=${0}    user_id=${1}    name=${farm_name}    location=E2E Location    has_derogation=${True}
     ${farm_response}=    POST    ${BE_BASE_URL}/v0/farms    json=${farm_data}    headers=${admin_headers}    expected_status=200

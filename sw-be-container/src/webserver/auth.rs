@@ -348,24 +348,6 @@ pub async fn get_user_auth_info_by_sub(
         if res.is_some() {
             return res.map(|(role, suspended, id)| (role, suspended, Some(id)));
         }
-
-        let fallback = sqlx::query_as::<_, (String, bool, i64)>(
-            "SELECT role::text, is_suspended, id FROM users ORDER BY id ASC LIMIT 1",
-        )
-        .fetch_optional(pool)
-        .await
-        .ok()
-        .flatten();
-
-        if let Some((role, suspended, id)) = fallback {
-            let _ = sqlx::query("UPDATE users SET keycloak_sub = $1 WHERE id = $2")
-                .bind(sub)
-                .bind(id)
-                .execute(pool)
-                .await;
-            return Some((role, suspended, Some(id)));
-        }
-
         None
     }
 }
