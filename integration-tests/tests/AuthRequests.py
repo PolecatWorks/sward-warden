@@ -3,9 +3,53 @@ from RequestsLibrary import RequestsLibrary
 from robot.libraries.BuiltIn import BuiltIn
 
 _token_cache = {}
+_verified_users = set()
 
 class AuthRequests(RequestsLibrary):
     ROBOT_LIBRARY_SCOPE = 'GLOBAL'
+
+    def ensure_user_exists(self, user_id=1, name="Demo User", email="user1@example.com", role="user"):
+        user_id_int = int(user_id) if str(user_id).isdigit() else 1
+        if user_id_int in _verified_users:
+            return
+
+        be_base_url = BuiltIn().get_variable_value("${BE_BASE_URL}") or "http://localhost:8080/sward"
+        clean_base = be_base_url.rstrip('/')
+        if not clean_base.endswith('/sward'):
+            clean_base = f"{clean_base}/sward"
+
+        # Ensure admin token for verification/creation calls
+        admin_token = None
+        try:
+            tok_r = requests.post(f"{clean_base}/dev/auth/token", json={"user_id": 999, "role": "admin"}, timeout=5)
+            if tok_r.status_code == 200:
+                admin_token = tok_r.json().get("access_token")
+        except Exception:
+            pass
+
+        headers = {}
+        if admin_token:
+            headers["Authorization"] = f"Bearer {admin_token}"
+        else:
+            headers = {'X-User-ID': '999', 'X-User-Role': 'admin'}
+
+        # Idempotently check if user already exists
+        try:
+            get_r = requests.get(f"{clean_base}/v0/users/{user_id_int}", headers=headers, timeout=5)
+            if get_r.status_code == 200:
+                _verified_users.add(user_id_int)
+                return
+        except Exception:
+            pass
+
+        # Create user if not present
+        payload = {"id": user_id_int, "name": name, "email": email, "role": role}
+        try:
+            post_r = requests.post(f"{clean_base}/v0/users", json=payload, headers=headers, timeout=5)
+            if post_r.status_code in (200, 201, 409):
+                _verified_users.add(user_id_int)
+        except Exception as e:
+            BuiltIn().log(f"ensure_user_exists request failed: {e}", level="WARN")
 
     def _common_request(self, method, session, uri, **kwargs):
         # Determine the base URL
@@ -45,6 +89,9 @@ class AuthRequests(RequestsLibrary):
                     user_id = 1
                 if role is None:
                     role = "user"
+
+                # Automatically ensure target user exists in DB before sending request
+                self.ensure_user_exists(user_id=user_id)
 
                 enable_keycloak = BuiltIn().get_variable_value("${ENABLE_KEYCLOAK}", "false")
                 if isinstance(enable_keycloak, str):

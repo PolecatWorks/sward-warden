@@ -37,12 +37,6 @@ pub async fn seed_database(pool: &PgPool, user_id: i64) -> Result<(), AppError> 
     .await
     .map_err(|e| AppError::Message(format!("Failed to ensure admin user: {e}")))?;
 
-    // Advance users sequence past explicit IDs to prevent primary key conflicts on auto-increment
-    sqlx::query("SELECT setval(pg_get_serial_sequence('users', 'id'), GREATEST(1000, (SELECT COALESCE(MAX(id), 1) FROM users)))")
-    .execute(pool)
-    .await
-    .map_err(|e| AppError::Message(format!("Failed to update users sequence: {e}")))?;
-
     for i in 1..=3 {
         let farm_name = format!("Farm {}", i);
         let location = format!("County {}, NI", ["Down", "Antrim", "Tyrone"][i - 1]);

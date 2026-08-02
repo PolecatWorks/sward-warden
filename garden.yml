@@ -5,10 +5,6 @@ name: sward-warden
 variables:
   pr-number: ${local.env.PR_NUMBER || "local"}
   kube-context: "${local.env.GARDEN_KUBECONTEXT || (local.env.CI == 'true' ? 'local' : 'kubernetes-admin@kubernetes')}"
-  sw-be-image: ghcr.io/polecatworks/sward-warden-be
-  sw-be-tag: ${local.env.SW_BE_TAG || "main"}
-  sw-fe-image: ghcr.io/polecatworks/sward-warden-fe
-  sw-fe-tag: ${local.env.SW_FE_TAG || "main"}
   dns-host: sw-${local.env.USER || "local"}.dev.k8s
 
 providers:
@@ -309,8 +305,15 @@ spec:
     - "-c"
     - |
       BACKEND_SHA=$(git log -1 --format=%H -- sw-be-container/ .github/workflows/sw-be-docker-publish.yml)
-      IMAGE="ghcr.io/polecatworks/sward-warden-be/dev"
-      TAG="sha-$BACKEND_SHA"
+      MAIN_SHA=$(git log -1 --format=%H origin/main -- sw-be-container/ .github/workflows/sw-be-docker-publish.yml 2>/dev/null || echo "")
+      HAS_UNCOMMITTED=$(git status --porcelain -- sw-be-container/ .github/workflows/sw-be-docker-publish.yml)
+      if [ -n "$HAS_UNCOMMITTED" ] || [ "$BACKEND_SHA" != "$MAIN_SHA" ]; then
+        IMAGE="ghcr.io/polecatworks/sward-warden-be/dev"
+        TAG="sha-$BACKEND_SHA"
+      else
+        IMAGE="ghcr.io/polecatworks/sward-warden-be"
+        TAG="main"
+      fi
       if [ -n "$GARDEN_ACTION_OUTPUTS_JSON_PATH" ]; then
         echo "{\"image\": \"$IMAGE\", \"tag\": \"$TAG\"}" > "$GARDEN_ACTION_OUTPUTS_JSON_PATH"
       elif [ -n "$GARDEN_ACTION_JSON_OUTPUTS_PATH" ]; then
@@ -331,12 +334,13 @@ spec:
     - |
       FRONTEND_SHA=$(git log -1 --format=%H -- sw-fe-container/ .github/workflows/sw-fe-docker-publish.yml)
       MAIN_SHA=$(git log -1 --format=%H origin/main -- sw-fe-container/ .github/workflows/sw-fe-docker-publish.yml 2>/dev/null || echo "")
-      if [ "$FRONTEND_SHA" = "$MAIN_SHA" ] || [ -z "$MAIN_SHA" ]; then
-        IMAGE="ghcr.io/polecatworks/sward-warden-fe"
-        TAG="main"
-      else
+      HAS_UNCOMMITTED=$(git status --porcelain -- sw-fe-container/ .github/workflows/sw-fe-docker-publish.yml)
+      if [ -n "$HAS_UNCOMMITTED" ] || [ "$FRONTEND_SHA" != "$MAIN_SHA" ]; then
         IMAGE="ghcr.io/polecatworks/sward-warden-fe/dev"
         TAG="sha-$FRONTEND_SHA"
+      else
+        IMAGE="ghcr.io/polecatworks/sward-warden-fe"
+        TAG="main"
       fi
       if [ -n "$GARDEN_ACTION_OUTPUTS_JSON_PATH" ]; then
         echo "{\"image\": \"$IMAGE\", \"tag\": \"$TAG\"}" > "$GARDEN_ACTION_OUTPUTS_JSON_PATH"
