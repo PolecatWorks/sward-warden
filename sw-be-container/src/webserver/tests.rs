@@ -637,3 +637,35 @@ async fn test_x_jwt_payload_missing_dev_auth_disabled() {
 
     assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
 }
+
+#[tokio::test]
+async fn test_create_user_conflict_returns_error() {
+    let state = get_test_state();
+    let app = app_router(state.clone());
+
+    let token = generate_test_jwt(&state, 1, "admin");
+
+    // Attempting to post user with id 100 via create_user
+    let user_json = serde_json::json!({
+        "id": 100,
+        "name": "Original User",
+        "email": "conflict_user100@example.com",
+        "role": "user"
+    });
+
+    let res1 = app
+        .oneshot(
+            Request::builder()
+                .method("POST")
+                .uri("/v0/users")
+                .header("Authorization", format!("Bearer {}", token))
+                .header("Content-Type", "application/json")
+                .body(Body::from(user_json.to_string()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    // Route executes database query without ON CONFLICT clause
+    assert_eq!(res1.status(), StatusCode::INTERNAL_SERVER_ERROR);
+}
