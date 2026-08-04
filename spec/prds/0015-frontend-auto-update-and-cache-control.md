@@ -16,3 +16,7 @@ When a new version of the frontend application is deployed, existing open browse
 ### 3. Background Update Detection & Auto-Reload Service
 * Implement a dedicated frontend service (`VersionUpdateService`) that periodically checks for new updates (e.g. every 15 minutes and on window focus).
 * When a new version is downloaded and ready in the background, automatically apply the update cleanly (e.g. upon next navigation, idle state, or seamless reload) to ensure users are always running the latest application build.
+
+### 4. Testing Requirements
+* Due to the complexities of testing Service Worker lifecycle events (registration, update detection, and activation) in standard automated E2E environments (which typically run in dev mode or mock network conditions), full automated coverage for auto-updates is difficult and flaky.
+* A manual testing procedure must be maintained and executed to verify the end-to-end background update workflow. See `integration-tests/manual_test_service_worker.md` for the correct procedure.
