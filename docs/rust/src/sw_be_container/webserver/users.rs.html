@@ -53,7 +53,7 @@
 <a href=#53 id=53 data-nosnippet>53</a>    <span class="kw">let </span>new_user: User = <span class="kw">loop </span>{
 <a href=#54 id=54 data-nosnippet>54</a>        <span class="kw">if </span>user.id &gt; <span class="number">0 </span>{
 <a href=#55 id=55 data-nosnippet>55</a>            <span class="kw">let </span>inserted = sqlx::query_as::&lt;<span class="kw">_</span>, User&gt;(
-<a href=#56 id=56 data-nosnippet>56</a>                <span class="string">"INSERT INTO users (id, name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, keycloak_sub = COALESCE(users.keycloak_sub, EXCLUDED.keycloak_sub) RETURNING id, name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub, NULL AS modules"</span>,
+<a href=#56 id=56 data-nosnippet>56</a>                <span class="string">"INSERT INTO users (id, name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id, name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub, NULL AS modules"</span>,
 <a href=#57 id=57 data-nosnippet>57</a>            )
 <a href=#58 id=58 data-nosnippet>58</a>            .bind(user.id)
 <a href=#59 id=59 data-nosnippet>59</a>            .bind(<span class="kw-2">&amp;</span>user.name)
@@ -70,7 +70,7 @@
 <a href=#70 id=70 data-nosnippet>70</a>            <span class="kw">break </span>inserted;
 <a href=#71 id=71 data-nosnippet>71</a>        } <span class="kw">else </span>{
 <a href=#72 id=72 data-nosnippet>72</a>            <span class="kw">let </span>res = sqlx::query_as::&lt;<span class="kw">_</span>, User&gt;(
-<a href=#73 id=73 data-nosnippet>73</a>                <span class="string">"INSERT INTO users (name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name, keycloak_sub = COALESCE(users.keycloak_sub, EXCLUDED.keycloak_sub) RETURNING id, name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub, NULL AS modules"</span>,
+<a href=#73 id=73 data-nosnippet>73</a>                <span class="string">"INSERT INTO users (name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id, name, email, role, phone, description, is_suspended, client_log_level, keycloak_sub, NULL AS modules"</span>,
 <a href=#74 id=74 data-nosnippet>74</a>            )
 <a href=#75 id=75 data-nosnippet>75</a>            .bind(<span class="kw-2">&amp;</span>user.name)
 <a href=#76 id=76 data-nosnippet>76</a>            .bind(<span class="kw-2">&amp;</span>user.email)
