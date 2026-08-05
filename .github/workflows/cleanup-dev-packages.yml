@@ -25,7 +25,7 @@ jobs:
           image-names: ${{ steps.repo.outputs.repo_name }}-be/dev
           cut-off: 2 weeks ago UTC
           timestamp-to-use: updated_at
-          token: ${{ secrets.PAT_TOKEN != '' && secrets.PAT_TOKEN || github.token }}
+          token: ${{ github.token }}
 
       - name: Cleanup dev frontend packages older than 2 weeks
         uses: snok/container-retention-policy@v3.0.0
@@ -34,4 +34,4 @@ jobs:
           image-names: ${{ steps.repo.outputs.repo_name }}-fe/dev
           cut-off: 2 weeks ago UTC
           timestamp-to-use: updated_at
-          token: ${{ secrets.PAT_TOKEN != '' && secrets.PAT_TOKEN || github.token }}
+          token: ${{ github.token }}
