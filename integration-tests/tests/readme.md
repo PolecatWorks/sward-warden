@@ -16,6 +16,7 @@ The tests are organized into several logical suites:
 | [test_farm_flow.robot](file:///Users/bengreene/Development/polecatworks/sward-warden/integration-tests/tests/test_farm_flow.robot) | E2E (UI + API) | End-to-end creation and deletion of farms |
 | [test_field_flow.robot](file:///Users/bengreene/Development/polecatworks/sward-warden/integration-tests/tests/test_field_flow.robot) | E2E (UI + API) | End-to-end field creation and deletion under a parent farm |
 | [test_sward_movements.robot](file:///Users/bengreene/Development/polecatworks/sward-warden/integration-tests/tests/test_sward_movements.robot) | E2E (UI + API) | End-to-end sward movement registration and API validation |
+| [test_field_topology.robot](file:///Users/bengreene/Development/polecatworks/sward-warden/integration-tests/tests/test_field_topology.robot) | E2E (UI + API) | Spatial data mapping journey testing Polygon (Ballycastle search & draw), Point, and null geometry creation via API and UI map tools |
 
 ---
 

@@ -303,11 +303,11 @@ robot-test-keycloak: $(ROBOT_VENV)/bin/robot wait-all
 		$(ROBOT_TEST_DIR); \
 		rc=$$?; if [ -t 1 ]; then open $(ROBOT_REPORT_DIR)/log.html; fi; exit $$rc
 
-# Run a specific robot test file or test case (e.g. make robot-test-single TEST=test_field_topology_flow.robot)
+# Run a specific robot test file or test case (e.g. make robot-test-single TEST=test_field_topology.robot)
 .PHONY: robot-test-single
 robot-test-single: $(ROBOT_VENV)/bin/robot wait-all
 	@if [ -z "$(TEST)" ]; then \
-		echo "ERROR: Please specify the test file or test case name, e.g.: make robot-test-single TEST=test_field_topology_flow.robot"; \
+		echo "ERROR: Please specify the test file or test case name, e.g.: make robot-test-single TEST=test_field_topology.robot"; \
 		exit 1; \
 	fi
 	@echo "Running robot test: $(TEST)..."

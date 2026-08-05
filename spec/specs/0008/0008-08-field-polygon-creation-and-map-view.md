@@ -5,7 +5,7 @@ This specification details the implementation of an end-to-end integration test 
 
 Status: Complete
 
-## 2. Test Journey Steps (`integration-tests/tests/test_field_polygon.robot`)
+## 2. Test Journey Steps (`integration-tests/tests/test_field_topology.robot`)
 
 The robot test must perform the following actions:
 1.  **Setup**:
