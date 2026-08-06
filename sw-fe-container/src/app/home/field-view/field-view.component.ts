@@ -1,6 +1,6 @@
 import { HostListener } from '@angular/core';
 import { Component, OnInit } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { FarmManagementService } from '../../services/farm-management.service';
@@ -113,6 +113,7 @@ export class FieldViewComponent implements OnInit {
     private router: Router,
     private logger: LoggerService,
     private spatialService: SpatialService,
+    private location: Location,
   ) {}
 
   @HostListener('document:keydown.escape', ['$event'])
@@ -195,6 +196,8 @@ export class FieldViewComponent implements OnInit {
     this.originalEditFieldGeometry_geojson = this.field.geometry_geojson || '';
     this.errorMessage = null;
     this.showEditFieldModal = true;
+
+    this.location.replaceState(`/fields/${this.fieldId}/edit`);
   }
 
   // PRD Reference: 0003
@@ -236,9 +239,7 @@ export class FieldViewComponent implements OnInit {
     this.editFieldFarmId = 0;
     this.editFieldGeometry_geojson = '';
     this.errorMessage = null;
-    if (this.router.url.endsWith('/edit')) {
-      this.router.navigate(['/fields', this.fieldId]);
-    }
+    this.location.replaceState(`/fields/${this.fieldId}`);
   }
 
   // PRD Reference: 0003
