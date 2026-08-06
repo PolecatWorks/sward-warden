@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { combineLatest } from 'rxjs';
 import { FarmManagementService } from '../../services/farm-management.service';
@@ -43,6 +43,7 @@ export class FarmDetailComponent implements OnInit {
     private farmService: FarmManagementService,
     private rxdbService: RxdbService,
     private logger: LoggerService,
+    private location: Location,
   ) {}
 
   @HostListener('document:keydown.escape', ['$event'])
@@ -125,6 +126,8 @@ export class FarmDetailComponent implements OnInit {
     this.originalEditFarmPhoto = this.farm.photo || null;
     this.errorMessage = null;
     this.showEditFarmModal = true;
+
+    this.location.replaceState(`/farms/${this.farmId}/edit`);
   }
 
   // PRD Reference: 0003
@@ -142,9 +145,7 @@ export class FarmDetailComponent implements OnInit {
     this.editFarmName = '';
     this.editFarmLocation = '';
     this.editFarmPhoto = null;
-    if (this.router.url.endsWith('/edit')) {
-      this.router.navigate(['/farms', this.farmId]);
-    }
+    this.location.replaceState(`/farms/${this.farmId}`);
   }
 
   // PRD Reference: 0003
