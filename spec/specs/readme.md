@@ -63,6 +63,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0003-19 Farm List Editing and Creation Alignment Specification](./0003/0003-19-farm-list-editing-and-creation-alignment.md) | Complete | PRD 0003 |
 | [0003-20 Core Form Submission & Double Submit Prevention](./0003/0003-20-record-submission-prevention.md) | Complete | PRD 0003 |
 | [0003-21 First-Time Login User Profile Onboarding](./0003/0003-21-first-time-login-user-profile-onboarding.md) | Complete | PRD 0003 |
+| [0003-22 Restrict Delete Farm Button to Edit View](./0003/0003-22-delete-farm-in-edit-view.md) | Complete | PRD 0003 |
 | [0004-01 General Farm Records Specification](./0004/0004-01-general-farm-records.md) | Complete | PRD 0004 |
 | [0004-02 Fertiliser Application Records Specification](./0004/0004-02-fertiliser-application-records.md) | Complete | PRD 0004 |
 | [0004-03 Fertilisation Plan Specification](./0004/0004-03-fertilisation-plan.md) | Complete | PRD 0004 |

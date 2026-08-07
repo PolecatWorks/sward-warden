@@ -142,6 +142,7 @@ export class FarmDetailComponent implements OnInit {
   // PRD Reference: 0003
   closeEditFarmModal(): void {
     this.showEditFarmModal = false;
+    this.showDeleteConfirm = false;
     this.editFarmName = '';
     this.editFarmLocation = '';
     this.editFarmPhoto = null;
