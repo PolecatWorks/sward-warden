@@ -35,7 +35,7 @@ Since the majority of users manage a single farm, the application prioritizes a 
 
 ## 4. Field Management
 - **List & Card Layout:** Field list cards use the same visual pattern as farm cards, featuring a top image header (using `field.image_url` if available, otherwise a default agricultural landscape image), followed by a bottom drawer with the field name, area, and edit pencil icon (which stops click propagation and opens the edit modal). Clicking elsewhere on the card navigates to the field detail view (`/fields/:fieldId`). No separate "View Details" button is permitted. The list uses a responsive grid layout, expanding to utilize the full available screen width and displaying up to 3 cards per row on larger screens.
-- **Field Deletion:** Deletion is strictly isolated to the Field Detail page via a trash can icon and inline confirmation.
+- **Field Deletion:** Deletion is strictly isolated to the Field Detail page (`/fields/:fieldId`) while in the edit view (inside the edit modal) via a red trash can icon/button revealing an inline confirmation.
 - **Empty State:** Center-aligned empty state card with a prominent "Add Field" button. The empty state card must span the full page width and not be constrained by grid layouts to ensure consistent center alignment.
 - **Field Migration:** Users can edit field details and migrate a field to another farm via the Farm selector.
 - **Area Calculation:** When editing a field, a "Calculate Area" button is available next to the area input, which uses the field's polygon to suggest an area in hectares (converted from sq meters) by calling the backend.
