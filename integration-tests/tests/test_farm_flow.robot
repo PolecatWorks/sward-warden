@@ -60,7 +60,9 @@ Farm Creation and Deletion Flow - Save Button Click
     Go To    ${EXTERNAL_DNS_URL}/farms/${farm_id}
     Wait For Elements State    id=farm-name-heading    visible    timeout=5s
 
-    # 6. Click Delete Farm button to reveal confirmation panel
+    # 6. Click Edit Farm button to open edit modal and click Delete Farm button to reveal confirmation panel
+    Click    id=edit-farm-btn    button=left
+    Wait For Elements State    id=edit-farm-modal    visible    timeout=5s
     Click    button[data-testid="delete-farm-btn"]    button=left
     Wait For Elements State    id=delete-confirm-panel    visible    timeout=5s
 
@@ -140,7 +142,9 @@ Farm Creation and Deletion Flow - Enter Key
     Go To    ${EXTERNAL_DNS_URL}/farms/${farm_id}
     Wait For Elements State    id=farm-name-heading    visible    timeout=5s
 
-    # 7. Click Delete Farm button to reveal confirmation panel
+    # 7. Click Edit Farm button to open edit modal and click Delete Farm button to reveal confirmation panel
+    Click    id=edit-farm-btn    button=left
+    Wait For Elements State    id=edit-farm-modal    visible    timeout=5s
     Click    button[data-testid="delete-farm-btn"]    button=left
     Wait For Elements State    id=delete-confirm-panel    visible    timeout=5s
 
@@ -202,7 +206,9 @@ Farm Deletion Blocking and Field Migration Flow
     Go To    ${EXTERNAL_DNS_URL}/farms/${farm_a_id}
     Wait For Elements State    id=farm-name-heading    visible    timeout=5s
 
-    # 4. Verify Delete Farm button is disabled and warning is present
+    # 4. Open edit modal and verify Delete Farm button is disabled and warning is present
+    Click    id=edit-farm-btn    button=left
+    Wait For Elements State    id=edit-farm-modal    visible    timeout=5s
     Wait For Elements State    id=delete-farm-warning    visible    timeout=5s
     Get Element States    id=delete-farm-btn    contains    disabled
 
@@ -226,7 +232,9 @@ Farm Deletion Blocking and Field Migration Flow
     Go To    ${EXTERNAL_DNS_URL}/farms/${farm_a_id}
     Wait For Elements State    id=farm-name-heading    visible    timeout=5s
 
-    # 8. Verify Delete Farm button is now enabled and warning is gone
+    # 8. Open edit modal and verify Delete Farm button is now enabled and warning is gone
+    Click    id=edit-farm-btn    button=left
+    Wait For Elements State    id=edit-farm-modal    visible    timeout=5s
     Wait For Elements State    id=delete-farm-warning    detached    timeout=5s
     Get Element States    id=delete-farm-btn    not contains    disabled
 

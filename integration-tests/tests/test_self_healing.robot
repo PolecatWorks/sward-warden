@@ -63,6 +63,8 @@ Verify REST Fallback and Warning Banner on Database Failure
     # 9. Clean up: Delete the farm via the UI
     Go To    ${EXTERNAL_DNS_URL}/farms/${farm_id}?mock-db-fail-persistent=true
     Wait For Elements State    id=farm-name-heading    visible    timeout=5s
+    Click    id=edit-farm-btn    button=left
+    Wait For Elements State    id=edit-farm-modal    visible    timeout=5s
     Click    button[data-testid="delete-farm-btn"]    button=left
     Wait For Elements State    id=delete-confirm-panel    visible    timeout=5s
     Click    button[data-testid="confirm-delete-farm-btn"]    button=left
