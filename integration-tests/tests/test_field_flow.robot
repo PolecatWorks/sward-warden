@@ -65,7 +65,9 @@ Field Creation and Deletion Flow - Save Button Click
     Go To    ${EXTERNAL_DNS_URL}/fields/${field_id}
     Wait For Elements State    text=${field_name}    visible    timeout=5s
 
-    # 8. Click Delete Field to reveal confirmation panel
+    # 8. Click Edit Field button to open modal, then click Delete Field to reveal confirmation panel
+    Click    \#edit-field-btn    button=left
+    Wait For Elements State    id=edit-field-modal    visible    timeout=5s
     Click    \#delete-field-btn    button=left
     Wait For Elements State    id=delete-confirm-panel    visible    timeout=5s
 
@@ -151,7 +153,9 @@ Field Creation and Deletion Flow - Enter Key
     Go To    ${EXTERNAL_DNS_URL}/fields/${field_id}
     Wait For Elements State    text=${field_name}    visible    timeout=5s
 
-    # 8. Click Delete Field to reveal confirmation panel
+    # 8. Click Edit Field button to open modal, then click Delete Field to reveal confirmation panel
+    Click    \#edit-field-btn    button=left
+    Wait For Elements State    id=edit-field-modal    visible    timeout=5s
     Click    \#delete-field-btn    button=left
     Wait For Elements State    id=delete-confirm-panel    visible    timeout=5s
 

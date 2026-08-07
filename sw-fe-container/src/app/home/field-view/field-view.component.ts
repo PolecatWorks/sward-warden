@@ -233,6 +233,7 @@ export class FieldViewComponent implements OnInit {
   // PRD Reference: 0003
   closeEditFieldModal(): void {
     this.showEditFieldModal = false;
+    this.showDeleteConfirm = false;
     this.editFieldName = '';
     this.editFieldArea = 0;
     this.editFieldLandUse = 'grassland';
