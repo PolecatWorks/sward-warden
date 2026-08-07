@@ -130,6 +130,7 @@ The repository uses specific `Makefile` targets to coordinate builds and testing
 * `make helm-deploy` - Upgrades or installs the packaged Helm chart.
 * `make all` - Builds fe, be, and packages the Helm chart.
 
+
 # Garden
 
 Ensure `GHCR_TOKEN` is exported in your environment:
