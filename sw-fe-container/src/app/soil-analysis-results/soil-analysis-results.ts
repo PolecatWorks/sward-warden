@@ -15,6 +15,7 @@ import { SoilAnalysis } from '../models/soil-analysis';
 export class SoilAnalysisResults implements OnInit {
   fields: Field[] = [];
   analyses: SoilAnalysis[] = [];
+  editingId: number | undefined = undefined;
   newAnalysis: SoilAnalysis = {
     field_id: 0,
     sample_date: new Date().toISOString().split('T')[0],
@@ -35,28 +36,50 @@ export class SoilAnalysisResults implements OnInit {
       .subscribe((analyses) => (this.analyses = analyses));
   }
 
+  resetForm(): void {
+    this.editingId = undefined;
+    this.newAnalysis = {
+      field_id: 0,
+      sample_date: new Date().toISOString().split('T')[0],
+      ph_level: undefined,
+      phosphorus_index: undefined,
+      potassium_index: undefined,
+      magnesium_index: undefined,
+    };
+  }
+
+  editAnalysis(analysis: SoilAnalysis): void {
+    this.editingId = analysis.id;
+    this.newAnalysis = { ...analysis };
+  }
+
+  cancelEdit(): void {
+    this.resetForm();
+  }
+
   // No obvious PRD requirement
-  addAnalysis(): void {
+  saveAnalysis(): void {
     if (this.newAnalysis.field_id > 0 && this.newAnalysis.sample_date) {
-      this.farmService.addSoilAnalysis(this.newAnalysis).subscribe(() => {
-        this.loadData();
-        this.newAnalysis = {
-          field_id: 0,
-          sample_date: new Date().toISOString().split('T')[0],
-          ph_level: undefined,
-          phosphorus_index: undefined,
-          potassium_index: undefined,
-          magnesium_index: undefined,
-        };
-      });
+      if (this.editingId) {
+        this.farmService.updateSoilAnalysis(this.newAnalysis).subscribe(() => {
+          this.loadData();
+          this.resetForm();
+        });
+      } else {
+        this.farmService.addSoilAnalysis(this.newAnalysis).subscribe(() => {
+          this.loadData();
+          this.resetForm();
+        });
+      }
     }
   }
 
   // No obvious PRD requirement
-  deleteAnalysis(id: number | undefined): void {
-    if (id) {
-      this.farmService.deleteEntity('soil_analyses', id).subscribe(() => {
+  deleteAnalysis(): void {
+    if (this.editingId) {
+      this.farmService.deleteEntity('soil_analyses', this.editingId).subscribe(() => {
         this.loadData();
+        this.resetForm();
       });
     }
   }

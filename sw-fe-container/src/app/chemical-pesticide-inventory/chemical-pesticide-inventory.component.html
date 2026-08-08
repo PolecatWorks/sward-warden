@@ -91,21 +91,33 @@
           </div>
         </div>
 
-        <div class="md:col-span-2 flex justify-end gap-2 mt-4">
-          <button
-            type="button"
-            (click)="closeForm()"
-            class="px-4 py-2 text-primary font-semibold hover:bg-surface-variant rounded-md transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            [disabled]="!chemicalForm.valid"
-            class="px-4 py-2 bg-primary text-white font-semibold rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
-          >
-            Save
-          </button>
+        <div class="md:col-span-2 flex justify-between gap-2 mt-4">
+          <div>
+            <button
+              *ngIf="editingId"
+              type="button"
+              (click)="deleteChemical(editingId)"
+              class="px-4 py-2 text-error font-semibold hover:bg-error/10 rounded-md transition-colors flex items-center gap-1"
+            >
+              <span class="material-symbols-outlined text-sm">delete</span> Delete
+            </button>
+          </div>
+          <div class="flex gap-2">
+            <button
+              type="button"
+              (click)="closeForm()"
+              class="px-4 py-2 text-primary font-semibold hover:bg-surface-variant rounded-md transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              [disabled]="!chemicalForm.valid"
+              class="px-4 py-2 bg-primary text-white font-semibold rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
+            >
+              Save
+            </button>
+          </div>
         </div>
       </form>
     </div>
@@ -178,13 +190,6 @@
                 title="Edit"
               >
                 <span class="material-symbols-outlined text-sm">edit</span>
-              </button>
-              <button
-                (click)="deleteChemical(chem.id)"
-                class="p-2 text-error hover:text-error/80 transition-colors"
-                title="Delete"
-              >
-                <span class="material-symbols-outlined text-sm">delete</span>
               </button>
             </div>
           </div>

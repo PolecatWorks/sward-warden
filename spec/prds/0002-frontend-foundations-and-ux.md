@@ -29,6 +29,7 @@ All user-facing modules must adhere to a premium design system:
 - **Navigation State Visibility:** Navigation items must be visibly distinct based on availability. Available items must be fully visible (solid colors, full opacity), while unavailable modules (e.g., unsubscribed features) must remain in the UI but be styled in a greyed-out/disabled state, rather than being completely hidden.
 - **Micro-Animations:** Subtle interactions (e.g., `scale-95` on active states, hover transitions).
 - **Glassmorphism:** Bottom navigation bar with `backdrop-blur`.
+- **Deletion Policy:** Deletion is only available from the edit form. It should not be possible to delete items unless you are on the edit view for that specific item.
 
 ## 3. Responsive Design
 The application must scale gracefully across all device form factors (Mobile, Tablet, Desktop).
