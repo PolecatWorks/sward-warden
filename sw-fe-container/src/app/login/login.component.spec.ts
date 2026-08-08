@@ -16,7 +16,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { DevAuthApiService } from '../services/dev-auth-api.service';
 
 // No obvious PRD requirement
-xdescribe('LoginComponent', () => {
+describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
   let mockFarmService: jasmine.SpyObj<FarmManagementService>;
@@ -31,7 +31,8 @@ xdescribe('LoginComponent', () => {
       'addUser',
       'deleteUser',
     ]);
-    mockAuthService = jasmine.createSpyObj('AuthService', ['login', 'logout']);
+    mockAuthService = jasmine.createSpyObj('AuthService', ['login', 'logout', 'isLoggedIn', 'initCodeFlow']);
+    mockAuthService.isLoggedIn.and.returnValue(false);
     mockRouter = jasmine.createSpyObj('Router', ['navigate']);
     mockDevAuthApi = jasmine.createSpyObj('DevAuthApiService', ['getToken']);
     mockDevAuthApi.getToken.and.returnValue(of({ access_token: 'fake-token' }));
@@ -252,13 +253,13 @@ xdescribe('LoginComponent', () => {
       role: 'user',
     };
 
-    component.deleteUser(event, userToDelete);
+    component.deleteUser(event, userToDelete.id);
 
     // No obvious PRD requirement
     expect(event.stopPropagation).toHaveBeenCalled();
     // No obvious PRD requirement
     expect(window.confirm).toHaveBeenCalledWith(
-      jasmine.stringContaining('delete the user "Alice"'),
+      'Are you sure you want to delete this user? This will delete all of their farms, fields, and records.',
     );
     // No obvious PRD requirement
     expect(mockFarmService.deleteUser).toHaveBeenCalledWith(1);
@@ -284,7 +285,7 @@ xdescribe('LoginComponent', () => {
       role: 'user',
     };
 
-    component.deleteUser(event, userToDelete);
+    component.deleteUser(event, userToDelete.id);
 
     // No obvious PRD requirement
     expect(event.stopPropagation).toHaveBeenCalled();

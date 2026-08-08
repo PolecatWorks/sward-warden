@@ -649,6 +649,50 @@ export class FarmManagementService {
     );
   }
 
+  /** Update a soil analysis in the local RxDB database and queue an outbox entry. */
+  updateSoilAnalysis(analysis: SoilAnalysis): Observable<SoilAnalysis> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap((apiUrl) =>
+          this.http.put<SoilAnalysis>(
+            `${apiUrl}/soil_analyses/${analysis.id}`,
+            analysis,
+            { headers: this.getHeaders() },
+          ),
+        ),
+      );
+    }
+
+    const updates: any = {
+      field_id: analysis.field_id,
+      sample_date: analysis.sample_date,
+      ph_level: analysis.ph_level,
+      phosphorus_index: analysis.phosphorus_index,
+      potassium_index: analysis.potassium_index,
+      magnesium_index: analysis.magnesium_index,
+    };
+
+    return this.rxdbService.db$.pipe(
+      switchMap((db) => {
+        return from(db.soil_analyses.findOne({
+          selector: { serverId: analysis.id }
+        }).exec()).pipe(
+          switchMap((doc: any) => {
+            if (!doc) throw new Error('Soil analysis not found');
+            return this.updateEntity<SoilAnalysisDocType, SoilAnalysis>(
+              'soil_analyses',
+              doc.id,
+              analysis.id,
+              updates,
+              updates,
+              (d) => this.soilAnalysisDocToModel(d)
+            );
+          })
+        );
+      })
+    );
+  }
+
   /** Add a soil analysis to the local RxDB database and queue an outbox entry. */
   // PRD Reference: 0003
   addSoilAnalysis(analysis: SoilAnalysis): Observable<SoilAnalysis> {
@@ -708,6 +752,51 @@ export class FarmManagementService {
       ),
       // PRD Reference: 0003
       map((docs) => docs.map((doc) => this.fertilisationPlanDocToModel(doc))),
+    );
+  }
+
+  /** Update a fertilisation plan in the local RxDB database and queue an outbox entry. */
+  updateFertilisationPlan(plan: FertilisationPlan): Observable<FertilisationPlan> {
+    if (this.rxdbService.fallbackToRest$.value) {
+      return this.apiUrl$.pipe(
+        switchMap((apiUrl) =>
+          this.http.put<FertilisationPlan>(
+            `${apiUrl}/fertilisation_plans/${plan.id}`,
+            plan,
+            { headers: this.getHeaders() },
+          ),
+        ),
+      );
+    }
+
+    const updates: any = {
+      field_id: plan.field_id,
+      crop_type: plan.crop_type,
+      target_yield: plan.target_yield,
+      nitrogen_requirement: plan.nitrogen_requirement,
+      phosphorus_requirement: plan.phosphorus_requirement,
+      potassium_requirement: plan.potassium_requirement,
+      application_date: plan.application_date,
+    };
+
+    return this.rxdbService.db$.pipe(
+      switchMap((db) => {
+        return from(db.fertilisation_plans.findOne({
+          selector: { serverId: plan.id }
+        }).exec()).pipe(
+          switchMap((doc: any) => {
+            if (!doc) throw new Error('Fertilisation plan not found');
+            return this.updateEntity<FertilisationPlanDocType, FertilisationPlan>(
+              'fertilisation_plans',
+              doc.id,
+              plan.id,
+              updates,
+              updates,
+              (d) => this.fertilisationPlanDocToModel(d)
+            );
+          })
+        );
+      })
     );
   }
 

@@ -182,6 +182,7 @@ export class ChemicalPesticideInventoryComponent implements OnInit, OnDestroy {
     if (confirm('Are you sure you want to delete this product?')) {
       try {
         await this.inventoryService.deleteChemical(id);
+        this.closeForm();
       } catch (err) {
         this.logger.error('Failed to delete chemical', err);
       }

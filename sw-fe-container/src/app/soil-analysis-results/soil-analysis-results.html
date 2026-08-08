@@ -2,8 +2,8 @@
   <h2 class="text-2xl font-bold mb-6">Soil Analysis Results</h2>
 
   <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-8">
-    <h3 class="text-lg font-semibold mb-4">Record New Analysis</h3>
-    <form (ngSubmit)="addAnalysis()" #analysisForm="ngForm" class="space-y-4">
+    <h3 class="text-lg font-semibold mb-4">{{ editingId ? 'Edit Analysis' : 'Record New Analysis' }}</h3>
+    <form (ngSubmit)="saveAnalysis()" #analysisForm="ngForm" class="space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Field</label>
@@ -33,9 +33,21 @@
           <input type="number" [(ngModel)]="newAnalysis.magnesium_index" name="magnesium_index" class="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
         </div>
       </div>
-      <button type="submit" [disabled]="!analysisForm.form.valid || newAnalysis.field_id === 0" class="mt-4 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50">
-        Save Analysis
-      </button>
+      <div class="flex justify-between items-center mt-4">
+        <div>
+          <button *ngIf="editingId" type="button" (click)="deleteAnalysis()" class="text-red-600 hover:text-red-900 px-4 py-2 font-medium">
+            Delete Analysis
+          </button>
+        </div>
+        <div class="flex gap-2">
+          <button *ngIf="editingId" type="button" (click)="cancelEdit()" class="text-gray-600 hover:text-gray-900 px-4 py-2 font-medium">
+            Cancel
+          </button>
+          <button type="submit" [disabled]="!analysisForm.form.valid || newAnalysis.field_id === 0" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50">
+            Save Analysis
+          </button>
+        </div>
+      </div>
     </form>
   </div>
 
@@ -61,7 +73,7 @@
           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ analysis.potassium_index !== null ? analysis.potassium_index : '-' }}</td>
           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ analysis.magnesium_index !== null ? analysis.magnesium_index : '-' }}</td>
           <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-            <button (click)="deleteAnalysis(analysis.id)" class="text-red-600 hover:text-red-900">Delete</button>
+            <button (click)="editAnalysis(analysis)" class="text-indigo-600 hover:text-indigo-900">Edit</button>
           </td>
         </tr>
         <tr *ngIf="analyses.length === 0">

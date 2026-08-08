@@ -90,13 +90,20 @@
         <label for="is_covered" class="text-sm font-medium text-on-surface">Is this facility covered? (Prevents rainfall accumulation)</label>
       </div>
 
-      <div class="flex justify-end gap-3 mt-6">
-        <button type="button" (click)="cancelForm()" class="px-4 py-2 rounded-full font-semibold text-on-surface-variant hover:bg-surface-variant transition-colors">
-          Cancel
-        </button>
-        <button type="submit" [disabled]="storageForm.invalid" class="bg-primary text-white px-6 py-2 rounded-full font-bold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-          Save
-        </button>
+      <div class="flex justify-between gap-3 mt-6">
+        <div>
+          <button *ngIf="editingId" type="button" (click)="deleteStorage(editingId)" class="px-4 py-2 rounded-full font-semibold text-error hover:bg-error-container transition-colors flex items-center gap-1">
+            <span class="material-symbols-outlined text-sm">delete</span> Delete
+          </button>
+        </div>
+        <div class="flex gap-3">
+          <button type="button" (click)="cancelForm()" class="px-4 py-2 rounded-full font-semibold text-on-surface-variant hover:bg-surface-variant transition-colors">
+            Cancel
+          </button>
+          <button type="submit" [disabled]="storageForm.invalid" class="bg-primary text-white px-6 py-2 rounded-full font-bold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            Save
+          </button>
+        </div>
       </div>
     </form>
   </div>
@@ -144,9 +151,6 @@
         </span>
         <button (click)="startEdit(storage)" class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-variant rounded-full transition-colors tooltip" title="Edit">
           <span class="material-symbols-outlined">edit</span>
-        </button>
-        <button (click)="deleteStorage(storage.id)" class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container rounded-full transition-colors tooltip" title="Delete">
-          <span class="material-symbols-outlined">delete</span>
         </button>
       </div>
 

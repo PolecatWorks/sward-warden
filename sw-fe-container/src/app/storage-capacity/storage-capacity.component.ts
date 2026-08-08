@@ -290,5 +290,7 @@ export class StorageCapacityComponent implements OnInit, OnDestroy {
         });
       }
     }
+
+    this.cancelForm();
   }
 }
