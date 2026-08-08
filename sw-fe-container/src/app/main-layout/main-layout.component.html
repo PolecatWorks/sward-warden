@@ -123,34 +123,34 @@
 
     <!-- Bottom Navigation (Mobile Only) -->
     <nav class="fixed bottom-0 left-0 w-full z-50 bg-[#faf9f5]/80 dark:bg-[#1a1c1a]/80 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,0,0,0.06)] rounded-t-2xl lg:hidden">
-      <div class="flex justify-around items-center px-4 py-3 pb-safe max-w-2xl mx-auto">
+      <div class="flex justify-between items-center px-2 py-3 pb-safe w-full">
         <a routerLink="/home" routerLinkActive="nav-active"
-           class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
+           class="nav-item flex-1 flex flex-col items-center justify-center px-1 py-2 rounded-xl transition-all duration-200">
           <span class="material-symbols-outlined nav-icon">home</span>
-          <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Home</span>
+          <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-tight mt-1 truncate max-w-full text-center">Home</span>
         </a>
         <a routerLink="/fields" routerLinkActive="nav-active"
-           class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
+           class="nav-item flex-1 flex flex-col items-center justify-center px-1 py-2 rounded-xl transition-all duration-200">
           <span class="material-symbols-outlined nav-icon">format_list_bulleted</span>
-          <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Fields</span>
+          <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-tight mt-1 truncate max-w-full text-center">Fields</span>
         </a>
         <a routerLink="/farms" routerLinkActive="nav-active"
-           class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
+           class="nav-item flex-1 flex flex-col items-center justify-center px-1 py-2 rounded-xl transition-all duration-200">
           <span class="material-symbols-outlined nav-icon">agriculture</span>
-          <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Farms</span>
+          <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-tight mt-1 truncate max-w-full text-center">Farms</span>
         </a>
         <a routerLink="/inventory" routerLinkActive="nav-active"
-           class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
+           class="nav-item flex-1 flex flex-col items-center justify-center px-1 py-2 rounded-xl transition-all duration-200">
           <span class="material-symbols-outlined nav-icon">inventory_2</span>
-          <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Inventory</span>
+          <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-tight mt-1 truncate max-w-full text-center">Inventory</span>
         </a>
         <a [routerLink]="(currentUser$ | async)?.modules?.includes('reports_and_analysis') ? '/reporting' : null"
            routerLinkActive="nav-active"
            [class.disabled]="!(currentUser$ | async)?.modules?.includes('reports_and_analysis')"
            [attr.title]="!(currentUser$ | async)?.modules?.includes('reports_and_analysis') ? 'Module not subscribed' : null"
-           class="nav-item flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-200">
+           class="nav-item flex-1 flex flex-col items-center justify-center px-1 py-2 rounded-xl transition-all duration-200">
           <span class="material-symbols-outlined nav-icon">summarize</span>
-          <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-widest mt-1">Reporting</span>
+          <span class="nav-label font-['Work_Sans'] font-medium text-[10px] uppercase tracking-tight mt-1 truncate max-w-full text-center">Reporting</span>
         </a>
       </div>
     </nav>
