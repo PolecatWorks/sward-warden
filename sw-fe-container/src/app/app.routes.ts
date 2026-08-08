@@ -84,10 +84,16 @@ export const routes: Routes = [
       // ── Inventory & Equipment (parent + children) ──
       { path: 'inventory', component: InventoryAndEquipmentComponent },
       { path: 'inventory/storage', component: StorageCapacityComponent },
+      { path: 'inventory/storage/new', component: StorageCapacityComponent },
+      { path: 'inventory/storage/:id/edit', component: StorageCapacityComponent },
+      { path: 'inventory/storage/:id', component: StorageCapacityComponent },
       {
         path: 'inventory/chemical',
         component: ChemicalPesticideInventoryComponent,
       },
+      { path: 'inventory/chemical/new', component: ChemicalPesticideInventoryComponent },
+      { path: 'inventory/chemical/:id/edit', component: ChemicalPesticideInventoryComponent },
+      { path: 'inventory/chemical/:id', component: ChemicalPesticideInventoryComponent },
       { path: 'inventory/equipment', component: EquipmentTrackingComponent },
       {
         path: 'inventory/contracts',
