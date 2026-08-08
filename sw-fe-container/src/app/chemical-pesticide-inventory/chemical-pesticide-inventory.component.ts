@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule, Location } from '@angular/common';
+import { RouterLink, ActivatedRoute } from '@angular/router';
 import {
   ReactiveFormsModule,
   FormBuilder,
@@ -8,8 +8,8 @@ import {
   Validators,
   FormsModule,
 } from '@angular/forms';
-import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, BehaviorSubject, combineLatest, Subscription } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 import { InventoryChemicalsService } from '../services/inventory-chemicals.service';
 import { InventoryChemicalDocType } from '../services/rxdb/schemas';
 import { LoggerService } from '../services/logger.service';
@@ -21,7 +21,7 @@ import { LoggerService } from '../services/logger.service';
   templateUrl: './chemical-pesticide-inventory.component.html',
   styleUrl: './chemical-pesticide-inventory.component.css',
 })
-export class ChemicalPesticideInventoryComponent implements OnInit {
+export class ChemicalPesticideInventoryComponent implements OnInit, OnDestroy {
   chemicals$!: Observable<InventoryChemicalDocType[]>;
   filteredChemicals$!: Observable<InventoryChemicalDocType[]>;
   showForm = false;
@@ -29,6 +29,7 @@ export class ChemicalPesticideInventoryComponent implements OnInit {
   editingId: string | null = null;
 
   searchQuery$ = new BehaviorSubject<string>('');
+  private subs = new Subscription();
 
   get searchQuery(): string {
     return this.searchQuery$.value;
@@ -42,6 +43,8 @@ export class ChemicalPesticideInventoryComponent implements OnInit {
     private inventoryService: InventoryChemicalsService,
     private fb: FormBuilder,
     private logger: LoggerService,
+    private route: ActivatedRoute,
+    private location: Location,
   ) {}
 
   // PRD Reference: 0006
@@ -60,6 +63,37 @@ export class ChemicalPesticideInventoryComponent implements OnInit {
       })
     );
     this.initForm();
+    this.processInitialRoute();
+  }
+
+  private processInitialRoute(): void {
+    this.subs.add(
+      this.route.paramMap.subscribe(params => {
+        const id = params.get('id');
+        this.subs.add(
+          this.route.url.subscribe(urlSegments => {
+            const url = urlSegments.map(s => s.path).join('/');
+
+            if (url.includes('new')) {
+              this.openAddForm(true);
+            } else if (id) {
+              this.subs.add(
+                this.chemicals$.pipe(take(1)).subscribe(chemicals => {
+                  const chemical = chemicals.find(c => c.id === id);
+                  if (chemical) {
+                    this.openEditForm(chemical, true);
+                  }
+                })
+              );
+            }
+          })
+        );
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
   }
 
   // PRD Reference: 0006
@@ -75,14 +109,17 @@ export class ChemicalPesticideInventoryComponent implements OnInit {
   }
 
   // PRD Reference: 0006
-  openAddForm(): void {
+  openAddForm(fromRoute = false): void {
     this.showForm = true;
     this.editingId = null;
     this.chemicalForm.reset({ unit: 'Litres' });
+    if (!fromRoute) {
+      this.location.replaceState('/inventory/chemical/new');
+    }
   }
 
   // PRD Reference: 0006
-  openEditForm(chemical: InventoryChemicalDocType): void {
+  openEditForm(chemical: InventoryChemicalDocType, fromRoute = false): void {
     this.showForm = true;
     this.editingId = chemical.id;
     this.chemicalForm.patchValue({
@@ -93,12 +130,16 @@ export class ChemicalPesticideInventoryComponent implements OnInit {
       unit: chemical.unit,
       farm_id: chemical.farm_id,
     });
+    if (!fromRoute) {
+      this.location.replaceState(`/inventory/chemical/${chemical.id}/edit`);
+    }
   }
 
   // PRD Reference: 0006
   closeForm(): void {
     this.showForm = false;
     this.editingId = null;
+    this.location.replaceState('/inventory/chemical');
   }
 
   // PRD Reference: 0006

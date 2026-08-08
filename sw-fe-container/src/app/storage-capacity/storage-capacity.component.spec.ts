@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
-
 import { StorageCapacityComponent } from './storage-capacity.component';
+import { of } from 'rxjs';
 
 // No obvious PRD requirement
 describe('StorageCapacityComponent', () => {
@@ -11,7 +11,16 @@ describe('StorageCapacityComponent', () => {
   // No obvious PRD requirement
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      providers: [{ provide: ActivatedRoute, useValue: {} }, provideRouter([])],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            paramMap: of(new Map()),
+            url: of([])
+          }
+        },
+        provideRouter([])
+      ],
       imports: [StorageCapacityComponent],
     }).compileComponents();
 

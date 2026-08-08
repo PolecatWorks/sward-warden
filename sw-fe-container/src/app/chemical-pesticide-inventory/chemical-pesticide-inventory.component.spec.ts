@@ -4,6 +4,7 @@ import { ActivatedRoute, provideRouter } from '@angular/router';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ChemicalPesticideInventoryComponent } from './chemical-pesticide-inventory.component';
 import { APP_CONFIG } from '../app-config';
+import { of } from 'rxjs';
 
 // PRD Reference: 0006
 describe('ChemicalPesticideInventoryComponent', () => {
@@ -14,7 +15,13 @@ describe('ChemicalPesticideInventoryComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [
-        { provide: ActivatedRoute, useValue: {} },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            paramMap: of(new Map()),
+            url: of([])
+          }
+        },
         // PRD Reference: 0006
         provideRouter([]),
         { provide: APP_CONFIG, useValue: { apiPath: "/v0", logLevel: "DEBUG" } },

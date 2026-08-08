@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { CommonModule, Location } from '@angular/common';
+import { RouterLink, ActivatedRoute } from '@angular/router';
 import {
   FormBuilder,
   FormGroup,
@@ -33,6 +33,8 @@ export class StorageCapacityComponent implements OnInit, OnDestroy {
   constructor(
     private rxdbService: RxdbService,
     private fb: FormBuilder,
+    private route: ActivatedRoute,
+    private location: Location,
   ) {
     this.storageForm = this.fb.group({
       name: ['', Validators.required],
@@ -92,6 +94,8 @@ export class StorageCapacityComponent implements OnInit, OnDestroy {
 
   // No obvious PRD requirement
   ngOnInit() {
+    let initialRouteProcessed = false;
+
     this.subs.add(
       this.rxdbService.db$.subscribe((db) => {
         this.db = db;
@@ -100,6 +104,12 @@ export class StorageCapacityComponent implements OnInit, OnDestroy {
         this.subs.add(
           db.inventory_storage.find().$.subscribe((storages) => {
             this.storages = storages;
+
+            // Process initial route after storages are loaded
+            if (!initialRouteProcessed) {
+              initialRouteProcessed = true;
+              this.processInitialRoute();
+            }
           }),
         );
 
@@ -111,6 +121,23 @@ export class StorageCapacityComponent implements OnInit, OnDestroy {
         );
       }),
     );
+  }
+
+  private processInitialRoute() {
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      this.route.url.subscribe(urlSegments => {
+        const url = urlSegments.map(s => s.path).join('/');
+        if (url.includes('new')) {
+          this.startAdd(true);
+        } else if (id) {
+          const storage = this.storages.find(s => s.id === id);
+          if (storage) {
+            this.startEdit(storage, true);
+          }
+        }
+      });
+    });
   }
 
   // No obvious PRD requirement
@@ -126,7 +153,7 @@ export class StorageCapacityComponent implements OnInit, OnDestroy {
   }
 
   // No obvious PRD requirement
-  startAdd() {
+  startAdd(fromRoute = false) {
     this.isAdding = true;
     this.editingId = null;
     this.storageForm.reset({
@@ -138,10 +165,13 @@ export class StorageCapacityComponent implements OnInit, OnDestroy {
       is_covered: false,
       farm_id: null,
     });
+    if (!fromRoute) {
+      this.location.replaceState('/inventory/storage/new');
+    }
   }
 
   // No obvious PRD requirement
-  startEdit(storage: InventoryStorageDocType) {
+  startEdit(storage: InventoryStorageDocType, fromRoute = false) {
     this.isAdding = false;
     this.editingId = storage.id;
     const currentVol = storage.current_volume || 0;
@@ -157,6 +187,9 @@ export class StorageCapacityComponent implements OnInit, OnDestroy {
       is_covered: storage.is_covered,
       farm_id: storage.farm_id,
     });
+    if (!fromRoute) {
+      this.location.replaceState(`/inventory/storage/${storage.id}/edit`);
+    }
   }
 
   // No obvious PRD requirement
@@ -164,6 +197,7 @@ export class StorageCapacityComponent implements OnInit, OnDestroy {
     this.isAdding = false;
     this.editingId = null;
     this.storageForm.reset();
+    this.location.replaceState('/inventory/storage');
   }
 
   // No obvious PRD requirement
