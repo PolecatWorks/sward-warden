@@ -90,17 +90,20 @@ Storage Capacity E2E Flow
     END
     Should Be Equal As Integers    ${found_enter_count}    1    Expected exactly 1 storage for enter key submit, but found ${found_enter_count}
 
-    # Cleanup enter key storage
+    # Cleanup enter key storage (Delete operation is now in edit view)
+    Click    css=.bg-surface-container-lowest:has(h3:has-text("${lagoon_name_enter}")) button[title="Edit"]    button=left
     ${promise_enter}=    Promise To    Wait For Alert    action=accept
-    Click    css=.bg-surface-container-lowest:has(h3:has-text("${lagoon_name_enter}")) button[title="Delete"]    button=left
+    Click    button:has-text("Delete")    button=left
     Wait For    ${promise_enter}
     Wait For Elements State    text=${lagoon_name_enter}    detached    timeout=5s
     Sleep    3s
 
     # 5. Delete storage
+    # Open edit view first as delete button is inside edit mode
+    Click    css=.bg-surface-container-lowest:has(h3:has-text("${lagoon_name}")) button[title="Edit"]    button=left
     # Handle JS confirm dialog before clicking
     ${promise}=    Promise To    Wait For Alert    action=accept
-    Click    css=.bg-surface-container-lowest:has(h3:has-text("${lagoon_name}")) button[title="Delete"]    button=left
+    Click    button:has-text("Delete")    button=left
     Wait For    ${promise}
 
     # Verify removal from UI
