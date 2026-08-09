@@ -90,7 +90,7 @@ jobs:
 
           if [[ "${{ needs.check-paths.outputs.backend }}" == "true" ]]; then
             BACKEND_SHA=$(git log -1 --format=%H -- sw-be-container/ .github/workflows/sw-be-docker-publish.yml)
-            echo "SW_BE_IMAGE=ghcr.io/${REPO_LOWER}-be/dev" >> $GITHUB_ENV
+            echo "SW_BE_IMAGE=ghcr.io/${REPO_LOWER}-be" >> $GITHUB_ENV
             echo "SW_BE_TAG=sha-$BACKEND_SHA" >> $GITHUB_ENV
           else
             echo "SW_BE_IMAGE=ghcr.io/${REPO_LOWER}-be" >> $GITHUB_ENV
@@ -99,7 +99,7 @@ jobs:
 
           if [[ "${{ needs.check-paths.outputs.frontend }}" == "true" ]]; then
             FRONTEND_SHA=$(git log -1 --format=%H -- sw-fe-container/ .github/workflows/sw-fe-docker-publish.yml)
-            echo "SW_FE_IMAGE=ghcr.io/${REPO_LOWER}-fe/dev" >> $GITHUB_ENV
+            echo "SW_FE_IMAGE=ghcr.io/${REPO_LOWER}-fe" >> $GITHUB_ENV
             echo "SW_FE_TAG=sha-$FRONTEND_SHA" >> $GITHUB_ENV
           else
             echo "SW_FE_IMAGE=ghcr.io/${REPO_LOWER}-fe" >> $GITHUB_ENV

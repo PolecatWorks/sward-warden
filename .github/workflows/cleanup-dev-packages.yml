@@ -18,29 +18,6 @@ jobs:
           echo "repo_name=$REPO_NAME" >> $GITHUB_ENV
           echo "repo_name=$REPO_NAME" >> $GITHUB_OUTPUT
 
-      - name: Cleanup dev backend packages older than 2 weeks
-        uses: snok/container-retention-policy@v2.2.1
-        with:
-          account-type: org
-          org-name: ${{ github.repository_owner }}
-          image-names: ${{ steps.repo.outputs.repo_name }}-be/dev
-          cut-off: 2 weeks ago UTC
-          timestamp-to-use: updated_at
-          keep-at-least: 1
-          token: ${{ secrets.GITHUB_TOKEN }}
-          token-type: github-token
-
-      - name: Cleanup dev frontend packages older than 2 weeks
-        uses: snok/container-retention-policy@v2.2.1
-        with:
-          account-type: org
-          org-name: ${{ github.repository_owner }}
-          image-names: ${{ steps.repo.outputs.repo_name }}-fe/dev
-          cut-off: 2 weeks ago UTC
-          timestamp-to-use: updated_at
-          keep-at-least: 1
-          token: ${{ secrets.GITHUB_TOKEN }}
-          token-type: github-token
 
       - name: Cleanup main backend packages older than 2 weeks (excluding release tags)
         uses: snok/container-retention-policy@v2.2.1
