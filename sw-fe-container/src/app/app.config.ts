@@ -14,8 +14,9 @@ import { provideServiceWorker } from '@angular/service-worker';
 import { APP_CONFIG, AppConfig } from './app-config';
 import { devAuthInterceptor } from './services/dev-auth.interceptor';
 import { provideOAuthClient, OAuthService, AuthConfig, OAuthStorage } from 'angular-oauth2-oidc';
+import { LoggerService } from './services/logger.service';
 
-export function initializeOAuth(oauthService: OAuthService, config: AppConfig) {
+export function initializeOAuth(oauthService: OAuthService, config: AppConfig, logger: LoggerService) {
   return () => {
     if (config.auth) {
       const authConfig: AuthConfig = {
@@ -37,11 +38,11 @@ export function initializeOAuth(oauthService: OAuthService, config: AppConfig) {
       return oauthService
         .loadDiscoveryDocumentAndTryLogin()
         .then((result) => {
-          console.log('OAuth discovery & login result:', result, 'Has token:', oauthService.hasValidAccessToken(), 'Claims:', oauthService.getIdentityClaims());
+          logger.log('OAuth discovery & login result:', result, 'Has token:', oauthService.hasValidAccessToken(), 'Claims:', oauthService.getIdentityClaims());
           return true;
         })
         .catch((err) => {
-          console.error('OAuth discovery & login error:', err);
+          logger.error('OAuth discovery & login error:', err);
           return true;
         });
     }
@@ -69,7 +70,7 @@ export const createAppConfig = (config: AppConfig): ApplicationConfig => ({
     {
       provide: APP_INITIALIZER,
       useFactory: initializeOAuth,
-      deps: [OAuthService, APP_CONFIG],
+      deps: [OAuthService, APP_CONFIG, LoggerService],
       multi: true,
     },
   ],
