@@ -1,4 +1,4 @@
-<div class="px-6 pt-4 w-full mx-auto">
+<div class="px-6 pt-4 w-full mx-auto overflow-hidden">
   <div *ngIf="field; else loadingTemplate">
     <a
       [routerLink]="['/farms', field.farm_id, 'fields']"
