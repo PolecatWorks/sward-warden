@@ -22,7 +22,7 @@ import { GeoSearchControl, EsriProvider } from 'leaflet-geosearch';
   imports: [CommonModule],
   template: `
     <div
-      class="map-container relative w-full h-[400px] border border-outline rounded-md overflow-hidden"
+      class="map-container relative w-full max-w-full h-[400px] border border-outline rounded-md overflow-hidden"
     >
       <div #mapElement class="w-full h-full"></div>
       <div
