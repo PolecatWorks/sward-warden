@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription, interval } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { RxdbService } from '../services/rxdb/rxdb.service';
 import { SyncEngineService } from '../services/sync-engine.service';
 
 /**
@@ -41,6 +42,7 @@ export class ErrorPageComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private authService: AuthService,
+    private rxdbService: RxdbService,
     @Optional() private syncEngineService?: SyncEngineService,
   ) {
     const navigation = this.router.getCurrentNavigation();
@@ -146,9 +148,10 @@ export class ErrorPageComponent implements OnInit, OnDestroy {
     }
   }
 
-  goHome(): void {
+  async goHome(): Promise<void> {
     this.stopCountdown();
     if (this.isAuthError) {
+      await this.rxdbService.wipeDatabase();
       this.authService.logout();
       this.router.navigate(['/login']);
     } else {

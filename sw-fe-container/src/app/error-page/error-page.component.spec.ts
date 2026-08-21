@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ErrorPageComponent } from './error-page.component';
 import { AuthService } from '../services/auth.service';
 import { SyncEngineService } from '../services/sync-engine.service';
+import { RxdbService } from '../services/rxdb/rxdb.service';
 
 describe('ErrorPageComponent', () => {
   let component: ErrorPageComponent;
@@ -10,6 +11,7 @@ describe('ErrorPageComponent', () => {
   let mockRouter: any;
   let mockAuthService: any;
   let mockSyncEngineService: any;
+  let mockRxdbService: any;
 
   beforeEach(async () => {
     mockRouter = {
@@ -41,12 +43,16 @@ describe('ErrorPageComponent', () => {
       fullSync: jasmine.createSpy('fullSync').and.returnValue(Promise.resolve()),
     };
 
+    mockRxdbService = jasmine.createSpyObj('RxdbService', ['wipeDatabase']);
+    mockRxdbService.wipeDatabase.and.returnValue(Promise.resolve());
+
     await TestBed.configureTestingModule({
       imports: [ErrorPageComponent],
       providers: [
         { provide: Router, useValue: mockRouter },
         { provide: AuthService, useValue: mockAuthService },
         { provide: SyncEngineService, useValue: mockSyncEngineService },
+        { provide: RxdbService, useValue: mockRxdbService },
       ],
     }).compileComponents();
 
@@ -89,10 +95,11 @@ describe('ErrorPageComponent', () => {
     expect(mockRouter.navigateByUrl).toHaveBeenCalledWith('/home/fields');
   }));
 
-  it('should navigate to login on auth error when goHome is called', () => {
+  it('should navigate to login on auth error when goHome is called', async () => {
     component.isAuthError = true;
-    component.goHome();
+    await component.goHome();
 
+    expect(mockRxdbService.wipeDatabase).toHaveBeenCalled();
     expect(mockAuthService.logout).toHaveBeenCalled();
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
   });

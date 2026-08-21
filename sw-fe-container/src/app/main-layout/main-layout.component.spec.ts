@@ -41,9 +41,10 @@ describe('MainLayoutComponent', () => {
 
   // No obvious PRD requirement
   beforeEach(async () => {
-    rxdbServiceSpy = jasmine.createSpyObj('RxdbService', [], {
+    rxdbServiceSpy = jasmine.createSpyObj('RxdbService', ['wipeDatabase'], {
       fallbackToRest$: of(false),
     });
+    rxdbServiceSpy.wipeDatabase.and.returnValue(Promise.resolve());
     authServiceSpy = jasmine.createSpyObj('AuthService', [
       'getUserId',
       'login',
