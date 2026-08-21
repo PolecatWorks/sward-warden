@@ -102,7 +102,8 @@ export class MainLayoutComponent implements OnInit {
   }
 
   // No obvious PRD requirement
-  logout(): void {
+  async logout(): Promise<void> {
+    await this.rxdbService.wipeDatabase();
     this.authService.logout();
     this.router.navigate(['/login']);
   }

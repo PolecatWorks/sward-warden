@@ -16,6 +16,7 @@ import {
 } from 'rxdb';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { RxDBMigrationPlugin } from 'rxdb/plugins/migration-schema';
+import { firstValueFrom } from 'rxjs';
 
 addRxPlugin(RxDBMigrationPlugin);
 import {
@@ -163,7 +164,23 @@ export class RxdbService implements OnDestroy {
       );
       try {
         // Attempt to wipe the existing database
+
+
+      // If we use db.remove(), we must ensure no one else is using it. Since it's a shared observable,
+      // someone might still have it. It's safer to just wipe it via removeRxDatabase which targets the underlying storage directly
+      // However, db.remove() handles cleanup better if the instance is active.
+      const db = await firstValueFrom(this.db$).catch(() => null);
+      if (db) {
+        try {
+          await db.remove();
+        } catch (e) {
+          await removeRxDatabase(this.dbName, this.storage);
+        }
+      } else {
         await removeRxDatabase(this.dbName, this.storage);
+      }
+
+
         this.logger.log(
           'RxDB Database successfully wiped. Re-attempting initialization.',
         );
@@ -244,6 +261,35 @@ export class RxdbService implements OnDestroy {
           // ignore close errors
         }
       }
+      throw err;
+    }
+  }
+
+
+  /** Wipes the entire RxDB database. Used during logout. */
+  async wipeDatabase(): Promise<void> {
+    try {
+      this.logger.log('Wiping RxDB Database on demand...');
+
+
+      // If we use db.remove(), we must ensure no one else is using it. Since it's a shared observable,
+      // someone might still have it. It's safer to just wipe it via removeRxDatabase which targets the underlying storage directly
+      // However, db.remove() handles cleanup better if the instance is active.
+      const db = await firstValueFrom(this.db$).catch(() => null);
+      if (db) {
+        try {
+          await db.remove();
+        } catch (e) {
+          await removeRxDatabase(this.dbName, this.storage);
+        }
+      } else {
+        await removeRxDatabase(this.dbName, this.storage);
+      }
+
+
+      this.logger.log('RxDB Database successfully wiped.');
+    } catch (err) {
+      this.logger.error('Failed to wipe RxDB Database.', err);
       throw err;
     }
   }

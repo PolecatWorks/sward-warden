@@ -3,11 +3,13 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
+import { RxdbService } from './rxdb/rxdb.service';
 import { APP_CONFIG } from '../app-config';
 
 export const devAuthInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const authService = inject(AuthService);
+  const rxdbService = inject(RxdbService);
   const config = inject(APP_CONFIG, { optional: true });
 
   let newReq = req;
@@ -35,8 +37,10 @@ export const devAuthInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
       // Catch authentication/authorization errors
       if (error.status === 401) {
-        authService.logout();
-        router.navigate(['/login']);
+        rxdbService.wipeDatabase().finally(() => {
+          authService.logout();
+          router.navigate(['/login']);
+        });
       } else if (error.status === 403 && authService.getToken()) {
         const errorMsg =
           error.error?.error ||

@@ -11,6 +11,7 @@ import {
 } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
+import { RxdbService } from './rxdb/rxdb.service';
 
 import { devAuthInterceptor } from './dev-auth.interceptor';
 
@@ -20,11 +21,14 @@ describe('devAuthInterceptor', () => {
   let httpClient: HttpClient;
   let routerSpy: jasmine.SpyObj<Router>;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
+  let rxdbServiceSpy: jasmine.SpyObj<RxdbService>;
 
   // PRD Reference: 0014
   beforeEach(() => {
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     authServiceSpy = jasmine.createSpyObj('AuthService', ['getToken', 'logout', 'initCodeFlow']);
+    rxdbServiceSpy = jasmine.createSpyObj('RxdbService', ['wipeDatabase']);
+    rxdbServiceSpy.wipeDatabase.and.returnValue(Promise.resolve());
     authServiceSpy.getToken.and.returnValue('real-test-token');
 
     TestBed.configureTestingModule({
@@ -35,6 +39,7 @@ describe('devAuthInterceptor', () => {
         provideHttpClientTesting(),
         { provide: Router, useValue: routerSpy },
         { provide: AuthService, useValue: authServiceSpy },
+        { provide: RxdbService, useValue: rxdbServiceSpy },
       ],
     });
 
@@ -77,7 +82,7 @@ describe('devAuthInterceptor', () => {
   });
 
   // PRD Reference: 0014
-  it('should logout and navigate to /login on 401 response when not using OIDC auth config', () => {
+  it('should logout and navigate to /login on 401 response when not using OIDC auth config', async () => {
     httpClient.get('/test-endpoint').subscribe({
       next: () => fail('should have failed with 401'),
       error: (error: HttpErrorResponse) => {
@@ -93,6 +98,8 @@ describe('devAuthInterceptor', () => {
     );
 
     // PRD Reference: 0014
+    await new Promise(resolve => setTimeout(resolve, 0)); // wait for finally
+    expect(rxdbServiceSpy.wipeDatabase).toHaveBeenCalled();
     expect(authServiceSpy.logout).toHaveBeenCalled();
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/login']);
   });
