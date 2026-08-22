@@ -15,6 +15,7 @@ use sw_be_container::{NAME, VERSION};
 use ::hams::hams::Hams;
 
 /// Command line arguments structure for the backend binary executable.
+/// The application provides three subcommands to migrate, start and show version
 #[derive(Parser, Debug, PartialEq)]
 #[command(name = "sw-be", about = "Sward management be", version)]
 pub struct Cli {
