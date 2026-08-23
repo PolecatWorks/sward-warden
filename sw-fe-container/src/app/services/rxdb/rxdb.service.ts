@@ -163,23 +163,12 @@ export class RxdbService implements OnDestroy {
         err,
       );
       try {
-        // Attempt to wipe the existing database
-
-
-      // If we use db.remove(), we must ensure no one else is using it. Since it's a shared observable,
-      // someone might still have it. It's safer to just wipe it via removeRxDatabase which targets the underlying storage directly
-      // However, db.remove() handles cleanup better if the instance is active.
-      const db = await firstValueFrom(this.db$).catch(() => null);
-      if (db) {
-        try {
-          await db.remove();
-        } catch (e) {
-          await removeRxDatabase(this.dbName, this.storage);
-        }
-      } else {
+        // Attempt to wipe the existing database.
+        // NOTE: We cannot use `firstValueFrom(this.db$)` here because this
+        // function IS the source of db$ — calling it would create a circular
+        // deadlock. Since db creation just failed there is no live instance, so
+        // we wipe directly via removeRxDatabase.
         await removeRxDatabase(this.dbName, this.storage);
-      }
-
 
         this.logger.log(
           'RxDB Database successfully wiped. Re-attempting initialization.',
