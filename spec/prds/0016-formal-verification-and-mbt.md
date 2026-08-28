@@ -23,7 +23,55 @@ To bridge the gap, we adopt a **Specification-Driven Development** approach, uti
 3. **AI-Assisted Code Generation**: The validated TLA+ specification, alongside clear contextual prompts, is provided to LLMs. Because TLA+ eliminates ambiguity and defines all edge cases upfront, the LLM can generate highly accurate, target-language code (e.g., Rust actors, state machines).
 4. **State Machine Mapping**: Implement the logic using strict state machine libraries (e.g., `statig` in Rust or `XState` in Angular) that conceptually mirror the TLA+ transitions line-by-line.
 
-### 3.3 Implementation Workflow Diagram
+### 3.3 Prototype Concept: PlusCal to Rust
+To illustrate this approach, consider a simple inventory logic where a silo can be filled, but not beyond its maximum capacity.
+
+**1. The PlusCal Model:**
+```tla
+--algorithm SiloInventory {
+    variables
+        current_volume = 0,
+        max_capacity = 100;
+
+    process (FillSilo = 1)
+    variable amount \in 1..50;
+    {
+    Fill:
+        if (current_volume + amount <= max_capacity) {
+            current_volume := current_volume + amount;
+        } else {
+            \* Reject filling beyond capacity
+            skip;
+        }
+    }
+}
+```
+
+**2. The Target Rust Implementation:**
+Using the TLA+ definition, an LLM or developer clearly maps the states and invariants to Rust code.
+
+```rust
+struct Silo {
+    current_volume: u32,
+    max_capacity: u32,
+}
+
+impl Silo {
+    /// Attempts to fill the silo.
+    /// Returns Ok if successful, Err if the fill would exceed max capacity.
+    fn fill(&mut self, amount: u32) -> Result<(), &'static str> {
+        if self.current_volume + amount <= self.max_capacity {
+            self.current_volume += amount;
+            Ok(())
+        } else {
+            // Equivalent to `skip` in TLA+, rejecting the state change.
+            Err("Cannot exceed max capacity")
+        }
+    }
+}
+```
+
+### 3.4 Implementation Workflow Diagram
 
 ```mermaid
 graph TD
@@ -54,7 +102,44 @@ We will utilize tools like **Apalache** (a symbolic model checker for TLA+) and 
 2. **Trace Interpretation (Harness)**: We build test harnesses (in Rust for backend, or Robot Framework for E2E) that interpret these traces.
 3. **Execution**: The harness maps the abstract TLA+ state variables to concrete application states, executes the corresponding API/interface calls, and asserts that the application's post-state matches the TLA+ post-state.
 
-### 4.3 MBT Workflow Diagram
+### 4.3 Prototype Concept: Traces to Test Harness
+
+Using the `SiloInventory` example, `Modelator` generates an execution trace where a system tries to fill a silo.
+
+**1. Generated JSON Trace (Abstract State):**
+```json
+{
+  "states": [
+    { "step": 1, "action": "Init", "current_volume": 0, "max_capacity": 100 },
+    { "step": 2, "action": "FillSilo", "amount_passed": 60, "current_volume": 60, "max_capacity": 100 },
+    { "step": 3, "action": "FillSilo", "amount_passed": 50, "current_volume": 60, "max_capacity": 100 }
+  ]
+}
+```
+*(Note in step 3, the `current_volume` remained 60 because 60 + 50 > 100, fulfilling the safety constraint).*
+
+**2. Rust Trace Interpreter (Harness):**
+A test harness parses this JSON and dynamically calls the system interfaces.
+
+```rust
+#[test]
+fn test_silo_traces() {
+    let trace: Trace = load_trace("silo_trace.json");
+    let mut silo = Silo { current_volume: 0, max_capacity: 100 }; // Init state
+
+    for state in trace.states.iter().skip(1) { // Skip Init
+        if state.action == "FillSilo" {
+            // Execute the system under test (SUT)
+            let _ = silo.fill(state.amount_passed);
+
+            // Assert that the Concrete SUT State matches the Abstract TLA+ Post-State
+            assert_eq!(silo.current_volume, state.current_volume);
+        }
+    }
+}
+```
+
+### 4.4 MBT Workflow Diagram
 
 ```mermaid
 graph TD
