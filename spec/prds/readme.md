@@ -19,6 +19,7 @@ PRDs dictate the high-level features and requirements of the project. Every PRD 
 - [0014 Development & Testing Tools](./0014-development-and-testing-tools.md)
 - [0015 Frontend Auto-Update & Background Cache Sync](./0015-frontend-auto-update-and-cache-control.md)
 - [0016 Formal Verification and Model-Based Testing (MBT)](./0016-formal-verification-and-mbt.md)
+- [0017 Payments and Subscriptions](./0017-payments-and-subscriptions.md)
 
 ## Evolution Mapping
 
