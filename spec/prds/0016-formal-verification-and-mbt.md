@@ -156,28 +156,50 @@ graph TD
 
 ---
 
-## 5. Alternatives to TLA+
+## 5. Required Toolchain
+
+To execute the specification, verification, and testing lifecycle, the following toolchain is required:
+
+### 5.1 Modeling & Verification
+- **TLA+ VS Code Extension**: For authoring TLA+ and PlusCal specifications, providing syntax highlighting and integrated tool access.
+- **TLC Model Checker**: The standard explicit-state model checker, used during the design phase to exhaustively check state spaces for deadlocks and invariant violations.
+- **Apalache**: A symbolic model checker for TLA+. Required by Modelator to handle infinite state spaces efficiently and to generate structured execution traces.
+
+### 5.2 Test Trace Generation
+- **Modelator**: A Python-based CLI tool developed by Informal Systems. It wraps Apalache to automatically generate `JSON` traces based on TLA+ specifications and specific target invariants (happy/negative paths).
+
+### 5.3 Implementation & Execution
+- **State Machine Libraries**:
+  - **Rust (Backend)**: `statig` or `machine` to enforce strict state transitions that mirror the TLA+ model.
+  - **Angular (Frontend)**: `xstate` to manage complex client-side interactions and ensure the UI logic aligns with the validated model.
+- **Test Harnesses**:
+  - **Rust `#[test]` modules**: Custom parsing logic to read Modelator JSON traces and execute the `sw-be-container` internal services.
+  - **Robot Framework**: Used in the `integration-tests` directory to parse traces for E2E testing against the running stack via the Browser library and REST API calls.
+
+---
+
+## 6. Alternatives to TLA+
 
 While TLA+ is the industry standard for verifying distributed systems, its disconnect from executable code introduces friction. We should consider the following alternatives depending on the specific subsystem requirements:
 
-### 5.1 P Language
+### 6.1 P Language
 - **What it is**: A state-machine-based programming language developed by Amazon and Microsoft for modeling and specifying complex distributed systems.
 - **Why use it**: P models can be rigorously model-checked, and importantly, **compiled directly to executable code** (C/C++). This eliminates the gap between model and implementation.
 - **Use Case**: Highly asynchronous, event-driven subsystems where generating C/Rust FFI bindings is acceptable.
 
-### 5.2 Dafny
+### 6.2 Dafny
 - **What it is**: A verification-aware programming language backed by Microsoft Research. It requires programmers to write pre-conditions, post-conditions, and loop invariants alongside the code.
 - **Why use it**: It mathematically proves the code compiles and adheres to the specifications before it can be run. It compiles to C#, Java, JavaScript, and Go.
 - **Use Case**: Critical algorithms (e.g., spatial optimizations, cryptography) where mathematical certainty of the implementation is required, and compilation to a target language (like Go/JS) is acceptable.
 
-### 5.3 Rust-Native Verification (Prusti / Creusot / Kani)
+### 6.3 Rust-Native Verification (Prusti / Creusot / Kani)
 - **What it is**: Tools that bring formal verification directly into the Rust ecosystem.
   - **Prusti / Creusot**: Deductive verifiers for Rust. You write contracts (pre/post-conditions) in Rust macros, and it proves them.
   - **Kani**: A bit-precise model checker for Rust that verifies properties using bounded model checking.
 - **Why use it**: Allows us to keep all logic natively within Rust while proving functional correctness, avoiding the need for a separate modeling language like TLA+.
 - **Use Case**: Proving the safety and correctness of critical Rust backend modules without stepping outside the Rust ecosystem.
 
-## 6. Summary and Recommendation
+## 7. Summary and Recommendation
 For distributed system architectures and macroscopic state changes, **TLA+ coupled with Modelator/Apalache for Model-Based Testing** is the recommended path. It treats the backend as a black box and validates the contractual interfaces.
 
 For microscopic, highly complex algorithmic logic confined within the backend, leveraging **Rust-Native Verification (Kani / Creusot)** is recommended to maintain developer velocity while achieving mathematical certainty.
