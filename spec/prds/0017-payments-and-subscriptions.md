@@ -124,3 +124,97 @@ Before implementing the code, the following design decisions must be finalized:
   - A section in the user profile or settings page displaying active modules, their expiration dates, and a history of previous transactions.
 - **Module Access Gating:**
   - Ensure UI navigation, sidebars, and components appropriately lock or unlock features based on the presence of the purchased module in the user's JWT claims.
+
+## 7. Prototype Concept Examples
+
+### 7.1 Backend API Contract (Intent Generation)
+
+**Request:** `POST /v0/payments/intent`
+```json
+{
+  "module_id": "reports_and_analysis",
+  "duration_months": 12
+}
+```
+
+**Response (Stripe 90% Route):**
+```json
+{
+  "gateway": "stripe",
+  "client_secret": "pi_1J4b..._secret_...",
+  "amount_pence": 15000,
+  "currency": "GBP"
+}
+```
+
+**Response (Braintree 10% Route / Fallback):**
+```json
+{
+  "gateway": "braintree",
+  "client_token": "eyJ2ZXJzaW9uIjoyLCJhdXRob3JpemF0aW9uRmluZ2VycHJpbnQiOi...=",
+  "amount_pence": 15000,
+  "currency": "GBP"
+}
+```
+
+### 7.2 Frontend Angular Component Architecture (Conceptual)
+
+```typescript
+// PaymentContainerComponent
+// Orchestrates the gateway logic and renders the correct child UI
+
+@Component({
+  selector: 'app-payment-container',
+  template: `
+    <div class="checkout-wrapper">
+      <h2>Upgrade to {{ moduleName }}</h2>
+
+      <div *ngIf="loading" class="spinner">Loading payment gateway...</div>
+
+      <!-- Rendered if backend assigned Stripe (90% chance) -->
+      <app-stripe-checkout
+         *ngIf="activeGateway === 'stripe'"
+         [clientSecret]="stripeClientSecret"
+         (paymentSuccess)="onSuccess($event)"
+         (gatewayError)="fallbackToBraintree()">
+      </app-stripe-checkout>
+
+      <!-- Rendered if backend assigned Braintree (10% chance) OR if Stripe failed -->
+      <app-braintree-checkout
+         *ngIf="activeGateway === 'braintree'"
+         [clientToken]="braintreeClientToken"
+         (paymentSuccess)="onSuccess($event)"
+         (gatewayError)="fallbackToStripe()">
+      </app-braintree-checkout>
+    </div>
+  `
+})
+export class PaymentContainerComponent implements OnInit {
+   // Logic to call POST /v0/payments/intent and set activeGateway
+}
+```
+
+### 7.3 Webhook Event Processing (Concept)
+
+When Stripe confirms a successful payment, the backend webhook handler processes the event:
+
+```json
+// Incoming Stripe Webhook Payload (payment_intent.succeeded)
+{
+  "id": "evt_1J4b...",
+  "type": "payment_intent.succeeded",
+  "data": {
+    "object": {
+      "id": "pi_1J4b...",
+      "amount": 15000,
+      "metadata": {
+        "user_id": "ae5245cd-3095-46db-8ce3-cea42fe26edf",
+        "module_id": "reports_and_analysis",
+        "duration_months": "12"
+      }
+    }
+  }
+}
+```
+
+The backend receives this, verifies the signature securely, and executes a database transaction to grant the module, before making the Keycloak API call to sync the JWT claims for the user.
