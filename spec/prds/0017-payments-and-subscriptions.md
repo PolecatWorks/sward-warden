@@ -23,6 +23,10 @@ To meet the requirement of having two payment providers for fallback, the follow
 ### Recommendation
 Use **Stripe** as the primary payment processor for its superior developer tools and subscription management, and implement **Braintree** as a fallback to ensure transactions can still be processed if Stripe experiences an outage.
 
+To ensure the fallback system is continuously validated in production, **10% of checkout traffic will be deliberately routed to Braintree**.
+- If a transaction routed to Stripe (90%) fails due to a gateway error, it will fall back to Braintree.
+- If a transaction routed to Braintree (10%) fails due to a gateway error, it will fall back to Stripe.
+
 ## 3. Flows and Architecture
 
 ### Primary Payment Flow (Stripe)
@@ -86,9 +90,9 @@ Before implementing the code, the following design decisions must be finalized:
 - **Purchase Model: Auto-Renewal vs. One-Off Time-Bound Purchases**
   - *Option A:* Subscriptions that automatically renew at the end of the term (e.g., 3 months, 1 year) requiring vaulting of payment methods.
   - *Option B:* One-off purchases that grant access for a fixed duration, requiring the user to manually repurchase when the term expires. (Simpler initial implementation, avoids complex cancellation flows).
-- **Payment Abstraction Layer vs. Direct Integration**
-  - *Option A:* Build a custom generic payment interface in the backend that abstractly routes requests to either Stripe or Braintree.
-  - *Option B:* Direct, separate integrations in the frontend where the user manually selects the fallback option, or the application automatically switches the UI component if the primary gateway's API fails to initialize.
+- **Payment Gateway Traffic Routing & Abstraction**
+  - *Option A:* Backend determines the active gateway (90% Stripe, 10% Braintree) during the `POST /v0/payments/intent` call and returns the specific gateway to the frontend, which renders the corresponding UI. The frontend automatically requests the other gateway if the first fails to initialize.
+  - *Option B:* The frontend determines the 10% split locally and requests the appropriate gateway from the backend.
 - **Handling Module Expiration**
   - *Option A:* A background cron job in the backend that daily checks for expired modules and removes the module claims from the database and Keycloak.
   - *Option B:* Real-time evaluation of module expiration dates during authentication and API access checks.
@@ -115,7 +119,7 @@ Before implementing the code, the following design decisions must be finalized:
   - Integration of **Stripe Elements** for the primary checkout flow to ensure PCI compliance (sensitive card data is sent directly to Stripe, not our servers).
   - Integration of **Braintree Drop-in UI** as the fallback mechanism.
 - **Fallback Logic:**
-  - Frontend error handling to detect if the Stripe SDK fails to load or initialize, automatically falling back to rendering the Braintree component.
+  - Frontend error handling to detect if the designated payment SDK (Stripe or Braintree) fails to load or initialize, automatically requesting intent for and rendering the alternative component.
 - **Subscription Status View:**
   - A section in the user profile or settings page displaying active modules, their expiration dates, and a history of previous transactions.
 - **Module Access Gating:**
