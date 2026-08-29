@@ -133,6 +133,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0014-16 Admin and Support User Switcher and All-Entity Visibility Journey](./0014/0014-16-admin-support-user-switch-journey.md) | Complete | PRD 0014 |
 | [0014-17 Integration Test Keycloak Execution & Test Data Cleanup](./0014/0014-17-keycloak-test-cleanup.md) | Complete | PRD 0014 |
 | [0015-01 Frontend Auto-Update and Background Cache Sync Specification](./0015/0015-01-frontend-auto-update-and-cache-control.md) | Complete | PRD 0015 |
+| [0017-01 Billing State Machine](./0017/0017-01-billing-state-machine.md) | Complete | PRD 0017 |
 
 
 

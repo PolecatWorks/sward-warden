@@ -377,3 +377,9 @@ robot-test-hold: $(ROBOT_VENV)/bin/robot wait-all
 		-d $(ROBOT_REPORT_DIR) \
 		$(ROBOT_HOLD_DIR); \
 		rc=$$?; if [ -t 1 ]; then open $(ROBOT_REPORT_DIR)/log.html; fi; exit $$rc
+
+# --- Quint Formal Verification ---
+.PHONY: quint-check-billing
+quint-check-billing:
+	@echo "Running Quint model checking for Billing State Machine..."
+	npx -y @informalsystems/quint run spec/specs/0017/BillingStateMachine.qnt --invariant Safety
