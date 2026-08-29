@@ -1,0 +1,22 @@
+--- sw-fe-container/src/app/login/login.component.ts
++++ sw-fe-container/src/app/login/login.component.ts
+@@ -28,7 +28,7 @@
+   styleUrls: ['./login.component.css'],
+ })
+ export class LoginComponent implements OnInit {
+-  isDevAuth = !this.config?.auth;
++  isDevAuth = false;
+   users$!: Observable<User[]>;
+   errorMsg: string | null = null;
+   showCreateForm = false;
+@@ -46,7 +46,9 @@
+     private fb: FormBuilder,
+     private logger: LoggerService,
+     @Inject(APP_CONFIG) private config: AppConfig,
+-  ) {}
++  ) {
++    this.isDevAuth = !this.config?.auth;
++  }
+
+   // No obvious PRD requirement
+   ngOnInit(): void {

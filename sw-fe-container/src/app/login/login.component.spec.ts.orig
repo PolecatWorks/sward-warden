@@ -51,7 +51,7 @@ describe('LoginComponent', () => {
         { provide: AuthService, useValue: mockAuthService },
         { provide: Router, useValue: mockRouter },
         { provide: DevAuthApiService, useValue: mockDevAuthApi },
-        { provide: APP_CONFIG, useValue: { apiPath: "/api", logLevel: "DEBUG", auth: false } },
+        { provide: APP_CONFIG, useValue: { apiPath: "/api", logLevel: "DEBUG" } },
         LoggerService,
       ],
     }).compileComponents();
