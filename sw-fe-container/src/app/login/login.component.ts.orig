@@ -24,7 +24,7 @@ import { APP_CONFIG, AppConfig } from '../app-config';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
-  isDevAuth = false;
+  isDevAuth = !this.config?.auth;
   users$!: Observable<User[]>;
   errorMsg: string | null = null;
   showCreateForm = false;
@@ -42,9 +42,7 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder,
     private logger: LoggerService,
     @Inject(APP_CONFIG) private config: AppConfig,
-  ) {
-    this.isDevAuth = !this.config?.auth;
-  }
+  ) {}
 
   // No obvious PRD requirement
   ngOnInit(): void {
