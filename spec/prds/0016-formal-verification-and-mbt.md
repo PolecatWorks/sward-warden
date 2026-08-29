@@ -182,17 +182,22 @@ To execute the specification, verification, and testing lifecycle, the following
 
 While TLA+ is the industry standard for verifying distributed systems, its disconnect from executable code introduces friction. We should consider the following alternatives depending on the specific subsystem requirements:
 
-### 6.1 P Language
+### 6.1 GraphWalker
+- **What it is**: An open-source Model-Based Testing (MBT) tool that allows modeling system behavior as a state machine using directed graphs.
+- **Why use it**: It provides a visual editor and exports models to JSON. Test paths are automatically generated based on graph coverage criteria (e.g., node coverage, edge coverage). It acts as a bridge between the state machine model and test code, making it particularly useful for automated E2E testing (e.g., with Selenium or Robot Framework).
+- **Use Case**: Generating and executing automated tests for UI flows or system lifecycles where full mathematical formal verification (like TLA+) is overkill, but rigorous test coverage of different states and transitions is required.
+
+### 6.2 P Language
 - **What it is**: A state-machine-based programming language developed by Amazon and Microsoft for modeling and specifying complex distributed systems.
 - **Why use it**: P models can be rigorously model-checked, and importantly, **compiled directly to executable code** (C/C++). This eliminates the gap between model and implementation.
 - **Use Case**: Highly asynchronous, event-driven subsystems where generating C/Rust FFI bindings is acceptable.
 
-### 6.2 Dafny
+### 6.3 Dafny
 - **What it is**: A verification-aware programming language backed by Microsoft Research. It requires programmers to write pre-conditions, post-conditions, and loop invariants alongside the code.
 - **Why use it**: It mathematically proves the code compiles and adheres to the specifications before it can be run. It compiles to C#, Java, JavaScript, and Go.
 - **Use Case**: Critical algorithms (e.g., spatial optimizations, cryptography) where mathematical certainty of the implementation is required, and compilation to a target language (like Go/JS) is acceptable.
 
-### 6.3 Rust-Native Verification (Prusti / Creusot / Kani)
+### 6.4 Rust-Native Verification (Prusti / Creusot / Kani)
 - **What it is**: Tools that bring formal verification directly into the Rust ecosystem.
   - **Prusti / Creusot**: Deductive verifiers for Rust. You write contracts (pre/post-conditions) in Rust macros, and it proves them.
   - **Kani**: A bit-precise model checker for Rust that verifies properties using bounded model checking.
