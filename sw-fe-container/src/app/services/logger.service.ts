@@ -140,7 +140,7 @@ export class LoggerService implements OnDestroy {
   // No obvious PRD requirement
   log(message: any, ...args: any[]): void {
     if (this.level <= LogLevel.DEBUG) {
-      console.log(message, ...args);
+      console.debug(message, ...args);
       this.enqueueLog('DEBUG', message, ...args);
     }
   }
