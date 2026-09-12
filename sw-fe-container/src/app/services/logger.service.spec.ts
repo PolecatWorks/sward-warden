@@ -26,8 +26,8 @@ describe('LoggerService', () => {
   });
 
   // No obvious PRD requirement
-  it('should call console.log when log is called', () => {
-    const spy = spyOn(console, 'log');
+  it('should call console.debug when log is called', () => {
+    const spy = spyOn(console, 'debug');
     service.log('test message');
     // No obvious PRD requirement
     expect(spy).toHaveBeenCalledWith('test message');
