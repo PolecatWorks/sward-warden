@@ -59,18 +59,21 @@ fn main() -> Result<(), AppError> {
 
     match &cli.command {
         Commands::Serve => {
-            let mut delay = None;
+            let config_res = AppConfig::load(&cli.config_path, &cli.secrets_dir).map_err(|e| {
+                init_logging("info");
+                tracing::error!("Failed to load config: {}", e);
+                AppError::Message(format!("Failed to load config: {}", e))
+            });
+
+            let config = match config_res {
+                Ok(c) => c,
+                Err(e) => return Err(e),
+            };
+
+            init_logging(&config.debugging.log_level);
+            let delay = config.debugging.fail_debug_delay;
 
             let result = (|| -> Result<(), AppError> {
-                let config = AppConfig::load(&cli.config_path, &cli.secrets_dir).map_err(|e| {
-                    init_logging("info");
-                    tracing::error!("Failed to load config: {}", e);
-                    AppError::Message(format!("Failed to load config: {}", e))
-                })?;
-                init_logging(&config.debugging.log_level);
-
-                delay = Some(config.debugging.fail_debug_delay);
-
                 println!(
                     "Config:\n{}",
                     serde_yaml::to_string(&config).map_err(|e| AppError::Message(format!(
@@ -93,31 +96,33 @@ fn main() -> Result<(), AppError> {
                 hams.start()
                     .map_err(|e| AppError::Message(format!("Failed to start HaMS: {e}")))?;
 
-                let res = run_in_tokio(
-                    &config.runtime,
-                    service_cancellable(ct, config.clone(), &mut hams),
-                );
+                let res = run_in_tokio(&config.runtime, async {
+                    let serve_res = service_cancellable(ct, config.clone(), &mut hams).await;
 
-                if let Err(e) = hams.deregister_prometheus() {
-                    tracing::error!("Failed to deregister prometheus: {e}");
-                }
+                    if let Err(e) = hams.deregister_prometheus() {
+                        tracing::error!("Failed to deregister prometheus: {e}");
+                    }
 
-                if let Err(e) = hams.stop() {
-                    tracing::info!("Failed to stop HaMS, it may already be stopped: {e}");
-                }
+                    if let Err(e) = hams.stop() {
+                        tracing::info!("Failed to stop HaMS, it may already be stopped: {e}");
+                    }
+
+                    if let Err(e) = serve_res {
+                        tracing::error!(
+                            "Serve failed: {}. Sleeping for {:?} before exiting...",
+                            e,
+                            delay
+                        );
+                        tokio::time::sleep(delay).await;
+                        return Err(e);
+                    }
+                    Ok(())
+                });
 
                 res
             })();
 
             if let Err(e) = result {
-                if let Some(d) = delay {
-                    tracing::error!(
-                        "Serve failed: {}. Sleeping for {:?} before exiting...",
-                        e,
-                        d
-                    );
-                    std::thread::sleep(d);
-                }
                 return Err(e);
             }
         }
@@ -141,28 +146,37 @@ fn main() -> Result<(), AppError> {
             let delay = config.debugging.fail_debug_delay;
             if let Err(e) = run_in_tokio(&config.runtime, async move {
                 let db_url: url::Url = config.database.url.clone().into();
-                let db_pool = sqlx::postgres::PgPoolOptions::new()
+                let db_pool_res = sqlx::postgres::PgPoolOptions::new()
                     .max_connections(1)
                     .connect(db_url.as_str())
                     .await
                     .map_err(|e| {
                         AppError::Message(format!("Failed to connect to database: {e}"))
-                    })?;
+                    });
 
-                sqlx::migrate!()
-                    .run(&db_pool)
-                    .await
-                    .map_err(|e| AppError::Message(format!("Failed to run migrations: {e}")))?;
+                let res = match db_pool_res {
+                    Ok(db_pool) => {
+                        sqlx::migrate!()
+                            .run(&db_pool)
+                            .await
+                            .map_err(|e| AppError::Message(format!("Failed to run migrations: {e}")))
+                    }
+                    Err(e) => Err(e),
+                };
+
+                if let Err(e) = res {
+                    tracing::error!(
+                        "Migrate failed: {}. Sleeping for {:?} before exiting...",
+                        e,
+                        delay
+                    );
+                    tokio::time::sleep(delay).await;
+                    return Err(e);
+                }
 
                 println!("Migrations completed successfully.");
                 Ok(())
             }) {
-                tracing::error!(
-                    "Migrate failed: {}. Sleeping for {:?} before exiting...",
-                    e,
-                    delay
-                );
-                std::thread::sleep(delay);
                 return Err(e);
             }
         }
