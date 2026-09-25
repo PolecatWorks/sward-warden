@@ -31,7 +31,7 @@ npx -p @angular/cli@18 ng build --configuration production
 Serve the built application with caching disabled on the server (to simulate the exact Nginx cache-control headers specified in PRD 0015):
 
 ```bash
-http-server dist/temp-app/browser -p 8081 -c-1
+http-server dist/sward-warden/browser -p 8081 -c-1
 ```
 *(Leave this terminal window running)*
 
@@ -56,7 +56,7 @@ cd sw-fe-container
 npx -p @angular/cli@18 ng build --configuration production
 ```
 
-*(Note: Ensure you are overwriting the same `dist/temp-app/browser` directory that `http-server` is currently serving).*
+*(Note: Ensure you are overwriting the same `dist/sward-warden/browser` directory that `http-server` is currently serving).*
 
 ### 4. Verify Background Update
 

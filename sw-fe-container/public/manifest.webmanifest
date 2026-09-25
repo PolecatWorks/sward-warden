@@ -1,6 +1,6 @@
 {
-  "name": "temp-app",
-  "short_name": "temp-app",
+  "name": "SwardWarden",
+  "short_name": "SwardWarden",
   "theme_color": "#1976d2",
   "background_color": "#fafafa",
   "display": "standalone",

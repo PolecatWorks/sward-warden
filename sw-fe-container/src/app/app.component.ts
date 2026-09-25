@@ -12,7 +12,7 @@ import * as L from 'leaflet';
   styleUrl: './app.component.css',
 })
 export class AppComponent {
-  title = 'temp-app';
+  title = 'SwardWarden';
 
   constructor(
     private syncEngine: SyncEngineService,
