@@ -8,6 +8,8 @@ use axum::{
     Json,
     extract::{Path, Query, State},
 };
+use serde::{Serialize, Deserialize};
+use chrono::{DateTime, Utc};
 use reqwest::StatusCode;
 
 // References more than 3 PRDs
@@ -21,13 +23,12 @@ pub async fn list_fields(
     let target_user_id = if is_admin {
         params.user_id
     } else {
-        if let Some(requested_uid) = params.user_id {
-            if requested_uid != user_id {
+        if let Some(requested_uid) = params.user_id
+            && requested_uid != user_id {
                 return Err(AppError::Forbidden(
                     "Cannot query another user's fields".to_string(),
                 ));
             }
-        }
         Some(user_id)
     };
 
@@ -249,4 +250,35 @@ pub async fn update_field(
     };
 
     Ok(Json(updated_field))
+}
+
+/// Rainfall forecast entry for a field with calculated volume.
+#[derive(sqlx::FromRow, Serialize, Deserialize, Debug)]
+pub struct FieldRainfall {
+    pub timestamp: DateTime<Utc>,
+    pub precipitation_mm: f64,
+    pub temperature: f64,
+    pub is_forecast: bool,
+    pub volume_liters: f64,
+}
+
+// PRD Reference: 0008
+pub async fn get_field_rainfall(
+    State(state): State<AppState>,
+    Path(id): Path<i64>,
+) -> Result<Json<Vec<FieldRainfall>>, AppError> {
+    let rainfall = sqlx::query_as::<_, FieldRainfall>(
+        "SELECT c.timestamp, c.precipitation_mm, c.temperature, c.is_forecast,
+                CAST((c.precipitation_mm * ST_Area(f.geom::geography)) AS DOUBLE PRECISION) as volume_liters
+         FROM field_weather_cache c
+         JOIN fields f ON c.field_id = f.id
+         WHERE c.field_id = $1
+         ORDER BY c.timestamp ASC"
+    )
+    .bind(id)
+    .fetch_all(&state.db_pool)
+    .await
+    .map_err(|e| AppError::Message(format!("Failed to query rainfall: {}", e)))?;
+
+    Ok(Json(rainfall))
 }
