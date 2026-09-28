@@ -22,6 +22,25 @@ pub struct WeatherData {
 
 /// Generates a static weather forecast sequence for testing and mock environments.
 // PRD Reference: 0001
+
+/// Open-Meteo API response structure for hourly forecast data.
+#[derive(serde::Deserialize, Debug)]
+pub struct OpenMeteoHourly {
+    pub time: Vec<String>,
+    pub temperature_2m: Vec<f64>,
+    pub precipitation: Vec<f64>,
+    pub precipitation_probability: Option<Vec<f64>>,
+    pub wind_speed_10m: Option<Vec<f64>>,
+}
+
+/// Open-Meteo API root response structure.
+#[derive(serde::Deserialize, Debug)]
+pub struct OpenMeteoResponse {
+    pub latitude: f64,
+    pub longitude: f64,
+    pub hourly: OpenMeteoHourly,
+}
+
 pub fn get_static_forecast() -> Vec<WeatherData> {
     let now = Utc::now();
     vec![
