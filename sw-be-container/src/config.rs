@@ -63,6 +63,9 @@ pub struct AppConfig {
     /// Keycloak SSO integration settings.
     #[serde(default)]
     pub keycloak: KeycloakConfig,
+    /// Weather background job settings.
+    #[serde(default)]
+    pub weather_job: WeatherJobConfig,
 }
 
 /// Keycloak identity provider configuration settings.
@@ -76,6 +79,26 @@ pub struct KeycloakConfig {
     pub client_id: Option<String>,
     /// Optional client secret key for confidential clients.
     pub client_secret: Option<String>,
+}
+
+/// Weather job configuration.
+#[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
+pub struct WeatherJobConfig {
+    /// Interval at which the worker wakes up to check the lock.
+    #[serde(with = "humantime_serde")]
+    pub check_interval: std::time::Duration,
+    /// Minimum time that must pass before updating data from the API.
+    #[serde(with = "humantime_serde")]
+    pub update_interval: std::time::Duration,
+}
+
+impl Default for WeatherJobConfig {
+    fn default() -> Self {
+        Self {
+            check_interval: std::time::Duration::from_secs(300),
+            update_interval: std::time::Duration::from_secs(3600),
+        }
+    }
 }
 
 /// Spatial and geographic boundary service settings.

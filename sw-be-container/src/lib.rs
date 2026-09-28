@@ -146,6 +146,9 @@ pub async fn service_cancellable(
         ct_clone.cancel();
     })?;
 
+    // Spawn background workers
+    tokio::spawn(weather::worker::start_weather_worker(config.weather_job.clone(), db_pool.clone(), ct.clone()));
+
     let server_future = start_app_api(state.clone(), ct.clone());
 
     server_future.await?;

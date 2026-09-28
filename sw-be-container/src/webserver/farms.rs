@@ -21,21 +21,19 @@ pub async fn list_farms(
     let target_user_id = if is_admin {
         params.user_id
     } else {
-        if let Some(requested_uid) = params.user_id {
-            if requested_uid != user_id {
+        if let Some(requested_uid) = params.user_id
+            && requested_uid != user_id {
                 return Err(AppError::Forbidden(
                     "Cannot query another user's farms".to_string(),
                 ));
             }
-        }
         Some(user_id)
     };
 
-    if !is_admin && params.user_id.is_none() {
-        if let Some(cached_farms) = state.farms_cache.read().await.get(&user_id) {
+    if !is_admin && params.user_id.is_none()
+        && let Some(cached_farms) = state.farms_cache.read().await.get(&user_id) {
             return Ok(Json(cached_farms.clone()));
         }
-    }
 
     let farms = match target_user_id {
         Some(uid) => {

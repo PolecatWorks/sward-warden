@@ -78,7 +78,12 @@ pub fn app_router(state: AppState) -> Router {
             "/v0/fields/{id}",
             get(fields::get_field)
                 .delete(fields::delete_field)
-                .put(fields::update_field),
+                .put(fields::update_field)
+        )
+        .route(
+            "/v0/fields/{id}/rainfall",
+            get(fields::get_field_rainfall)
+        ,
         )
         .route(
             "/v0/events",
