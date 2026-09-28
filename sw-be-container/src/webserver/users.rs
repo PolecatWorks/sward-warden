@@ -28,13 +28,11 @@ pub async fn create_user(
     caller: crate::webserver::auth::OptionalJwtUser,
     Json(mut user): Json<User>,
 ) -> Result<Json<User>, AppError> {
-    if user.keycloak_sub.is_none() {
-        if let Some(c) = caller.0 {
-            if !c.sub.is_empty() && c.sub.parse::<i64>().is_err() {
+    if user.keycloak_sub.is_none()
+        && let Some(c) = caller.0
+            && !c.sub.is_empty() && c.sub.parse::<i64>().is_err() {
                 user.keycloak_sub = Some(c.sub);
             }
-        }
-    }
     let mut tx = state.db_pool.begin().await?;
     let log_level = if user.client_log_level.is_empty() {
         "INFO"
@@ -97,15 +95,14 @@ pub async fn create_user(
         }
     };
 
-    if let Some(modules) = &user.modules {
-        if !modules.is_empty() {
+    if let Some(modules) = &user.modules
+        && !modules.is_empty() {
             sqlx::query("INSERT INTO user_modules (user_id, module_id) SELECT $1, id FROM modules WHERE name = ANY($2)")
                 .bind(new_user.id)
                 .bind(modules)
                 .execute(&mut *tx)
                 .await?;
         }
-    }
 
     let final_user = sqlx::query_as::<_, User>(
         "SELECT u.id, u.name, u.email, u.role, u.phone, u.description, u.is_suspended, u.client_log_level, u.keycloak_sub, ARRAY_AGG(m.name) FILTER (WHERE m.name IS NOT NULL) AS modules FROM users u LEFT JOIN user_modules um ON u.id = um.user_id LEFT JOIN modules m ON um.module_id = m.id WHERE u.id = $1 GROUP BY u.id",
@@ -238,8 +235,8 @@ pub async fn update_user(
     .execute(&mut *tx)
     .await?;
 
-    if is_admin {
-        if let Some(modules) = modules_to_save {
+    if is_admin
+        && let Some(modules) = modules_to_save {
             sqlx::query("DELETE FROM user_modules WHERE user_id = $1")
                 .bind(db_id)
                 .execute(&mut *tx)
@@ -252,7 +249,6 @@ pub async fn update_user(
                     .await?;
             }
         }
-    }
 
     let raw_token_str = raw_token.map(|axum::Extension(rt)| rt.0);
     let empty_modules = Vec::new();

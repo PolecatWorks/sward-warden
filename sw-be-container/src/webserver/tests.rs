@@ -64,6 +64,7 @@ fn get_test_state() -> AppState {
         },
         spatial: crate::config::SpatialConfig::default(),
         keycloak: crate::config::KeycloakConfig::default(),
+        weather_job: crate::config::WeatherJobConfig::default(),
     };
 
     let db_pool = sqlx::postgres::PgPoolOptions::new()

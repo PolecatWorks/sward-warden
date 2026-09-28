@@ -65,10 +65,7 @@ fn main() -> Result<(), AppError> {
                 AppError::Message(format!("Failed to load config: {}", e))
             });
 
-            let config = match config_res {
-                Ok(c) => c,
-                Err(e) => return Err(e),
-            };
+            let config = config_res?;
 
             init_logging(&config.debugging.log_level);
             let delay = config.debugging.fail_debug_delay;
@@ -96,7 +93,9 @@ fn main() -> Result<(), AppError> {
                 hams.start()
                     .map_err(|e| AppError::Message(format!("Failed to start HaMS: {e}")))?;
 
-                let res = run_in_tokio(&config.runtime, async {
+
+
+                run_in_tokio(&config.runtime, async {
                     let serve_res = service_cancellable(ct, config.clone(), &mut hams).await;
 
                     if let Err(e) = hams.deregister_prometheus() {
@@ -117,14 +116,10 @@ fn main() -> Result<(), AppError> {
                         return Err(e);
                     }
                     Ok(())
-                });
-
-                res
+                })
             })();
 
-            if let Err(e) = result {
-                return Err(e);
-            }
+            result?
         }
         Commands::Version => {
             init_logging("info");
@@ -144,7 +139,7 @@ fn main() -> Result<(), AppError> {
                     .map_err(|e| AppError::Message(format!("Failed to serialize config: {e}")))?
             );
             let delay = config.debugging.fail_debug_delay;
-            if let Err(e) = run_in_tokio(&config.runtime, async move {
+            run_in_tokio(&config.runtime, async move {
                 let db_url: url::Url = config.database.url.clone().into();
                 let db_pool_res = sqlx::postgres::PgPoolOptions::new()
                     .max_connections(1)
@@ -176,9 +171,7 @@ fn main() -> Result<(), AppError> {
 
                 println!("Migrations completed successfully.");
                 Ok(())
-            }) {
-                return Err(e);
-            }
+            })?
         }
     }
 

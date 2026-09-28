@@ -39,13 +39,12 @@ impl OptimizationEngine {
             let mut recommended_rate = 30.0;
             let mut reasoning = "Standard maintenance rate.".to_string();
 
-            if let Some(ref land_use) = field.land_use {
-                if land_use.to_lowercase().contains("grass") {
+            if let Some(ref land_use) = field.land_use
+                && land_use.to_lowercase().contains("grass") {
                     score += 0.2;
                     recommended_rate = 40.0;
                     reasoning = "High uptake potential for grass crop.".to_string();
                 }
-            }
 
             // TODO: The soil test date check is currently missing because `soil_test_date` is not in the `Field` model.
             // Addressing this requires modifying the `Field` model, the database schema (adding the column to the `fields` table),

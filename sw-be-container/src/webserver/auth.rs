@@ -206,12 +206,9 @@ async fn extract_jwt_claims(
         .headers
         .get(axum::http::header::AUTHORIZATION)
         .and_then(|h| h.to_str().ok())
-    {
-        if auth_header.starts_with("Bearer ") {
-            let token = &auth_header["Bearer ".len()..];
+        && let Some(token) = auth_header.strip_prefix("Bearer ") {
             parts.extensions.insert(RawToken(token.to_string()));
         }
-    }
 
     if let Some(jwt_payload_header) = parts.headers.get("x-jwt-payload") {
         let payload_str = jwt_payload_header.to_str().map_err(|_| {
