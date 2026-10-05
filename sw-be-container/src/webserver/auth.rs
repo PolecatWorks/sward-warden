@@ -161,13 +161,6 @@ impl FromRequestParts<AppState> for OptionalJwtUser {
 #[derive(Debug, Clone)]
 pub struct RawToken(pub String);
 
-#[derive(Debug, Clone, serde::Deserialize)]
-pub struct JwtPayload {
-    pub sub: String,
-    #[serde(default)]
-    pub sward_roles: Vec<String>,
-}
-
 fn decode_base64(s: &str) -> Result<Vec<u8>, AppError> {
     use base64::{
         Engine as _,
@@ -201,57 +194,24 @@ async fn extract_jwt_claims(
     parts: &mut Parts,
     state: &AppState,
 ) -> Result<(String, Option<String>), AppError> {
-    // Retain the raw token if Authorization header is present
-    if let Some(auth_header) = parts
-        .headers
-        .get(axum::http::header::AUTHORIZATION)
-        .and_then(|h| h.to_str().ok())
-    {
-        if auth_header.starts_with("Bearer ") {
-            let token = &auth_header["Bearer ".len()..];
-            parts.extensions.insert(RawToken(token.to_string()));
-        }
-    }
-
-    if let Some(jwt_payload_header) = parts.headers.get("x-jwt-payload") {
-        let payload_str = jwt_payload_header.to_str().map_err(|_| {
-            AppError::Unauthorized("Invalid x-jwt-payload header format".to_string())
-        })?;
-
-        let decoded_bytes = decode_base64(payload_str)?;
-        let decoded_str = String::from_utf8(decoded_bytes).map_err(|e| {
-            AppError::Unauthorized(format!("Invalid UTF-8 in decoded x-jwt-payload: {e}"))
-        })?;
-
-        let payload: JwtPayload = serde_json::from_str(&decoded_str).map_err(|e| {
-            AppError::Unauthorized(format!("Failed to parse x-jwt-payload JSON: {e}"))
-        })?;
-
-        if payload.sub.is_empty() {
-            return Err(AppError::Unauthorized("Missing subject claim".to_string()));
-        }
-
-        let role = payload.sward_roles.first().cloned();
-        return Ok((payload.sub, role));
-    }
-
     let auth_header = parts
         .headers
         .get(axum::http::header::AUTHORIZATION)
         .and_then(|h| h.to_str().ok());
 
+    let header_val = auth_header
+        .ok_or_else(|| AppError::Unauthorized("Missing Authorization header".to_string()))?;
+
+    if !header_val.starts_with("Bearer ") {
+        return Err(AppError::Unauthorized(
+            "Invalid Authorization header format".to_string(),
+        ));
+    }
+
+    let token = &header_val["Bearer ".len()..];
+    parts.extensions.insert(RawToken(token.to_string()));
+
     if !state.config.debugging.enable_dev_auth {
-        let header_val = auth_header.ok_or_else(|| {
-            AppError::Unauthorized("Missing Authorization or x-jwt-payload header".to_string())
-        })?;
-
-        if !header_val.starts_with("Bearer ") {
-            return Err(AppError::Unauthorized(
-                "Invalid Authorization header format".to_string(),
-            ));
-        }
-
-        let token = &header_val["Bearer ".len()..];
         let parts_vec: Vec<&str> = token.split('.').collect();
         if parts_vec.len() != 3 {
             return Err(AppError::Unauthorized(
@@ -282,25 +242,6 @@ async fn extract_jwt_claims(
         return Ok((sub, role));
     }
 
-    let auth_header_val = match auth_header {
-        Some(val) if val.starts_with("Bearer ") => val,
-        _ => {
-            if let Some(user_id_h) = parts.headers.get("x-user-id").and_then(|h| h.to_str().ok()) {
-                let role_h = parts
-                    .headers
-                    .get("x-user-role")
-                    .and_then(|h| h.to_str().ok())
-                    .map(|r| r.to_string());
-                return Ok((user_id_h.to_string(), role_h));
-            }
-            return Err(AppError::Unauthorized(
-                "Missing Authorization header".to_string(),
-            ));
-        }
-    };
-
-    let token = &auth_header_val["Bearer ".len()..];
-
     let public_key = if let Some(keypair) = &state.dev_jwt_keypair {
         keypair.public_key()
     } else {
@@ -309,12 +250,13 @@ async fn extract_jwt_claims(
         ));
     };
 
-    let mut verification_options = VerificationOptions::default();
-    verification_options.allowed_audiences =
-        Some(std::collections::HashSet::from(["sward-api".to_string()]));
-    verification_options.allowed_issuers = Some(std::collections::HashSet::from([
-        "http://localhost:8080".to_string(),
-    ]));
+    let verification_options = VerificationOptions {
+        allowed_audiences: Some(std::collections::HashSet::from(["sward-api".to_string()])),
+        allowed_issuers: Some(std::collections::HashSet::from([
+            "http://localhost:8080".to_string()
+        ])),
+        ..Default::default()
+    };
 
     let claims = public_key
         .verify_token::<CustomClaims>(token, Some(verification_options))
