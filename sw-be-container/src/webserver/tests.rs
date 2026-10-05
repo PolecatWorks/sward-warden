@@ -591,23 +591,17 @@ async fn test_update_user_idor_and_privilege_escalation() {
 }
 
 #[tokio::test]
-async fn test_x_jwt_payload_authorized() {
+async fn test_bearer_token_authorized_dev_mode() {
     let state = get_test_state();
-    let app = app_router(state);
+    let app = app_router(state.clone());
 
-    // payload: {"sub": "1", "sward_roles": ["admin"]}
-    let payload = r#"{"sub": "1", "sward_roles": ["admin"]}"#;
-    let b64_payload = base64::Engine::encode(
-        &base64::engine::general_purpose::STANDARD,
-        payload.as_bytes(),
-    );
+    let token = generate_test_jwt(&state, 1, "admin");
 
     let response = app
         .oneshot(
             Request::builder()
                 .uri("/v0/admin/health")
-                .header("x-jwt-payload", b64_payload)
-                .header("Authorization", "Bearer some_dummy_token_123")
+                .header("Authorization", format!("Bearer {}", token))
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -618,17 +612,15 @@ async fn test_x_jwt_payload_authorized() {
 }
 
 #[tokio::test]
-async fn test_x_jwt_payload_missing_dev_auth_disabled() {
+async fn test_missing_bearer_token_prod_mode() {
     let mut state = get_test_state();
     state.config.debugging.enable_dev_auth = false;
     let app = app_router(state);
 
-    // Missing x-jwt-payload header in production mode must return 401
     let response = app
         .oneshot(
             Request::builder()
                 .uri("/v0/admin/health")
-                .header("Authorization", "Bearer some_dummy_token_123")
                 .body(Body::empty())
                 .unwrap(),
         )
