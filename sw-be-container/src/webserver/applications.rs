@@ -217,10 +217,10 @@ pub async fn create_organic_manure_application(
 
     // Use query_as instead of the query! macro since we don't have offline compile checks setup here
     let year_apps_records_apps = sqlx::query_as::<_, OrganicManureApplication>(
-        "SELECT oma.id, oma.event_id, oma.manure_type, oma.volume_applied_m3_per_ha, oma.weight_applied_tonnes_per_ha, oma.nitrogen_content_kg_per_unit, oma.is_lesse_applied, oma.weather_conditions_confirmed, oma.buffer_zone_distance_meters, oma.updated_at, oma.is_deleted, oma.equipment_used, oma.lesse_exemption_reason FROM organic_manure_applications oma JOIN events e ON oma.event_id = e.id JOIN fields f ON e.field_id = f.id WHERE f.farm_id = $1 AND e.date LIKE $2 AND oma.is_deleted = FALSE AND e.is_deleted = FALSE AND f.is_deleted = FALSE"
+        "SELECT oma.id, oma.event_id, oma.manure_type, oma.volume_applied_m3_per_ha, oma.weight_applied_tonnes_per_ha, oma.nitrogen_content_kg_per_unit, oma.is_lesse_applied, oma.weather_conditions_confirmed, oma.buffer_zone_distance_meters, oma.updated_at, oma.is_deleted, oma.equipment_used, oma.lesse_exemption_reason FROM organic_manure_applications oma JOIN events e ON oma.event_id = e.id JOIN fields f ON e.field_id = f.id WHERE f.farm_id = $1 AND e.date LIKE $2 || '%' AND oma.is_deleted = FALSE AND e.is_deleted = FALSE AND f.is_deleted = FALSE"
     )
     .bind(farm.id)
-    .bind(format!("{}%", year_str))
+    .bind(year_str.clone())
     .fetch_all(&state.db_pool)
     .await?;
 
@@ -382,10 +382,10 @@ pub async fn update_organic_manure_application(
 
     // Use query_as instead of the query! macro since we don't have offline compile checks setup here
     let year_apps_records_apps = sqlx::query_as::<_, OrganicManureApplication>(
-        "SELECT oma.id, oma.event_id, oma.manure_type, oma.volume_applied_m3_per_ha, oma.weight_applied_tonnes_per_ha, oma.nitrogen_content_kg_per_unit, oma.is_lesse_applied, oma.weather_conditions_confirmed, oma.buffer_zone_distance_meters, oma.updated_at, oma.is_deleted, oma.equipment_used, oma.lesse_exemption_reason FROM organic_manure_applications oma JOIN events e ON oma.event_id = e.id JOIN fields f ON e.field_id = f.id WHERE f.farm_id = $1 AND e.date LIKE $2 AND oma.is_deleted = FALSE AND e.is_deleted = FALSE AND f.is_deleted = FALSE"
+        "SELECT oma.id, oma.event_id, oma.manure_type, oma.volume_applied_m3_per_ha, oma.weight_applied_tonnes_per_ha, oma.nitrogen_content_kg_per_unit, oma.is_lesse_applied, oma.weather_conditions_confirmed, oma.buffer_zone_distance_meters, oma.updated_at, oma.is_deleted, oma.equipment_used, oma.lesse_exemption_reason FROM organic_manure_applications oma JOIN events e ON oma.event_id = e.id JOIN fields f ON e.field_id = f.id WHERE f.farm_id = $1 AND e.date LIKE $2 || '%' AND oma.is_deleted = FALSE AND e.is_deleted = FALSE AND f.is_deleted = FALSE"
     )
     .bind(farm.id)
-    .bind(format!("{}%", year_str))
+    .bind(year_str)
     .fetch_all(&state.db_pool)
     .await?;
 
