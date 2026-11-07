@@ -1,8 +1,8 @@
 //! Weather evaluation and application safety validation service.
 
 use crate::error::AppError;
-use crate::weather::data::{WeatherData, get_static_forecast, OpenMeteoResponse};
-use chrono::{DateTime, Utc, TimeZone, NaiveDateTime};
+use crate::weather::data::{OpenMeteoResponse, WeatherData, get_static_forecast};
+use chrono::{DateTime, NaiveDateTime, TimeZone, Utc};
 use reqwest::Client;
 
 /// Service providing weather forecasts and weather-dependent spreading safety checks.
@@ -12,23 +12,37 @@ impl WeatherService {
     /// Retrieves weather forecast entries for specified latitude and longitude coordinates.
     // PRD Reference: 0008
     pub async fn get_forecast(lat: f64, lon: f64) -> Result<Vec<WeatherData>, AppError> {
-        #[cfg(test)]
-        {
-            return Ok(get_static_forecast());
-        }
         let url = format!(
             "https://api.open-meteo.com/v1/forecast?latitude={}&longitude={}&hourly=temperature_2m,precipitation,precipitation_probability,wind_speed_10m&timezone=UTC",
             lat, lon
         );
 
-        let client = Client::new();
-        let res = client.get(&url).send().await.map_err(|e| {
-            AppError::Message(format!("Failed to fetch weather data: {}", e))
-        })?;
+        let client = Client::builder()
+            .timeout(std::time::Duration::from_secs(5))
+            .build()
+            .unwrap_or_else(|_| Client::new());
 
-        let data: OpenMeteoResponse = res.json().await.map_err(|e| {
-            AppError::Message(format!("Failed to parse weather data: {}", e))
-        })?;
+        let res = match client.get(&url).send().await {
+            Ok(r) => r,
+            Err(e) => {
+                tracing::warn!(
+                    "Failed to fetch live weather data from Open-Meteo: {}. Falling back to static forecast.",
+                    e
+                );
+                return Ok(get_static_forecast());
+            }
+        };
+
+        let data: OpenMeteoResponse = match res.json().await {
+            Ok(d) => d,
+            Err(e) => {
+                tracing::warn!(
+                    "Failed to parse live weather data from Open-Meteo: {}. Falling back to static forecast.",
+                    e
+                );
+                return Ok(get_static_forecast());
+            }
+        };
 
         let mut forecast = Vec::new();
         for i in 0..data.hourly.time.len() {
@@ -43,7 +57,11 @@ impl WeatherService {
                 timestamp,
                 temperature: data.hourly.temperature_2m[i],
                 precipitation_amount_mm: data.hourly.precipitation[i],
-                precipitation_probability: data.hourly.precipitation_probability.as_ref().map_or(0.0, |p| p[i]),
+                precipitation_probability: data
+                    .hourly
+                    .precipitation_probability
+                    .as_ref()
+                    .map_or(0.0, |p| p[i]),
                 wind_speed_kph: data.hourly.wind_speed_10m.as_ref().map_or(0.0, |w| w[i]),
                 condition: "".to_string(), // Open-Meteo doesn't provide condition string directly in this endpoint
             });
@@ -69,14 +87,15 @@ impl WeatherService {
             // Check if this forecast entry is within 48 hours of the application date
             let diff = entry.timestamp.signed_duration_since(date).num_hours();
             if (0..=48).contains(&diff)
-                && (entry.precipitation_amount_mm > 10.0 || entry.precipitation_probability > 75.0) {
-                    return Err(AppError::BadRequest(format!(
-                        "Application blocked: Heavy rain forecast ({:.1}mm, {:.0}%) at {}",
-                        entry.precipitation_amount_mm,
-                        entry.precipitation_probability,
-                        entry.timestamp.format("%Y-%m-%d %H:%M")
-                    )));
-                }
+                && (entry.precipitation_amount_mm > 10.0 || entry.precipitation_probability > 75.0)
+            {
+                return Err(AppError::BadRequest(format!(
+                    "Application blocked: Heavy rain forecast ({:.1}mm, {:.0}%) at {}",
+                    entry.precipitation_amount_mm,
+                    entry.precipitation_probability,
+                    entry.timestamp.format("%Y-%m-%d %H:%M")
+                )));
+            }
         }
 
         Ok(())

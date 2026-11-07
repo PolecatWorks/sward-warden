@@ -8,9 +8,9 @@ use axum::{
     Json,
     extract::{Path, Query, State},
 };
-use serde::{Serialize, Deserialize};
 use chrono::{DateTime, Utc};
 use reqwest::StatusCode;
+use serde::{Deserialize, Serialize};
 
 // References more than 3 PRDs
 pub async fn list_fields(
@@ -24,11 +24,12 @@ pub async fn list_fields(
         params.user_id
     } else {
         if let Some(requested_uid) = params.user_id
-            && requested_uid != user_id {
-                return Err(AppError::Forbidden(
-                    "Cannot query another user's fields".to_string(),
-                ));
-            }
+            && requested_uid != user_id
+        {
+            return Err(AppError::Forbidden(
+                "Cannot query another user's fields".to_string(),
+            ));
+        }
         Some(user_id)
     };
 
