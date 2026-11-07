@@ -30,11 +30,12 @@ pub async fn delta_sync(
         params.user_id
     } else {
         if let Some(requested_uid) = params.user_id
-            && requested_uid != user_id {
-                return Err(AppError::Forbidden(
-                    "Cannot sync another user's data".to_string(),
-                ));
-            }
+            && requested_uid != user_id
+        {
+            return Err(AppError::Forbidden(
+                "Cannot sync another user's data".to_string(),
+            ));
+        }
         Some(user_id)
     };
 

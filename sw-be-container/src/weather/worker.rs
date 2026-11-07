@@ -7,7 +7,7 @@ use chrono::Utc;
 use sqlx::{PgPool, Row};
 use tokio::time::sleep;
 use tokio_util::sync::CancellationToken;
-use tracing::{info, warn, error};
+use tracing::{error, info, warn};
 
 // PRD Reference: 0008
 pub async fn start_weather_worker(
@@ -37,9 +37,10 @@ pub async fn start_weather_worker(
 
 // PRD Reference: 0008
 async fn run_weather_update(config: &WeatherJobConfig, db_pool: &PgPool) -> Result<(), AppError> {
-    let mut tx = db_pool.begin().await.map_err(|e| {
-        AppError::Message(format!("Worker failed to start transaction: {}", e))
-    })?;
+    let mut tx = db_pool
+        .begin()
+        .await
+        .map_err(|e| AppError::Message(format!("Worker failed to start transaction: {}", e)))?;
 
     // Advisory lock for the specific job name "weather_update"
     let lock_id: i64 = 8274917; // Arbitrary constant for weather job
@@ -57,10 +58,11 @@ async fn run_weather_update(config: &WeatherJobConfig, db_pool: &PgPool) -> Resu
     }
 
     // Check last run time
-    let last_run_row = sqlx::query("SELECT last_run FROM job_locks WHERE job_name = 'weather_update'")
-        .fetch_optional(&mut *tx)
-        .await
-        .map_err(|e| AppError::Message(format!("Failed to check last run: {}", e)))?;
+    let last_run_row =
+        sqlx::query("SELECT last_run FROM job_locks WHERE job_name = 'weather_update'")
+            .fetch_optional(&mut *tx)
+            .await
+            .map_err(|e| AppError::Message(format!("Failed to check last run: {}", e)))?;
 
     let now = Utc::now();
     let mut should_run = true;
@@ -75,7 +77,9 @@ async fn run_weather_update(config: &WeatherJobConfig, db_pool: &PgPool) -> Resu
     }
 
     if !should_run {
-        tx.commit().await.map_err(|e| AppError::Message(format!("Commit failed: {}", e)))?;
+        tx.commit()
+            .await
+            .map_err(|e| AppError::Message(format!("Commit failed: {}", e)))?;
         return Ok(());
     }
 
@@ -88,7 +92,7 @@ async fn run_weather_update(config: &WeatherJobConfig, db_pool: &PgPool) -> Resu
             id,
             ST_X(ST_Centroid(ST_Envelope(geom::geometry))) as lon,
             ST_Y(ST_Centroid(ST_Envelope(geom::geometry))) as lat
-        FROM fields"
+        FROM fields",
     )
     .fetch_all(&mut *tx)
     .await
@@ -107,7 +111,9 @@ async fn run_weather_update(config: &WeatherJobConfig, db_pool: &PgPool) -> Resu
                     .bind(field_id)
                     .execute(&mut *tx)
                     .await
-                    .map_err(|e| AppError::Message(format!("Failed to clear old weather cache: {}", e)))?;
+                    .map_err(|e| {
+                        AppError::Message(format!("Failed to clear old weather cache: {}", e))
+                    })?;
 
                 // Insert new data
                 for entry in forecast {
@@ -136,14 +142,16 @@ async fn run_weather_update(config: &WeatherJobConfig, db_pool: &PgPool) -> Resu
     // Update job lock
     sqlx::query(
         "INSERT INTO job_locks (job_name, last_run) VALUES ('weather_update', $1)
-         ON CONFLICT (job_name) DO UPDATE SET last_run = EXCLUDED.last_run"
+         ON CONFLICT (job_name) DO UPDATE SET last_run = EXCLUDED.last_run",
     )
     .bind(now)
     .execute(&mut *tx)
     .await
     .map_err(|e| AppError::Message(format!("Failed to update job lock: {}", e)))?;
 
-    tx.commit().await.map_err(|e| AppError::Message(format!("Worker commit failed: {}", e)))?;
+    tx.commit()
+        .await
+        .map_err(|e| AppError::Message(format!("Worker commit failed: {}", e)))?;
     info!("Weather worker update complete");
 
     Ok(())
