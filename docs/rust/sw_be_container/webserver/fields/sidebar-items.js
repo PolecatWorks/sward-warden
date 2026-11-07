@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["create_field","delete_field","get_field","list_fields","update_field"]};
+window.SIDEBAR_ITEMS = {"fn":["create_field","delete_field","get_field","get_field_rainfall","list_fields","update_field"],"struct":["FieldRainfall"]};

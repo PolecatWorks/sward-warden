@@ -146,10 +146,17 @@
 <a href=#146 id=146 data-nosnippet>146</a>        ct_clone.cancel();
 <a href=#147 id=147 data-nosnippet>147</a>    })<span class="question-mark">?</span>;
 <a href=#148 id=148 data-nosnippet>148</a>
-<a href=#149 id=149 data-nosnippet>149</a>    <span class="kw">let </span>server_future = start_app_api(state.clone(), ct.clone());
-<a href=#150 id=150 data-nosnippet>150</a>
-<a href=#151 id=151 data-nosnippet>151</a>    server_future.<span class="kw">await</span><span class="question-mark">?</span>;
-<a href=#152 id=152 data-nosnippet>152</a>
-<a href=#153 id=153 data-nosnippet>153</a>    <span class="prelude-val">Ok</span>(())
-<a href=#154 id=154 data-nosnippet>154</a>}
+<a href=#149 id=149 data-nosnippet>149</a>    <span class="comment">// Spawn background workers
+<a href=#150 id=150 data-nosnippet>150</a>    </span>tokio::spawn(weather::worker::start_weather_worker(
+<a href=#151 id=151 data-nosnippet>151</a>        config.weather_job.clone(),
+<a href=#152 id=152 data-nosnippet>152</a>        db_pool.clone(),
+<a href=#153 id=153 data-nosnippet>153</a>        ct.clone(),
+<a href=#154 id=154 data-nosnippet>154</a>    ));
+<a href=#155 id=155 data-nosnippet>155</a>
+<a href=#156 id=156 data-nosnippet>156</a>    <span class="kw">let </span>server_future = start_app_api(state.clone(), ct.clone());
+<a href=#157 id=157 data-nosnippet>157</a>
+<a href=#158 id=158 data-nosnippet>158</a>    server_future.<span class="kw">await</span><span class="question-mark">?</span>;
+<a href=#159 id=159 data-nosnippet>159</a>
+<a href=#160 id=160 data-nosnippet>160</a>    <span class="prelude-val">Ok</span>(())
+<a href=#161 id=161 data-nosnippet>161</a>}
 </code></pre></div></section></main></body></html>
