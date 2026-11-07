@@ -1,13 +1,10 @@
 {
 	"folders": [
 		{
-			"path": "."
+			"path": ".."
 		},
 		{
-			"path": "../../home-k8s"
-		},
-		{
-			"path": "../hams"
+			"path": "../../Mfe-shell"
 		}
 	],
 	"settings": {}
