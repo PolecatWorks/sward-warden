@@ -1,6 +1,8 @@
 # Backend: Auth Middleware & Istio Integration
 
-**State**: Complete
+**State**: Superceded
+
+> **Note**: This specification has been superceded by [0001-21 Backend: Universal JWT Verification via JWKS](./0001-21-universal-jwt-jwks-verification.md).
 
 ## 1. Overview
 This specification details the updates required for the SwardWarden Rust backend (`sw-be-container`) to support authentication when running behind an Istio service mesh that acts as the primary OIDC token verifier.
