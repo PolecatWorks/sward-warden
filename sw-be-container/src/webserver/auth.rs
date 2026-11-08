@@ -5,9 +5,146 @@
 
 use crate::error::AppError;
 use crate::state::AppState;
-use crate::webserver::dev_auth::CustomClaims;
 use axum::{extract::FromRequestParts, http::request::Parts};
 use jwt_simple::prelude::*;
+use std::collections::HashMap;
+use std::time::{Duration, Instant};
+use tokio::sync::RwLock;
+
+/// Single key representation within a JWKS JSON response.
+#[derive(Debug, Clone, serde::Deserialize)]
+pub struct JwkKey {
+    pub kid: Option<String>,
+    pub kty: String,
+    pub alg: Option<String>,
+    pub n: Option<String>,
+    pub e: Option<String>,
+}
+
+/// Root JWKS response payload.
+#[derive(Debug, Clone, serde::Deserialize)]
+pub struct JwksResponse {
+    pub keys: Vec<JwkKey>,
+}
+
+/// Token payload claims extracted from verified JWTs.
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
+pub struct VerifiedClaims {
+    #[serde(default)]
+    pub sward_roles: Vec<String>,
+    #[serde(default)]
+    pub realm_access: Option<RealmAccessClaims>,
+}
+
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
+pub struct RealmAccessClaims {
+    #[serde(default)]
+    pub roles: Vec<String>,
+}
+
+/// Thread-safe in-memory cache of verified public keys with automatic TTL expiration.
+pub struct JwksVerifier {
+    keys: RwLock<HashMap<String, (RS256PublicKey, Instant)>>,
+    cache_ttl: Duration,
+    http_client: reqwest::Client,
+}
+
+impl Default for JwksVerifier {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl JwksVerifier {
+    pub fn new() -> Self {
+        Self {
+            keys: RwLock::new(HashMap::new()),
+            cache_ttl: Duration::from_secs(3600),
+            http_client: reqwest::Client::builder()
+                .timeout(Duration::from_secs(5))
+                .build()
+                .unwrap_or_else(|_| reqwest::Client::new()),
+        }
+    }
+
+    /// Explicitly register or seed a public key in the cache (useful for dev-mode or tests).
+    pub async fn add_key(&self, kid: String, public_key: RS256PublicKey) {
+        let mut write_guard = self.keys.write().await;
+        write_guard.insert(kid, (public_key, Instant::now()));
+    }
+
+    /// Retrieve or refresh the matching public key for a key ID.
+    pub async fn get_key(
+        &self,
+        kid: &str,
+        jwks_url: Option<&str>,
+        force_refresh: bool,
+    ) -> Result<RS256PublicKey, AppError> {
+        let now = Instant::now();
+
+        if !force_refresh {
+            let read_guard = self.keys.read().await;
+            if let Some((key, inserted_at)) = read_guard.get(kid) {
+                if now.duration_since(*inserted_at) < self.cache_ttl {
+                    return Ok(key.clone());
+                }
+            }
+        }
+
+        let url = jwks_url.ok_or_else(|| {
+            AppError::Unauthorized(format!("Key '{kid}' not found and no JWKS URL configured"))
+        })?;
+
+        self.refresh_keys(url).await?;
+
+        let read_guard = self.keys.read().await;
+        read_guard
+            .get(kid)
+            .map(|(k, _)| k.clone())
+            .ok_or_else(|| AppError::Unauthorized(format!("Key ID '{kid}' not found in JWKS")))
+    }
+
+    /// Fetch keys from the JWKS URL and update the cache.
+    pub async fn refresh_keys(&self, jwks_url: &str) -> Result<(), AppError> {
+        use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
+
+        let res = self.http_client.get(jwks_url).send().await.map_err(|e| {
+            AppError::Unauthorized(format!("Failed to fetch JWKS from {jwks_url}: {e}"))
+        })?;
+
+        let jwks: JwksResponse = res
+            .json()
+            .await
+            .map_err(|e| AppError::Unauthorized(format!("Failed to parse JWKS JSON: {e}")))?;
+
+        let mut write_guard = self.keys.write().await;
+        let now = Instant::now();
+
+        for key_data in jwks.keys {
+            if key_data.kty == "RSA"
+                && let (Some(n_str), Some(e_str)) = (key_data.n, key_data.e)
+            {
+                let n_bytes = match URL_SAFE_NO_PAD.decode(&n_str) {
+                    Ok(b) => b,
+                    Err(_) => continue,
+                };
+                let e_bytes = match URL_SAFE_NO_PAD.decode(&e_str) {
+                    Ok(b) => b,
+                    Err(_) => continue,
+                };
+
+                if let Ok(mut pk) = RS256PublicKey::from_components(&n_bytes, &e_bytes) {
+                    if let Some(ref kid) = key_data.kid {
+                        pk.set_key_id(kid.clone());
+                        write_guard.insert(kid.clone(), (pk, now));
+                    }
+                }
+            }
+        }
+
+        Ok(())
+    }
+}
 
 /// Axum extractor guard requiring `admin` role privileges.
 pub struct AdminOnly;
@@ -161,168 +298,80 @@ impl FromRequestParts<AppState> for OptionalJwtUser {
 #[derive(Debug, Clone)]
 pub struct RawToken(pub String);
 
-#[derive(Debug, Clone, serde::Deserialize)]
-pub struct JwtPayload {
-    pub sub: String,
-    #[serde(default)]
-    pub sward_roles: Vec<String>,
-}
-
-fn decode_base64(s: &str) -> Result<Vec<u8>, AppError> {
-    use base64::{
-        Engine as _,
-        engine::general_purpose::{STANDARD, STANDARD_NO_PAD, URL_SAFE, URL_SAFE_NO_PAD},
-    };
-    STANDARD
-        .decode(s)
-        .or_else(|_| STANDARD_NO_PAD.decode(s))
-        .or_else(|_| URL_SAFE.decode(s))
-        .or_else(|_| URL_SAFE_NO_PAD.decode(s))
-        .map_err(|e| AppError::Unauthorized(format!("Failed to decode base64 x-jwt-payload: {e}")))
-}
-
-#[derive(Debug, serde::Deserialize)]
-struct DirectBearerClaims {
-    pub sub: Option<String>,
-    #[serde(default)]
-    pub sward_roles: Vec<String>,
-    #[serde(default)]
-    pub realm_access: Option<DirectRealmAccess>,
-}
-
-#[derive(Debug, serde::Deserialize)]
-struct DirectRealmAccess {
-    #[serde(default)]
-    pub roles: Vec<String>,
-}
-
 // PRD Reference: 0001, 0014
 async fn extract_jwt_claims(
     parts: &mut Parts,
     state: &AppState,
 ) -> Result<(String, Option<String>), AppError> {
-    // Retain the raw token if Authorization header is present
-    if let Some(auth_header) = parts
-        .headers
-        .get(axum::http::header::AUTHORIZATION)
-        .and_then(|h| h.to_str().ok())
-        && let Some(token) = auth_header.strip_prefix("Bearer ")
-    {
-        parts.extensions.insert(RawToken(token.to_string()));
-    }
-
-    if let Some(jwt_payload_header) = parts.headers.get("x-jwt-payload") {
-        let payload_str = jwt_payload_header.to_str().map_err(|_| {
-            AppError::Unauthorized("Invalid x-jwt-payload header format".to_string())
-        })?;
-
-        let decoded_bytes = decode_base64(payload_str)?;
-        let decoded_str = String::from_utf8(decoded_bytes).map_err(|e| {
-            AppError::Unauthorized(format!("Invalid UTF-8 in decoded x-jwt-payload: {e}"))
-        })?;
-
-        let payload: JwtPayload = serde_json::from_str(&decoded_str).map_err(|e| {
-            AppError::Unauthorized(format!("Failed to parse x-jwt-payload JSON: {e}"))
-        })?;
-
-        if payload.sub.is_empty() {
-            return Err(AppError::Unauthorized("Missing subject claim".to_string()));
-        }
-
-        let role = payload.sward_roles.first().cloned();
-        return Ok((payload.sub, role));
-    }
-
     let auth_header = parts
         .headers
         .get(axum::http::header::AUTHORIZATION)
-        .and_then(|h| h.to_str().ok());
+        .and_then(|h| h.to_str().ok())
+        .ok_or_else(|| AppError::Unauthorized("Missing Authorization header".to_string()))?;
 
-    if !state.config.debugging.enable_dev_auth {
-        let header_val = auth_header.ok_or_else(|| {
-            AppError::Unauthorized("Missing Authorization or x-jwt-payload header".to_string())
-        })?;
+    let token = auth_header
+        .strip_prefix("Bearer ")
+        .ok_or_else(|| AppError::Unauthorized("Invalid Authorization header format".to_string()))?;
 
-        if !header_val.starts_with("Bearer ") {
-            return Err(AppError::Unauthorized(
-                "Invalid Authorization header format".to_string(),
-            ));
+    parts.extensions.insert(RawToken(token.to_string()));
+
+    // Resolve JWKS URL and expected issuer/audience
+    let jwks_url = state.config.keycloak.jwks_url.as_deref().or_else(|| {
+        if state.config.debugging.enable_dev_auth {
+            None // In dev auth mode with in-memory keypair, we can use the local dev key directly
+        } else {
+            None
         }
-
-        let token = &header_val["Bearer ".len()..];
-        let parts_vec: Vec<&str> = token.split('.').collect();
-        if parts_vec.len() != 3 {
-            return Err(AppError::Unauthorized(
-                "Invalid Bearer token format".to_string(),
-            ));
-        }
-
-        let payload_bytes = decode_base64(parts_vec[1])?;
-        let payload_str = String::from_utf8(payload_bytes).map_err(|e| {
-            AppError::Unauthorized(format!("Invalid UTF-8 in Bearer token payload: {e}"))
-        })?;
-
-        let claims: DirectBearerClaims = serde_json::from_str(&payload_str).map_err(|e| {
-            AppError::Unauthorized(format!("Failed to parse Bearer token claims: {e}"))
-        })?;
-
-        let sub = claims.sub.filter(|s| !s.is_empty()).ok_or_else(|| {
-            AppError::Unauthorized("Missing subject claim in Bearer token".to_string())
-        })?;
-
-        let role = claims.sward_roles.first().cloned().or_else(|| {
-            claims
-                .realm_access
-                .as_ref()
-                .and_then(|r| r.roles.first().cloned())
-        });
-
-        return Ok((sub, role));
-    }
-
-    let auth_header_val = match auth_header {
-        Some(val) if val.starts_with("Bearer ") => val,
-        _ => {
-            if let Some(user_id_h) = parts.headers.get("x-user-id").and_then(|h| h.to_str().ok()) {
-                let role_h = parts
-                    .headers
-                    .get("x-user-role")
-                    .and_then(|h| h.to_str().ok())
-                    .map(|r| r.to_string());
-                return Ok((user_id_h.to_string(), role_h));
-            }
-            return Err(AppError::Unauthorized(
-                "Missing Authorization header".to_string(),
-            ));
-        }
-    };
-
-    let token = &auth_header_val["Bearer ".len()..];
-
-    let public_key = if let Some(keypair) = &state.dev_jwt_keypair {
-        keypair.public_key()
-    } else {
-        return Err(AppError::Unauthorized(
-            "Dev auth is not enabled, missing public key".to_string(),
-        ));
-    };
+    });
 
     let mut verification_options = VerificationOptions::default();
+
+    let expected_aud = state
+        .config
+        .keycloak
+        .expected_audience
+        .as_deref()
+        .unwrap_or("sward-api");
     verification_options.allowed_audiences =
-        Some(std::collections::HashSet::from(["sward-api".to_string()]));
-    verification_options.allowed_issuers = Some(std::collections::HashSet::from([
-        "http://localhost:8080".to_string(),
-    ]));
+        Some(std::collections::HashSet::from([expected_aud.to_string()]));
+
+    if let Some(expected_iss) = state.config.keycloak.expected_issuer.as_deref() {
+        verification_options.allowed_issuers =
+            Some(std::collections::HashSet::from([expected_iss.to_string()]));
+    } else if state.config.debugging.enable_dev_auth {
+        verification_options.allowed_issuers = Some(std::collections::HashSet::from([
+            "http://localhost:8080".to_string(),
+        ]));
+    }
+
+    // Read header to extract Key ID (kid)
+    let token_metadata = Token::decode_metadata(token)
+        .map_err(|e| AppError::Unauthorized(format!("Invalid JWT header metadata: {e}")))?;
+
+    let public_key = if let Some(keypair) = &state.dev_jwt_keypair {
+        // Dev auth mode seeded keypair
+        keypair.public_key()
+    } else {
+        let kid = token_metadata.key_id().ok_or_else(|| {
+            AppError::Unauthorized("JWT missing 'kid' header parameter".to_string())
+        })?;
+        state.jwks_verifier.get_key(kid, jwks_url, false).await?
+    };
 
     let claims = public_key
-        .verify_token::<CustomClaims>(token, Some(verification_options))
-        .map_err(|e| AppError::Unauthorized(format!("Invalid token: {e}")))?;
+        .verify_token::<VerifiedClaims>(token, Some(verification_options))
+        .map_err(|e| AppError::Unauthorized(format!("Invalid token signature or claims: {e}")))?;
 
     let user_id_str = claims
         .subject
-        .ok_or_else(|| AppError::Unauthorized("Missing subject claim".to_string()))?;
+        .ok_or_else(|| AppError::Unauthorized("Missing subject claim in token".to_string()))?;
 
-    let role = claims.custom.sward_roles.first().cloned();
+    let role = claims.custom.sward_roles.first().cloned().or_else(|| {
+        claims
+            .custom
+            .realm_access
+            .and_then(|r| r.roles.first().cloned())
+    });
 
     Ok((user_id_str, role))
 }

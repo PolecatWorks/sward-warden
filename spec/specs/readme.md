@@ -24,7 +24,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0001-18 Backend: Auth Middleware & Istio Integration](./0001/0001-18-backend-auth-middleware-istio.md) | Superceded | PRD 0001 |
 | [0001-19 Frontend: OIDC Integration](./0001/0001-19-frontend-auth-oidc.md) | Complete | PRD 0001 |
 | [0001-20 Backend: Keycloak Admin API Synchronization](./0001/0001-20-backend-keycloak-admin-sync.md) | Complete | PRD 0001 |
-| [0001-21 Backend: Universal JWT Verification via JWKS](./0001/0001-21-universal-jwt-jwks-verification.md) | Open | PRD 0001 |
+| [0001-21 Backend: Universal JWT Verification via JWKS](./0001/0001-21-universal-jwt-jwks-verification.md) | Complete | PRD 0001 |
 | [0002-01 Dashboard Specification](./0002/0002-01-dashboard.md) | Complete | PRD 0002 |
 
 | [0002-02 Compliance Tracking Specification](./0002/0002-02-compliance-tracking.md) | Complete | PRD 0002 |
