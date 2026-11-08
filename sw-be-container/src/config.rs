@@ -79,6 +79,12 @@ pub struct KeycloakConfig {
     pub client_id: Option<String>,
     /// Optional client secret key for confidential clients.
     pub client_secret: Option<String>,
+    /// Explicit JWKS endpoint URL to fetch public keys from.
+    pub jwks_url: Option<String>,
+    /// Expected issuer (`iss`) claim in the JWT.
+    pub expected_issuer: Option<String>,
+    /// Expected audience (`aud`) claim in the JWT.
+    pub expected_audience: Option<String>,
 }
 
 /// Weather job configuration.

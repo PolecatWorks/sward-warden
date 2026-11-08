@@ -10,6 +10,7 @@ use tokio::sync::RwLock;
 
 use crate::config::AppConfig;
 use crate::models::Farm;
+use crate::webserver::auth::JwksVerifier;
 
 /// Thread-safe shared application state passed to HTTP handlers via Axum extractors.
 #[derive(Clone)]
@@ -26,6 +27,8 @@ pub struct AppState {
     pub dev_jwt_keypair: Option<Arc<RS256KeyPair>>,
     /// Optional dev-mode JWKS JSON response string.
     pub dev_jwks_json: Option<String>,
+    /// Thread-safe JWKS token verifier with key cache.
+    pub jwks_verifier: Arc<JwksVerifier>,
 }
 
 impl AppState {
@@ -45,6 +48,7 @@ impl AppState {
             farms_cache: Arc::new(RwLock::new(std::collections::HashMap::new())),
             dev_jwt_keypair,
             dev_jwks_json,
+            jwks_verifier: Arc::new(JwksVerifier::new()),
         }
     }
 }

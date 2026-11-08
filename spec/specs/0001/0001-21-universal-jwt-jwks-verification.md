@@ -1,6 +1,6 @@
 # 0001-21 Backend: Universal JWT Verification via JWKS
 
-**State**: Open
+**State**: Complete
 
 ## 1. Overview
 This specification details the transition of the SwardWarden Rust backend (`sw-be-container`) from trusting mesh-injected headers (`x-jwt-payload`) or using unauthenticated fallback mechanisms to a universal, zero-trust token verification model.

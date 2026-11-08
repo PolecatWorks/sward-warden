@@ -592,23 +592,17 @@ async fn test_update_user_idor_and_privilege_escalation() {
 }
 
 #[tokio::test]
-async fn test_x_jwt_payload_authorized() {
+async fn test_bearer_token_authorized_with_jwks() {
     let state = get_test_state();
-    let app = app_router(state);
+    let app = app_router(state.clone());
 
-    // payload: {"sub": "1", "sward_roles": ["admin"]}
-    let payload = r#"{"sub": "1", "sward_roles": ["admin"]}"#;
-    let b64_payload = base64::Engine::encode(
-        &base64::engine::general_purpose::STANDARD,
-        payload.as_bytes(),
-    );
+    let token = generate_test_jwt(&state, 1, "admin");
 
     let response = app
         .oneshot(
             Request::builder()
                 .uri("/v0/admin/health")
-                .header("x-jwt-payload", b64_payload)
-                .header("Authorization", "Bearer some_dummy_token_123")
+                .header("Authorization", format!("Bearer {}", token))
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -619,17 +613,76 @@ async fn test_x_jwt_payload_authorized() {
 }
 
 #[tokio::test]
-async fn test_x_jwt_payload_missing_dev_auth_disabled() {
-    let mut state = get_test_state();
-    state.config.debugging.enable_dev_auth = false;
+async fn test_missing_authorization_header_unauthorized() {
+    let state = get_test_state();
     let app = app_router(state);
 
-    // Missing x-jwt-payload header in production mode must return 401
     let response = app
         .oneshot(
             Request::builder()
                 .uri("/v0/admin/health")
-                .header("Authorization", "Bearer some_dummy_token_123")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
+}
+
+#[tokio::test]
+async fn test_invalid_signature_token_rejected() {
+    let state = get_test_state();
+    let app = app_router(state);
+
+    // Generate token signed with an untrusted keypair
+    let other_keypair = jwt_simple::algorithms::RS256KeyPair::generate(2048)
+        .unwrap()
+        .with_key_id("dev-key-1");
+    let custom_claims = crate::webserver::dev_auth::CustomClaims {
+        sward_roles: vec!["admin".to_string()],
+    };
+    let claims = jwt_simple::prelude::Claims::with_custom_claims(
+        custom_claims,
+        jwt_simple::prelude::Duration::from_hours(1),
+    )
+    .with_issuer("http://localhost:8080")
+    .with_audience("sward-api")
+    .with_subject("1");
+    use jwt_simple::algorithms::RSAKeyPairLike;
+    let untrusted_token = other_keypair.sign(claims).unwrap();
+
+    let response = app
+        .oneshot(
+            Request::builder()
+                .uri("/v0/admin/health")
+                .header("Authorization", format!("Bearer {}", untrusted_token))
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
+}
+
+#[tokio::test]
+async fn test_x_jwt_payload_header_ignored_and_rejected_without_bearer() {
+    let state = get_test_state();
+    let app = app_router(state);
+
+    let payload = r#"{"sub": "1", "sward_roles": ["admin"]}"#;
+    let b64_payload = base64::Engine::encode(
+        &base64::engine::general_purpose::STANDARD,
+        payload.as_bytes(),
+    );
+
+    // Attempting to pass forged x-jwt-payload header without Authorization header must be 401
+    let response = app
+        .oneshot(
+            Request::builder()
+                .uri("/v0/admin/health")
+                .header("x-jwt-payload", b64_payload)
                 .body(Body::empty())
                 .unwrap(),
         )
