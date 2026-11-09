@@ -1,7 +1,7 @@
 # Specification: 0001-23 Frontend OIDC PKCE & OAuthStorage LocalStorage Persistence
 
 ## Status
-Open
+Complete
 
 ## PRD Reference
 - `spec/prds/0001-core-architecture.md` (Authentication, Security, Offline Resilience)
