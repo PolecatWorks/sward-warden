@@ -32,6 +32,8 @@ export function initializeOAuth(oauthService: OAuthService, config: AppConfig, l
         skipIssuerCheck: config.auth.skipIssuerCheck ?? true,
       };
       oauthService.configure(authConfig);
+      // Ensure OAuthService writes to localStorage
+      oauthService.setStorage(localStorage);
       if (config.auth.requireHttps ?? true) {
         oauthService.setupAutomaticSilentRefresh();
       }
@@ -65,8 +67,8 @@ export const createAppConfig = (config: AppConfig): ApplicationConfig => ({
       registrationStrategy: 'registerWhenStable:30000',
     }),
     { provide: APP_CONFIG, useValue: config },
-    { provide: OAuthStorage, useValue: localStorage },
     provideOAuthClient(),
+    { provide: OAuthStorage, useFactory: () => localStorage },
     {
       provide: APP_INITIALIZER,
       useFactory: initializeOAuth,
