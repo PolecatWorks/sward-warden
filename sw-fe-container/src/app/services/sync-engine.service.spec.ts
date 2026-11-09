@@ -61,7 +61,14 @@ describe('SyncEngineService', () => {
           provide: NetworkService,
           useValue: { isOnline$: mockOnline$.asObservable() },
         },
-        { provide: AuthService, useValue: { getUserId: () => '1' } },
+        {
+          provide: AuthService,
+          useValue: {
+            getUserId: () => '1',
+            isLoggedIn: () => true,
+            authState$: of(true),
+          },
+        },
       ],
     });
 
@@ -769,6 +776,15 @@ describe('SyncEngineService', () => {
       const farm = await db.farms.findOne('local-400-1').exec();
       // PRD Reference: 0001
       expect(farm?.syncStatus).toBe('failed');
+    });
+
+    it('should abort fullSync without making network requests if user is unauthenticated', async () => {
+      const authService = TestBed.inject(AuthService);
+      spyOn(authService, 'isLoggedIn').and.returnValue(false);
+
+      await service.fullSync();
+
+      httpMock.expectNone('/api/sync');
     });
   });
 });

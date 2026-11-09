@@ -1,6 +1,6 @@
 # 0001-22 Frontend: Sync Engine Authentication Guard & OIDC Flow Preservation
 
-**State**: Open
+**State**: Complete
 
 ## 1. Overview
 This specification addresses an issue where the background synchronization engine (`SyncEngineService`) runs prematurely upon application launch before identity verification or OIDC token acquisition completes. In production/dev-mesh environments where endpoints are secured by Istio `AuthorizationPolicy` and zero-trust backend signature verification (per Spec 0001-21), unauthenticated sync requests produce `403 Forbidden` errors that route the browser to the error page, breaking the login and callback flows.
