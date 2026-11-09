@@ -22,7 +22,7 @@ export const devAuthInterceptor: HttpInterceptorFn = (req, next) => {
       newReq = req.clone({
         headers: req.headers.set('Authorization', `Bearer ${token}`),
       });
-    } else {
+    } else if (!config?.auth) {
       const storedUserId = authService.getUserId() || '1';
       newReq = req.clone({
         headers: req.headers

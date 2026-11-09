@@ -86,16 +86,22 @@ export class SyncEngineService implements OnDestroy {
       }
     });
 
-    // Sync triggers: online events + periodic timer + pending outbox inserts
+    // Sync triggers: online events + periodic timer + pending outbox inserts + auth state changes
     const onlineEvent$ = this.networkService.isOnline$.pipe(
       // PRD Reference: 0001
-      filter((online) => online),
+      filter((online) => online && this.authService.isLoggedIn()),
     );
 
     const periodicSync$ = timer(0, SYNC_INTERVAL_MS).pipe(
       // PRD Reference: 0001
       switchMap(() => this.networkService.isOnline$),
       // PRD Reference: 0001
+      filter((online) => online && this.authService.isLoggedIn()),
+    );
+
+    const authTrigger$ = this.authService.authState$.pipe(
+      filter((loggedIn) => loggedIn),
+      switchMap(() => this.networkService.isOnline$),
       filter((online) => online),
     );
 
@@ -107,16 +113,16 @@ export class SyncEngineService implements OnDestroy {
       // PRD Reference: 0001
       switchMap((db) => db!.outbox.find({ selector: { status: 'pending' } }).$),
       // PRD Reference: 0001
-      filter((entries) => entries.length > 0),
+      filter((entries) => entries.length > 0 && this.authService.isLoggedIn()),
       // PRD Reference: 0001
       debounceTime(500),
       // PRD Reference: 0001
       switchMap(() => this.networkService.isOnline$),
       // PRD Reference: 0001
-      filter((online) => online),
+      filter((online) => online && this.authService.isLoggedIn()),
     );
 
-    this.subscription = merge(onlineEvent$, periodicSync$, outboxTrigger$)
+    this.subscription = merge(onlineEvent$, periodicSync$, authTrigger$, outboxTrigger$)
       .pipe(
         // PRD Reference: 0001
         filter(() => !this.rxdbService.fallbackToRest$.value),
@@ -133,6 +139,10 @@ export class SyncEngineService implements OnDestroy {
    */
   // PRD Reference: 0001, 0002
   async fullSync(): Promise<void> {
+    if (!this.authService.isLoggedIn()) {
+      return;
+    }
+
     if (this.syncInProgress || this.rxdbService.fallbackToRest$.value) {
       this.syncNeededAgain = true;
       return;
@@ -165,6 +175,16 @@ export class SyncEngineService implements OnDestroy {
   // PRD Reference: 0001, 0002
   private handleSyncError(error: any): void {
     const currentUrl = this.router ? this.router.url : '/home';
+    const isLoginOrAuthFlow =
+      currentUrl.includes('/login') ||
+      (typeof window !== 'undefined' &&
+        (window.location.search.includes('code=') || window.location.search.includes('state=')));
+
+    // Do not disrupt login or OIDC authorization code exchange flows on sync failure
+    if (isLoginOrAuthFlow || !this.authService.isLoggedIn()) {
+      return;
+    }
+
     const previousUrl = currentUrl && currentUrl !== '/error' ? currentUrl : '/home';
     const status = error.status || 403;
     const message =

@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -8,8 +9,24 @@ export class AuthService {
   private readonly oauthService = inject(OAuthService, { optional: true });
   private readonly USER_KEY = 'agent-user-id';
   private readonly JWT_KEY = 'dev-jwt-token';
+  private readonly authStateSubject = new BehaviorSubject<boolean>(false);
+  public readonly authState$: Observable<boolean> = this.authStateSubject.asObservable();
 
-  constructor() {}
+  constructor() {
+    this.updateAuthState();
+    if (this.oauthService) {
+      this.oauthService.events.subscribe(() => {
+        this.updateAuthState();
+      });
+    }
+  }
+
+  private updateAuthState(): void {
+    const loggedIn = this.isLoggedIn();
+    if (this.authStateSubject.value !== loggedIn) {
+      this.authStateSubject.next(loggedIn);
+    }
+  }
 
   // PRD Reference: 0014
   login(userId: string, token?: string): void {
@@ -19,6 +36,7 @@ export class AuthService {
     } else {
       localStorage.removeItem(this.JWT_KEY);
     }
+    this.updateAuthState();
   }
 
   // PRD Reference: 0014
@@ -28,6 +46,7 @@ export class AuthService {
     }
     localStorage.removeItem(this.USER_KEY);
     localStorage.removeItem(this.JWT_KEY);
+    this.updateAuthState();
   }
 
   // PRD Reference: 0014
