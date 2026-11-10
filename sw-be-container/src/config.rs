@@ -60,12 +60,26 @@ pub struct AppConfig {
     /// Spatial/GIS integration settings.
     #[serde(default)]
     pub spatial: SpatialConfig,
-    /// Keycloak SSO integration settings.
+    /// Provider-agnostic OIDC token verification settings.
+    #[serde(default)]
+    pub auth: AuthConfig,
+    /// Keycloak SSO integration settings (for Keycloak Admin API sync).
     #[serde(default)]
     pub keycloak: KeycloakConfig,
     /// Weather background job settings.
     #[serde(default)]
     pub weather_job: WeatherJobConfig,
+}
+
+/// Provider-agnostic OIDC token verification settings.
+#[derive(Deserialize, Serialize, Debug, Clone, Default)]
+pub struct AuthConfig {
+    /// Explicit JWKS endpoint URL to fetch public signing keys from.
+    pub jwks_url: Option<String>,
+    /// Expected issuer (`iss`) claim in the JWT.
+    pub issuer: Option<String>,
+    /// Expected audience (`aud`) claim in the JWT.
+    pub audience: Option<String>,
 }
 
 /// Keycloak identity provider configuration settings.
@@ -79,12 +93,6 @@ pub struct KeycloakConfig {
     pub client_id: Option<String>,
     /// Optional client secret key for confidential clients.
     pub client_secret: Option<String>,
-    /// Explicit JWKS endpoint URL to fetch public keys from.
-    pub jwks_url: Option<String>,
-    /// Expected issuer (`iss`) claim in the JWT.
-    pub expected_issuer: Option<String>,
-    /// Expected audience (`aud`) claim in the JWT.
-    pub expected_audience: Option<String>,
 }
 
 /// Weather job configuration.
@@ -201,6 +209,37 @@ impl AppConfig {
             .merge(Env::prefixed("SP_BE__").split("__").lowercase(true))
             .extract()
             .map_err(Box::new)
+    }
+
+    /// Validates application configuration integrity.
+    pub fn validate(&self) -> Result<(), String> {
+        if self.debugging.enable_dev_auth {
+            let jwks_url = self
+                .auth
+                .jwks_url
+                .as_deref()
+                .ok_or_else(|| "Dev auth enabled: 'auth.jwks_url' must be configured to point to '/.well-known/jwks.json'".to_string())?;
+
+            if !jwks_url.ends_with("/.well-known/jwks.json") {
+                return Err(format!(
+                    "Dev auth enabled: 'auth.jwks_url' ({jwks_url}) must end with '/.well-known/jwks.json'"
+                ));
+            }
+        } else {
+            if self.auth.jwks_url.is_none() {
+                return Err("Missing required configuration: 'auth.jwks_url'".to_string());
+            }
+        }
+
+        if self.auth.issuer.is_none() {
+            return Err("Missing required configuration: 'auth.issuer'".to_string());
+        }
+
+        if self.auth.audience.is_none() {
+            return Err("Missing required configuration: 'auth.audience'".to_string());
+        }
+
+        Ok(())
     }
 }
 
@@ -322,5 +361,38 @@ mod tests {
 
         // Cleanup
         fs::remove_dir_all(test_dir).unwrap();
+    }
+
+    #[test]
+    fn test_config_validate_dev_auth_rules() {
+        let mut config = AppConfig::load(
+            std::path::Path::new("config/default.yaml"),
+            std::path::Path::new("config"),
+        )
+        .unwrap();
+
+        // Default should be valid
+        assert!(config.validate().is_ok());
+
+        // Mismatched dev jwks_url should fail
+        config.auth.jwks_url = Some("http://example.com/certs".to_string());
+        assert!(config.validate().is_err());
+
+        // None jwks_url should fail
+        config.auth.jwks_url = None;
+        assert!(config.validate().is_err());
+
+        // Valid dev jwks_url
+        config.auth.jwks_url = Some("http://localhost:8080/.well-known/jwks.json".to_string());
+        assert!(config.validate().is_ok());
+
+        // When dev auth is disabled, any well-formed jwks_url is valid
+        config.debugging.enable_dev_auth = false;
+        config.auth.jwks_url = Some("http://example.com/certs".to_string());
+        assert!(config.validate().is_ok());
+
+        // Missing issuer should fail
+        config.auth.issuer = None;
+        assert!(config.validate().is_err());
     }
 }

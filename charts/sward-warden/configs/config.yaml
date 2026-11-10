@@ -28,3 +28,7 @@ debugging:
   environment: "production"
   enable_dev_auth: false
   log_level: "info"
+auth:
+  jwks_url: "http://keycloak-keycloakx-http.auth.svc.cluster.local/auth/realms/sw-dev/protocol/openid-connect/certs"
+  issuer: "https://sw-dev.polecatworks.com/auth/realms/sw-dev"
+  audience: "sward-api"

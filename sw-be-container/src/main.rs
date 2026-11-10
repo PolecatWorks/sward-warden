@@ -71,6 +71,11 @@ fn main() -> Result<(), AppError> {
             let delay = config.debugging.fail_debug_delay;
 
             let result = (|| -> Result<(), AppError> {
+                config.validate().map_err(|e| {
+                    tracing::error!("Configuration validation error: {}", e);
+                    AppError::Message(format!("Configuration validation error: {e}"))
+                })?;
+
                 println!(
                     "Config:\n{}",
                     serde_yaml::to_string(&config).map_err(|e| AppError::Message(format!(

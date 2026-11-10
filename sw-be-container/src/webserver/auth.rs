@@ -73,6 +73,16 @@ impl JwksVerifier {
         write_guard.insert(kid, (public_key, Instant::now()));
     }
 
+    /// Synchronously register or seed a public key without async await.
+    pub fn add_key_sync(&self, kid: String, public_key: RS256PublicKey) {
+        if let Ok(mut write_guard) = self.keys.try_write() {
+            write_guard.insert(kid, (public_key, Instant::now()));
+        } else {
+            let mut write_guard = self.keys.blocking_write();
+            write_guard.insert(kid, (public_key, Instant::now()));
+        }
+    }
+
     /// Retrieve or refresh the matching public key for a key ID.
     pub async fn get_key(
         &self,
@@ -315,48 +325,32 @@ async fn extract_jwt_claims(
 
     parts.extensions.insert(RawToken(token.to_string()));
 
-    // Resolve JWKS URL and expected issuer/audience
-    let jwks_url = state.config.keycloak.jwks_url.as_deref().or_else(|| {
-        if state.config.debugging.enable_dev_auth {
-            None // In dev auth mode with in-memory keypair, we can use the local dev key directly
-        } else {
-            None
-        }
-    });
+    let jwks_url = state.config.auth.jwks_url.as_deref();
 
     let mut verification_options = VerificationOptions::default();
 
-    let expected_aud = state
-        .config
-        .keycloak
-        .expected_audience
-        .as_deref()
-        .unwrap_or("sward-api");
+    let expected_aud = state.config.auth.audience.as_deref().unwrap_or("sward-api");
     verification_options.allowed_audiences =
         Some(std::collections::HashSet::from([expected_aud.to_string()]));
 
-    if let Some(expected_iss) = state.config.keycloak.expected_issuer.as_deref() {
-        verification_options.allowed_issuers =
-            Some(std::collections::HashSet::from([expected_iss.to_string()]));
-    } else if state.config.debugging.enable_dev_auth {
-        verification_options.allowed_issuers = Some(std::collections::HashSet::from([
-            "http://localhost:8080".to_string(),
-        ]));
-    }
+    let expected_iss = state
+        .config
+        .auth
+        .issuer
+        .as_deref()
+        .unwrap_or("http://localhost:8080");
+    verification_options.allowed_issuers =
+        Some(std::collections::HashSet::from([expected_iss.to_string()]));
 
     // Read header to extract Key ID (kid)
     let token_metadata = Token::decode_metadata(token)
         .map_err(|e| AppError::Unauthorized(format!("Invalid JWT header metadata: {e}")))?;
 
-    let public_key = if let Some(keypair) = &state.dev_jwt_keypair {
-        // Dev auth mode seeded keypair
-        keypair.public_key()
-    } else {
-        let kid = token_metadata.key_id().ok_or_else(|| {
-            AppError::Unauthorized("JWT missing 'kid' header parameter".to_string())
-        })?;
-        state.jwks_verifier.get_key(kid, jwks_url, false).await?
-    };
+    let kid = token_metadata
+        .key_id()
+        .ok_or_else(|| AppError::Unauthorized("JWT missing 'kid' header parameter".to_string()))?;
+
+    let public_key = state.jwks_verifier.get_key(kid, jwks_url, false).await?;
 
     let claims = public_key
         .verify_token::<VerifiedClaims>(token, Some(verification_options))

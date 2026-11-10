@@ -39,9 +39,18 @@ pub async fn generate_token(
         sward_roles: vec![payload.role],
     };
 
+    let issuer = state
+        .config
+        .auth
+        .issuer
+        .as_deref()
+        .unwrap_or("http://localhost:8080");
+
+    let audience = state.config.auth.audience.as_deref().unwrap_or("sward-api");
+
     let claims = Claims::with_custom_claims(custom_claims, Duration::from_hours(24))
-        .with_issuer("http://localhost:8080")
-        .with_audience("sward-api")
+        .with_issuer(issuer)
+        .with_audience(audience)
         .with_subject(payload.user_id.to_string());
 
     let token = keypair

@@ -27,7 +27,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0001-21 Backend: Universal JWT Verification via JWKS](./0001/0001-21-universal-jwt-jwks-verification.md) | Complete | PRD 0001 |
 | [0001-22 Frontend: Sync Engine Authentication Guard & OIDC Flow Preservation](./0001/0001-22-sync-engine-auth-guard.md) | Complete | PRD 0001 |
 | [0001-23 Frontend OIDC PKCE & OAuthStorage LocalStorage Persistence](./0001/0001-23-oidc-pkce-localstorage-persistence.md) | Complete | PRD 0001 |
-| [0001-24 Backend: Provider-Agnostic OIDC Verification via Standard JWKS and Dev Validation](./0001/0001-24-backend-agnostic-oidc-jwks.md) | Open | PRD 0001 |
+| [0001-24 Backend: Provider-Agnostic OIDC Verification via Standard JWKS and Dev Validation](./0001/0001-24-backend-agnostic-oidc-jwks.md) | Complete | PRD 0001 |
 | [0002-01 Dashboard Specification](./0002/0002-01-dashboard.md) | Complete | PRD 0002 |
 
 | [0002-02 Compliance Tracking Specification](./0002/0002-02-compliance-tracking.md) | Complete | PRD 0002 |
