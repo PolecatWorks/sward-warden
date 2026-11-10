@@ -136,6 +136,10 @@ spec:
         environment: "testing"
         enable_dev_auth: true
         log_level: "info"
+      auth:
+        jwks_url: "http://sward-warden-be:8080/.well-known/jwks.json"
+        issuer: "http://localhost:8080"
+        audience: "sward-api"
 
 
     initContainer:
