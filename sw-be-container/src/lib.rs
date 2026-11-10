@@ -81,6 +81,7 @@ pub async fn service_cancellable(
 
     let mut dev_jwt_keypair = None;
     let mut dev_jwks_json = None;
+    let mut dev_public_key = None;
 
     if config.debugging.enable_dev_auth {
         info!("Dev auth is enabled. Generating in-memory RS256 keypair for JWT...");
@@ -112,6 +113,7 @@ pub async fn service_cancellable(
             ]
         });
 
+        dev_public_key = Some(public_key);
         dev_jwt_keypair = Some(Arc::new(keypair));
         dev_jwks_json = Some(jwks.to_string());
     }
@@ -123,6 +125,13 @@ pub async fn service_cancellable(
         dev_jwt_keypair,
         dev_jwks_json,
     );
+
+    if let Some(pub_key) = dev_public_key {
+        state
+            .jwks_verifier
+            .add_key("dev-key-1".to_string(), pub_key)
+            .await;
+    }
 
     if config.startup_checks.enabled {
         startup_tools::run_startup_checks(&config, &db_pool).await?;

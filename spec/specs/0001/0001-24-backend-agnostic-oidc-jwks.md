@@ -1,6 +1,6 @@
 # 0001-24 Backend: Provider-Agnostic OIDC Verification via Standard JWKS and Dev Validation
 
-**State**: Open
+**State**: Complete
 
 ## 1. Overview
 This specification supersedes [0001-21 Backend: Universal JWT Verification via JWKS](./0001-21-universal-jwt-jwks-verification.md). It eliminates provider-specific naming (e.g. `keycloak.expected_issuer`), removes all "magic" environment/address-based branching, and standardizes backend token verification on a single, uniform JWKS architecture.

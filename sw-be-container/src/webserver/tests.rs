@@ -63,6 +63,11 @@ fn get_test_state() -> AppState {
             log_level: "info".to_string(),
         },
         spatial: crate::config::SpatialConfig::default(),
+        auth: crate::config::AuthConfig {
+            jwks_url: Some("http://localhost:8080/.well-known/jwks.json".to_string()),
+            issuer: Some("http://localhost:8080".to_string()),
+            audience: Some("sward-api".to_string()),
+        },
         keycloak: crate::config::KeycloakConfig::default(),
         weather_job: crate::config::WeatherJobConfig::default(),
     };
@@ -76,9 +81,14 @@ fn get_test_state() -> AppState {
     let keypair = jwt_simple::algorithms::RS256KeyPair::generate(2048)
         .unwrap()
         .with_key_id("dev-key-1");
+    let public_key = keypair.public_key();
     let dev_jwt_keypair = Some(std::sync::Arc::new(keypair));
 
-    AppState::new(config, metric_handle, db_pool, dev_jwt_keypair, None)
+    let state = AppState::new(config, metric_handle, db_pool, dev_jwt_keypair, None);
+    state
+        .jwks_verifier
+        .add_key_sync("dev-key-1".to_string(), public_key);
+    state
 }
 
 // PRD Reference: 0001, 0014
