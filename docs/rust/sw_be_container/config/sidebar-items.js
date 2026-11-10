@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["AppConfig","CorsConfig","DatabaseConfig","DebuggingConfig","KeycloakConfig","SpatialConfig","StartupCheckConfig","UrlWithUsernamePassword","WeatherJobConfig","WebServiceConfig"]};
+window.SIDEBAR_ITEMS = {"struct":["AppConfig","AuthConfig","CorsConfig","DatabaseConfig","DebuggingConfig","KeycloakConfig","SpatialConfig","StartupCheckConfig","UrlWithUsernamePassword","WeatherJobConfig","WebServiceConfig"]};
