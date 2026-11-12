@@ -34,6 +34,7 @@ export function initializeOAuth(oauthService: OAuthService, config: AppConfig, l
       oauthService.configure(authConfig);
       // Ensure OAuthService writes to localStorage
       oauthService.setStorage(localStorage);
+      (oauthService as any).saveNoncesInLocalStorage = true;
       if (config.auth.requireHttps ?? true) {
         oauthService.setupAutomaticSilentRefresh();
       }
