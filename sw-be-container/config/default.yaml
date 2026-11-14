@@ -33,9 +33,9 @@ spatial:
   official_boundary_api_url: null
   official_boundary_api_key: null
 auth:
-  jwks_url: "http://localhost:8080/.well-known/jwks.json"
+  jwks_url: "http://localhost:8080/sward/.well-known/jwks.json"
   issuer: "http://localhost:8080"
-  audience: "sward-api"
+  audience: "sward-warden-be"
 keycloak:
   base_url: "http://keycloak-keycloakx-http.auth.svc.cluster.local/auth"
   realm: "sw-dev"

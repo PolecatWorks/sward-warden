@@ -93,6 +93,15 @@ fn get_test_state() -> AppState {
 
 // PRD Reference: 0001, 0014
 fn generate_test_jwt(state: &AppState, user_id: i64, role: &str) -> String {
+    generate_test_jwt_with_audience(state, user_id, role, "sward-warden-be")
+}
+
+fn generate_test_jwt_with_audience(
+    state: &AppState,
+    user_id: i64,
+    role: &str,
+    audience: &str,
+) -> String {
     use jwt_simple::prelude::*;
     let keypair = state.dev_jwt_keypair.as_ref().unwrap();
     let custom_claims = crate::webserver::dev_auth::CustomClaims {
@@ -100,7 +109,7 @@ fn generate_test_jwt(state: &AppState, user_id: i64, role: &str) -> String {
     };
     let claims = Claims::with_custom_claims(custom_claims, Duration::from_hours(1))
         .with_issuer("http://localhost:8080")
-        .with_audience("sward-api")
+        .with_audience(audience)
         .with_subject(user_id.to_string());
     keypair.sign(claims).unwrap()
 }
@@ -609,6 +618,7 @@ async fn test_bearer_token_authorized_with_jwks() {
     let token = generate_test_jwt(&state, 1, "admin");
 
     let response = app
+        .clone()
         .oneshot(
             Request::builder()
                 .uri("/v0/admin/health")
@@ -620,6 +630,21 @@ async fn test_bearer_token_authorized_with_jwks() {
         .unwrap();
 
     assert_eq!(response.status(), StatusCode::OK);
+
+    // Also verify backward-compatible audience "sward-api"
+    let legacy_token = generate_test_jwt_with_audience(&state, 1, "admin", "sward-api");
+    let response_legacy = app
+        .oneshot(
+            Request::builder()
+                .uri("/v0/admin/health")
+                .header("Authorization", format!("Bearer {}", legacy_token))
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(response_legacy.status(), StatusCode::OK);
 }
 
 #[tokio::test]
