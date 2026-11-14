@@ -41,6 +41,8 @@ describe('SyncEngineService Performance', () => {
 
     const mockAuthService = {
       getUserId: () => 'test-user',
+      isLoggedIn: () => true,
+      authState$: of(true),
     };
 
     TestBed.configureTestingModule({
