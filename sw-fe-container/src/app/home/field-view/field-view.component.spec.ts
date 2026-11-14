@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ActivatedRoute, provideRouter } from '@angular/router';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -334,12 +334,13 @@ describe('FieldViewComponent', () => {
   });
 
   // PRD Reference: 0003
-  it('should immediately apply error visual classes to empty required fields in planting form', async () => {
+  it('should immediately apply error visual classes to empty required fields in planting form', fakeAsync(() => {
     component.showPlantingForm = true;
     component.newPlanting.crop = '';
     component.newPlanting.variety = '';
     fixture.detectChanges();
-    await fixture.whenStable();
+    tick();
+    fixture.detectChanges();
 
     const cropInput = fixture.nativeElement.querySelector('input[name="crop"]');
     const varietyInput = fixture.nativeElement.querySelector(
@@ -354,5 +355,5 @@ describe('FieldViewComponent', () => {
     expect(varietyInput).toBeTruthy();
     // PRD Reference: 0003
     expect(varietyInput.className).toContain('border-error');
-  });
+  }));
 });

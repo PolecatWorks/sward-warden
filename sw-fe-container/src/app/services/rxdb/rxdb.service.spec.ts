@@ -14,7 +14,7 @@ import * as rxdbModule from 'rxdb';
 let testCounter = 0;
 
 // PRD Reference: 0001
-xdescribe('RxdbService', () => {
+describe('RxdbService', () => {
   let service: RxdbService;
   let testDbName: string;
 
@@ -158,9 +158,10 @@ xdescribe('RxdbService', () => {
   // PRD Reference: 0001
 
   it('should wipe database successfully on demand', async () => {
-    spyOn(rxdbModule, 'removeRxDatabase').and.returnValue(Promise.resolve() as any);
+    const Dexie = (await import('dexie')).default;
+    spyOn(Dexie, 'delete').and.returnValue(Promise.resolve() as any);
     await service.wipeDatabase();
-    expect(rxdbModule.removeRxDatabase).toHaveBeenCalled();
+    expect(Dexie.delete).toHaveBeenCalledWith(testDbName);
   });
 
   describe('Self-Healing & Fallback', () => {
