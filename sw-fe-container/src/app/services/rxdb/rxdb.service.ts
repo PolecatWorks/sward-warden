@@ -104,6 +104,22 @@ export class RxdbService implements OnDestroy {
 
   // PRD Reference: 0001, 0015
   public async tryCreateDatabase(): Promise<SwardDatabaseCollections> {
+    // E2E Test hooks to simulate database failures via query parameters
+    if (typeof window !== 'undefined' && window.location) {
+      if (window.location.search.includes('mock-db-fail-persistent')) {
+        throw new Error('Simulated persistent database failure');
+      }
+      if (window.location.search.includes('mock-db-fail-retry')) {
+        const attempts = sessionStorage.getItem('db-init-attempts') || '0';
+        if (attempts === '0') {
+          sessionStorage.setItem('db-init-attempts', '1');
+          throw new Error('Simulated database corruption/schema mismatch');
+        } else {
+          sessionStorage.removeItem('db-init-attempts');
+        }
+      }
+    }
+
     return await this.initDexie();
   }
 
