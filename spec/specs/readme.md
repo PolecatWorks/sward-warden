@@ -29,7 +29,7 @@ This directory contains Technical Specifications derived from the PRDs.
 | [0001-23 Frontend OIDC PKCE & OAuthStorage LocalStorage Persistence](./0001/0001-23-oidc-pkce-localstorage-persistence.md) | Complete | PRD 0001 |
 | [0001-24 Backend: Provider-Agnostic OIDC Verification via Standard JWKS and Dev Validation](./0001/0001-24-backend-agnostic-oidc-jwks.md) | Complete | PRD 0001 |
 | [0001-25 Backend OIDC Audience Alignment (`sward-warden-be`)](./0001/0001-25-be-audience-sward-warden-be.md) | Complete | PRD 0001 |
-| [0001-26 Dexie.js Client Database Migration](./0001/0001-26-dexie-client-database.md) | Open | PRD 0001 |
+| [0001-26 Dexie.js Client Database Migration](./0001/0001-26-dexie-client-database.md) | Complete | PRD 0001 |
 | [0002-01 Dashboard Specification](./0002/0002-01-dashboard.md) | Complete | PRD 0002 |
 
 | [0002-02 Compliance Tracking Specification](./0002/0002-02-compliance-tracking.md) | Complete | PRD 0002 |
