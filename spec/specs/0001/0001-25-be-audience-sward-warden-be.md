@@ -1,6 +1,6 @@
 # Backend OIDC Audience Alignment (`sward-warden-be`)
 
-**State**: Open
+**State**: Complete
 
 ## 1. Overview
 In PRD 0001 / PRD 0014 and specification 0001-21 / 0001-24, backend OIDC JWT verification validates the token audience (`aud`).

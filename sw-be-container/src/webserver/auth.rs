@@ -329,9 +329,17 @@ async fn extract_jwt_claims(
 
     let mut verification_options = VerificationOptions::default();
 
-    let expected_aud = state.config.auth.audience.as_deref().unwrap_or("sward-api");
-    verification_options.allowed_audiences =
-        Some(std::collections::HashSet::from([expected_aud.to_string()]));
+    let expected_aud = state
+        .config
+        .auth
+        .audience
+        .as_deref()
+        .unwrap_or("sward-warden-be");
+    verification_options.allowed_audiences = Some(std::collections::HashSet::from([
+        expected_aud.to_string(),
+        "sward-warden-be".to_string(),
+        "sward-api".to_string(),
+    ]));
 
     let expected_iss = state
         .config

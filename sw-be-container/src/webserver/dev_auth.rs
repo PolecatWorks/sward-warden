@@ -46,7 +46,12 @@ pub async fn generate_token(
         .as_deref()
         .unwrap_or("http://localhost:8080");
 
-    let audience = state.config.auth.audience.as_deref().unwrap_or("sward-api");
+    let audience = state
+        .config
+        .auth
+        .audience
+        .as_deref()
+        .unwrap_or("sward-warden-be");
 
     let claims = Claims::with_custom_claims(custom_claims, Duration::from_hours(24))
         .with_issuer(issuer)

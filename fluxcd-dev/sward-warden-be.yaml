@@ -114,7 +114,7 @@ spec:
       auth:
         jwks_url: "http://keycloak-keycloakx-http.auth.svc.cluster.local/auth/realms/sw-dev/protocol/openid-connect/certs"
         issuer: "https://sw-dev.polecatworks.com/auth/realms/sw-dev"
-        audience: "sward-api"
+        audience: "sward-warden-be"
     volumes:
       - name: config
         configMap:

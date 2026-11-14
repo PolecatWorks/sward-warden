@@ -139,7 +139,7 @@ spec:
       auth:
         jwks_url: "http://sward-warden-be:8080/.well-known/jwks.json"
         issuer: "http://localhost:8080"
-        audience: "sward-api"
+        audience: "sward-warden-be"
 
 
     initContainer:
