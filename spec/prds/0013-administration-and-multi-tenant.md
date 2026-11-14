@@ -5,7 +5,7 @@ This document defines the requirements for managing multiple users, data isolati
 
 ## 1. Multi-User Data Isolation
 The application must guarantee strict data isolation between tenants (users).
-- **Frontend Database Isolation:** The local RxDB database storage must be isolated on a per-user basis. The database name is dynamically constructed using the user's ID (e.g., `swarddb_1`).
+- **Frontend Database Isolation:** The local client storage (Dexie / IndexedDB) must be isolated on a per-user basis. The database name is dynamically constructed using the user's ID (e.g., `swarddb_1`).
 - **User Switching (Dev Feature):** Switching users fetches a fresh JWT, clears the old token, and reloads the app.
 - **Sync Checkpoint Validation:** The sync engine tracks the `lastSyncUserId`. If the current user differs from the last synced user, the sync metadata is invalidated and the page reloads to prevent cross-user data leakage.
 
